@@ -1,0 +1,67 @@
+﻿path,size_bytes,description
+README.md,13804,
+system/app/GMCarLife/GMCarLife.apk,3709230,百度 CarLife 前端（同类投影对比参考）
+system/app/GMCarPlay/GMCarPlay.apk,3067147,CarPlay HMI 应用（连接提示/授权弹窗/SurfaceView 承载画面），无 dex
+system/app/GMCarPlay/oat/x86_64/GMCarPlay.odex,193280,"GMCarPlay 的预编译 dex（x86_64, silvermont），实际代码在此"
+system/bin/MediaManagerService,1104200,CarPlay 服务端宿主进程，内含 Cinemo NME：iAP2/WiFi 传输/HID/鉴权/DDP
+system/bin/carplay.sh,105,有线 CarPlay USB gadget 的 IPv6 链路本地路由
+system/bin/native_enableApple.sh,86,切换 USB gadget UDC 到 dwc3.0.auto（SoC 原生口）
+system/bin/remote_display,63568,远端显示服务（与 QNX 显示共享相关，CarPlay 关联待验证）
+system/bin/remote_enableApple.sh,95,切换 USB gadget UDC 到 dabr_udc.0（远端/座舱口）
+system/bin/vehicleinputservice,10120,车辆输入服务（触摸/按键注入通道）
+system/build.prop,4542,系统版本（W40E-V167.3.1 / Android 6.0.1 / gminfo36）
+system/etc/asound.conf,8789,ALSA 配置，含 CarPlay 音频通路
+system/etc/asound_syncdump.conf,13923,ALSA 同步抓取配置
+system/etc/audio_policy.conf,3722,音频策略，含 CarPlay 输出设备
+system/etc/vehicle_audio_service.cfg,2887,车辆音频服务配置，含 CarPlay 焦点/路由
+system/framework/gm-res/gm-res.apk,432581,GM 资源与权限定义（gm.permission.ACCESS_CARPLAY_EAP / CARPLAY 权限组）
+system/lib64/libCarLifeServiceJNI.so,959752,百度 CarLife 服务 JNI（同类投影对比参考）
+system/lib64/libNme.so,153616,Cinemo NME 库
+system/lib64/libNmeAndroidTransport.so,38928,Cinemo NME 库
+system/lib64/libNmeAppleAuth.so,43024,Cinemo NME 库
+system/lib64/libNmeAppleAuthImpl.so,108560,Cinemo NME 库
+system/lib64/libNmeAudio.so,235536,Cinemo NME 库
+system/lib64/libNmeAudioAAC.so,297208,Cinemo NME 库
+system/lib64/libNmeAudioAMR.so,174216,Cinemo NME 库
+system/lib64/libNmeAudioDevice.so,296976,Cinemo NME 库
+system/lib64/libNmeAudioFLAC.so,79904,Cinemo NME 库
+system/lib64/libNmeAudioMP3.so,281952,Cinemo NME 库
+system/lib64/libNmeAudioMisc.so,161808,Cinemo NME 库
+system/lib64/libNmeAudioRenderer.so,108560,Cinemo NME 库
+system/lib64/libNmeAudioVorbis.so,190480,Cinemo NME 库
+system/lib64/libNmeAvrcpMediaFS.so,419856,Cinemo NME 库
+system/lib64/libNmeBaseClasses.so,4670136,Cinemo NME 库
+system/lib64/libNmeCarPlay.so,898312,Cinemo NME 库
+system/lib64/libNmeEncoder.so,776280,Cinemo NME 库
+system/lib64/libNmeImage.so,1208760,Cinemo NME 库
+system/lib64/libNmeNav.so,927792,Cinemo NME 库
+system/lib64/libNmeNavCopier.so,120848,Cinemo NME 库
+system/lib64/libNmeRedSource.so,436240,Cinemo NME 库
+system/lib64/libNmeSDK.so,3639320,Cinemo NME 库
+system/lib64/libNmeSubtitle.so,231440,Cinemo NME 库
+system/lib64/libNmeTransport.so,145424,Cinemo NME 库
+system/lib64/libNmeVfs.so,3815616,Cinemo NME 库
+system/lib64/libNmeVideo.so,78064,Cinemo NME 库
+system/lib64/libNmeVideoDevice.so,333960,Cinemo NME 库
+system/lib64/libNmeVideoGAVD.so,219344,Cinemo NME 库
+system/lib64/libNmeVideoRenderer.so,251992,Cinemo NME 库
+system/lib64/libNmeVideoSW.so,3049248,Cinemo NME 库
+system/priv-app/GMBluetooth/GMBluetooth.apk,105398,蓝牙管理应用，含可直接反编译的 classes.dex
+system/priv-app/GMSmartConnect/GMSmartConnect.apk,576692,无线连接管理前端（CarPlay 无线配对入口）
+system/priv-app/GMSmartConnect/oat/x86_64/GMSmartConnect.odex,10507008,GMSmartConnect 预编译 dex
+vendor/build.prop,200,系统版本（W40E-V167.3.1 / Android 6.0.1 / gminfo36）
+vendor/etc/BSD/SRcarplayUSB.1mic.bsd,1356,CarPlay 免手持/有源降噪调音表（vendor BSD）
+vendor/etc/BSD/SRcarplayUSB.2mic.bsd,1356,CarPlay 免手持/有源降噪调音表（vendor BSD）
+vendor/etc/BSD/SRcarplayUSB_WIFI.2mic.bsd,1356,CarPlay 免手持/有源降噪调音表（vendor BSD）
+vendor/etc/BSD/SSE_HF_GM_INFO3.5_CarPlayFT_SWB.1mic.bsd,1356,CarPlay 免手持/有源降噪调音表（vendor BSD）
+vendor/etc/BSD/SSE_HF_GM_INFO3.5_CarPlayFT_SWB.2mic.bsd,1534,CarPlay 免手持/有源降噪调音表（vendor BSD）
+vendor/etc/BSD/SSE_HF_GM_INFO3.5_CarPlayFT_SWB_WIFI.2mic.bsd,1866,CarPlay 免手持/有源降噪调音表（vendor BSD）
+vendor/etc/BSD/SSE_HF_GM_INFO3.5_CarPlayTelWB.1mic.bsd,1356,CarPlay 免手持/有源降噪调音表（vendor BSD）
+vendor/etc/BSD/SSE_HF_GM_INFO3.5_CarPlayTelWB.2mic.bsd,1534,CarPlay 免手持/有源降噪调音表（vendor BSD）
+vendor/etc/BSD/SSE_HF_GM_INFO3.5_CarPlayTelWB_WIFI.2mic.bsd,1969,CarPlay 免手持/有源降噪调音表（vendor BSD）
+vendor/etc/BSD/SSE_HF_GM_INFO3.6_CarPlayFT_SWB.2mic.bsd,1866,CarPlay 免手持/有源降噪调音表（vendor BSD）
+vendor/etc/BSD/SSE_HF_GM_INFO3.6_CarPlayFT_SWB_WIFI.2mic.bsd,1866,CarPlay 免手持/有源降噪调音表（vendor BSD）
+vendor/etc/BSD/SSE_HF_GM_INFO3.6_CarPlayTelNB.2mic.bsd,1858,CarPlay 免手持/有源降噪调音表（vendor BSD）
+vendor/etc/BSD/SSE_HF_GM_INFO3.6_CarPlayTelNB_WIFI.2mic.bsd,1858,CarPlay 免手持/有源降噪调音表（vendor BSD）
+vendor/etc/BSD/SSE_HF_GM_INFO3.6_CarPlayTelWB.2mic.bsd,1969,CarPlay 免手持/有源降噪调音表（vendor BSD）
+vendor/etc/BSD/SSE_HF_GM_INFO3.6_CarPlayTelWB_WIFI.2mic.bsd,1969,CarPlay 免手持/有源降噪调音表（vendor BSD）

@@ -1,0 +1,471 @@
+%s: Cinemo Log Level %s - Enabled
+%s:%s:%llu:CINEMO_MM_VOLUME_STATUS_FLAG_INDEXER_DATABASE
+%s:%s:%llu:CINEMO_MM_VOLUME_STATUS_FLAG_INDEXER_DONE
+%s:%s:%llu:CINEMO_MM_VOLUME_STATUS_FLAG_INDEXER_EXTERNAL_DONE
+%s:%s:%llu:CINEMO_MM_VOLUME_STATUS_FLAG_INDEXER_MASK
+%s:%s:%llu:CINEMO_MM_VOLUME_STATUS_FLAG_INDEXER_METADATA
+%s:%s:%llu:CINEMO_MM_VOLUME_STATUS_FLAG_INDEXER_THUMBS
+%s:%s:%llu:CINEMO_MM_VOLUME_STATUS_FLAG_INDEXER_TRACKS
+,NmeTransport:CreateNmeIAPWifiTransport
+/data/mediaFiles/CINEMO_LOGLEVEL_TRACE
+/data/mediaFiles/CINEMO_LOGLEVEL_VERBOSE
+/data/mediaFiles/cinemo_log
+AddWiFiNetworkDriverWorkload
+AndroidAuto_enableWireless
+AppleIAPH
+Apple_CarPlay_MusicLists
+Apple_CarPlay_enableWireless
+Apple_CarPlay_japanMaps
+Apple_CarPlay_nonMusicLists
+Apple_CarPlay_softKeyboard
+Apple_CarPlay_softKeypad
+Apple_CarPlay_touchFidelity
+BnMediaManagerService::CREATE_PROJECTION_DEVICE stub Entry
+BnMediaManagerService::DESTROY_PROJECTION_DEVICE stub Entry
+BnMediaPlayerJNIListener::sendCopFileInfo stub Entry
+BnMediaPlayerJNIListener::sendCopFileInfo stub failed
+BpMediaManagerService::createProjectionDevice Proxy Entry
+BpMediaManagerService::createProjectionDevice transact failed %d
+BpMediaManagerService::destroyProjectionDevice Proxy Entry
+BpMediaManagerService::destroyProjectionDevice transact failed %d
+BpMediaPlayerJNIListener::sendCopFileInfo proxy Entry
+BpMediaPlayerJNIListener::sendCopFileInfo proxy invoking transact
+BpMediaPlayerJNIListener::sendCopFileInfo proxy return BAD_VALUE
+CARPLAY
+CARPLAY-UUID
+CINEMO_METANAME_ALBUM
+CINEMO_METANAME_ALBUM_ARTIST
+CINEMO_METANAME_ARTIST
+CINEMO_METANAME_COMPOSER
+CINEMO_METANAME_GENRE
+CINEMO_METANAME_IAP_ACCESSORY_CAPS
+CINEMO_METANAME_IAP_ACCESSORY_INFO
+CINEMO_METANAME_IAP_ACCESSORY_NAME
+CINEMO_METANAME_IAP_AVAILABLE_CURRENT
+CINEMO_METANAME_IAP_BT_MAC_ADDRESS
+CINEMO_METANAME_IAP_BUNDLE_SEED_ID_PREFERENCE
+CINEMO_METANAME_IAP_CURRENT_LANGUAGE
+CINEMO_METANAME_IAP_DEVICE_ID
+CINEMO_METANAME_IAP_DEVICE_OPTIONS
+CINEMO_METANAME_IAP_EAP_APP_BUNDLE_ID
+CINEMO_METANAME_IAP_EAP_APP_SUPPORTS_CARPLAY
+CINEMO_METANAME_IAP_EAP_MATCH_ACTION
+CINEMO_METANAME_IAP_EAP_NATIVE_TRANSPORT_ID
+CINEMO_METANAME_IAP_HID_COMPONENT_FUNCTION
+CINEMO_METANAME_IAP_HID_COMPONENT_NAME
+CINEMO_METANAME_IAP_HID_PRODUCT_ID
+CINEMO_METANAME_IAP_HID_REPORT_DESCRIPTOR
+CINEMO_METANAME_IAP_HID_VENDOR_ID
+CINEMO_METANAME_IAP_IAP1_LINGOS
+CINEMO_METANAME_IAP_IAP2_FIRMWARE_VERSION
+CINEMO_METANAME_IAP_IAP2_HARDWARE_VERSION
+CINEMO_METANAME_IAP_LINK_CUMULATIVE_ACK_TIMEOUT
+CINEMO_METANAME_IAP_LOC_CAPABILITIES_BITMASK
+CINEMO_METANAME_IAP_LOC_COMPONENT_NAME
+CINEMO_METANAME_IAP_MANUFACTURER
+CINEMO_METANAME_IAP_MODEL_IDENTIFIER
+CINEMO_METANAME_IAP_POWER_PROVIDING_CAP
+CINEMO_METANAME_IAP_RECV_MSGS
+CINEMO_METANAME_IAP_SAMPLE_RATES
+CINEMO_METANAME_IAP_SEND_MSGS
+CINEMO_METANAME_IAP_SERIAL_NO
+CINEMO_METANAME_IAP_SUPPORTED_LANGUAGES
+CINEMO_METANAME_IAP_SUPPORTS_CARPLAY
+CINEMO_METANAME_IAP_SUPPORTS_IAP2_CONNECTION
+CINEMO_METANAME_IAP_TRANSPORT_COMPONENT_NAME
+CINEMO_METANAME_IAP_TRANSPORT_TYPE
+CINEMO_METANAME_IAP_VEHICLE_INFO_DISPLAYNAME
+CINEMO_METANAME_IAP_VEHICLE_INFO_ENGINE
+CINEMO_METANAME_IAP_VEHICLE_INFO_NAME
+CINEMO_METANAME_IAP_VEHICLE_STATUS_BITMASK
+CINEMO_METANAME_IAP_VEHICLE_STATUS_NAME
+CINEMO_METANAME_TITLE
+CINEMO_METANAME_VFS_BT_PLAYER_BROWSABLE
+CINEMO_METANAME_VFS_BT_PLAYER_NOWPLAYING_AVAILABLE
+CINEMO_METANAME_VFS_BT_PLAYER_SEARCHABLE
+CINEMO_METANAME_VFS_COUNT
+CINEMO_METANAME_VFS_IAP1_LINGO_OPTIONS
+CINEMO_METANAME_VFS_IAP1_LINGO_VERSION
+CINEMO_METANAME_VFS_MAY_BE_INDEXED
+CINEMO_METANAME_VFS_NAME
+CINEMO_METANAME_VFS_PLORDER_CAPS
+CINEMO_METANAME_VFS_PLREPEAT_CAPS
+CINEMO_METANAME_VFS_UPNP_CLASS
+CINEMO_METANAME_VFS_UPNP_HIERARCHY_NODE_ROLE
+CINEMO_METANAME_VFS_UPNP_ID
+CINEMO_METANAME_VFS_UPNP_INDEXING_PASS
+CINEMO_METANAME_VFS_UPNP_PARENTID
+CINEMO_METANAME_VFS_UPNP_REFID
+CINEMO_METANAME_VFS_UPNP_VOLUMEID
+CINEMO_METANAME_VFS_UPNP_VOLUME_TYPE
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_ACCESSORY_CAPS
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_ACCESSORY_INFO
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_ACCESSORY_NAME
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_AVAILABLE_CURRENT
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_BT_MAC_ADDRESS
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_BUNDLE_SEED_ID_PREFERENCE
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_CURRENT_LANGUAGE
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_DEVICE_ID
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_DEVICE_OPTIONS
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_EAP_APP_BUNDLE_ID
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_EAP_APP_SUPPORTS_CARPLAY
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_EAP_MATCH_ACTION
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_EAP_NATIVE_TRANSPORT_ID
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_HID_COMPONENT_FUNCTION
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_HID_COMPONENT_NAME
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_HID_PRODUCT_ID
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_HID_REPORT_DESCRIPTOR
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_HID_VENDOR_ID
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_IAP1_LINGOS
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_IAP2_FIRMWARE_VERSION
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_IAP2_HARDWARE_VERSION
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_LINK_CUMULATIVE_ACK_TIMEOUT
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_LOC_CAPABILITIES_BITMASK
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_LOC_COMPONENT_NAME
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_MANUFACTURER
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_MODEL_IDENTIFIER
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_POWER_PROVIDING_CAP
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_RECV_MSGS
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_SAMPLE_RATES
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_SEND_MSGS
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_SERIAL_NO
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_SUPPORTED_LANGUAGES
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_SUPPORTS_CARPLAY
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_SUPPORTS_IAP2_CONNECTION
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_TRANSPORT_COMPONENT_NAME
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_TRANSPORT_TYPE
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_VEHICLE_INFO_DISPLAYNAME
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_VEHICLE_INFO_ENGINE
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_VEHICLE_INFO_NAME
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_VEHICLE_STATUS_BITMASK
+CINEMO_METATYPE_OF_CINEMO_METANAME_IAP_VEHICLE_STATUS_NAME
+CINEMO_OPTION_APPLEAUTH_URL
+CINEMO_OPTION_AUDIO_CAPTURE_DEVICE_ID
+CINEMO_OPTION_AVRCP_TIMEOUT
+CINEMO_OPTION_CARPLAY_WIFI_TRANSPORT_NAME
+CINEMO_OPTION_DISTRIBUTED_SSDP_ENABLE_DISCOVERY
+CINEMO_OPTION_FILE_FAIL_UNSUPPORTED_AUDIO
+CINEMO_OPTION_FILE_FAIL_UNSUPPORTED_VIDEO
+CINEMO_OPTION_IAP_ENABLE_IAP1
+CINEMO_OPTION_IAP_IAP1_RESTORE_ON_EXIT
+CINEMO_OPTION_IAP_TRACK_BY_TRACK_TIMEOUT
+CINEMO_OPTION_IAP_TRANSPORT_LIBRARIES
+CINEMO_OPTION_IAP_TRANSPORT_OPTION_STRING
+CINEMO_OPTION_METADATA_DEFAULT_CHARSET
+CINEMO_OPTION_METADATA_MAX_SIZE
+CINEMO_OPTION_MM_CONFIG_XML
+CINEMO_OPTION_MM_ENABLE_JOURNALING
+CINEMO_OPTION_MM_FILENAME_AUDIO
+CINEMO_OPTION_MM_FILENAME_EXCLUDE
+CINEMO_OPTION_MM_FILENAME_EXCLUDE_FULLPATH
+CINEMO_OPTION_MM_FILENAME_IMAGE
+CINEMO_OPTION_MM_FILENAME_PLAYLISTS
+CINEMO_OPTION_MM_FILENAME_VIDEO
+CINEMO_OPTION_MM_FILENAME_WHITELIST
+CINEMO_OPTION_MM_ICU_DATAFILE
+CINEMO_OPTION_MM_ICU_SORT_LOCALE
+CINEMO_OPTION_MM_INDEXER_IAP2_TIMEOUT
+CINEMO_OPTION_MM_MOUNT_EXISTING_VOLUMES
+CINEMO_OPTION_MM_QUOTA_STORAGE
+CINEMO_OPTION_MM_SERVER_URL
+CINEMO_OPTION_MM_SSDP_ENABLE_DISCOVERY
+CINEMO_OPTION_MM_THUMB_SKIP_IMAGES
+CINEMO_OPTION_MM_THUMB_SKIP_VIDEOS
+CINEMO_OPTION_PLAYLIST_ICU_LOCALE
+CINEMO_OPTION_PLUGIN_AUDIO_CAPTURE
+CINEMO_OPTION_PRIO_INDEXING
+CINEMO_OPTION_VIDEO_DIVXCOMPATIBILITY_ENABLE_AVI
+CINEMO_OPTION_VIDEO_DIVXCOMPATIBILITY_ENABLE_MKV
+CINEMO_OPTION_VIDEO_DIVXCOMPATIBILITY_SKIP_STREAMMARKER_CHECK
+CarPlayAH
+CarPlayAL
+CarPlayAuthentication
+CarPlayD
+CarPlayDH
+CarPlayDevice
+Carplay Device in USB subsystem
+Cinemo Info Logging - Enabled for user build by default
+Cinemo SetOption(exclude Folders) done
+Cinemo Trace Logging - Disabled
+Cinemo Trace Logging - Enabled
+Cinemo Verbose Logging - Disabled
+Cinemo Verbose Logging - Enabled
+CinemoBTComponent
+CinemoCreateConfig
+CinemoCreateDDP
+CinemoCreateIAP
+CinemoCreateLogAppender
+CinemoCreateMM
+CinemoCreateMetapool
+CinemoCreatePlaylist
+CinemoCreateUTF8
+CinemoCreateVFS
+CinemoErrorToString
+CinemoGPSComponent
+CinemoHIDRemote
+CinemoMM::SetOption exclude Folders for MTP failed: %s
+CinemoUSBComponent
+CinemoWIFIComponent
+DDP: CINEMO_OPTION_PLAYLIST_ICU_LOCALE set to: %s
+GetOption(CINEMO_OPTION_IAP_TRANSPORT_LIBRARIES): %s
+ICinemoMetaPool::AddItem(SampleRate1) Failed:%s
+ICinemoMetaPool::AddItem(SampleRate2) Failed:%s
+ICinemoMetaPool::AddItem(SampleRate3) Failed:%s
+MMS- Config File->cinemoBtsaPath =%s
+MMS- Config File->cinemoMMConfigXMLPath =%s
+MMS-> initializeMMS() Cinemo startEngine() failed
+MMS: Add WIFI component meta entries
+MMS: AddVolumeGroup() for Carplay returned : %s
+MMS: CINEMO_OPTION_FILE_FAIL_UNSUPPORTED_AUDIO done:
+MMS: CINEMO_OPTION_FILE_FAIL_UNSUPPORTED_VIDEO done:
+MMS: CINEMO_OPTION_IAP_ENABLE_IAP1() returned: %s
+MMS: CINEMO_OPTION_METADATA_MAX_SIZE() returned: %s
+MMS: CINEMO_OPTION_MM_ICU_DATAFILE() returned: %s
+MMS: CINEMO_OPTION_MM_ICU_SORT_LOCALE set to: %s
+MMS: CINEMO_OPTION_MM_THUMB_SKIP_IMAGES done:
+MMS: CINEMO_OPTION_MM_THUMB_SKIP_VIDEOS done:
+MMS: CINEMO_OPTION_VIDEO_DIVXCOMPATIBILITY_ENABLE_AVI done
+MMS: CINEMO_OPTION_VIDEO_DIVXCOMPATIBILITY_ENABLE_MKV done
+MMS: CINEMO_OPTION_VIDEO_DIVXCOMPATIBILITY_SKIP_STREAMMARKER_CHECK done
+MMS: Cinemo Friendly Carlife DDP usbfsDevicePath: %s
+MMS: Cinemo Friendly Carplay DDP usbfsDevicePath: %s
+MMS: Cinemo Friendly Ipod DDP usbfsDevicePath: %s
+MMS: Cinemo Friendly MTP DDP usbfsDevicePath: %s
+MMS: Cinemo Friendly Wireless CarPlay DDP usbfsDevicePath: %s
+MMS: Cinemo MMInstance is NULL 
+MMS: Cinemo Media Engine:: %d: %d: %d: %d
+MMS: Cinemo friendlyName: %s
+MMS: CinemoCreateConfig() returned: %s
+MMS: CinemoCreateDDP done
+MMS: CinemoCreateDDP() returned %s
+MMS: CinemoCreateIAP() returned: %s
+MMS: CinemoCreateLogAppender() returned: %s
+MMS: CinemoCreateMM done
+MMS: CinemoCreateMM() returned: %s
+MMS: Config File-> IAPTransportStr =%s
+MMS: Config File-> iapTBTTimeout =%s
+MMS: Config File->cinemoDDPUrl =%s
+MMS: Config File->cinemologlevel =%s
+MMS: IAP Release done for iPod
+MMS: IAP Release failed for iPod: %d
+MMS: IAP1 restore on exit set done :
+MMS: IAP2 NCM configuration 0 set done :
+MMS: IAPClose done for iPod
+MMS: IAPClose failed for iPod: %d
+MMS: IAPOpen done for Carlife
+MMS: IAPOpen done for iPod
+MMS: IAPOpen failed for Carlife: %d
+MMS: IAPOpen failed for iPod: %d
+MMS: MediaAppleInterface() - addiAP2MetaEntries(): Entry
+MMS: MediaAppleInterface() - getIAPOpenFlags(): Entry
+MMS: MediaAppleInterface() - releaseProjectionResources(): Entry
+MMS: MediaAppleInterface() - startIAPClose(): Entry
+MMS: MediaAppleInterface() - startIAPOpen(): Entry
+MMS: MediaAppleInterface() - startIAPRelease(): Entry
+MMS: MediaAppleInterface() - startProjectionAuth(): Entry
+MMS: MediaAppleInterface() - stopProjectionAuth(): Entry
+MMS: MediaAppleInterface(): ICinemoMetaPool::AddItem("%s"%d) returned: %s
+
+MMS: MediaBTSA - ICinemoVFS::Watch() returned %s
+MMS: MediaBTSA(): getCinemoIntegerValue()- Entry
+MMS: MediaBTSA(): getCinemoStringValue()- Entry
+MMS: MediaBTSA:CinemoCreateVFS() FAILED: returned %s
+MMS: MediaBTSA:ICinemoVFS::Open() returned %s
+MMS: MediaCarPlay() - startSync() Entry
+MMS: MediaCarPlayAuthentication() - dismount()- Entry
+MMS: MediaCarPlayAuthentication() - extractDeviceName(): failed.
+MMS: MediaCarPlayAuthentication() - getIAPOpenFlags(): Entry
+MMS: MediaCarPlayAuthentication() - initializeIdentificationParams(): Entry
+MMS: MediaCarPlayAuthentication() - startProjectionAuth(): Entry
+MMS: MediaCarPlayAuthentication() - startProjectionAuth(): failed.
+MMS: MediaCarPlayAuthentication() extractDeviceName()-path: %s
+MMS: MediaCarlifeApple() - getIAPOpenFlags(): Entry
+MMS: MediaDeviceManager() - createProjectionDevice(): Entry
+MMS: MediaDeviceManager() - createProjectionDevice(): Exit
+MMS: MediaDeviceManager() - destroyProjectionDevice(): Entry
+MMS: MediaDeviceManager() - destroyProjectionDevice(): Exit
+MMS: MediaDeviceManager() - destroyProjectionDevice(): appleInterfacePtr = NULL
+MMS: MediaDeviceManager() - startProjectionAuth(): failed
+MMS: MediaDigitalAux - ICinemoVFS::Watch() returned %s
+MMS: MediaDigitalAux:CinemoCreateVFS() FAILED: returned %s
+MMS: MediaDigitalAux:ICinemoVFS::Open() returned %s
+MMS: MediaIAPHandler() constructor
+MMS: MediaIAPHandler() destructor
+MMS: MediaWirelessCarPlay() - startSync() Entry
+MMS: Received EAPPacketArrived callback from Cinemo:
+MMS: Received EAPSessionInitiated callback from Cinemo:
+MMS: Received EndEAPSession callback from Cinemo:
+MMS: addVolume done for CarPlay
+MMS: addVolume done for Wireless CarPlay
+MMS: addVolume failed for CarPlay
+MMS: addVolume failed for Wireless CarPlay
+MMS: cinemoLogLevel: %d
+MMS: extractDevNameAndUUID done for CarPlay
+MMS: extractDevNameAndUUID done for CarPlay Authentication
+MMS: extractDevNameAndUUID failed for CarPlay
+MMS: get CINEMO_METANAME_VFS_MAY_BE_INDEXED failed
+MMS: get carplay type from calibration: ret = %d, carplayEnableWirelessValue = %s
+MMS: get wireless carplay calibration failed
+MMS: getCinemoLogLevel() Entry
+MMS: getWirelessCarplayCalibration(), enabled = %d
+MMS: iap time out [3sec] :
+MMS: m_pCinemoIAP is NULL
+MMS: m_pCinemoVFS is NULL
+MMS: not using ICinemoLogAppender for Cinemo log
+MMS: pCinemoLogAppender->SetLevel() returned: %s
+MMS: printCinemoSDKVersion() Entry
+MMS: releaseProjectionResources failed
+MMS: startIAPOpen appleDeviceChargingCurrent =%d
+MMS: stopProjectionAuth failed
+MMS: using ICinemoLogAppender for Cinemo log.
+MMS:CARPLAY:LingoOptions:%llX, LingoVersion: %lld
+MMS:Cinemo Friendly Carlife FFS_Path: %s
+MMS:CinemoCreateMetapool() Failed: %s
+MMS:CinemoCreateVFS() FAILED: returned %s
+
+MMS:CinemoCreateVFS() Failed: %s
+MMS:ICinemoVFS::Open() returned %s
+MMS:MediaCarPlayAuthentication() - Carplay Identifications are added
+MMS:addToMetapool(iAP1) Failed
+MMS:addToMetapool(iAP2 HID report descriptor array) Failed
+MMS:addToMetapool(iAP2 china region descriptor)
+MMS:addToMetapool(iAP2) Failed
+MMS:addToMetapool(wifi_component_meta_entries) Failed
+MMS:addiAP2MetaEntries Failed
+MMS:startIAPClose CinemoIAP->Close() retValue: %d
+MMS:startIAPClose CinemoIAP->Release retValue: %d
+MMS:startIAPClose:CinemoIAP->Close() Failed: %s
+MMS:startIAPOpen CinemoIAP->Open() done
+MMS:startIAPOpen SendPowerSourceUpdate() done
+MMS:startIAPOpen::CinemoIAP->Open() Failed: %s
+MMS:startIAPOpen:Device doesn't support proper charging but supports Indexing
+MMS:startIAPOpen:SendPowerSourceUpdate() Failed: %s
+MMS:startIAPOpen:StartPowerUpdates() Failed: %s
+MMS:startIAPOpen:StartPowerUpdates() done
+MediaAppleInterface::OOBBTPairingLinkKeyInformation(): m_pCinemoIAP = NULL!
+MediaAppleInterface::OOBBTPairingLinkKeyInformation(): m_pCinemoIAP->OOBBTPairingCompletionInformation() return %d
+MediaAppleInterface::addiAP2MetaEntries::Current system language: %s
+MediaBTSA::CinemoCreateMetapool failed: %s
+MediaBTSA::Watching changes for cinemoBtsaWatchPath
+MediaBTSA::cinemoBtsaWatchPath : %s
+MediaBTSA::updateBTSADevType pCinemoMM NULL
+MediaCarPlay() - CarPlay's Constructor- Entry
+MediaCarPlay() - CarPlay's Destructor
+MediaCarPlayAuthentication() - CarPlay Authentication's Constructor- Entry
+MediaCarPlayAuthentication() - CarPlay Authentication's Destructor
+MediaDevice::CinemoCreateMetapool failed: %s
+MediaIPOD::CinemoCreateMetapool failed: %s
+MediaJournaling: cinemoGetText() failed
+MediaJournaling:: cinemoGetText Entry
+MediaJournaling::CINEMO_MM_VOLUME_EVENT_ADD
+MediaJournaling::CINEMO_MM_VOLUME_EVENT_DISMOUNT/REMOVE
+MediaJournaling::CINEMO_MM_VOLUME_EVENT_MOUNT
+MediaJournaling::CINEMO_MM_VOLUME_EVENT_REMOVE
+MediaJournaling::CinemoCreateMetapool failed in writeIntegerToNode(): %s
+MediaJournaling::CinemoCreateMetapool failed: %s
+MediaJournaling::CinemoCreateMetapool: %s
+MediaJournaling::CinemoPlaylistOpen Entry: upnpQuery: %s
+MediaJournaling::CinemoPlaylistOpen Succedded
+MediaJournaling::CinemoPlaylistOpen Succedded AudioBooks/Podcasts
+MediaJournaling::CinemoPlaylistOpen Succedded for Episodes
+MediaJournaling::CinemoVfsClose Entry
+MediaJournaling::CinemoVfsOpen Entry
+MediaJournaling::Metapool found using ICinemoPlaylist
+MediaJournaling::browseAndGenerateCopfile CinemoMM Unavailable
+MediaJournaling::browseAndGenerateCopfile MetaPool found using Cinemo VFS
+MediaJournaling::browseAndGenerateVRAudioBookfile CinemoMM Unavailable
+MediaJournaling::browseAndGenerateVRPlaylistfile CinemoMM Unavailable
+MediaJournaling::browseAndGenerateVRPodCastfile CinemoMM Unavailable
+MediaJournaling::browseAndGenerateVRVideofile CinemoMM Unavailable
+MediaJournaling::browseInterDBAndGenerateCopfile CinemoMM Unavailable
+MediaJournaling::constructCinemoUrl Entry
+MediaJournaling::prepareDeltaUpdateVRCopfile CinemoMM Unavailable
+MediaJournaling::prepareFullUpdateVRCopfile CinemoMM Unavailable
+MediaJournaling:CinemoCreatePlaylist Failed: %s
+MediaJournaling:CinemoCreateVFS() FAILED: returned %s
+MediaJournaling:CinemoVfsOpen::Open() failed
+MediaJournaling:ICinemoPlaylist::Open Failed: %s
+MediaJournaling:ICinemoVFS::Open() returned %s
+MediaMTP::cinemoMTPWatchPath:: %s
+MediaMTP::mtpSessionHandler CinemoCreateVFS() Failed::%s
+MediaMTP::mtpSessionHandler: calling checkStoragesAddAddVolume() after Watch() return CinemoNoError.
+MediaMTP::mtpSessionHandler:CinemoVFS::Open() Failed::%s
+MediaMTP::mtpSessionHandler:CinemoVFS::Watching Status:: %s
+MediaPlayerJNIListener
+MediaVRCopfileGenerator::Cinemo EditNode success
+MediaVRCopfileGenerator::getTrigger:CinemoPlaylistOpen Succedded
+MediaVRCopfileGenerator::getTrigger:Metapool found using ICinemoPlaylist
+MediaWirelessCarPlay() - Wireless CarPlay's Constructor- Entry
+MediaWirelessCarPlay() - Wireless CarPlay's Destructor
+SetOption(CINEMO_OPTION_APPLEAUTH_URL): %s
+SetOption(CINEMO_OPTION_AUDIO_CAPTURE_DEVICE_ID): %s
+SetOption(CINEMO_OPTION_AVRCP_TIMEOUT): %s
+SetOption(CINEMO_OPTION_CARPLAY_WIFI_TRANSPORT_NAME): %s
+SetOption(CINEMO_OPTION_DISTRIBUTED_SSDP_ENABLE_DISCOVERY): %s
+SetOption(CINEMO_OPTION_FILE_FAIL_UNSUPPORTED_AUDIO) %s
+SetOption(CINEMO_OPTION_FILE_FAIL_UNSUPPORTED_VIDEO) %s
+SetOption(CINEMO_OPTION_IAP_IAP1_RESTORE_ON_EXIT): %s
+SetOption(CINEMO_OPTION_IAP_TRACK_BY_TRACK_TIMEOUT): %s
+SetOption(CINEMO_OPTION_IAP_TRANSPORT_LIBRARIES): %s
+SetOption(CINEMO_OPTION_IAP_TRANSPORT_OPTION_STRING): %s
+SetOption(CINEMO_OPTION_METADATA_DEFAULT_CHARSET): %s
+SetOption(CINEMO_OPTION_MM_CONFIG_XML) %s
+SetOption(CINEMO_OPTION_MM_ENABLE_JOURNALING) %s
+SetOption(CINEMO_OPTION_MM_FILENAME_AUDIO) %s
+SetOption(CINEMO_OPTION_MM_FILENAME_EXCLUDE) %s
+SetOption(CINEMO_OPTION_MM_FILENAME_EXCLUDE_FULLPATH) %s
+SetOption(CINEMO_OPTION_MM_FILENAME_IMAGE) %s
+SetOption(CINEMO_OPTION_MM_FILENAME_PLAYLIST) %s
+SetOption(CINEMO_OPTION_MM_FILENAME_VIDEO) %s
+SetOption(CINEMO_OPTION_MM_FILENAME_WHITELIST) %s
+SetOption(CINEMO_OPTION_MM_ICU_SORT_LOCALE): %s
+SetOption(CINEMO_OPTION_MM_INDEXER_IAP2_TIMEOUT): %s
+SetOption(CINEMO_OPTION_MM_MOUNT_EXISTING_VOLUMES) %s
+SetOption(CINEMO_OPTION_MM_QUOTA_STORAGE) %s
+SetOption(CINEMO_OPTION_MM_SERVER_URL) %s
+SetOption(CINEMO_OPTION_MM_SSDP_ENABLE_DISCOVERY): %s
+SetOption(CINEMO_OPTION_MM_THUMB_SKIP_IMAGES) %s
+SetOption(CINEMO_OPTION_MM_THUMB_SKIP_VIDEOS) %s
+SetOption(CINEMO_OPTION_PLAYLIST_ICU_LOCALE) Failed : %s
+SetOption(CINEMO_OPTION_PLUGIN_AUDIO_CAPTURE): %s
+SetOption(CINEMO_OPTION_PRIO_INDEXING): %s
+SetOption(CINEMO_OPTION_VIDEO_DIVXCOMPATIBILITY_ENABLE_AVI) %s
+SetOption(CINEMO_OPTION_VIDEO_DIVXCOMPATIBILITY_ENABLE_MKV) %s
+SetOption(CINEMO_OPTION_VIDEO_DIVXCOMPATIBILITY_SKIP_STREAMMARKER_CHECK) %s
+The IPOD device has a Wireless CarPlay in session, ignore sync IPOD volume.
+VehicleWiFiPasswordDriverWorkload
+VehicleWifiNameDriverWorkload
+Wireless CarPlay Device Removed
+Wireless CarPlay session is terminated, resume sync IPOD volume.
+Wireless Carplay Device connected
+WirelessCarPlayDevice
+addEAPMetaEntries::AddItem(External Accessory Protocol supports carplay) failed: %s
+addiAP2MetaEntries::AddItem(Current Language) failed: %s
+cinemoBtsaPath
+cinemoDDPUrl
+cinemoLogLevel
+cinemoMMConfigXMLPath
+dc:title, cinemo:indexingPass, upnp:class
+iAPTransportString
+iap://ff
+iap://ffH
+iap://ffs:///dev/ffs
+iap://us1
+iap://usH
+iapTBTTimeout
+m_ProjectionIAPLock init failed
+m_deviceType = %s, mEnableOOBBTPairing = %d, mEnableWIFIComponent = %d
+m_pCinemoIAP = NULL!
+max cinemo log index: %d
+mms_cinemo
+nodeEventsCallback:: CINEMO_MM_INDEXING_PASS_COMPLETE for received nodeEvent
+nodeEventsCallback:: CINEMO_MM_NODE_EVENT_ADD Received
+nodeEventsCallback:: CINEMO_MM_NODE_EVENT_CHANGE Received
+nodeEventsCallback:: CINEMO_MM_NODE_EVENT_EXISTING Received
+nodeEventsCallback:: CINEMO_MM_NODE_EVENT_REMOVE Received
+nodeEventsCallback:: CINEMO_MM_NODE_EVENT_STATUS Received
+nodeEventsCallback:: CINEMO_MM_VOLUME_STATUS_FLAG_INDEXER_EXTERNAL_DONE Received
+persist.cinemo.log_to_logcat
+persist.cinemo.mms_log_index
+persist.sys.cinemo.loglevel
+persist.sys.projection.carlife

@@ -1,0 +1,237 @@
+ -> szoption  = %s
+ -> szurl  = %s
+ [A\A^A_]
+%s does not support this url
+%u bytes -> [
+([A\A^A_
+../../../NmeAppleAuth/src/base/NmeAppleAuth.cpp
+../../../NmeAppleAuth/src/base/NmeAppleAuthFactory.cpp
+../../../NmeAppleAuth/src/base/NmeAppleAuthHelper.cpp
+../../../NmeAppleAuth/src/base/NmeAppleAuthImpl.cpp
+.comment
+.data.rel.ro
+.dynamic
+.dynstr
+.dynsym
+.eh_frame
+.eh_frame_hdr
+.fini_array
+.gnu.version
+.gnu.version_d
+.gnu.version_r
+.got.plt
+.init_array
+.note.gnu.build-id
+.note.gnu.gold-version
+.rela.dyn
+.rela.plt
+.rodata
+.shstrtab
+1.189.4
+100578
+7[A^A_
+8[A\A]A^A_]
+<NULL>
+@[A^A_
+APPLEAUTH_LIBRARIES option is empty, no Apple auth implementations available: %e
+AWAVATSH
+AWAVSH
+AWAVSI
+Android clang version 3.8.256229  (based on LLVM 3.8.256229)
+Apple auth chip path is not set: %e
+Apple authentication library create parameters:
+Auth access library entry %s failed: %e
+Auth access library implementation is outdated: %e
+Branch
+CacheCertificate
+CacheSerialNumber
+CheckPointers
+Cinemo/AppleAuth
+Cinemo/AppleAuth/Factory
+Cinemo/AppleAuth/Helper
+Cinemo/AppleAuth/Impl
+ConvertCALIToNmeError
+Could not load Apple authentication library %s: %e.
+Create
+Create([0x%p]) successful
+Create([0x%p], %s) count = %d
+CreateAppleAuth
+CreateAppleAuth()
+Customer
+Delete
+Delete([0x%p]) count = %d
+Delete([0x%p]) redundant
+Delete([0x%p]) returns
+Error allocating NmeClassDLL object: %e
+Error allocating dll_holder class object: %e
+Error allocating memory for NmeAppleAuthImpl object: %e
+Error creating dll_holder class object: %e
+Error in cali_context: authentication handle is NULL
+Error in cali_context: delete_authentication function pointer is NULL
+Error in cali_context: get_certificate function pointer is NULL
+Error in cali_context: get_challenge_response function pointer is NULL
+Error in cali_context: get_serial_number function pointer is NULL
+Error opening auth access: %e
+Fatal error while creating auth access: %e
+Function "%s" not found in library %s: %e
+GCC: (GNU) 4.9.x 20150123 (prerelease)
+GetCertificate
+GetCertificate() failed with CALI_ERROR %d
+GetChallengeResponse
+GetChallengeResponse() failed with CALI_ERROR %d
+GetSerialNumber
+GetSerialNumber() failed with CALI_ERROR %d
+H;D$ u
+H;D$0u
+H;D$8uL
+H;D$Hu
+H;D$HuL
+H;D$Pu
+H[A\A]A^A_]
+Info3 MY21
+Invalid create function.
+Mar 24 2020
+NmeAppleAuth
+NmeAppleAuthFactory
+NmeAppleAuthHelper
+NmeAppleAuthImpl
+NmeCreateAppleAuth
+NmeInterlockedDecrement
+NmeInterlockedExchange
+NmeInterlockedExchangeAdd
+NmeInterlockedIncrement
+NmeInterlockedRead
+NmeModuleInfo
+No auth access library implementation supports this url: %s
+P[A\A^A_]
+P[A^A_
+Platform
+Project
+Project Number
+Skipping invalid entry in CINEMO_OPTION_APPLE_AUTH_LIBRARIES option: %s
+Successfully started auth access implementation %s
+Transport library implementation not complete: %e
+Transport library protocol version missing!
+UAWAVATSH
+UAWAVAUATSH
+UAWAVSH
+Unknown error code received from auth access library create function: %e
+Unmapped error code received from authentication library: %d
+Unsupported error code received from auth access library: %e
+Unsupported transport library protocol version detected! (received %u, min_version %u)
+Using APPLEAUTH_LIBRARIES entry %d: "%s"
+Version
+X[A\A]A^A_]
+[0x%p]->CacheCertificate()
+[0x%p]->CacheCertificate() 
+[0x%p]->CacheCertificate() Called without valid implementation: %e
+[0x%p]->CacheCertificate() Error allocating memory: %e
+[0x%p]->CacheCertificate() Error getting certificate: %e
+[0x%p]->CacheCertificate() Error resizing certificate memory: %e
+[0x%p]->CacheSerialNumber()
+[0x%p]->CacheSerialNumber() 
+[0x%p]->CacheSerialNumber() Called without valid implementation: %e
+[0x%p]->CacheSerialNumber() Error allocating memory: %e
+[0x%p]->CacheSerialNumber() Error getting serial number: %e
+[0x%p]->CacheSerialNumber() Error resizing serial number memory: %e
+[0x%p]->Create() Could not create Apple authentication object: %e
+[0x%p]->Create() Error creating base class: %e
+[0x%p]->Create() Error creating threading resources: %e
+[0x%p]->GetCertificate()
+[0x%p]->GetCertificate() Buffer too small (%u < %u): %e
+[0x%p]->GetChallengeResponse()
+[0x%p]->GetChallengeResponse() 
+[0x%p]->GetChallengeResponse() Called without valid implementation: %e
+[0x%p]->GetChallengeResponse() failed: %e
+[0x%p]->GetSerialNumber()
+[0x%p]->GetSerialNumber() Buffer too small (%u < %u): %e
+[A\A]A^A_]
+[A^A_]
+_ZN10NmeUnknown12GetInterfaceEPPvP14ICinemoUnknown
+_ZN11NmeAutoLockC2ER8NmeMutex
+_ZN11NmeAutoLockD2Ev
+_ZN11NmeClassDLL11GetFunctionEPKc
+_ZN11NmeClassDLL4LoadEPKcS1_b
+_ZN11NmeClassDLLC1Ev
+_ZN12NmeCharArray5writeEPKcz
+_ZN12NmeCharArrayC2Ev
+_ZN12NmeCharArrayD2Ev
+_ZN13INmeAppleAuth3iidE
+_ZN14NmeDeviceClass14QueryInterfaceEPPvPKc
+_ZN14NmeDeviceClass19KeepAliveDurationMSEv
+_ZN14NmeDeviceClass22InheritClassAttributesEPS_
+_ZN14NmeDeviceClass6AddRefEv
+_ZN14NmeDeviceClass6CreateER18NmeClassAttributes
+_ZN14NmeDeviceClass6DeleteEv
+_ZN14NmeDeviceClass7IsMatchEPKcS1_Rb
+_ZN14NmeDeviceClass7ReleaseEv
+_ZN14NmeDeviceClassC2Ev
+_ZN14NmeDeviceClassD2Ev
+_ZN14NmeMutexNormal6CreateEv
+_ZN14NmeMutexNormalC2Ev
+_ZN15NmeClassFactory4PathEv
+_ZN8NmeLogEx11InitializerC2Ev
+_ZN8NmeLogEx11InitializerD2Ev
+_ZN8NmeLogEx5SetupEv
+_ZN8NmeLogEx6LoggerC1ERKNS0_11DescriptionE
+_ZN8NmeLogEx6LoggerD1Ev
+_ZN8NmeLogEx7MessageERKNS_6LoggerE15CINEMO_LOGLEVELiPKcS5_S5_z
+_ZN8NmeLogEx8TeardownEv
+_ZN8NmeMutex6CreateEi
+_ZN8NmeMutex6DeleteEv
+_ZN8NmeMutexC2Ev
+_ZN8NmeMutexD2Ev
+_ZN9NmeString17set_url_parameterEPKcS1_
+_ZN9NmeStringC1EPKc
+_ZN9NmeStringC1ERKS_
+_ZN9NmeStringC1Ev
+_ZN9NmeStringD1Ev
+_ZNK11INmeOptions13appleauth_urlEv
+_ZNK11INmeOptions19appleauth_librariesEv
+_ZNK11INmeOptions23appleauth_option_stringEv
+_ZNK18NmeClassAttributes10GetOptionsEv
+_ZNK18NmeClassAttributes14GetInterfaceIdEv
+_ZNK18NmeClassAttributes6GetURIEv
+_ZNK18NmeClassAttributes9GetAccessEv
+_ZNK8NmeLogEx6Logger5levelEv
+_ZNK8NmeLogEx6Logger7enabledE15CINEMO_LOGLEVEL
+_ZNK8NmeMutex13ResourceErrorEv
+_ZNK9NmeString10item_countEPKc
+_ZNK9NmeString18iter_url_parameterERiRS_S1_
+_ZNK9NmeString3ptrEv
+_ZNK9NmeString4itemEiPKc
+_ZNK9NmeString4ptrzEv
+_ZNK9NmeString5emptyEv
+_ZNK9NmeStringcvPKcEv
+_ZSt7nothrow
+_ZdlPv
+_ZnwmRKSt9nothrow_t
+__bss_start
+__cxa_atexit
+__cxa_finalize
+__cxa_pure_virtual
+__stack_chk_fail
+_edata
+androidndk_GMHarmanINFO3MidHigh_MY21_gm_harman
+fffff.
+ffffff.
+g_class_factory
+gold 1.11
+libNmeAppleAuth.so
+libNmeBaseClasses.so
+libc.so
+libdl.so
+libgnustl_shared.so
+liblog.so
+libm.so
+libstdc++.so
+memcpy
+pthread_mutex_destroy
+pthread_mutex_init
+pthread_mutex_lock
+pthread_mutex_unlock
+pthread_mutexattr_destroy
+pthread_mutexattr_init
+pthread_mutexattr_settype
+realloc
+stable-20180811-0328-gm_harman_info3_my21

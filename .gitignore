@@ -33,3 +33,21 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# ---------------------------------------------------------------
+# 本仓库是「逆向分析材料」，不是 Android 工程：
+# firmware/ 与 java-project/ 里的 APK 是研究素材，不是构建产物，
+# 因此对这两棵子树恢复 *.apk（上面的通用规则会误伤）。
+# ---------------------------------------------------------------
+!firmware/**/*.apk
+!java-project/**/*.apk
+
+# 绝不提交：配对私钥 / 设备身份
+*identity*.json
+.diplay_identity.json
+
+# 本地产物
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db

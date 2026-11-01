@@ -1,0 +1,151 @@
+
+GMCarPlay_
+  CarPlay is not enabled.
+  dcmState=
+  state=
+ isCarPlayWirelessEnabled=
+ state=
+"Lgm/carplay/CarPlayServiceManager;
+"Lgm/carplay/ICarPlayListener$Stub;
+"MSG_CHECK_VIDEO_READY_STATE_CHANGE
+"addOnActiveSessionsChangedListener
+#CarPlayListener.onShowAccessoryUI()
+#GMCarPlay_ProjectionConsentActivity
+#Landroid/view/View$OnClickListener;
+#Landroid/view/View$OnTouchListener;
+#Projection service died, exit app..
+#setupCarPlayHomeScreen() device -> 
+$Carplay projection fragment is null!
+$Lcom/gm/carplay/hmi/CarModeReceiver;
+$SYSTEM_POPUP_STATE_CHANGE popupName=
+%Landroid/media/session/PlaybackState;
+%removeOnActiveSessionsChangedListener
+%setOnSystemUiVisibilityChangeListener
+&Unable to fetch CarPlay Setting Value 
+&startProjection() notifyAppStateDelay 
+'Error in getting Carplay Setting Value 
+'Lcom/gm/carplay/hmi/CarPlayApplication;
+(displayCarPlayHomeScreen() hide and show
+(launchEnableProjection() activityExists=
+)Lcom/gm/carplay/hmi/CarPlayApplication$a;
+)Lgm/connection/DeviceInfo$ProjectionType;
+)harman.intent.action.SYSTEM_STATE_CHANGED
+*CarPlayListener.onProjectionDisplayError()
+*CarPlayListener.onVideoReadyStateChanged()
+*Lcom/gm/carplay/hmi/activity/MainActivity;
++Device does not support wireless projection
++Lgm/phoneprojection/PhoneProjectionManager;
++Lgm/widget/AdapterView$OnItemClickListener;
++gm.intent.action.SYSTEM_POPUP_STATE_CHANGED
++hideAllStatusBar() IsProjectionScreenShown=
+,Fail to send stateChanged to CarPlayService.
+,Lcom/gm/carplay/hmi/activity/MainActivity$a;
+-  CARPLAY_DISCONNECTING!!! move to background
+--runtime-arg -Xms64m --runtime-arg -Xmx512m --boot-image=out/target/product/gminfo36/dex_bootjars/system/framework/boot.art --dex-file=vendor/gm/packages/apps/GMCarPlay/build/outputs/apk/GMCarPlay-myresConfigs-release.apk --dex-location=/system/app/GMCarPlay/GMCarPlay.apk --oat-file=out/target/product/gminfo36/obj/APPS/GMCarPlay_intermediates/oat/x86_64/package.odex --android-root=out/target/product/gminfo36/system --instruction-set=x86_64 --instruction-set-variant=silvermont --instruction-set-features=default --include-patch-information --runtime-arg -Xnorelocate --no-generate-debug-info --abort-on-hard-verifier-error
+/MSG_NOTIFY_APP_STATE_CHANGE_DELAY mIsInFront = 
+/android.intent.action.CARPLAY_PAIRING_INITIATED
+/com.gm.connection.intent.action.CARPLAY_SHOW_UI
+/system/app/GMCarPlay/GMCarPlay.apk3
+1handleMessage() MSG_ID_PROJECTION_SURFACE_CREATED
+1promptUSerAsCarplayConnected() connectionSate -> 
+2CarPlayListener.onCarPlayConnectionStateChanged() 
+2startMainActivity() isGMCarPlayActivityForeground=
+3handleMessage() MSG_ID_PROJECTION_SURFACE_DESTROYED
+4  No CarPlay device connected, start SettingPopup...
+5Lcom/gm/carplay/hmi/activity/EnableCarplayProjection;
+5com.gm.carplay.intent.action.PROMPT_CARPLAY_CONNECTED
+5registerCarplayListenerCallback() mCarPlayCallBack = 
+6Landroid/view/View$OnSystemUiVisibilityChangeListener;
+6displayCarPlayHomeScreen() call setupCarPlayHomeScreen
+7Landroid/view/ViewTreeObserver$OnScrollChangedListener;
+7Lcom/gm/carplay/hmi/activity/ProjectionConsentActivity;
+7deregisterCarplayListenerCallback() mCarPlayCallBack = 
+8Carplay service seems to be in a wrong state. State is: 
+8com.gm.carplay.intent.action.PROMPT_ABRUPT_DISCONNECTION
+8ignore for event irrelevant to Carplay or device is null
+:Lgm/carplay/CarPlayServiceManager$ICarPlayServiceCallBack;
+; mHasProjectionFrag -> 
+;Lcom/gm/carplay/hmi/activity/EnableCarplaySettingsActivity;
+=Lcom/gm/carplay/hmi/activity/EnableCarplaySettingsActivity$a;
+=Lcom/gm/carplay/hmi/activity/EnableCarplaySettingsActivity$b;
+=move to background because of wireless projection unsupported
+CARPLAY
+Carplay moveTaskToBack
+FRAG_TAG_PROJECTION
+GMCarPlay_UpperStatusBarWrapper
+GMCarPlay_Utils
+HProjectionStateHandler.handleMessage() MSG_ID_PROJECTION_SURFACE_CHANGED
+KLandroid/media/session/MediaSessionManager$OnActiveSessionsChangedListener;
+Lcom/gm/carplay/hmi/a/a;
+Lcom/gm/carplay/hmi/a/b;
+Lcom/gm/carplay/hmi/a/c;
+Lcom/gm/carplay/hmi/a/d;
+Lcom/gm/carplay/hmi/a/e;
+Lcom/gm/carplay/hmi/a/f;
+Lcom/gm/carplay/hmi/a;
+Lcom/gm/carplay/hmi/activity/a;
+Lcom/gm/carplay/hmi/activity/b;
+Lcom/gm/carplay/hmi/activity/c;
+Lcom/gm/carplay/hmi/activity/d;
+Lcom/gm/carplay/hmi/activity/e;
+Lcom/gm/carplay/hmi/activity/f;
+Lcom/gm/carplay/hmi/activity/g;
+Lcom/gm/carplay/hmi/activity/h;
+Lcom/gm/carplay/hmi/activity/i;
+Lcom/gm/carplay/hmi/activity/j;
+Lcom/gm/carplay/hmi/activity/k;
+Lcom/gm/carplay/hmi/activity/l;
+Lcom/gm/carplay/hmi/activity/m;
+Lcom/gm/carplay/hmi/activity/n;
+Lcom/gm/carplay/hmi/activity/o;
+Lcom/gm/carplay/hmi/activity/p;
+Lcom/gm/carplay/hmi/activity/q;
+Lcom/gm/carplay/hmi/activity/r;
+Lcom/gm/carplay/hmi/activity/s;
+Lcom/gm/carplay/hmi/b;
+Lcom/gm/carplay/hmi/c$a;
+Lcom/gm/carplay/hmi/c;
+Lcom/gm/carplay/hmi/d;
+Lcom/gm/carplay/hmi/e;
+Lcom/gm/carplay/hmi/f;
+Lgm/carplay/ICarPlayListener;
+PROJECTION_TYPE_CARPLAY
+ProjectionHandlerThread
+System state: 
+System_State
+addOnScrollChangedListener
+addToProjectionWhiteList
+carPlayAppStateChanged
+carPlayConnectionState
+carplay_enabled
+com.gm.carplay
+commitAllowingStateLoss
+displayCarPlayHomeScreen() 
+displayCarPlayHomeScreen() show
+endProjection()
+extra_projection_type
+getCurrentProjectionDevice
+getDCMState
+getPlaybackState
+getProjectionCapability
+getProjectionType
+getState
+gm.poweroff_view_state
+gm.system_popup_state
+handleUsbTimeout() dcmState=
+mProjectionEnable
+mProjectionType
+notifyAppStateChange() state= 
+onActivitySaveInstanceState
+onCarPlayConnectionStateChanged
+onPlaybackStateChanged
+onProjectionDisplayError
+onTouch() borrowState=
+onVideoReadyStateChanged
+registerCarPlayServiceCallBack
+removeCarPlayHomeScreen()
+requestProjectionApp
+screen power state: 
+setOnClickListener
+setOnItemClickListener
+setOnTouchListener

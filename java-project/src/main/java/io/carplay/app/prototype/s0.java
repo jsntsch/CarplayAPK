@@ -14,7 +14,7 @@ public final /* synthetic */ class s0 implements Runnable {
     public /* synthetic */ PairingSession.i f;
 
     @Override // java.lang.Runnable
-    public final void run() throws Throwable {
+    public final void run() {
         this.a.w(this.b, this.c, this.d, this.e, this.f);
     }
 }

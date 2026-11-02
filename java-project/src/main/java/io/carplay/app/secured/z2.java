@@ -26,7 +26,7 @@ public final /* synthetic */ class z2 implements j5.a, f6.a, VideoCipher.b.c {
     }
 
     @Override // io.carplay.app.secured.j5.a
-    public void run() throws IOException {
+    public void run() {
         ((MfiCertificateVerifier) this.a).M((j5.c) this.b);
     }
 }

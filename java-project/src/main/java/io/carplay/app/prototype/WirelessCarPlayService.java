@@ -226,12 +226,12 @@ public final class WirelessCarPlayService extends Service {
         }
 
         /* JADX INFO: Access modifiers changed from: private */
-        public /* synthetic */ void w(Network network, Iap2Csm.a aVar, String str, long j, PairingSession.i iVar) throws Throwable {
+        public /* synthetic */ void w(Network network, Iap2Csm.a aVar, String str, long j, PairingSession.i iVar) {
             this.d.z1(network, aVar, str, j, iVar);
         }
 
         /* JADX INFO: Access modifiers changed from: private */
-        public /* synthetic */ void x(Network network, Iap2Csm.a aVar, String str, long j) throws Throwable {
+        public /* synthetic */ void x(Network network, Iap2Csm.a aVar, String str, long j) {
             this.d.y1(network, aVar, str, j);
         }
 
@@ -847,7 +847,7 @@ public final class WirelessCarPlayService extends Service {
         }
 
         @Override // io.carplay.app.secured.AirPlaySession.n
-        public void r(int i, int i2, boolean z) throws IOException {
+        public void r(int i, int i2, boolean z) {
             t4 t4Var;
             i6.TouchAction aVar;
             synchronized (this.b.s) {
@@ -937,7 +937,7 @@ public final class WirelessCarPlayService extends Service {
         }
 
         @Override // io.carplay.app.prototype.AvcEncoder.f
-        public void d(byte[] bArr, long j) throws IOException {
+        public void d(byte[] bArr, long j) {
             throw new IOException("ADAPTER_COMPLETE_AU_REQUIRED");
         }
 
@@ -1038,7 +1038,7 @@ public final class WirelessCarPlayService extends Service {
         }
 
         @Override // io.carplay.app.secured.t4.d
-        public void g(r6.a aVar, int i, int i2, int i3) throws IOException {
+        public void g(r6.a aVar, int i, int i2, int i3) {
             if (WirelessCarPlayService.this.t.get()) {
                 SyntheticRefs.c("wireless session cancelled");
                 return;
@@ -1048,7 +1048,7 @@ public final class WirelessCarPlayService extends Service {
         }
 
         @Override // io.carplay.app.secured.t4.h
-        public void h(byte[] bArr, long j) throws IOException {
+        public void h(byte[] bArr, long j) {
             if (WirelessCarPlayService.this.t.get()) {
                 SyntheticRefs.c("wireless session cancelled");
             } else {
@@ -1068,7 +1068,7 @@ public final class WirelessCarPlayService extends Service {
         }
 
         @Override // io.carplay.app.secured.t4.d
-        public void k(r6.a aVar, byte[] bArr, long j) throws IOException {
+        public void k(r6.a aVar, byte[] bArr, long j) {
             if (WirelessCarPlayService.this.t.get()) {
                 SyntheticRefs.c("wireless session cancelled");
             } else {
@@ -1114,7 +1114,7 @@ public final class WirelessCarPlayService extends Service {
         }
 
         @Override // io.carplay.app.secured.PairingTlv8.c
-        public PairingTlv8.b b(String str) throws IOException {
+        public PairingTlv8.b b(String str) {
             String string = this.a.getString(a(str), null);
             if (string == null) {
                 return null;
@@ -1127,7 +1127,7 @@ public final class WirelessCarPlayService extends Service {
         }
 
         @Override // io.carplay.app.secured.PairingTlv8.c
-        public void c(PairingTlv8.b bVar) throws IOException {
+        public void c(PairingTlv8.b bVar) {
             PairingTlv8.b bVarB = b(bVar.c());
             if (bVarB != null && !MessageDigest.isEqual(bVarB.e(), bVar.e())) {
                 SyntheticRefs.c("stored peer key changed; explicit unpair required");
@@ -2003,7 +2003,7 @@ public final class WirelessCarPlayService extends Service {
     }
 
     /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void U1(Network network, Iap2Csm.a aVar, String str, u5.a aVar2) throws Throwable {
+    public /* synthetic */ void U1(Network network, Iap2Csm.a aVar, String str, u5.a aVar2) {
         y1(network, aVar, str, aVar2.h());
     }
 
@@ -2320,7 +2320,7 @@ public final class WirelessCarPlayService extends Service {
                         i1("Native source not started: no authenticated transport");
                         return;
                     }
-                    t4.g gVarJ2 = j2();
+                    t4.VideoConfig gVarJ2 = j2();
                     int i2 = 1;
                     this.c0 = true;
                     g1 = false;
@@ -2740,7 +2740,7 @@ public final class WirelessCarPlayService extends Service {
     }
 
     /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void g2(t4.g gVar, AirPlaySession airPlaySession) {
+    public /* synthetic */ void g2(t4.VideoConfig gVar, AirPlaySession airPlaySession) {
         try {
             I1();
             i7 i7Var = new i7();
@@ -3364,7 +3364,7 @@ public final class WirelessCarPlayService extends Service {
     }
 
     /* JADX INFO: Access modifiers changed from: private */
-    public void y1(Network network, Iap2Csm.a aVar, String str, long j2) throws Throwable {
+    public void y1(Network network, Iap2Csm.a aVar, String str, long j2) {
         z1(network, aVar, str, j2, null);
     }
 
@@ -3508,8 +3508,8 @@ public final class WirelessCarPlayService extends Service {
         }
     }
 
-    public t4.g j2() {
-        return new t4.g(0, this.f0, this.g0, false, this.h0, this.K0 && this.L0);
+    public t4.VideoConfig j2() {
+        return new t4.VideoConfig(0, this.f0, this.g0, false, this.h0, this.K0 && this.L0);
     }
 
     public AirPlaySession.k k2(AirPlaySession.k kVar) {

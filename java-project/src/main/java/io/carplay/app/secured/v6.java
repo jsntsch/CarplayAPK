@@ -17,7 +17,7 @@ public final /* synthetic */ class v6 implements Runnable {
     }
 
     @Override // java.lang.Runnable
-    public final void run() throws Throwable {
+    public final void run() {
         switch (this.a) {
             case 0:
                 this.b.X0(this.c, this.d);

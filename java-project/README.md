@@ -95,11 +95,12 @@ src/main/java/io/carplay/app/
 | 44 类改名后 | 426 | 起点 |
 | 改 4 个类名 + 补 catch 转发变量 | 267 | `d0→SyntheticRefs` 等 |
 | 改 20 组嵌套类型名 | 180 | `fix_type_shadow.py` |
-| 同包顶层类用 FQCN | 205 → 140 | 16 处 |
-| **当前** | **140** | 净减 286 条（-67%） |
+| 同包顶层类用 FQCN | 140 | 16 处 |
+| 按文件逐个修（本轮） | **81** | 净减 59 条（-42%） |
 
 `X cannot be dereferenced` 这类从 86 条降到 **0**。完整过程见
-`CarplayAPKBuild/reports/compile-progress.md`。
+`CarplayAPKBuild/reports/compile-progress.md`，剩余清单见
+`CarplayAPKBuild/logs/residual_81.txt`。
 
 **为什么「原始 20 处 = 本工程 20 处」不能当作验收标准**：javac 一旦遇到语法
 错误就不进入语义分析阶段，此时报出来的全是语法类，语义错误一条都不会出现。
@@ -116,11 +117,47 @@ src/main/java/io/carplay/app/
 - **嵌套类型** → 改类型名（字段名要留着和 APK 逐字段对照，类型名只影响 `$Inner` 后缀）
 - **同包顶层类** → 全限定名可以（包作用域里没有字段查找）
 
-剩下 140 条已经不是命名问题，是 jadx 把这几处方法体还原错了：匿名内部类被
-写成 `new Runnable(this) { }`、泛型被擦成 raw type、`iput` 目标被当成 `this`、
-`ByteArrayOutputStream.buf` 这种 `protected` 字段被直接访问。继续修等于按
-smali 重写方法体，超出「等价改写」的边界。清单在
-`CarplayAPKBuild/logs/residual.txt`。
+本轮按文件修 59 条，靠的是三个从 smali 里挖出来的**结构性事实**：
+
+1. **全库 0 个 `Throws` 注解**。`apktool d` 出来的 565 个 smali 里
+   `Ldalvik/annotation/Throws` 出现 0 次，说明 `throws Throwable` / `throws IOException`
+   全是 jadx 根据方法体反推的，**不是原 APK 的签名**。删掉它们才更接近原包。
+   这一类清掉 19 条（7 个 `run()` + 12 处转发链）。
+2. **d8 会把「子类构造器只调 super」优化掉**。`q$a`、`r4`、`AirPlaySession$f`、
+   `PairingSession$m` 在 dex 里实例化时是 `new-instance 子类` 紧跟
+   `invoke-direct 子类 -> 父类.<init>(...)`，子类自己没有 `<init>`；另有一批
+   带一个多余 `int` 参数的 **synthetic 桥接构造器**（javac 给内部类私有构造器
+   生成的占位参数）。jadx 会把这两类都还原错，必须按 smali 补构造器或还原实参。
+3. **寄存器复用会让 jadx 造出成堆的假别名**。`t4.P()` 一个方法里
+   `scheduledExecutorService` / `…2` / `…3` / `…4` / `…NewSingleThreadScheduledExecutor`
+   六个名字互相赋值，而 smali 全方法只调**一次** `newSingleThreadScheduledExecutor`。
+   合并成一个变量后该方法少 79 行，且删掉的都是 `x = x` 这种自赋值。
+
+顺带修出的**语义错误**（不是编译错误，但影响等价性）：
+
+- `PairingSession.a1` 里 `if (isClosed()) return;` 被 jadx 取反了。smali 是
+  `if-nez p0, :cond_3`，即 `isClosed()` 为 **false** 时才跳过上报，应写
+  `if (!isClosed())`。这类「条件方向搞反」在 jadx 输出里比想象中常见。
+- `t4.P()` 里 `Throwable e` 实际只接 `catch (Exception e3/e4/e5)`，收窄成
+  `Exception e` 才能喂给 `R(Exception)`。
+- `AirPlaySession.t0` 末尾 `this.D = "videoPlayback"` 是假的：`D` 是
+  `volatile boolean`，smali 是 `iput-boolean v1`，而 `v1` 在该方法唯一的 int
+  赋值是 `const/4 v1, 0x1`。
+
+**新发现的另一类缺口**：jadx 有 **15 处方法体完全没还原**，只留下
+`throw new UnsupportedOperationException("Method not decompiled: ...")` 桩
+（`AirPlaySession` 7 处、`WirelessCarPlayService` 2 处，`z0`/`y0`/`x0`/
+`AudioRelay`/`PairingSession`/`CarLifeBridge` 各 1 处）。这些必须按 smali
+重新还原方法体，不是改命名能解决的。
+
+剩下 81 条集中在 30 个文件，性质是 jadx 方法体还原错误：`this = xxx` 这种
+非法赋值、变量类型张冠李戴（`String e` 被赋 `Exception`）、raw type 泛型、
+`Map` 未参数化、桥接方法被内联进实现体（`Q1` 在 smali 里只有 11 行转发桩，
+Java 版却有 70 行）。继续修等于按 smali 重写方法体。
+
+试过写脚本自动补限定名（`tools/fix_obscured_types.py`），一轮能消掉 277 条，
+但它在「本文件嵌套类型」和「同包顶层类型」之间二选一时会绑错，错误数下降、
+语义却已变。**已撤回**，改用「成员存在性唯一匹配 + 改名」的可证明路径。
 
 试过写脚本自动补限定名（`tools/fix_obscured_types.py`），一轮能消掉 277 条，
 但它在「本文件嵌套类型」和「同包顶层类型」之间二选一时会绑错，错误数下降、

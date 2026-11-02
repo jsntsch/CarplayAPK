@@ -50,6 +50,9 @@ public final /* synthetic */ class g implements Runnable {
         String str3;
         SharedPreferences sharedPreferences;
         w5 w5Var;
+        // jadx 漏了方法级声明：下面多处 catch 用 `e = eN;` 转发异常，再取 e.getClass()，
+        // 但方法里没有 `Exception e;`，e 会报「找不到符号」。
+        Exception e = null;
         switch (this.a) {
             case 0:
                 ((CarPlayCtrlAdvertiser) this.b).l((ServerSocket) this.c);
@@ -210,9 +213,8 @@ public final /* synthetic */ class g implements Runnable {
                                                         handler3.post(yVar3);
                                                         return;
                                                     }
-                                                } catch (Exception e) {
-                                                    e = e;
-                                                    strConcat = "CHECK_FAILED_".concat(e.getClass().getSimpleName());
+                                                } catch (Exception eCaught) {
+                                                    strConcat = "CHECK_FAILED_".concat(eCaught.getClass().getSimpleName());
                                                     str = "暂时无法完成版本验证，请开启手机移动数据后重试；车机 WLAN 可能只支持投屏、不提供互联网。已运行的连接不受影响，日志仍可导出。";
                                                     str2 = strA;
                                                     z2 = z;

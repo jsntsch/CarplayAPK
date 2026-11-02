@@ -14,7 +14,7 @@ public final /* synthetic */ class z6 implements Runnable {
     public /* synthetic */ AtomicInteger d;
 
     @Override // java.lang.Runnable
-    public final void run() throws Throwable {
+    public final void run() {
         this.a.i1(this.b, this.c, this.d);
     }
 }

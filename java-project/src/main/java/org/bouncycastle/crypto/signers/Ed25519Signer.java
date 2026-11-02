@@ -24,7 +24,7 @@ public class Ed25519Signer {
         public synchronized byte[] b(Ed25519PrivateKeyParameters ed25519PrivateKeyParameters) {
             byte[] bArr;
             bArr = new byte[64];
-            ed25519PrivateKeyParameters.sign(0, null, ((ByteArrayOutputStream) this).buf, 0, ((ByteArrayOutputStream) this).count, bArr, 0);
+            ed25519PrivateKeyParameters.sign(0, null, this.buf, 0, this.count, bArr, 0);
             reset();
             return bArr;
         }
@@ -34,15 +34,15 @@ public class Ed25519Signer {
                 reset();
                 return false;
             }
-            boolean zVerify = ed25519PublicKeyParameters.verify(0, null, ((ByteArrayOutputStream) this).buf, 0, ((ByteArrayOutputStream) this).count, bArr, 0);
+            boolean zVerify = ed25519PublicKeyParameters.verify(0, null, this.buf, 0, this.count, bArr, 0);
             reset();
             return zVerify;
         }
 
         @Override // java.io.ByteArrayOutputStream
         public synchronized void reset() {
-            e.f(((ByteArrayOutputStream) this).buf, 0, ((ByteArrayOutputStream) this).count, (byte) 0);
-            ((ByteArrayOutputStream) this).count = 0;
+            e.f(this.buf, 0, this.count, (byte) 0);
+            this.count = 0;
         }
     }
 

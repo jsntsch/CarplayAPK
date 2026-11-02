@@ -171,7 +171,7 @@ public final class AirPlaySession implements AutoCloseable {
     private final AtomicBoolean v = new AtomicBoolean();
     private final AtomicLong w = new AtomicLong();
     private final AtomicReference<o> y = new AtomicReference<>(new o(true, 0, 0, 0));
-    private final AtomicReference<f> z = new AtomicReference<>(new f(0, 0, 0 == true ? 1 : 0));
+    private final AtomicReference<f> z = new AtomicReference<>(new f(0, 0L, false));
     private final AtomicLong A = new AtomicLong();
     private final AtomicReference<c> B = new AtomicReference<>();
     private final f4 C = new f4();
@@ -470,7 +470,7 @@ public final class AirPlaySession implements AutoCloseable {
         this.U = new z(32);
         this.V = Collections.EMPTY_LIST;
         this.W = map;
-        this.Y = Executors.newScheduledThreadPool(4, new n0(0 == true ? 1 : 0));
+        this.Y = Executors.newScheduledThreadPool(4, new n0(0));
         this.Z = Executors.newScheduledThreadPool(8, new n0(1));
         this.q0 = new Object();
         this.y0 = System.currentTimeMillis();
@@ -1845,7 +1845,7 @@ public final class AirPlaySession implements AutoCloseable {
         String str;
         if (obj instanceof Map) {
             LinkedHashMap linkedHashMap = new LinkedHashMap();
-            for (Map.Entry entry : ((Map) obj).entrySet()) {
+            for (Map.Entry entry : ((Map<?, ?>) obj).entrySet()) {
                 Object key = entry.getKey();
                 if (key instanceof String) {
                     linkedHashMap.put((String) key, entry.getValue());
@@ -2568,7 +2568,7 @@ public final class AirPlaySession implements AutoCloseable {
                                                 }
                                             }
                                             boolean z = true;
-                                            p0 p0Var = new p0(1 == true ? 1 : 0);
+                                            p0 p0Var = new p0(1);
                                             p0Var.b = this;
                                             p0Var.c = dVar2;
                                             VarHandle.storeStoreFence();
@@ -3852,7 +3852,8 @@ public final class AirPlaySession implements AutoCloseable {
         this.n.a("CARPLAY_INFO_AFTER_AUTHENTICATED_SETUP");
         S(g1(R1("GET", "/info", null)));
         q0();
-        this.D = "videoPlayback";
+        // smali: iput-boolean v1, p0, AirPlaySession->D:Z，v1 在本方法唯一的 int 赋值是 const/4 v1,0x1
+        this.D = true;
         return mapG1;
     }
 
@@ -4155,6 +4156,12 @@ public final class AirPlaySession implements AutoCloseable {
     public static final class f extends w1 {
         private final boolean a;
         private final long b;
+
+        /* smali 中另有 public synthetic constructor <init>(IJZ)V，
+           实现为 invoke-direct f(ZJ)，即丢弃首参 int 后转调下面这个私有构造器。 */
+        public /* synthetic */ f(int i, long j, boolean z) {
+            this(z, j);
+        }
 
         private f(boolean z, long j) {
             this.a = z;

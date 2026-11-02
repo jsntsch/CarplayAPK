@@ -63,7 +63,7 @@ public final class t4 implements AutoCloseable, j6 {
     private final h c;
     private f6 c0;
     private final d d;
-    private final g e;
+    private final VideoConfig e;
     private final Map<r6.a, Socket> f;
     private final List<Thread> g;
     private final AtomicBoolean h;
@@ -279,7 +279,7 @@ public final class t4 implements AutoCloseable, j6 {
         void h(byte[] bArr, long j);
     }
 
-    private t4(c cVar, f fVar, h hVar, d dVar, g gVar) {
+    private t4(c cVar, f fVar, h hVar, d dVar, VideoConfig gVar) {
         this.f = new EnumMap(r6.a.class);
         this.g = new ArrayList();
         this.h = new AtomicBoolean();
@@ -886,7 +886,7 @@ public final class t4 implements AutoCloseable, j6 {
     /* JADX WARN: Type inference failed for: r9v3, types: [io.carplay.app.secured.o5] */
     /* JADX WARN: Type inference failed for: r9v5, types: [io.carplay.app.secured.o5] */
     public e P() throws Throwable {
-        Throwable e = null;
+        Exception e = null;
         Throwable th = null;
         o5 o5Var;
         o5 o5Var2;
@@ -901,9 +901,7 @@ public final class t4 implements AutoCloseable, j6 {
         f6 f6Var2;
         Iterator<Thread> it3;
         Iterator<AudioRelay> it4;
-        ScheduledExecutorService scheduledExecutorService2;
         o5 o5Var3;
-        ScheduledExecutorService scheduledExecutorService3;
         o5 o5Var4;
         r6.a aVar;
         r6.c cVarI;
@@ -911,7 +909,6 @@ public final class t4 implements AutoCloseable, j6 {
         int iH;
         int i;
         int iIntValue;
-        ScheduledExecutorService scheduledExecutorService4;
         int i2;
         l5.a aVarC;
         boolean zG;
@@ -928,14 +925,14 @@ public final class t4 implements AutoCloseable, j6 {
             this.I = true;
         }
         this.G = this.e.i() == 0 ? Long.MAX_VALUE : System.nanoTime() + TimeUnit.SECONDS.toNanos(this.e.i());
-        ScheduledExecutorService scheduledExecutorServiceNewSingleThreadScheduledExecutor = Executors.newSingleThreadScheduledExecutor(new n0(3));
+        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(new n0(3));
         final int i4 = 0;
         if (this.e.i() != 0) {
-            Runnable runnable = new Runnable(this) { // from class: io.carplay.app.secured.p4
+            Runnable runnable = new Runnable() { // from class: io.carplay.app.secured.p4
                 public final /* synthetic */ t4 b;
 
                 {
-                    this.b = this;
+                    this.b = t4.this;
                 }
 
                 @Override // java.lang.Runnable
@@ -954,13 +951,13 @@ public final class t4 implements AutoCloseable, j6 {
             };
             long jI = this.e.i();
             timeUnit = TimeUnit.SECONDS;
-            scheduledExecutorServiceNewSingleThreadScheduledExecutor.schedule(runnable, jI, timeUnit);
+            scheduledExecutorService.schedule(runnable, jI, timeUnit);
         }
-        scheduledExecutorServiceNewSingleThreadScheduledExecutor.scheduleAtFixedRate(new Runnable(this) { // from class: io.carplay.app.secured.p4
+        scheduledExecutorService.scheduleAtFixedRate(new Runnable() { // from class: io.carplay.app.secured.p4
             public final /* synthetic */ t4 b;
 
             {
-                this.b = this;
+                this.b = t4.this;
             }
 
             @Override // java.lang.Runnable
@@ -1006,7 +1003,6 @@ public final class t4 implements AutoCloseable, j6 {
                     HashMap map = new HashMap();
                     long j3 = 0;
                     o5VarG = o5VarG;
-                    scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                     while (true) {
                         if (this.h.get()) {
                             o5Var3 = o5VarG;
@@ -1033,12 +1029,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                     }
                                                     switch (iH) {
                                                         case t1.b /* 65538 */:
-                                                            scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                             if (!this.K) {
                                                             }
                                                             throw new r5("version rejected/duplicate");
                                                         case 65540:
-                                                            scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                             if (!this.L) {
                                                                 throw new r5("duplicate MD_INFO");
                                                             }
@@ -1058,7 +1052,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                             j2 = j;
                                                             num = num;
                                                             map = map;
-                                                            scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                             exc = null;
                                                             break;
                                                             break;
@@ -1071,7 +1064,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                         case 65569:
                                                         case 65592:
                                                             M(iH, bArrA);
-                                                            scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                             if (this.K) {
                                                                 j = 1;
                                                             } else {
@@ -1086,13 +1078,11 @@ public final class t4 implements AutoCloseable, j6 {
                                                             j2 = j;
                                                             num = num;
                                                             map = map;
-                                                            scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                             exc = null;
                                                             break;
                                                             break;
                                                         case 65574:
                                                             K(bArrA);
-                                                            scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                             if (this.K) {
                                                                 j = 1;
                                                             } else {
@@ -1107,7 +1097,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                             j2 = j;
                                                             num = num;
                                                             map = map;
-                                                            scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                             exc = null;
                                                             break;
                                                             break;
@@ -1128,7 +1117,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                                 this.a.a("Own local experimental receiver UUID/channel sent; not a borrowed vehicle or officially allocated manufacturer identity");
                                                             }
                                                             x();
-                                                            scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                             if (this.K) {
                                                                 j = 1;
                                                             } else {
@@ -1143,7 +1131,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                             j2 = j;
                                                             num = num;
                                                             map = map;
-                                                            scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                             exc = null;
                                                             break;
                                                             break;
@@ -1158,7 +1145,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                             if (zG) {
                                                                 throw new r5("phone eligibility rejected");
                                                             }
-                                                            scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                             if (this.K) {
                                                                 j = 1;
                                                             } else {
@@ -1173,7 +1159,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                             j2 = j;
                                                             num = num;
                                                             map = map;
-                                                            scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                             exc = null;
                                                             break;
                                                             break;
@@ -1181,7 +1166,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                             if ("VERIFIED".equals(this.Y)) {
                                                                 x();
                                                             }
-                                                            scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                             if (this.K) {
                                                                 j = 1;
                                                             } else {
@@ -1196,7 +1180,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                             j2 = j;
                                                             num = num;
                                                             map = map;
-                                                            scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                             exc = null;
                                                             break;
                                                             break;
@@ -1214,7 +1197,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                             }
                                                             throw new r5("unexpected encryption READY");
                                                         default:
-                                                            scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                             if (this.K) {
                                                                 j = 1;
                                                             } else {
@@ -1229,7 +1211,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                             j2 = j;
                                                             num = num;
                                                             map = map;
-                                                            scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                             exc = null;
                                                             break;
                                                             break;
@@ -1243,12 +1224,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                 }
                                                 switch (iH) {
                                                     case t1.b /* 65538 */:
-                                                        scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                         if (!this.K) {
                                                         }
                                                         throw new r5("version rejected/duplicate");
                                                     case 65540:
-                                                        scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                         if (!this.L) {
                                                             throw new r5("duplicate MD_INFO");
                                                         }
@@ -1268,7 +1247,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                         j2 = j;
                                                         num = num;
                                                         map = map;
-                                                        scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                         exc = null;
                                                         break;
                                                         break;
@@ -1281,7 +1259,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                     case 65569:
                                                     case 65592:
                                                         M(iH, bArrA);
-                                                        scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                         if (this.K) {
                                                             j = 1;
                                                         } else {
@@ -1296,13 +1273,11 @@ public final class t4 implements AutoCloseable, j6 {
                                                         j2 = j;
                                                         num = num;
                                                         map = map;
-                                                        scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                         exc = null;
                                                         break;
                                                         break;
                                                     case 65574:
                                                         K(bArrA);
-                                                        scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                         if (this.K) {
                                                             j = 1;
                                                         } else {
@@ -1317,7 +1292,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                         j2 = j;
                                                         num = num;
                                                         map = map;
-                                                        scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                         exc = null;
                                                         break;
                                                         break;
@@ -1338,7 +1312,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                             this.a.a("Own local experimental receiver UUID/channel sent; not a borrowed vehicle or officially allocated manufacturer identity");
                                                         }
                                                         x();
-                                                        scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                         if (this.K) {
                                                             j = 1;
                                                         } else {
@@ -1353,7 +1326,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                         j2 = j;
                                                         num = num;
                                                         map = map;
-                                                        scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                         exc = null;
                                                         break;
                                                         break;
@@ -1368,7 +1340,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                         if (zG) {
                                                             throw new r5("phone eligibility rejected");
                                                         }
-                                                        scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                         if (this.K) {
                                                             j = 1;
                                                         } else {
@@ -1383,7 +1354,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                         j2 = j;
                                                         num = num;
                                                         map = map;
-                                                        scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                         exc = null;
                                                         break;
                                                         break;
@@ -1391,7 +1361,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                         if ("VERIFIED".equals(this.Y)) {
                                                             x();
                                                         }
-                                                        scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                         if (this.K) {
                                                             j = 1;
                                                         } else {
@@ -1406,7 +1375,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                         j2 = j;
                                                         num = num;
                                                         map = map;
-                                                        scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                         exc = null;
                                                         break;
                                                         break;
@@ -1424,7 +1392,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                         }
                                                         throw new r5("unexpected encryption READY");
                                                     default:
-                                                        scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                         if (this.K) {
                                                             j = 1;
                                                         } else {
@@ -1439,7 +1406,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                         j2 = j;
                                                         num = num;
                                                         map = map;
-                                                        scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                         exc = null;
                                                         break;
                                                         break;
@@ -1470,7 +1436,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                             }
                                                             switch (iH) {
                                                                 case t1.b /* 65538 */:
-                                                                    scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                                     if (!this.K || ProtobufReader.a(bArrA).i(1) != 1) {
                                                                         throw new r5("version rejected/duplicate");
                                                                     }
@@ -1491,17 +1456,14 @@ public final class t4 implements AutoCloseable, j6 {
                                                                         j2 = j;
                                                                         num = num;
                                                                         map = map;
-                                                                        scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                                         exc = null;
                                                                     } else {
                                                                         str3 = "8MiB actual video received; bounded experiment complete";
                                                                         o5Var4 = o5Var3;
-                                                                        scheduledExecutorService3 = scheduledExecutorService4;
                                                                     }
                                                                     break;
                                                                     break;
                                                                 case 65540:
-                                                                    scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                                     if (!this.L) {
                                                                         throw new r5("duplicate MD_INFO");
                                                                     }
@@ -1521,7 +1483,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                                     j2 = j;
                                                                     num = num;
                                                                     map = map;
-                                                                    scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                                     exc = null;
                                                                     break;
                                                                     break;
@@ -1567,7 +1528,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                                         cVar.a(sb.toString());
                                                                     }
                                                                     U();
-                                                                    scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                                     if (this.K) {
                                                                         j = 1;
                                                                     } else {
@@ -1582,7 +1542,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                                     j2 = j;
                                                                     num = num;
                                                                     map = map;
-                                                                    scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                                     exc = null;
                                                                     break;
                                                                     break;
@@ -1591,7 +1550,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                                 case 65569:
                                                                 case 65592:
                                                                     M(iH, bArrA);
-                                                                    scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                                     if (this.K) {
                                                                         j = 1;
                                                                     } else {
@@ -1606,13 +1564,11 @@ public final class t4 implements AutoCloseable, j6 {
                                                                     j2 = j;
                                                                     num = num;
                                                                     map = map;
-                                                                    scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                                     exc = null;
                                                                     break;
                                                                     break;
                                                                 case 65574:
                                                                     K(bArrA);
-                                                                    scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                                     if (this.K) {
                                                                         j = 1;
                                                                     } else {
@@ -1627,7 +1583,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                                     j2 = j;
                                                                     num = num;
                                                                     map = map;
-                                                                    scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                                     exc = null;
                                                                     break;
                                                                     break;
@@ -1648,7 +1603,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                                         this.a.a("Own local experimental receiver UUID/channel sent; not a borrowed vehicle or officially allocated manufacturer identity");
                                                                     }
                                                                     x();
-                                                                    scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                                     if (this.K) {
                                                                         j = 1;
                                                                     } else {
@@ -1663,7 +1617,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                                     j2 = j;
                                                                     num = num;
                                                                     map = map;
-                                                                    scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                                     exc = null;
                                                                     break;
                                                                     break;
@@ -1678,7 +1631,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                                     if (zG) {
                                                                         throw new r5("phone eligibility rejected");
                                                                     }
-                                                                    scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                                     if (this.K) {
                                                                         j = 1;
                                                                     } else {
@@ -1693,7 +1645,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                                     j2 = j;
                                                                     num = num;
                                                                     map = map;
-                                                                    scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                                     exc = null;
                                                                     break;
                                                                     break;
@@ -1701,7 +1652,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                                     if ("VERIFIED".equals(this.Y)) {
                                                                         x();
                                                                     }
-                                                                    scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                                     if (this.K) {
                                                                         j = 1;
                                                                     } else {
@@ -1716,7 +1666,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                                     j2 = j;
                                                                     num = num;
                                                                     map = map;
-                                                                    scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                                     exc = null;
                                                                     break;
                                                                     break;
@@ -1728,7 +1677,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                                     this.c0 = f6Var4;
                                                                     S(t1.k, t1.i(f6Var4.c()));
                                                                     this.P = true;
-                                                                    scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                                     if (this.K) {
                                                                         j = 1;
                                                                     } else {
@@ -1743,7 +1691,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                                     j2 = j;
                                                                     num = num;
                                                                     map = map;
-                                                                    scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                                     exc = null;
                                                                     break;
                                                                     break;
@@ -1757,7 +1704,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                                     this.a0 = new c2(true, this.E);
                                                                     this.F = true;
                                                                     this.Q = true;
-                                                                    scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                                     if (this.K) {
                                                                         j = 1;
                                                                     } else {
@@ -1772,7 +1718,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                                     j2 = j;
                                                                     num = num;
                                                                     map = map;
-                                                                    scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                                     exc = null;
                                                                     break;
                                                                     break;
@@ -1784,7 +1729,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                                     this.a.a("Actual MD_ENCRYPT_READY observed; own experimental receiver metadata only");
                                                                     S(t1.e, Z());
                                                                     this.O = true;
-                                                                    scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                                     if (this.K) {
                                                                         j = 1;
                                                                     } else {
@@ -1799,12 +1743,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                                     j2 = j;
                                                                     num = num;
                                                                     map = map;
-                                                                    scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                                     exc = null;
                                                                     break;
                                                                     break;
                                                                 default:
-                                                                    scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                                     if (this.K) {
                                                                         j = 1;
                                                                     } else {
@@ -1819,7 +1761,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                                     j2 = j;
                                                                     num = num;
                                                                     map = map;
-                                                                    scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                                     exc = null;
                                                                     break;
                                                                     break;
@@ -1833,12 +1774,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                         }
                                                         switch (iH) {
                                                             case t1.b /* 65538 */:
-                                                                scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                                 if (!this.K) {
                                                                 }
                                                                 throw new r5("version rejected/duplicate");
                                                             case 65540:
-                                                                scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                                 if (!this.L) {
                                                                     throw new r5("duplicate MD_INFO");
                                                                 }
@@ -1858,7 +1797,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                                 j2 = j;
                                                                 num = num;
                                                                 map = map;
-                                                                scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                                 exc = null;
                                                                 break;
                                                                 break;
@@ -1871,7 +1809,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                             case 65569:
                                                             case 65592:
                                                                 M(iH, bArrA);
-                                                                scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                                 if (this.K) {
                                                                     j = 1;
                                                                 } else {
@@ -1886,13 +1823,11 @@ public final class t4 implements AutoCloseable, j6 {
                                                                 j2 = j;
                                                                 num = num;
                                                                 map = map;
-                                                                scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                                 exc = null;
                                                                 break;
                                                                 break;
                                                             case 65574:
                                                                 K(bArrA);
-                                                                scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                                 if (this.K) {
                                                                     j = 1;
                                                                 } else {
@@ -1907,7 +1842,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                                 j2 = j;
                                                                 num = num;
                                                                 map = map;
-                                                                scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                                 exc = null;
                                                                 break;
                                                                 break;
@@ -1928,7 +1862,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                                     this.a.a("Own local experimental receiver UUID/channel sent; not a borrowed vehicle or officially allocated manufacturer identity");
                                                                 }
                                                                 x();
-                                                                scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                                 if (this.K) {
                                                                     j = 1;
                                                                 } else {
@@ -1943,7 +1876,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                                 j2 = j;
                                                                 num = num;
                                                                 map = map;
-                                                                scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                                 exc = null;
                                                                 break;
                                                                 break;
@@ -1958,7 +1890,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                                 if (zG) {
                                                                     throw new r5("phone eligibility rejected");
                                                                 }
-                                                                scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                                 if (this.K) {
                                                                     j = 1;
                                                                 } else {
@@ -1973,7 +1904,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                                 j2 = j;
                                                                 num = num;
                                                                 map = map;
-                                                                scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                                 exc = null;
                                                                 break;
                                                                 break;
@@ -1981,7 +1911,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                                 if ("VERIFIED".equals(this.Y)) {
                                                                     x();
                                                                 }
-                                                                scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                                 if (this.K) {
                                                                     j = 1;
                                                                 } else {
@@ -1996,7 +1925,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                                 j2 = j;
                                                                 num = num;
                                                                 map = map;
-                                                                scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                                 exc = null;
                                                                 break;
                                                                 break;
@@ -2014,7 +1942,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                                 }
                                                                 throw new r5("unexpected encryption READY");
                                                             default:
-                                                                scheduledExecutorService4 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                                                 if (this.K) {
                                                                     j = 1;
                                                                 } else {
@@ -2029,7 +1956,6 @@ public final class t4 implements AutoCloseable, j6 {
                                                                 j2 = j;
                                                                 num = num;
                                                                 map = map;
-                                                                scheduledExecutorServiceNewSingleThreadScheduledExecutor = scheduledExecutorService4;
                                                                 exc = null;
                                                                 break;
                                                                 break;
@@ -2046,13 +1972,11 @@ public final class t4 implements AutoCloseable, j6 {
                                         }
                                     }
                                 } catch (Throwable thCaught) {
-                                    scheduledExecutorService2 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                     o5Var = o5Var3;
-                                    ScheduledExecutorService scheduledExecutorService5 = scheduledExecutorService2;
                                     r10 = o5Var;
                                     this.a.a("NATIVE_SOURCE_FINAL first_channel_end=" + ((String) Objects.requireNonNullElse(this.p.get(), "NONE")) + " " + X());
                                     close();
-                                    scheduledExecutorService5.shutdownNow();
+                                    scheduledExecutorService.shutdownNow();
                                     l4Var.close();
                                     r10.close();
                                     f6Var2 = this.c0;
@@ -2084,9 +2008,7 @@ public final class t4 implements AutoCloseable, j6 {
                                 }
                             } catch (Exception e3) {
                                 e = e3;
-                                scheduledExecutorService = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                 o5Var2 = o5Var3;
-                                ScheduledExecutorService scheduledExecutorService6 = scheduledExecutorService;
                                 r9 = o5Var2;
                                 if (this.H != null) {
                                     str = this.H;
@@ -2096,7 +2018,7 @@ public final class t4 implements AutoCloseable, j6 {
                                 str3 = str;
                                 this.a.a("NATIVE_SOURCE_FINAL first_channel_end=" + ((String) Objects.requireNonNullElse(this.p.get(), "NONE")) + " " + X());
                                 close();
-                                scheduledExecutorService6.shutdownNow();
+                                scheduledExecutorService.shutdownNow();
                                 l4Var.close();
                                 r9.close();
                                 f6Var = this.c0;
@@ -2119,7 +2041,6 @@ public final class t4 implements AutoCloseable, j6 {
                                 c2Var = new c2(false, null);
                             }
                         }
-                        scheduledExecutorService3 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                         o5Var4 = o5Var3;
                     }
                     if (this.h.get()) {
@@ -2127,7 +2048,7 @@ public final class t4 implements AutoCloseable, j6 {
                     }
                     this.a.a("NATIVE_SOURCE_FINAL first_channel_end=" + ((String) Objects.requireNonNullElse(this.p.get(), "NONE")) + " " + X());
                     close();
-                    scheduledExecutorService3.shutdownNow();
+                    scheduledExecutorService.shutdownNow();
                     l4Var.close();
                     o5Var4.close();
                     f6 f6Var5 = this.c0;
@@ -2164,7 +2085,7 @@ public final class t4 implements AutoCloseable, j6 {
                     str3 = str;
                     this.a.a("NATIVE_SOURCE_FINAL first_channel_end=" + ((String) Objects.requireNonNullElse(this.p.get(), "NONE")) + " " + X());
                     close();
-                    scheduledExecutorService6.shutdownNow();
+                    scheduledExecutorService.shutdownNow();
                     l4Var.close();
                     r9.close();
                     f6Var = this.c0;
@@ -2187,7 +2108,7 @@ public final class t4 implements AutoCloseable, j6 {
                 r10 = o5Var;
                 this.a.a("NATIVE_SOURCE_FINAL first_channel_end=" + ((String) Objects.requireNonNullElse(this.p.get(), "NONE")) + " " + X());
                 close();
-                scheduledExecutorService5.shutdownNow();
+                scheduledExecutorService.shutdownNow();
                 l4Var.close();
                 r10.close();
                 f6Var2 = this.c0;
@@ -2209,13 +2130,10 @@ public final class t4 implements AutoCloseable, j6 {
         } catch (Exception e5) {
             e = e5;
             o5Var2 = o5VarG;
-            scheduledExecutorService = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
         } catch (Throwable th3) {
             th = th3;
             o5Var = o5VarG;
-            scheduledExecutorService2 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
         }
-        ScheduledExecutorService scheduledExecutorService7 = scheduledExecutorService;
         r9 = o5Var2;
         if (this.H != null) {
             str = this.H;
@@ -2225,7 +2143,7 @@ public final class t4 implements AutoCloseable, j6 {
         str3 = str;
         this.a.a("NATIVE_SOURCE_FINAL first_channel_end=" + ((String) Objects.requireNonNullElse(this.p.get(), "NONE")) + " " + X());
         close();
-        scheduledExecutorService7.shutdownNow();
+        scheduledExecutorService.shutdownNow();
         l4Var.close();
         r9.close();
         f6Var = this.c0;
@@ -2846,11 +2764,26 @@ public final class t4 implements AutoCloseable, j6 {
         }
 
         public a(r6.a aVar, d dVar, c cVar) {
+            // smali 中该构造器是：requireNonNull(c) -> new r4(1) -> r4.b=c
+            // -> storeStoreFence -> new AudioRelay(a, r4) -> 转调 4 参构造器。
+            // Java 8 不允许 this(...) 的实参里出现 new（flexible constructors），
+            // 故按 smali 顺序把 4 参构造器展开到此，语义逐条对应。
             Objects.requireNonNull(cVar);
             r4 r4Var = new r4(1);
             r4Var.b = cVar;
             VarHandle.storeStoreFence();
-            this(aVar, dVar, cVar, new AudioRelay(aVar, r4Var));
+            AudioRelay audioRelay = new AudioRelay(aVar, r4Var);
+            if (aVar != r6.a.MEDIA && aVar != r6.a.TTS && aVar != r6.a.VR) {
+                SyntheticRefs.b("native audio channel required");
+                throw null;
+            }
+            this.a = aVar;
+            Objects.requireNonNull(dVar);
+            this.b = dVar;
+            Objects.requireNonNull(cVar);
+            this.c = cVar;
+            Objects.requireNonNull(audioRelay);
+            this.d = audioRelay;
         }
     }
 
@@ -2892,7 +2825,8 @@ public final class t4 implements AutoCloseable, j6 {
         }
     }
 
-    public static final class g extends w1 {
+    /* 原名 g。字段 a=时长秒、b/c=宽高、d=精确几何开关、e=fps、f=标志。 */
+    public static final class VideoConfig extends w1 {
         private final int a;
         private final int b;
         private final int c;
@@ -2900,7 +2834,7 @@ public final class t4 implements AutoCloseable, j6 {
         private final int e;
         private final boolean f;
 
-        public g(int i, int i2, int i3, boolean z, int i4, boolean z2) {
+        public VideoConfig(int i, int i2, int i3, boolean z, int i4, boolean z2) {
             if (i < 0 || i > 1800 || ((z && i == 0) || i2 < 1 || i2 > 4096 || i3 < 1 || i3 > 4096 || i4 < 1 || i4 > 60)) {
                 SyntheticRefs.b("duration 0 (continuous non-diagnostic) or 1..1800 seconds; dimensions 1..4096 and fps 1..60 required");
                 throw null;
@@ -2917,15 +2851,15 @@ public final class t4 implements AutoCloseable, j6 {
             this.f = z2;
         }
 
-        public static g g() {
-            return new g(55, 1280, 720, true);
+        public static VideoConfig g() {
+            return new VideoConfig(55, 1280, 720, true);
         }
 
         public final boolean equals(Object obj) {
-            if (!(obj instanceof g)) {
+            if (!(obj instanceof VideoConfig)) {
                 return false;
             }
-            g gVar = (g) obj;
+            VideoConfig gVar = (VideoConfig) obj;
             return this.d == gVar.d && this.f == gVar.f && this.a == gVar.a && this.b == gVar.b && this.c == gVar.c && this.e == gVar.e;
         }
 
@@ -2979,21 +2913,21 @@ public final class t4 implements AutoCloseable, j6 {
             return sb.toString();
         }
 
-        public g(int i, int i2, int i3, boolean z) {
+        public VideoConfig(int i, int i2, int i3, boolean z) {
             this(i, i2, i3, z, 30);
         }
 
-        public g(int i, int i2, int i3, boolean z, int i4) {
+        public VideoConfig(int i, int i2, int i3, boolean z, int i4) {
             this(i, i2, i3, z, i4, false);
         }
     }
 
     public t4(c cVar, f fVar, h hVar) {
-        this(cVar, fVar, hVar, null, g.g());
+        this(cVar, fVar, hVar, null, t4.VideoConfig.g());
     }
 
     /* JADX WARN: 'this' call moved to the top of the method (can break code semantics) */
-    public t4(c cVar, f fVar, d dVar, g gVar) {
+    public t4(c cVar, f fVar, d dVar, VideoConfig gVar) {
         this(cVar, fVar, dVar, dVar, gVar);
         Objects.requireNonNull(dVar);
     }

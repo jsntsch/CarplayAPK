@@ -302,7 +302,7 @@ public final class MfiCertificateVerifier {
     }
 
     /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void M(j5.c cVar) throws IOException {
+    public /* synthetic */ void M(j5.c cVar) {
         x(44545, Iap2Csm.B(4, new byte[]{cVar.g() ? (byte) 1 : (byte) 0}));
     }
 
@@ -1063,7 +1063,7 @@ public final class MfiCertificateVerifier {
         return mfiCertificateVerifierS;
     }
 
-    private void x(int i, byte[] bArr) throws IOException {
+    private void x(int i, byte[] bArr) {
         if (this.j.size() < 32) {
             this.j.add(new d(i, Iap2Csm.o(i, bArr)));
         } else {

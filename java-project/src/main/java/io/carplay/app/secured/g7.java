@@ -18,7 +18,7 @@ public final /* synthetic */ class g7 implements Runnable {
     }
 
     @Override // java.lang.Runnable
-    public final void run() throws Throwable {
+    public final void run() {
         switch (this.a) {
             case 0:
                 this.b.U1(this.d, this.e, this.f, this.c);

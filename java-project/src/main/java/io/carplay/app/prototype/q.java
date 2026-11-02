@@ -24,6 +24,16 @@ final class q {
     public long h;
 
     public static final class a extends IOException {
+        /* dex 中 q$a 没有自己的 <init>：实例创建是 new-instance q$a 之后直接
+           invoke-direct q$a -> Ljava/io/IOException;-><init>(...)，
+           d8 把「子类构造器只调 super」优化掉了。下面两个构造器与之一一对应。 */
+        a(String str) {
+            super(str);
+        }
+
+        a(String str, Throwable th) {
+            super(str, th);
+        }
     }
 
     public static q a(Context context) throws a, PackageManager.NameNotFoundException {

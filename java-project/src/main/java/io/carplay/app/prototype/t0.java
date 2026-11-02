@@ -18,7 +18,7 @@ public final /* synthetic */ class t0 implements Runnable {
     }
 
     @Override // java.lang.Runnable
-    public final void run() throws Throwable {
+    public final void run() {
         switch (this.a) {
             case 0:
                 ((WirelessCarPlayService.a) this.f).x(this.b, this.c, this.d, this.e);

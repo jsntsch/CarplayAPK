@@ -21,7 +21,7 @@ public final /* synthetic */ class q0 implements Runnable {
                 ((AirPlaySession) this.b).a1((r6.a) this.c, (AirPlaySession.d) this.d);
                 break;
             case p1.c /* 1 */:
-                ((WirelessCarPlayService) this.c).g2((t4.g) this.d, (AirPlaySession) this.b);
+                ((WirelessCarPlayService) this.c).g2((t4.VideoConfig) this.d, (AirPlaySession) this.b);
                 break;
             default:
                 ((WirelessCarPlayService) this.b).Q1((String) this.c, (u5.a) this.d);

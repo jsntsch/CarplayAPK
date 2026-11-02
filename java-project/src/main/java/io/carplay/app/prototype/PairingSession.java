@@ -681,7 +681,7 @@ public final class PairingSession implements AutoCloseable {
 
     /* JADX INFO: Access modifiers changed from: private */
     /* JADX INFO: renamed from: A0, reason: merged with bridge method [inline-methods] */
-    public void i1(BluetoothServerSocket bluetoothServerSocket, BluetoothDevice bluetoothDevice, AtomicInteger atomicInteger) throws Throwable {
+    public void i1(BluetoothServerSocket bluetoothServerSocket, BluetoothDevice bluetoothDevice, AtomicInteger atomicInteger) {
         long jElapsedRealtime = SystemClock.elapsedRealtime() + V;
         while (!isClosed()) {
             try {
@@ -711,10 +711,6 @@ public final class PairingSession implements AutoCloseable {
     /* JADX WARN: Multi-variable type inference failed */
     /* JADX INFO: renamed from: A1, reason: merged with bridge method [inline-methods] */
     public void a1(InputStream inputStream, ArrayBlockingQueue<m> arrayBlockingQueue, j jVar) {
-        int i2 = 0;
-        IOException iOException = null;
-        Object[] objArr = 0;
-        Object[] objArr2 = 0;
         try {
             byte[] bArr = new byte[4096];
             while (!isClosed()) {
@@ -722,23 +718,23 @@ public final class PairingSession implements AutoCloseable {
                 jVar.a.incrementAndGet();
                 if (i3 < 0) {
                     jVar.e = "EOF";
-                    arrayBlockingQueue.put(new m(objArr2 == true ? 1 : 0, new EOFException("RFCOMM_EOF"), i2));
+                    arrayBlockingQueue.put(new m(null, new EOFException("RFCOMM_EOF")));
                     return;
                 } else if (i3 > 0) {
                     long j2 = i3;
                     jVar.b.addAndGet(j2);
-                    arrayBlockingQueue.put(new m(Arrays.copyOf(bArr, i3), iOException, i2));
+                    arrayBlockingQueue.put(new m(Arrays.copyOf(bArr, i3), null));
                     jVar.c.addAndGet(j2);
                 }
             }
             jVar.e = "OWNER_CLOSED";
         } catch (IOException e2) {
             jVar.e = "IO_FAILURE";
-            if (isClosed()) {
+            if (!isClosed()) {
                 return;
             }
             try {
-                arrayBlockingQueue.put(new m(objArr == true ? 1 : 0, N1("RFCOMM_READ_FAILED", e2), i2));
+                arrayBlockingQueue.put(new m(null, N1("RFCOMM_READ_FAILED", e2)));
             } catch (InterruptedException unused) {
                 Thread.currentThread().interrupt();
             }

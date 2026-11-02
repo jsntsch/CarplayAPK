@@ -12,7 +12,7 @@ public interface g4 {
         MICROPHONE
     }
 
-    public enum b {
+    public enum Endian {
         LITTLE_ENDIAN,
         BIG_ENDIAN,
         UNKNOWN
@@ -27,11 +27,11 @@ public interface g4 {
 
         public c(long j, g gVar, byte[] bArr, long j2, boolean z) {
             if (j < 1 || gVar == null || bArr == null || bArr.length == 0 || j2 < 0) {
-                d0.b("media frame");
+                SyntheticRefs.b("media frame");
                 throw null;
             }
             if (bArr.length > 8388608) {
-                d0.b("frame too large");
+                SyntheticRefs.b("frame too large");
                 throw null;
             }
             byte[] bArr2 = (byte[]) bArr.clone();
@@ -123,11 +123,11 @@ public interface g4 {
 
         public h(String str, int i, int i2, d dVar, byte[][] bArr) {
             if (!"video/avc".equals(str) && !"video/hevc".equals(str)) {
-                d0.b("unsupported video MIME");
+                SyntheticRefs.b("unsupported video MIME");
                 throw null;
             }
             if (i < 1 || i2 < 1 || i > 8192 || i2 > 8192 || dVar == null) {
-                d0.b("video dimensions/layout");
+                SyntheticRefs.b("video dimensions/layout");
                 throw null;
             }
             byte[][] bArrH = h(bArr);
@@ -219,12 +219,12 @@ public interface g4 {
         private final int b;
         private final int c;
         private final int d;
-        private final b e;
+        private final Endian e;
         private final f f;
 
-        public e(a aVar, int i, int i2, int i3, b bVar, f fVar) {
+        public e(a aVar, int i, int i2, int i3, Endian bVar, f fVar) {
             if (aVar == null || bVar == null || fVar == null || i < 4000 || i > 192000 || i2 < 1 || i2 > 8 || !(i3 == 8 || i3 == 16 || i3 == 24 || i3 == 32)) {
-                d0.b("PCM format");
+                SyntheticRefs.b("PCM format");
                 throw null;
             }
             this.a = aVar;
@@ -256,7 +256,7 @@ public interface g4 {
             int i2 = this.c;
             int i3 = this.d;
             a aVar = this.a;
-            b bVar = this.e;
+            Endian bVar = this.e;
             f fVar = this.f;
             return Objects.hashCode(fVar) + ((Objects.hashCode(bVar) + ((Objects.hashCode(aVar) + (((((i * 31) + i2) * 31) + i3) * 31)) * 31)) * 31);
         }
@@ -276,12 +276,12 @@ public interface g4 {
         public void l() {
             f fVar = this.f;
             if (fVar == f.UNKNOWN || fVar == f.FLOAT || ((fVar == f.UNSIGNED_INTEGER && this.d != 8) || (fVar == f.SIGNED_INTEGER && this.d == 8))) {
-                d0.d("PCM sample encoding unsupported/unverified");
+                SyntheticRefs.d("PCM sample encoding unsupported/unverified");
             } else {
-                if (this.d <= 8 || this.e != b.UNKNOWN) {
+                if (this.d <= 8 || this.e != Endian.UNKNOWN) {
                     return;
                 }
-                d0.d("PCM byte order unverified");
+                SyntheticRefs.d("PCM byte order unverified");
             }
         }
 
@@ -310,7 +310,7 @@ public interface g4 {
             return sb.toString();
         }
 
-        public e(a aVar, int i, int i2, int i3, b bVar) {
+        public e(a aVar, int i, int i2, int i3, Endian bVar) {
             this(aVar, i, i2, i3, bVar, f.UNKNOWN);
         }
     }

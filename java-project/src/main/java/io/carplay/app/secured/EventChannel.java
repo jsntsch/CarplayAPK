@@ -155,7 +155,7 @@ public final class EventChannel implements Closeable {
 
     private static void A(String str) {
         if (str == null || str.indexOf(13) >= 0 || str.indexOf(10) >= 0) {
-            d0.b("Invalid RTSP line");
+            SyntheticRefs.b("Invalid RTSP line");
         }
     }
 
@@ -171,14 +171,14 @@ public final class EventChannel implements Closeable {
             return;
         }
         str2 = "Empty token";
-        d0.b(str2);
+        SyntheticRefs.b(str2);
     }
 
     private static int C(int i) {
         if (i >= 1 && i <= 120000) {
             return i;
         }
-        d0.b("Timeout must be 1..120000 ms");
+        SyntheticRefs.b("Timeout must be 1..120000 ms");
         return 0;
     }
 
@@ -187,13 +187,13 @@ public final class EventChannel implements Closeable {
         e eVar;
         String strD = bVar.d("cseq");
         if (strD == null || strD.isEmpty() || strD.length() > 10) {
-            d0.c("Invalid RTSP event response sequence");
+            SyntheticRefs.c("Invalid RTSP event response sequence");
             return;
         }
         for (int i = 0; i < strD.length(); i++) {
             char cCharAt = strD.charAt(i);
             if (cCharAt < '0' || cCharAt > '9') {
-                d0.c("Invalid RTSP event response sequence");
+                SyntheticRefs.c("Invalid RTSP event response sequence");
                 return;
             }
         }
@@ -204,7 +204,7 @@ public final class EventChannel implements Closeable {
                 eVar = this.q;
             }
             if (aVarRemove == null) {
-                d0.c("Unknown RTSP event response sequence");
+                SyntheticRefs.c("Unknown RTSP event response sequence");
                 return;
             }
             bVar.d = aVarRemove.g();
@@ -216,7 +216,7 @@ public final class EventChannel implements Closeable {
             }
             aVarRemove.h().complete(bVar);
         } catch (NumberFormatException unused2) {
-            d0.c("Invalid RTSP event response sequence");
+            SyntheticRefs.c("Invalid RTSP event response sequence");
         }
     }
 
@@ -256,7 +256,7 @@ public final class EventChannel implements Closeable {
 
     private void k() throws IOException {
         if (this.o) {
-            d0.c("RTSP connection closed");
+            SyntheticRefs.c("RTSP connection closed");
         }
     }
 
@@ -273,7 +273,7 @@ public final class EventChannel implements Closeable {
 
     public static EventChannel p(String str, int i, int i2) throws IOException {
         if (i2 < 1 || i2 > 120000) {
-            d0.b("Timeout must be 1..120000 ms");
+            SyntheticRefs.b("Timeout must be 1..120000 ms");
             return null;
         }
         Socket socket = new Socket();
@@ -335,7 +335,7 @@ public final class EventChannel implements Closeable {
                 if (c2 == 4) {
                     String[] strArrSplit = new String(byteArrayOutputStream.toByteArray(), StandardCharsets.US_ASCII).split("\r\n");
                     if (strArrSplit.length == 0 || strArrSplit[0].length() > 4096) {
-                        d0.c("Malformed RTSP start line");
+                        SyntheticRefs.c("Malformed RTSP start line");
                         return null;
                     }
                     LinkedHashMap linkedHashMap = new LinkedHashMap();
@@ -343,24 +343,24 @@ public final class EventChannel implements Closeable {
                         if (!strArrSplit[i].isEmpty()) {
                             int iIndexOf = strArrSplit[i].indexOf(58);
                             if (iIndexOf < 1) {
-                                d0.c("Malformed RTSP header");
+                                SyntheticRefs.c("Malformed RTSP header");
                                 return null;
                             }
                             String lowerCase = strArrSplit[i].substring(0, iIndexOf).trim().toLowerCase(Locale.ROOT);
                             if (linkedHashMap.put(lowerCase, strArrSplit[i].substring(iIndexOf + 1).trim()) != null) {
-                                d0.c(w1.e("Duplicate RTSP header: ", lowerCase));
+                                SyntheticRefs.c(w1.e("Duplicate RTSP header: ", lowerCase));
                                 return null;
                             }
                         }
                     }
                     if (linkedHashMap.containsKey("transfer-encoding")) {
-                        d0.c("Unsupported RTSP transfer encoding");
+                        SyntheticRefs.c("Unsupported RTSP transfer encoding");
                         return null;
                     }
                     try {
                         int i2 = linkedHashMap.containsKey("content-length") ? Integer.parseInt((String) linkedHashMap.get("content-length")) : 0;
                         if (i2 < 0 || i2 > 4194304) {
-                            d0.c("RTSP body length out of bounds");
+                            SyntheticRefs.c("RTSP body length out of bounds");
                             return null;
                         }
                         this.G = i2;
@@ -396,7 +396,7 @@ public final class EventChannel implements Closeable {
                 byteArrayOutputStream.write(iT2);
                 this.E = byteArrayOutputStream.size();
                 if (byteArrayOutputStream.size() > 32768) {
-                    d0.c("RTSP header too large");
+                    SyntheticRefs.c("RTSP header too large");
                     return null;
                 }
                 if (c2 == 0) {
@@ -470,7 +470,7 @@ public final class EventChannel implements Closeable {
                 this.H = i4;
             }
             if (this.k == -1) {
-                d0.c("Control nonce exhausted");
+                SyntheticRefs.c("Control nonce exhausted");
                 return 0;
             }
             try {
@@ -690,6 +690,10 @@ public final class EventChannel implements Closeable {
 
     public CompletableFuture<b> l(String str, String str2, String str3, byte[] bArr) {
         CompletableFuture<b> completableFuture = new CompletableFuture<>();
+        // jadx 漏了方法级声明：下面 try/catch 里用 `e = null;` / `e = e2;` 转发异常，
+        // 但没有 `Throwable e;`，于是 `e` 落到字段 `private final int e;` 上。
+        // 补声明后 `e.addSuppressed(...)` 恢复为异常语义，字段仍由 `this.e` 访问。
+        Throwable e = null;
         synchronized (this) {
             try {
                 try {
@@ -762,12 +766,12 @@ public final class EventChannel implements Closeable {
     }
 
     public synchronized b v(String str, String str2, String str3, byte[] bArr) {
+        Throwable th = null;
         try {
             try {
                 return w(str, str2, str3, bArr, Collections.EMPTY_MAP);
-            } catch (Throwable th) {
-                th = th;
-                throw th;
+            } catch (Throwable thCaught) {
+                throw thCaught;
             }
         } catch (Throwable th2) {
             th = th2;
@@ -984,7 +988,7 @@ public final class EventChannel implements Closeable {
     public EventChannel(Socket socket, int i) throws IOException {
         this(socket.getInputStream(), socket.getOutputStream(), socket, socket, C(i));
         if (!socket.isConnected() || socket.isClosed()) {
-            d0.c("Socket must be connected");
+            SyntheticRefs.c("Socket must be connected");
             throw null;
         }
         socket.setSoTimeout(i);

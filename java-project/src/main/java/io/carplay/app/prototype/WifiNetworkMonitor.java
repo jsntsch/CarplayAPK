@@ -11,7 +11,7 @@ import android.os.Handler;
 import android.os.Looper;
 import io.carplay.app.secured.ControlChannel;
 import io.carplay.app.secured.Iap2Csm;
-import io.carplay.app.secured.d0;
+import io.carplay.app.secured.SyntheticRefs;
 import io.carplay.app.secured.w1;
 import java.io.IOException;
 import java.lang.invoke.VarHandle;
@@ -238,7 +238,7 @@ final class WifiNetworkMonitor implements AutoCloseable {
         this.p = pVar;
         this.q = new a();
         if (j < 1 || j > 90000) {
-            d0.b("current WLAN budget out of bounds");
+            SyntheticRefs.b("current WLAN budget out of bounds");
             throw null;
         }
         this.a = context;

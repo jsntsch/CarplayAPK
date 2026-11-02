@@ -32,7 +32,7 @@ public abstract class ChaCha20 {
         this.e = new byte[64];
         this.f = false;
         if (i <= 0 || (i & 1) != 0) {
-            d0.b("'rounds' must be a positive, even number");
+            SyntheticRefs.b("'rounds' must be a positive, even number");
             throw null;
         }
         this.a = i;

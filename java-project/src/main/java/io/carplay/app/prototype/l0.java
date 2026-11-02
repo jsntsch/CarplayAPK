@@ -12,6 +12,6 @@ public final /* synthetic */ class l0 implements View.OnApplyWindowInsetsListene
 
     @Override // android.view.View.OnApplyWindowInsetsListener
     public final WindowInsets onApplyWindowInsets(View view, WindowInsets windowInsets) {
-        return m0.s(this.a, this.b, view, windowInsets);
+        return UiFactory.s(this.a, this.b, view, windowInsets);
     }
 }

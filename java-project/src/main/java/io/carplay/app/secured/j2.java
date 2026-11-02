@@ -16,16 +16,16 @@ public class j2 implements CipherParameters {
     public j2(BigInteger bigInteger, BigInteger bigInteger2, BigInteger bigInteger3, int i, int i2, BigInteger bigInteger4, k2 k2Var) {
         if (i2 != 0) {
             if (i2 > bigInteger.bitLength()) {
-                d0.b("when l value specified, it must satisfy 2^(l-1) <= p");
+                SyntheticRefs.b("when l value specified, it must satisfy 2^(l-1) <= p");
                 throw null;
             }
             if (i2 < i) {
-                d0.b("when l value specified, it may not be less than m value");
+                SyntheticRefs.b("when l value specified, it may not be less than m value");
                 throw null;
             }
         }
         if (i > bigInteger.bitLength() && !p5.b("org.bouncycastle.dh.allow_unsafe_p_value")) {
-            d0.b("unsafe p value so small specific l required");
+            SyntheticRefs.b("unsafe p value so small specific l required");
             throw null;
         }
         this.a = bigInteger2;

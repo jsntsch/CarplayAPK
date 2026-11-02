@@ -157,11 +157,11 @@ public final class LogActivity extends Activity {
     @Override // android.app.Activity
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
-        LinearLayout linearLayoutX = m0.x(this);
-        m0.D(this, linearLayoutX, "连接日志", "每次连接都有记录，排查问题更清楚");
-        LinearLayout linearLayoutJ = m0.j(linearLayoutX);
-        m0.m(linearLayoutJ, "记录留在你的手机", "shield");
-        m0.C(linearLayoutJ, "自动保存，退出后保留。最近 5 个文件；导出包含完整历史，由你选择保存位置。分享前请检查设备与网络隐私。", 13, false).setTextColor(-10193265);
+        LinearLayout linearLayoutX = UiFactory.x(this);
+        UiFactory.D(this, linearLayoutX, "连接日志", "每次连接都有记录，排查问题更清楚");
+        LinearLayout linearLayoutJ = UiFactory.j(linearLayoutX);
+        UiFactory.m(linearLayoutJ, "记录留在你的手机", "shield");
+        UiFactory.C(linearLayoutJ, "自动保存，退出后保留。最近 5 个文件；导出包含完整历史，由你选择保存位置。分享前请检查设备与网络隐私。", 13, false).setTextColor(-10193265);
         Button button = new Button(this);
         this.d = button;
         button.setText("导出完整日志文件");
@@ -171,8 +171,8 @@ public final class LogActivity extends Activity {
         VarHandle.storeStoreFence();
         button2.setOnClickListener(i3Var);
         linearLayoutX.addView(this.d);
-        m0.i(this.d, true);
-        LinearLayout linearLayoutZ = m0.z(linearLayoutX);
+        UiFactory.i(this.d, true);
+        LinearLayout linearLayoutZ = UiFactory.z(linearLayoutX);
         Button button3 = new Button(this);
         this.c = button3;
         button3.setText("刷新日志");
@@ -182,7 +182,7 @@ public final class LogActivity extends Activity {
         VarHandle.storeStoreFence();
         button4.setOnClickListener(i3Var2);
         linearLayoutZ.addView(this.c);
-        m0.i(this.c, false);
+        UiFactory.i(this.c, false);
         Button button5 = new Button(this);
         button5.setText("返回首页");
         i3 i3Var3 = new i3(2);
@@ -190,23 +190,23 @@ public final class LogActivity extends Activity {
         VarHandle.storeStoreFence();
         button5.setOnClickListener(i3Var3);
         linearLayoutZ.addView(button5);
-        m0.i(button5, false);
+        UiFactory.i(button5, false);
         TextView textView = new TextView(this);
         this.b = textView;
         textView.setTextIsSelectable(true);
         this.b.setTextColor(-2299910);
         this.b.setTextSize(12.0f);
-        this.b.setLineSpacing(m0.l(this, 3), 1.0f);
+        this.b.setLineSpacing(UiFactory.l(this, 3), 1.0f);
         this.b.setTypeface(Typeface.MONOSPACE);
-        this.b.setPadding(m0.l(this, 16), m0.l(this, 16), m0.l(this, 16), m0.l(this, 16));
+        this.b.setPadding(UiFactory.l(this, 16), UiFactory.l(this, 16), UiFactory.l(this, 16), UiFactory.l(this, 16));
         ScrollView scrollView = new ScrollView(this);
-        scrollView.setBackground(m0.B(this, -15260095, 18));
+        scrollView.setBackground(UiFactory.B(this, -15260095, 18));
         scrollView.addView(this.b);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(-1, 0, 1.0f);
-        layoutParams.topMargin = m0.l(this, 16);
+        layoutParams.topMargin = UiFactory.l(this, 16);
         linearLayoutX.addView(scrollView, layoutParams);
         setContentView(linearLayoutX);
-        m0.w(this);
+        UiFactory.w(this);
         o();
     }
 

@@ -104,7 +104,7 @@ public final class p1 {
             str = "alert";
         } else {
             if (i4 != 3) {
-                d0.c("AUDIO_SOURCE_CHANNEL_UNSUPPORTED");
+                SyntheticRefs.c("AUDIO_SOURCE_CHANNEL_UNSUPPORTED");
                 return null;
             }
             str = "speechRecognition";
@@ -134,7 +134,7 @@ public final class p1 {
         if (!arrayList.isEmpty()) {
             return new p1(xVar, arrayList);
         }
-        d0.c("CAP_MAIN_DISPLAY_UNAVAILABLE");
+        SyntheticRefs.c("CAP_MAIN_DISPLAY_UNAVAILABLE");
         return null;
     }
 
@@ -159,7 +159,7 @@ public final class p1 {
 
     public static b l(int i, int i2, int i3) {
         if (i < 8 || i2 < 8) {
-            d0.b("receiver dimensions too small");
+            SyntheticRefs.b("receiver dimensions too small");
             return null;
         }
         double dMin = Math.min(1.0d, 1920.0d / ((double) Math.max(i, i2)));

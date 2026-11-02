@@ -51,14 +51,14 @@ public final class EcdsaSignature {
                 int i = -1;
                 String[] strArrSplit = StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT).decode(ByteBuffer.wrap(bArr)).toString().split("\n", -1);
                 if (strArrSplit.length < 8 || strArrSplit.length > 70 || !strArrSplit[0].equals("CARPLUS_RELEASES_V1") || !strArrSplit[strArrSplit.length - 1].isEmpty()) {
-                    d0.c("release receipt schema");
+                    SyntheticRefs.c("release receipt schema");
                     return null;
                 }
                 long jB = EcdsaSignature.b(strArrSplit[1]);
                 long jB2 = EcdsaSignature.b(strArrSplit[2]);
                 long jB3 = EcdsaSignature.b(strArrSplit[3]);
                 if (!strArrSplit[4].equals("io.carplay.app.prototype")) {
-                    d0.c("release receipt package");
+                    SyntheticRefs.c("release receipt package");
                     return null;
                 }
                 long jB4 = EcdsaSignature.b(strArrSplit[5]);
@@ -70,7 +70,7 @@ public final class EcdsaSignature {
                 while (i3 < strArrSplit.length - 1) {
                     String[] strArrSplit2 = strArrSplit[i3].split("\t", i);
                     if (strArrSplit2.length != 4) {
-                        d0.c("release receipt entry");
+                        SyntheticRefs.c("release receipt entry");
                         return null;
                     }
                     String[] strArr = strArrSplit;
@@ -99,14 +99,14 @@ public final class EcdsaSignature {
                             i = -1;
                         }
                     }
-                    d0.c("release receipt entry");
+                    SyntheticRefs.c("release receipt entry");
                     return null;
                 }
                 String[] strArr2 = strArrSplit;
                 int i7 = length;
                 b[] bVarArr3 = bVarArr;
                 if (jB4 < 1 || jB4 > j4) {
-                    d0.c("release receipt minimum");
+                    SyntheticRefs.c("release receipt minimum");
                     return null;
                 }
                 String str9 = strArr2[4];
@@ -206,7 +206,7 @@ public final class EcdsaSignature {
 
     public static EcdsaSignature a(String str, String str2) throws IOException {
         if (str == null || str2 == null || str.length() > 12000 || str2.length() > 160) {
-            d0.c("release receipt bounds");
+            SyntheticRefs.c("release receipt bounds");
             return null;
         }
         try {
@@ -224,7 +224,7 @@ public final class EcdsaSignature {
 
     public static long b(String str) throws IOException {
         if (!str.matches("[0-9]{1,18}")) {
-            d0.c("release receipt integer");
+            SyntheticRefs.c("release receipt integer");
             return 0L;
         }
         try {

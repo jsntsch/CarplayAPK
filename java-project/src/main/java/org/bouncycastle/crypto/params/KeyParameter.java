@@ -1,6 +1,6 @@
 package org.bouncycastle.crypto.params;
 
-import io.carplay.app.secured.d0;
+import io.carplay.app.secured.SyntheticRefs;
 import io.carplay.app.secured.e;
 import org.bouncycastle.crypto.CipherParameters;
 
@@ -18,7 +18,7 @@ public class KeyParameter implements CipherParameters {
         if (bArr2.length == i2) {
             System.arraycopy(bArr2, 0, bArr, i, i2);
         } else {
-            d0.b("len");
+            SyntheticRefs.b("len");
         }
     }
 

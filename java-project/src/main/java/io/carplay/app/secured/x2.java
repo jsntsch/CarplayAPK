@@ -36,7 +36,7 @@ public class x2 {
             return bArr;
         }
         str2 = "a hexadecimal encoding must have an even number of characters";
-        d0.c(str2);
+        SyntheticRefs.c(str2);
         return null;
     }
 

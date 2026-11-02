@@ -24,26 +24,26 @@ public final class u1 implements AutoCloseable {
 
     public u1(long j2, g4.e eVar, boolean z, boolean z2, o oVar, Supplier<io.carplay.app.secured.b.C0003b> supplier) {
         if (j2 < 1) {
-            d0.b("session generation must be positive");
+            SyntheticRefs.b("session generation must be positive");
             throw null;
         }
         Objects.requireNonNull(eVar);
         this.b = eVar;
         if (!z) {
-            d0.b("caller must confirm microphone format");
+            SyntheticRefs.b("caller must confirm microphone format");
             throw null;
         }
         eVar.l();
-        if (eVar.k() == g4.b.UNKNOWN || eVar.j() == g4.f.UNKNOWN) {
-            d0.b("microphone byte order/encoding unverified");
+        if (eVar.k() == g4.Endian.UNKNOWN || eVar.j() == g4.f.UNKNOWN) {
+            SyntheticRefs.b("microphone byte order/encoding unverified");
             throw null;
         }
         if (eVar.n() != g4.a.MICROPHONE || eVar.m() != 16000 || eVar.i() != 1 || eVar.g() != 16 || eVar.j() != g4.f.SIGNED_INTEGER) {
-            d0.b("supported confirmed mic contract is 16000/mono/signed PCM16");
+            SyntheticRefs.b("supported confirmed mic contract is 16000/mono/signed PCM16");
             throw null;
         }
         if (z2 && oVar == null) {
-            d0.b("negotiated encryption needs explicit cipher");
+            SyntheticRefs.b("negotiated encryption needs explicit cipher");
             throw null;
         }
         this.a = j2;
@@ -60,7 +60,7 @@ public final class u1 implements AutoCloseable {
                 return;
             }
             m();
-            d0.f("normal microphone session not accepted or stale");
+            SyntheticRefs.f("normal microphone session not accepted or stale");
         } catch (RuntimeException e) {
             m();
             throw new r5("mic session acceptance unavailable", e);
@@ -69,20 +69,20 @@ public final class u1 implements AutoCloseable {
 
     private void k(long j2) throws r5 {
         if (this.g || j2 != this.a) {
-            d0.f("cancelled or stale mic session");
+            SyntheticRefs.f("cancelled or stale mic session");
         }
     }
 
     private void l(a aVar) throws r5 {
         if (aVar == null || aVar.a != this) {
-            d0.f("foreign or missing microphone ticket");
+            SyntheticRefs.f("foreign or missing microphone ticket");
             return;
         }
         k(aVar.b);
         if (this.f && aVar.c == this.i) {
             return;
         }
-        d0.f("stale or inactive microphone ticket");
+        SyntheticRefs.f("stale or inactive microphone ticket");
     }
 
     private void m() {
@@ -91,6 +91,7 @@ public final class u1 implements AutoCloseable {
     }
 
     public synchronized a b() throws Throwable {
+        Throwable th = null;
         try {
             try {
                 k(this.a);
@@ -98,9 +99,8 @@ public final class u1 implements AutoCloseable {
                     throw new r5("phone has not started microphone recording");
                 }
                 return new a(this, this.a, this.i, 0);
-            } catch (Throwable th) {
-                th = th;
-                throw th;
+            } catch (Throwable thCaught) {
+                throw thCaught;
             }
         } catch (Throwable th2) {
             th = th2;

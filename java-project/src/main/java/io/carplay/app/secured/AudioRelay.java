@@ -26,7 +26,7 @@ public final class AudioRelay {
     private final AtomicLong i = new AtomicLong();
     private final AtomicLong j = new AtomicLong();
     private final AtomicLong k = new AtomicLong();
-    private final AtomicLongArray l = new AtomicLongArray(b.values().length);
+    private final AtomicLongArray l = new AtomicLongArray(StreamState.values().length);
     private final AtomicBoolean m = new AtomicBoolean();
     private final AtomicBoolean n = new AtomicBoolean();
     private final AtomicBoolean o = new AtomicBoolean();
@@ -95,7 +95,7 @@ public final class AudioRelay {
         }
     }
 
-    public enum b {
+    public enum StreamState {
         NO_INIT,
         UNSUPPORTED_FORMAT,
         PAUSED,
@@ -104,7 +104,7 @@ public final class AudioRelay {
 
     public AudioRelay(r6.a aVar, Consumer<String> consumer) {
         if (aVar != r6.a.MEDIA && aVar != r6.a.TTS && aVar != r6.a.VR) {
-            d0.b("native audio channel required");
+            SyntheticRefs.b("native audio channel required");
             throw null;
         }
         this.a = aVar;
@@ -178,7 +178,7 @@ public final class AudioRelay {
         }
     }
 
-    public void n(b bVar) {
+    public void n(StreamState bVar) {
         this.l.incrementAndGet(bVar.ordinal());
         if (this.q.compareAndSet(false, true)) {
             d("FIRST_WITHHELD reason=".concat(String.valueOf(bVar)));

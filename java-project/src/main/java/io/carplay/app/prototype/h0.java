@@ -19,10 +19,10 @@ public final /* synthetic */ class h0 implements DialogInterface.OnShowListener 
     public final void onShow(DialogInterface dialogInterface) {
         switch (this.a) {
             case 0:
-                j0.l(this.b, this.c, dialogInterface);
+                DonationDialog.l(this.b, this.c, dialogInterface);
                 break;
             default:
-                m0.q(this.b, this.c, dialogInterface);
+                UiFactory.q(this.b, this.c, dialogInterface);
                 break;
         }
     }

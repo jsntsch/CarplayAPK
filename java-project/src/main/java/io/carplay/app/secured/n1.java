@@ -13,7 +13,7 @@ final class n1 {
     public static byte[] a(boolean z, long j, long j2, int i, long j3) throws IOException {
         byte[] bArrF;
         if (j < 0 || j2 < 0 || i < 0 || i > 12 || j3 < 1) {
-            d0.c("SCREEN_STATS_INVALID");
+            SyntheticRefs.c("SCREEN_STATS_INVALID");
             return null;
         }
         if (z) {

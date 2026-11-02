@@ -13,7 +13,7 @@ public final class o5 implements l5, AutoCloseable {
 
     public o5(byte[] bArr) {
         if (bArr == null || bArr.length == 0 || bArr.length > 1048576) {
-            d0.b("A nonempty bounded prefix must be explicitly configured");
+            SyntheticRefs.b("A nonempty bounded prefix must be explicitly configured");
             throw null;
         }
         this.a = (byte[]) bArr.clone();
@@ -26,7 +26,7 @@ public final class o5 implements l5, AutoCloseable {
     public static byte[] i(String str) {
         long jK = k(str);
         if (jK > 1048576) {
-            d0.b("Input exceeds byte limit");
+            SyntheticRefs.b("Input exceeds byte limit");
             return null;
         }
         byte[] bArr = new byte[(int) jK];

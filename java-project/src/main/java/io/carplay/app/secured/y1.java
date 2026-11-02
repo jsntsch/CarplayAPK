@@ -10,7 +10,7 @@ public class y1 extends ChaCha20 {
         if (i != 0) {
             return;
         }
-        d0.d("attempt to increase counter past 2^32.");
+        SyntheticRefs.d("attempt to increase counter past 2^32.");
     }
 
     @Override // io.carplay.app.secured.ChaCha20

@@ -38,7 +38,7 @@ public final class BinaryPlist {
 
         public a(byte[] bArr) throws IOException {
             if (bArr == null || bArr.length < 40 || bArr.length > BinaryPlist.b || !Arrays.equals(Arrays.copyOf(bArr, 8), BinaryPlist.a)) {
-                d0.c("invalid plist header/limit");
+                SyntheticRefs.c("invalid plist header/limit");
                 throw null;
             }
             byte[] bArr2 = (byte[]) bArr.clone();
@@ -49,7 +49,7 @@ public final class BinaryPlist {
             int i3 = bArr2[length - 25] & 255;
             this.d = i3;
             if (!f(i2) || !f(i3)) {
-                d0.c("invalid plist table width");
+                SyntheticRefs.c("invalid plist table width");
                 throw null;
             }
             int iA = a(length - 24, 8, BinaryPlist.c);
@@ -67,14 +67,14 @@ public final class BinaryPlist {
                         int i5 = this.e;
                         iArr[i4] = a((i4 * i2) + i5, i2, i5 - 1);
                         if (this.f[i4] < 8) {
-                            d0.c("invalid plist object offset");
+                            SyntheticRefs.c("invalid plist object offset");
                             throw null;
                         }
                     }
                     return;
                 }
             }
-            d0.c("invalid plist offset table");
+            SyntheticRefs.c("invalid plist offset table");
             throw null;
         }
 
@@ -83,19 +83,19 @@ public final class BinaryPlist {
             if (jE >= 0 && jE <= i3) {
                 return (int) jE;
             }
-            d0.c("plist numeric bound");
+            SyntheticRefs.c("plist numeric bound");
             return 0;
         }
 
         private void c(int i, long j) throws IOException {
             if (i < 8 || j < 0 || ((long) i) + j > this.e) {
-                d0.c("plist object crosses table");
+                SyntheticRefs.c("plist object crosses table");
             }
         }
 
         private long e(int i, int i2) throws IOException {
             if (i < 0 || ((long) i) + ((long) i2) > this.a.length) {
-                d0.c("truncated plist integer");
+                SyntheticRefs.c("truncated plist integer");
                 return 0L;
             }
             long j = 0;
@@ -131,13 +131,13 @@ public final class BinaryPlist {
             // String/Map/List/byte[]，只能用 Object 承载，取用时窄化。
             Object CopyOfRange = 0;
             if (i < 0 || i >= this.b || i2 > 64) {
-                d0.c("plist reference/depth limit");
+                SyntheticRefs.c("plist reference/depth limit");
                 return null;
             }
             byte[] bArr = this.h;
             byte b = bArr[i];
             if (b == 1) {
-                d0.c("cyclic peer plist");
+                SyntheticRefs.c("cyclic peer plist");
                 return null;
             }
             if (b == 2) {
@@ -155,7 +155,7 @@ public final class BinaryPlist {
                         CopyOfRange = Boolean.FALSE;
                     } else {
                         if (iA != 9) {
-                            d0.c("unsupported plist singleton");
+                            SyntheticRefs.c("unsupported plist singleton");
                             return null;
                         }
                         CopyOfRange = Boolean.TRUE;
@@ -163,7 +163,7 @@ public final class BinaryPlist {
                 }
             } else if (i6 == 1) {
                 if (iA > 3) {
-                    d0.c("plist integer too large");
+                    SyntheticRefs.c("plist integer too large");
                     return null;
                 }
                 int i7 = 1 << iA;
@@ -178,7 +178,7 @@ public final class BinaryPlist {
                     CopyOfRange = Double.valueOf(Float.intBitsToFloat((int) e(i5, 4)));
                 } else {
                     if (iA != 3) {
-                        d0.c("invalid plist real width");
+                        SyntheticRefs.c("invalid plist real width");
                         return null;
                     }
                     c(i5, 8L);
@@ -194,7 +194,7 @@ public final class BinaryPlist {
                     int i9 = i4 + 2;
                     byte b3 = this.a[i5];
                     if (((b3 & 255) >>> 4) != 1 || (i3 = b3 & 15) > 3) {
-                        d0.c("invalid plist extended length");
+                        SyntheticRefs.c("invalid plist extended length");
                         return null;
                     }
                     int i10 = 1 << i3;
@@ -212,7 +212,7 @@ public final class BinaryPlist {
                                 break;
                             }
                             if (bArr2[i5 + i11] < 0) {
-                                d0.c("invalid ASCII plist string");
+                                SyntheticRefs.c("invalid ASCII plist string");
                                 return null;
                             }
                             i11++;
@@ -220,11 +220,11 @@ public final class BinaryPlist {
                     } else if (i6 != 6) {
                         if (i6 != 10) {
                             if (i6 != 13) {
-                                d0.c("unsupported plist object type");
+                                SyntheticRefs.c("unsupported plist object type");
                                 return null;
                             }
                             if (iA > 8192) {
-                                d0.c("plist map limit");
+                                SyntheticRefs.c("plist map limit");
                                 return null;
                             }
                             c(i5, ((long) iA) * ((long) this.d) * 2);
@@ -241,12 +241,12 @@ public final class BinaryPlist {
                                         i11++;
                                     }
                                 }
-                                d0.c("invalid/duplicate dictionary key");
+                                SyntheticRefs.c("invalid/duplicate dictionary key");
                                 return null;
                             }
                         }
                         if (iA > BinaryPlist.c) {
-                            d0.c("plist array limit");
+                            SyntheticRefs.c("plist array limit");
                             return null;
                         }
                         c(i5, ((long) iA) * ((long) this.d));
@@ -258,7 +258,7 @@ public final class BinaryPlist {
                         }
                     } else {
                         if (iA > 1048576) {
-                            d0.c("UTF16 plist length");
+                            SyntheticRefs.c("UTF16 plist length");
                             return null;
                         }
                         int i16 = iA * 2;
@@ -285,7 +285,7 @@ public final class BinaryPlist {
 
         public c(BigInteger bigInteger) {
             if (bigInteger == null || bigInteger.signum() < 0 || bigInteger.bitLength() > 128) {
-                d0.b("plist UID bound");
+                SyntheticRefs.b("plist UID bound");
                 throw null;
             }
             this.a = bigInteger;
@@ -328,7 +328,7 @@ public final class BinaryPlist {
     private static int c(Object obj, List<b> list, IdentityHashMap<Object, Boolean> identityHashMap, int i) throws IOException {
         int i2 = 0;
         if (i > 64 || list.size() >= c) {
-            d0.c("plist structure exceeds limit");
+            SyntheticRefs.c("plist structure exceeds limit");
             return 0;
         }
         int size = list.size();
@@ -346,7 +346,7 @@ public final class BinaryPlist {
         if (obj instanceof String) {
             String str = (String) obj;
             if (str.length() > 1048576) {
-                d0.c("plist string exceeds limit");
+                SyntheticRefs.c("plist string exceeds limit");
                 return 0;
             }
             boolean zAllMatch = str.chars().allMatch(new k(i2));
@@ -359,7 +359,7 @@ public final class BinaryPlist {
                 list.set(size, new b(d(h(4, bArr.length), bArr), i2, iArr));
                 return size;
             }
-            d0.c("plist data exceeds limit");
+            SyntheticRefs.c("plist data exceeds limit");
             return 0;
         }
         if ((obj instanceof Double) || (obj instanceof Float)) {
@@ -378,7 +378,7 @@ public final class BinaryPlist {
         if (obj instanceof Number) {
             BigInteger bigIntegerValueOf = obj instanceof BigInteger ? (BigInteger) obj : BigInteger.valueOf(((Number) obj).longValue());
             if (bigIntegerValueOf.compareTo(BigInteger.valueOf(Long.MIN_VALUE)) < 0 || bigIntegerValueOf.bitLength() > 64) {
-                d0.c("plist integer outside signed64/unsigned64 bounds");
+                SyntheticRefs.c("plist integer outside signed64/unsigned64 bounds");
                 return 0;
             }
             if (bigIntegerValueOf.signum() < 0) {
@@ -401,13 +401,13 @@ public final class BinaryPlist {
         if (obj instanceof List) {
             List list2 = (List) obj;
             if (identityHashMap.put(obj, Boolean.TRUE) != null) {
-                d0.c("cyclic plist input");
+                SyntheticRefs.c("cyclic plist input");
                 return 0;
             }
             int size2 = list2.size();
             int[] iArr2 = new int[size2];
             if (size2 > c) {
-                d0.c("plist array limit");
+                SyntheticRefs.c("plist array limit");
                 return 0;
             }
             for (int i5 = 0; i5 < size2; i5++) {
@@ -418,16 +418,16 @@ public final class BinaryPlist {
             return size;
         }
         if (!(obj instanceof Map)) {
-            d0.c("unsupported plist value type");
+            SyntheticRefs.c("unsupported plist value type");
             return 0;
         }
         Map map = (Map) obj;
         if (map.size() > 8192) {
-            d0.c("plist dictionary limit");
+            SyntheticRefs.c("plist dictionary limit");
             return 0;
         }
         if (identityHashMap.put(obj, Boolean.TRUE) != null) {
-            d0.c("cyclic plist input");
+            SyntheticRefs.c("cyclic plist input");
             return 0;
         }
         int[] iArr3 = new int[map.size() * 2];
@@ -435,7 +435,7 @@ public final class BinaryPlist {
         for (Map.Entry entry : map.entrySet()) {
             Object key = entry.getKey();
             if (!(key instanceof String)) {
-                d0.c("plist dictionary key must be string");
+                SyntheticRefs.c("plist dictionary key must be string");
                 return 0;
             }
             int i7 = i + 1;
@@ -476,7 +476,7 @@ public final class BinaryPlist {
                 }
             }
             if (byteArrayOutputStream.size() > b) {
-                d0.c("plist object table exceeds limit");
+                SyntheticRefs.c("plist object table exceeds limit");
                 return null;
             }
         }
@@ -494,7 +494,7 @@ public final class BinaryPlist {
         if (byteArrayOutputStream.size() <= b) {
             return byteArrayOutputStream.toByteArray();
         }
-        d0.c("plist exceeds limit");
+        SyntheticRefs.c("plist exceeds limit");
         return null;
     }
 

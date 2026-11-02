@@ -82,7 +82,7 @@ public final class VideoCipher {
 
     public static byte[] b(byte[] bArr, long j) {
         if (j <= 0) {
-            d0.b("positive own stream identifier required");
+            SyntheticRefs.b("positive own stream identifier required");
             return null;
         }
         return DerCodec.k(bArr, "DataStream-Salt" + j, "DataStream-Output-Encryption-Key");
@@ -96,13 +96,13 @@ public final class VideoCipher {
         if (i >= 1 && i2 >= 1 && i <= 4096 && i2 <= 4096) {
             return e(bArr, bArr2, i, i2);
         }
-        d0.c("coded video dimensions outside supported bounds");
+        SyntheticRefs.c("coded video dimensions outside supported bounds");
         return null;
     }
 
     private static byte[] e(byte[] bArr, byte[] bArr2, int i, int i2) throws IOException {
         if (bArr == null || bArr2 == null || bArr.length < 4 || bArr.length > 65535 || bArr2.length < 1 || bArr2.length > 65535 || (bArr[0] & 31) != 7 || (bArr2[0] & 31) != 8) {
-            d0.c("actual AVC SPS/PPS required");
+            SyntheticRefs.c("actual AVC SPS/PPS required");
             return null;
         }
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -193,7 +193,7 @@ public final class VideoCipher {
                     if (!z) {
                         return null;
                     }
-                    d0.c("AVC slice header invalid");
+                    SyntheticRefs.c("AVC slice header invalid");
                     return null;
                 }
                 int i6 = (byteArray[i4 / 8] >>> (7 - (i4 % 8))) & 1;
@@ -206,7 +206,7 @@ public final class VideoCipher {
                             if (!z) {
                                 return null;
                             }
-                            d0.c("truncated AVC slice");
+                            SyntheticRefs.c("truncated AVC slice");
                             return null;
                         }
                         i8 = (i8 << 1) | ((byteArray[i7 / 8] >>> (7 - (i7 % 8))) & 1);
@@ -215,7 +215,7 @@ public final class VideoCipher {
                     return Integer.valueOf(((1 << i5) - 1) + i8);
                 }
             }
-            d0.c("AVC slice header invalid");
+            SyntheticRefs.c("AVC slice header invalid");
             return null;
         }
 
@@ -252,7 +252,7 @@ public final class VideoCipher {
             if (length <= 4194304) {
                 return;
             }
-            d0.c("AVC access unit limit");
+            SyntheticRefs.c("AVC access unit limit");
         }
 
         private static int j(byte[] bArr, int i) {
@@ -305,14 +305,14 @@ public final class VideoCipher {
 
         public void c(byte[] bArr, long j, long j2, long j3, c cVar) throws IOException {
             if (bArr == null || cVar == null || j3 < 0) {
-                d0.c("AVC input invalid");
+                SyntheticRefs.c("AVC input invalid");
                 return;
             }
             if (bArr.length == 0) {
                 return;
             }
             if (bArr.length > 2097152 || this.a.length + bArr.length > 4194304) {
-                d0.c("AnnexB pending limit");
+                SyntheticRefs.c("AnnexB pending limit");
                 return;
             }
             C0002b c0002b = new C0002b(j, j2, j3, 0);
@@ -326,7 +326,7 @@ public final class VideoCipher {
             if (iO < 0) {
                 byte[] bArr3 = this.a;
                 if (bArr3.length > 4) {
-                    d0.c("AVC start code missing");
+                    SyntheticRefs.c("AVC start code missing");
                     return;
                 }
                 if (c0002b2 == null) {
@@ -336,7 +336,7 @@ public final class VideoCipher {
                 return;
             }
             if (iO > 0) {
-                d0.c("unexpected bytes before AVC start code");
+                SyntheticRefs.c("unexpected bytes before AVC start code");
                 return;
             }
             while (true) {
@@ -389,7 +389,7 @@ public final class VideoCipher {
 
         public void l(byte[] bArr, byte[] bArr2) throws IOException {
             if (this.a.length != 0 || !this.b.isEmpty()) {
-                d0.c("AVC resume parameters must precede incoming video");
+                SyntheticRefs.c("AVC resume parameters must precede incoming video");
                 return;
             }
             VideoCipher.c(bArr, bArr2);
@@ -478,7 +478,7 @@ public final class VideoCipher {
 
         public a(byte[] bArr, long j, int i, int i2) {
             if (i2 != 100 && i2 != 101 && i2 != 102) {
-                d0.b("unsupported modern audio stream type");
+                SyntheticRefs.b("unsupported modern audio stream type");
                 throw null;
             }
             this.a = VideoCipher.b(bArr, j);

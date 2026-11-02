@@ -886,6 +886,8 @@ public final class t4 implements AutoCloseable, j6 {
     /* JADX WARN: Type inference failed for: r9v3, types: [io.carplay.app.secured.o5] */
     /* JADX WARN: Type inference failed for: r9v5, types: [io.carplay.app.secured.o5] */
     public e P() throws Throwable {
+        Throwable e = null;
+        Throwable th = null;
         o5 o5Var;
         o5 o5Var2;
         o5 r9;
@@ -2043,8 +2045,7 @@ public final class t4 implements AutoCloseable, j6 {
                                             }
                                         }
                                     }
-                                } catch (Throwable th) {
-                                    th = th;
+                                } catch (Throwable thCaught) {
                                     scheduledExecutorService2 = scheduledExecutorServiceNewSingleThreadScheduledExecutor;
                                     o5Var = o5Var3;
                                     ScheduledExecutorService scheduledExecutorService5 = scheduledExecutorService2;
@@ -2070,7 +2071,7 @@ public final class t4 implements AutoCloseable, j6 {
                                             }
                                             this.E = null;
                                             this.a0 = new c2(false, null);
-                                            throw th;
+                                            throw thCaught;
                                         }
                                     }
                                     it4 = this.n.values().iterator();
@@ -2079,7 +2080,7 @@ public final class t4 implements AutoCloseable, j6 {
                                     }
                                     this.E = null;
                                     this.a0 = new c2(false, null);
-                                    throw th;
+                                    throw thCaught;
                                 }
                             } catch (Exception e3) {
                                 e = e3;
@@ -2248,7 +2249,7 @@ public final class t4 implements AutoCloseable, j6 {
         return eVar2;
     }
 
-    public void T(i6.a aVar, int i, int i2) {
+    public void T(i6.TouchAction aVar, int i, int i2) {
         long jNanoTime = System.nanoTime();
         synchronized (this.B) {
             try {
@@ -2481,7 +2482,7 @@ public final class t4 implements AutoCloseable, j6 {
                         str = "VOICE_START";
                         break;
                     default:
-                        d0.b("unsupported native key");
+                        SyntheticRefs.b("unsupported native key");
                         return false;
                 }
                 break;
@@ -2511,11 +2512,11 @@ public final class t4 implements AutoCloseable, j6 {
 
     public void w(int i, byte[] bArr) throws r5 {
         if (i != 65563 && i != 65564 && i != 65592 && i != 65569) {
-            d0.f("unknown native UI command");
+            SyntheticRefs.f("unknown native UI command");
             return;
         }
         if (bArr == null || bArr.length != 0) {
-            d0.f("invalid native UI status body");
+            SyntheticRefs.f("invalid native UI status body");
             return;
         }
         if (this.h.get() || !this.S || !this.R || this.d == null) {
@@ -2563,12 +2564,12 @@ public final class t4 implements AutoCloseable, j6 {
             for (int i2 = 0; i2 < 4; i2++) {
                 String str8 = strArr[i2];
                 if (str8 == null || str8.isBlank() || str8.length() > 1024) {
-                    d0.b("actual receiver metadata required");
+                    SyntheticRefs.b("actual receiver metadata required");
                     throw null;
                 }
             }
             if (str7 != null && (str5 == null || str5.isBlank() || str6 == null || str6.isBlank() || i < 0 || !str7.matches("2[0-9]{7}") || str7.equals("20000000") || str7.equals("20000001"))) {
-                d0.b("own experimental receiver identity required");
+                SyntheticRefs.b("own experimental receiver identity required");
                 throw null;
             }
             this.a = str;
@@ -2679,7 +2680,7 @@ public final class t4 implements AutoCloseable, j6 {
 
         public a(r6.a aVar, d dVar, c cVar, AudioRelay audioRelay) {
             if (aVar != r6.a.MEDIA && aVar != r6.a.TTS && aVar != r6.a.VR) {
-                d0.b("native audio channel required");
+                SyntheticRefs.b("native audio channel required");
                 throw null;
             }
             this.a = aVar;
@@ -2701,7 +2702,7 @@ public final class t4 implements AutoCloseable, j6 {
                 return bArr;
             }
             if (oVar == null) {
-                d0.f("audio AES negotiated without cipher");
+                SyntheticRefs.f("audio AES negotiated without cipher");
                 return null;
             }
             try {
@@ -2719,13 +2720,13 @@ public final class t4 implements AutoCloseable, j6 {
             int i;
             int i2;
             int i3;
-            AudioRelay.b bVar;
+            AudioRelay.StreamState bVar;
             int i4;
             int i5;
             int i6;
             int i7;
             if (cVar.h() != this.a) {
-                d0.f("native audio channel mismatch");
+                SyntheticRefs.f("native audio channel mismatch");
                 return;
             }
             this.d.i(cVar.g().length);
@@ -2764,7 +2765,7 @@ public final class t4 implements AutoCloseable, j6 {
                 this.g = i11;
                 int i12 = this.e;
                 if (i12 <= 0 || (i4 = this.f) <= 0 || i11 <= 0) {
-                    d0.f("invalid explicit PCM format");
+                    SyntheticRefs.f("invalid explicit PCM format");
                     return;
                 }
                 this.i = true;
@@ -2817,7 +2818,7 @@ public final class t4 implements AutoCloseable, j6 {
             if (z6 && this.j && !this.k && z2) {
                 byte[] bArrC = c(cVar.g(), z && this.a != aVar2, oVar);
                 if (bArrC.length == 0 || bArrC.length % (this.f * 2) != 0) {
-                    d0.f("partial/empty native PCM16 frame");
+                    SyntheticRefs.f("partial/empty native PCM16 frame");
                     return;
                 }
                 this.d.m(bArrC.length);
@@ -2830,11 +2831,11 @@ public final class t4 implements AutoCloseable, j6 {
             }
             AudioRelay audioRelay = this.d;
             if (!z6) {
-                bVar = AudioRelay.b.NO_INIT;
+                bVar = AudioRelay.StreamState.NO_INIT;
             } else if (this.j) {
-                bVar = this.k ? AudioRelay.b.PAUSED : AudioRelay.b.SESSION_GATE;
+                bVar = this.k ? AudioRelay.StreamState.PAUSED : AudioRelay.StreamState.SESSION_GATE;
             } else {
-                bVar = AudioRelay.b.UNSUPPORTED_FORMAT;
+                bVar = AudioRelay.StreamState.UNSUPPORTED_FORMAT;
             }
             audioRelay.n(bVar);
             int i13 = this.h;
@@ -2877,7 +2878,7 @@ public final class t4 implements AutoCloseable, j6 {
                     }
                 }
             }
-            d0.c("cancelled");
+            SyntheticRefs.c("cancelled");
             return 0;
         }
 
@@ -2901,11 +2902,11 @@ public final class t4 implements AutoCloseable, j6 {
 
         public g(int i, int i2, int i3, boolean z, int i4, boolean z2) {
             if (i < 0 || i > 1800 || ((z && i == 0) || i2 < 1 || i2 > 4096 || i3 < 1 || i3 > 4096 || i4 < 1 || i4 > 60)) {
-                d0.b("duration 0 (continuous non-diagnostic) or 1..1800 seconds; dimensions 1..4096 and fps 1..60 required");
+                SyntheticRefs.b("duration 0 (continuous non-diagnostic) or 1..1800 seconds; dimensions 1..4096 and fps 1..60 required");
                 throw null;
             }
             if (z2 && (i2 < 8 || i3 < 8 || Math.max(i2, i3) > 1920 || (i2 & 1) != 0 || (i3 & 1) != 0)) {
-                d0.b("exact native geometry requires even dimensions 8..1920");
+                SyntheticRefs.b("exact native geometry requires even dimensions 8..1920");
                 throw null;
             }
             this.a = i;

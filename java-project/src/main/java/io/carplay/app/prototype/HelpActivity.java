@@ -35,15 +35,15 @@ public final class HelpActivity extends Activity {
     }
 
     private void g(LinearLayout linearLayout, String str, String str2) {
-        LinearLayout linearLayoutJ = m0.j(linearLayout);
-        TextView textViewM = m0.m(linearLayoutJ, str, "help");
-        textViewM.setMinHeight(m0.l(this, 44));
+        LinearLayout linearLayoutJ = UiFactory.j(linearLayout);
+        TextView textViewM = UiFactory.m(linearLayoutJ, str, "help");
+        textViewM.setMinHeight(UiFactory.l(this, 44));
         int i = 0;
-        TextView textViewC = m0.C(linearLayoutJ, str2, 14, false);
+        TextView textViewC = UiFactory.C(linearLayoutJ, str2, 14, false);
         textViewC.setTextColor(-11311232);
-        textViewC.setLineSpacing(m0.l(this, 5), 1.0f);
+        textViewC.setLineSpacing(UiFactory.l(this, 5), 1.0f);
         textViewC.setTextIsSelectable(true);
-        textViewC.setPadding(0, m0.l(this, 8), 0, m0.l(this, 4));
+        textViewC.setPadding(0, UiFactory.l(this, 8), 0, UiFactory.l(this, 4));
         int i2 = this.a;
         this.a = i2 + 1;
         boolean z = i2 == 0;
@@ -62,11 +62,11 @@ public final class HelpActivity extends Activity {
     @Override // android.app.Activity
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
-        LinearLayout linearLayoutX = m0.x(this);
-        m0.D(this, linearLayoutX, "使用教程", "从首次连接到日常使用，一页看明白");
-        TextView textViewC = m0.C(linearLayoutX, "轻点卡片标题展开或收起。请在安全停车后完成设置与排查。", 13, false);
+        LinearLayout linearLayoutX = UiFactory.x(this);
+        UiFactory.D(this, linearLayoutX, "使用教程", "从首次连接到日常使用，一页看明白");
+        TextView textViewC = UiFactory.C(linearLayoutX, "轻点卡片标题展开或收起。请在安全停车后完成设置与排查。", 13, false);
         textViewC.setTextColor(-10193265);
-        textViewC.setPadding(0, 0, 0, m0.l(this, 16));
+        textViewC.setPadding(0, 0, 0, UiFactory.l(this, 16));
         g(linearLayoutX, "第一次连接", "1. 车机正常开机。若有无线 CarPlay 开关，请确认已开启；图标灰色时无需先点击进入。\n\n2. 手机开启蓝牙和 WLAN，在系统蓝牙设置配对车机；已有配对请保留。\n\n3. 回本软件刷新列表，选择车机，点击“连接车机”。允许附近设备、本地网络及系统 WLAN 提示。\n\n4. 首次签名挑战通过后自动记住车机并继续。若已记住车机的证书发生变化，核对设备后再确认更新。\n\n5. 系统确认接入车机 WLAN 后，会继续等待车机完成 CarPlay 协商。\n\n6. 车机就绪后打开系统设置->设备互联->智慧车载->连接车辆->通用连接->无线连接百度Carlife+->选择连接方式改为连接车辆热点，否则连接车机热点后无网络");
         g(linearLayoutX, "两种连接方式怎样切换", "方式一：自动连接（推荐）。保留手机与车机的蓝牙配对，开启蓝牙和 WLAN，选择车机后点“连接车机”，按系统提示接入车机网络。\n\n方式二：使用当前车机 WLAN 连接。需先在手机系统设置连接这台车的蓝牙和车机提供的 CarPlay WLAN；普通上网热点不一定能用于投屏。再回连接页选择同一车机，选中“当前车机 WLAN”，点击“使用当前车机 WLAN 连接”。\n\n一种方式未连接成功时，可以先停止当前流程，再手动尝试另一种；WLAN 方式失败也可回到自动连接。软件不会自动切换网络或并行发起两次连接。\n\n认证、证书、安装包验证或权限未通过时，请先核对相应问题并查看日志。两种方式都执行完整车机认证，切换不是跳过验证。没有车机 WLAN 时，不必盲目改连普通热点。");
         g(linearLayoutX, "以后怎样连接", "底部“连接 / 工具 / 支持”可随时切换页面，不会中断正在运行的连接。顶部“原生 Car+”和“日志”始终可用。\n\n软件会记住上次选择的车机。车机正常开机，保持手机蓝牙和 WLAN 开启，进入本软件点击连接即可发起连接，无需先点击车机上的灰色 CarPlay 图标。\n\n本次软件进程中已经完整认证过的车机，如果仍连接着同一个有效 WLAN，自动连接会直接复用并重新认证，无需断开热点再连接。应用进程重启、网络变化或证书变化后恢复正常引导；不会把任意当前 WLAN 当作车机。\n\n按系统提示加入车机提供的网络。通常不需要自己开手机热点，也不需要手填网络地址。");
@@ -95,7 +95,7 @@ public final class HelpActivity extends Activity {
         VarHandle.storeStoreFence();
         button.setOnClickListener(u2Var);
         linearLayoutX.addView(button);
-        m0.i(button, true);
+        UiFactory.i(button, true);
         Button button2 = new Button(this);
         button2.setText("返回连接首页");
         u2 u2Var2 = new u2(1);
@@ -103,11 +103,11 @@ public final class HelpActivity extends Activity {
         VarHandle.storeStoreFence();
         button2.setOnClickListener(u2Var2);
         linearLayoutX.addView(button2);
-        m0.i(button2, false);
+        UiFactory.i(button2, false);
         ScrollView scrollView = new ScrollView(this);
         scrollView.setFillViewport(true);
         scrollView.addView(linearLayoutX);
         setContentView(scrollView);
-        m0.w(this);
+        UiFactory.w(this);
     }
 }

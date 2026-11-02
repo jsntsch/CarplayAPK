@@ -27,7 +27,7 @@ public final /* synthetic */ class p implements Runnable {
                 ((UpdateChecker.a) obj).a(false);
                 break;
             case 2:
-                m0.r((Activity) obj);
+                UiFactory.r((Activity) obj);
                 break;
             default:
                 int i2 = PairingSession.d.d;

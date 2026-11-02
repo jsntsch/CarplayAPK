@@ -13,35 +13,35 @@ final class c1 {
         Object obj2;
         if (!(obj instanceof byte[])) {
             if (!(obj instanceof Map)) {
-                d0.c("IAP2_POST_RESPONSE_ENVELOPE");
+                SyntheticRefs.c("IAP2_POST_RESPONSE_ENVELOPE");
                 return null;
             }
             Map map = (Map) obj;
             Object obj3 = map.get("type");
             if (obj3 != null && !"iAPSendMessage".equals(obj3)) {
-                d0.c("IAP2_POST_RESPONSE_TYPE");
+                SyntheticRefs.c("IAP2_POST_RESPONSE_TYPE");
                 return null;
             }
             if (!Set.of("type", "params", "data", "status").containsAll(map.keySet())) {
-                d0.c("IAP2_POST_RESPONSE_FIELDS");
+                SyntheticRefs.c("IAP2_POST_RESPONSE_FIELDS");
                 return null;
             }
             if (map.containsKey("status")) {
                 Object obj4 = map.get("status");
                 if ((!(obj4 instanceof Byte) && !(obj4 instanceof Short) && !(obj4 instanceof Integer) && !(obj4 instanceof Long)) || ((Number) obj4).longValue() != 0) {
-                    d0.c("IAP2_POST_RESPONSE_STATUS");
+                    SyntheticRefs.c("IAP2_POST_RESPONSE_STATUS");
                     return null;
                 }
             }
             Object obj5 = map.get("params");
             if (obj5 != null && !(obj5 instanceof Map)) {
-                d0.c("IAP2_POST_RESPONSE_PARAMS");
+                SyntheticRefs.c("IAP2_POST_RESPONSE_PARAMS");
                 return null;
             }
             if (obj5 instanceof Map) {
                 Map map2 = (Map) obj5;
                 if (!Set.of("data").containsAll(map2.keySet())) {
-                    d0.c("IAP2_POST_RESPONSE_FIELDS");
+                    SyntheticRefs.c("IAP2_POST_RESPONSE_FIELDS");
                     return null;
                 }
                 obj2 = map2.get("data");
@@ -52,7 +52,7 @@ final class c1 {
                 obj = map.get("data");
             } else {
                 if (map.containsKey("data")) {
-                    d0.c("IAP2_POST_RESPONSE_AMBIGUOUS");
+                    SyntheticRefs.c("IAP2_POST_RESPONSE_AMBIGUOUS");
                     return null;
                 }
                 obj = obj2;
@@ -70,7 +70,7 @@ final class c1 {
                 return (byte[]) bArr.clone();
             }
         }
-        d0.c("IAP2_POST_RESPONSE_DATA");
+        SyntheticRefs.c("IAP2_POST_RESPONSE_DATA");
         return null;
     }
 }

@@ -89,34 +89,49 @@ src/main/java/io/carplay/app/
 用 `android-36/android.jar` + `bcprov-jdk18on-1.79.jar` 做 classpath，
 `javac -source 8 -target 8` 的结果：
 
-| 阶段 | 语法错误 | 语义错误 | 说明 |
-|---|---|---|---|
-| 原始 jadx 产物 | 20 | 未统计（被语法错误挡住） | 语法错误集中在 `k4` / `t4` / `o5` / `BinaryPlist` |
-| 本工程 | **0** | **426** | 20 处语法缺陷已修，语义错误如实保留 |
+| 阶段 | 语义错误 | 动作 |
+|---|---|---|
+| 原始 jadx 产物 | 被 20 处语法错误挡住，未统计 | — |
+| 44 类改名后 | 426 | 起点 |
+| 改 4 个类名 + 补 catch 转发变量 | 267 | `d0→SyntheticRefs` 等 |
+| 改 20 组嵌套类型名 | 180 | `fix_type_shadow.py` |
+| 同包顶层类用 FQCN | 205 → 140 | 16 处 |
+| **当前** | **140** | 净减 286 条（-67%） |
+
+`X cannot be dereferenced` 这类从 86 条降到 **0**。完整过程见
+`CarplayAPKBuild/reports/compile-progress.md`。
 
 **为什么「原始 20 处 = 本工程 20 处」不能当作验收标准**：javac 一旦遇到语法
-错误就不进入语义分析阶段，此时报出来的 20 条全是语法类，语义错误一条都
-不会出现。把 20 处语法缺陷修掉后，才看到真正的问题量。
+错误就不进入语义分析阶段，此时报出来的全是语法类，语义错误一条都不会出现。
+这一轮又验证了两次：改完嵌套类型名后冒出的 2 条构造器错误，又把 160 多条
+语义错误挡在后面，看起来「只剩 2 条」。
 
-**这 426 条全部是 jadx 的反编译缺陷，不是重命名引入的**，可以直接在原始
-jadx 产物里找到同样的写法：
+**426 条的根子是一个 Java 语言事实**：R8 把字段名和类型名压成同一个字母，
+而 JLS 6.5.2 规定 ambiguous name 重新分类时**变量优先于类型**。所以
+`d.UNCONFIGURED`、`IccoaBridge.d.UNCONFIGURED`、连全限定名
+`io.carplay.app.secured.IccoaBridge.d.UNCONFIGURED` 全部被同名字段截胡，
+报 `long cannot be dereferenced` 或 `non-static variable d ...`。
+**限定名救不了，只能改名**：
 
-| 原始 jadx 位置 | 本工程位置 | 缺陷 |
-|---|---|---|
-| `prototype/u.java:45` `private final long c;` | `CarLifeBridge.java` | 字段 `c` 遮蔽了嵌套枚举 `c` |
-| `prototype/u.java:66` `this.a != c.BLOCKED` | 同上 | 于是报 `long cannot be dereferenced` |
-| `secured/i0.java:485` `d0.c("invalid CarPlay control port")` | `AirPlaySession.java:507` | `d0` 同时是字段名和类名 |
+- **嵌套类型** → 改类型名（字段名要留着和 APK 逐字段对照，类型名只影响 `$Inner` 后缀）
+- **同包顶层类** → 全限定名可以（包作用域里没有字段查找）
+
+剩下 140 条已经不是命名问题，是 jadx 把这几处方法体还原错了：匿名内部类被
+写成 `new Runnable(this) { }`、泛型被擦成 raw type、`iput` 目标被当成 `this`、
+`ByteArrayOutputStream.buf` 这种 `protected` 字段被直接访问。继续修等于按
+smali 重写方法体，超出「等价改写」的边界。清单在
+`CarplayAPKBuild/logs/residual.txt`。
 
 试过写脚本自动补限定名（`tools/fix_obscured_types.py`），一轮能消掉 277 条，
-但补限定名时要在「本文件嵌套类型」和「同包顶层类型」之间二选一，选错会把
-错误从「找不到符号」变成「类型不匹配」——错误数下降、语义却已绑错。对一个
-要拿去和原 APK 对照的工程，这种改动比不改更危险，所以**撤回了，保留纯净态**。
+但它在「本文件嵌套类型」和「同包顶层类型」之间二选一时会绑错，错误数下降、
+语义却已变。**已撤回**，改用「成员存在性唯一匹配 + 改名」的可证明路径。
 
 
 其余已知限制：
 
 - 缺 Android SDK 的 `R` 类（仅 3 处 `R.drawable`，已改成 `android.R.drawable`）、
   缺 `.so`、缺资源，所以 `javac` 通过也**不等于**能直接打出可运行 APK。
+
 
 - **字段名和局部变量名仍是混淆的**（`a`、`b`、`f0`…）。原因：`d`、`f`、`m`
   这类单字母类在 `secured` 和 `prototype` 两个包里含义完全不同，全局按名字

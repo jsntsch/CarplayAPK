@@ -19,8 +19,8 @@ import android.os.HandlerThread;
 import android.view.Surface;
 import io.carplay.app.secured.EventChannel;
 import io.carplay.app.secured.PcmConverter;
+import io.carplay.app.secured.SyntheticRefs;
 import io.carplay.app.secured.VideoCipher;
-import io.carplay.app.secured.d0;
 import io.carplay.app.secured.d1;
 import io.carplay.app.secured.j;
 import io.carplay.app.secured.p6;
@@ -110,7 +110,7 @@ final class AvcEncoder implements AutoCloseable {
 
         public a(int i, int i2) {
             if (i < 1 || i > 240 || i2 < 1 || i2 > 60) {
-                d0.b("AVC frame rate");
+                SyntheticRefs.b("AVC frame rate");
                 throw null;
             }
             this.a = i;
@@ -698,7 +698,7 @@ final class AvcEncoder implements AutoCloseable {
         byte[] bArrQ = Q();
         byte[] bArrP = P();
         if (bArrQ == null || bArrP == null) {
-            d0.c("native AVC config missing");
+            SyntheticRefs.c("native AVC config missing");
             return;
         }
         mediaFormatCreateVideoFormat.setByteBuffer("csd-0", ByteBuffer.wrap(io.carplay.app.secured.i.c(List.of(bArrQ))));
@@ -718,7 +718,7 @@ final class AvcEncoder implements AutoCloseable {
         MediaFormat mediaFormatV = v(this.a.h(), this.a.g(), this.d);
         String strW = w(mediaFormatV, this.a.h(), this.a.g(), this.d);
         if (strW == null) {
-            d0.c("hardware AVC encoder unavailable for receiver size");
+            SyntheticRefs.c("hardware AVC encoder unavailable for receiver size");
             return;
         }
         MediaCodec mediaCodecCreateByCodecName = MediaCodec.createByCodecName(strW);
@@ -733,13 +733,13 @@ final class AvcEncoder implements AutoCloseable {
         this.L = eGLDisplayEglGetDisplay;
         int[] iArr = new int[2];
         if (eGLDisplayEglGetDisplay == EGL14.EGL_NO_DISPLAY || !EGL14.eglInitialize(eGLDisplayEglGetDisplay, iArr, 0, iArr, 1)) {
-            d0.c("fit EGL init failed");
+            SyntheticRefs.c("fit EGL init failed");
             return;
         }
         EGLConfig[] eGLConfigArr = new EGLConfig[1];
         int[] iArr2 = new int[1];
         if (!EGL14.eglChooseConfig(this.L, new int[]{12324, 8, 12323, 8, 12322, 8, 12352, 4, 12339, 4, 12610, 1, 12344}, 0, eGLConfigArr, 0, 1, iArr2, 0) || iArr2[0] < 1) {
-            d0.c("recordable EGL config unavailable");
+            SyntheticRefs.c("recordable EGL config unavailable");
             return;
         }
         this.M = EGL14.eglCreateContext(this.L, eGLConfigArr[0], EGL14.EGL_NO_CONTEXT, new int[]{12440, 2, 12344}, 0);
@@ -747,7 +747,7 @@ final class AvcEncoder implements AutoCloseable {
         this.N = eGLSurfaceEglCreateWindowSurface;
         EGLContext eGLContext = this.M;
         if (eGLContext == EGL14.EGL_NO_CONTEXT || eGLSurfaceEglCreateWindowSurface == EGL14.EGL_NO_SURFACE || !EGL14.eglMakeCurrent(this.L, eGLSurfaceEglCreateWindowSurface, eGLSurfaceEglCreateWindowSurface, eGLContext)) {
-            d0.c("fit EGL surface failed");
+            SyntheticRefs.c("fit EGL surface failed");
             return;
         }
         int[] iArr3 = new int[1];
@@ -791,7 +791,7 @@ final class AvcEncoder implements AutoCloseable {
             return iGlCreateShader;
         }
         GLES20.glDeleteShader(iGlCreateShader);
-        d0.c("fit shader compile failed");
+        SyntheticRefs.c("fit shader compile failed");
         return 0;
     }
 
@@ -899,7 +899,7 @@ final class AvcEncoder implements AutoCloseable {
         for (int i2 = 0; i2 < 16 && !this.o.get() && (iDequeueOutputBuffer = this.G.dequeueOutputBuffer(this.U, 0L)) != -1; i2++) {
             if (iDequeueOutputBuffer == -2) {
                 if (this.n.c()) {
-                    d0.c("AVC_ENCODER_FRAGMENT_FORMAT_CHANGED");
+                    SyntheticRefs.c("AVC_ENCODER_FRAGMENT_FORMAT_CHANGED");
                     return;
                 }
                 MediaFormat outputFormat = this.G.getOutputFormat();
@@ -955,7 +955,7 @@ final class AvcEncoder implements AutoCloseable {
                         }
                     }
                 } else if (bVar.c() && (cVarQ.h() & 4) != 0) {
-                    d0.c("AVC_ENCODER_FRAGMENT_TRUNCATED");
+                    SyntheticRefs.c("AVC_ENCODER_FRAGMENT_TRUNCATED");
                     return;
                 }
             }
@@ -982,12 +982,12 @@ final class AvcEncoder implements AutoCloseable {
         GLES20.glUniform1i(GLES20.glGetUniformLocation(this.P, "uTexture"), 0);
         GLES20.glDrawArrays(5, 0, 4);
         if (GLES20.glGetError() != 0) {
-            d0.c("fit GL draw failed");
+            SyntheticRefs.c("fit GL draw failed");
             return;
         }
         EGLExt.eglPresentationTimeANDROID(this.L, this.N, j * 1000);
         if (!EGL14.eglSwapBuffers(this.L, this.N)) {
-            d0.c("fit EGL swap failed");
+            SyntheticRefs.c("fit EGL swap failed");
         } else if (this.E < 0) {
             this.E = System.nanoTime();
         }
@@ -998,7 +998,7 @@ final class AvcEncoder implements AutoCloseable {
         if (hVarD.k() != null && hVarD.h() != null) {
             return hVarD;
         }
-        d0.c("AVC encoder output config missing");
+        SyntheticRefs.c("AVC encoder output config missing");
         return null;
     }
 
@@ -1010,7 +1010,7 @@ final class AvcEncoder implements AutoCloseable {
         if (!hVarD.e()) {
             return null;
         }
-        d0.c("AVC encoder IDR config missing");
+        SyntheticRefs.c("AVC encoder IDR config missing");
         return null;
     }
 

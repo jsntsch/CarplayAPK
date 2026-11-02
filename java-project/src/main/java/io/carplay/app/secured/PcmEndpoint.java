@@ -75,7 +75,7 @@ public final class PcmEndpoint {
             if (this.d && PcmEndpoint.this.d == this.b) {
                 return;
             }
-            d0.d("stale PCM endpoint");
+            SyntheticRefs.d("stale PCM endpoint");
         }
 
         @Override // io.carplay.app.secured.g4
@@ -144,7 +144,7 @@ public final class PcmEndpoint {
 
         public c(b bVar, int i, g4.a aVar) {
             if (bVar == null || aVar == null || i < 0 || i > 65535) {
-                d0.b("explicit stream identity required");
+                SyntheticRefs.b("explicit stream identity required");
                 throw null;
             }
             this.a = bVar;
@@ -208,7 +208,7 @@ public final class PcmEndpoint {
 
     public PcmEndpoint(d dVar, Supplier<io.carplay.app.secured.b.C0003b> supplier) {
         if (dVar == null || supplier == null) {
-            d0.b("target/evidence");
+            SyntheticRefs.b("target/evidence");
             throw null;
         }
         this.a = dVar;
@@ -251,6 +251,7 @@ public final class PcmEndpoint {
     }
 
     public synchronized g4 i(c cVar) throws Throwable {
+        Throwable th = null;
         try {
             try {
                 if (this.d == 0 || cVar == null) {
@@ -266,9 +267,8 @@ public final class PcmEndpoint {
                 a aVar2 = new a(cVar, this.d, this.f);
                 this.c.put(cVar, aVar2);
                 return aVar2;
-            } catch (Throwable th) {
-                th = th;
-                throw th;
+            } catch (Throwable thCaught) {
+                throw thCaught;
             }
         } catch (Throwable th2) {
             th = th2;

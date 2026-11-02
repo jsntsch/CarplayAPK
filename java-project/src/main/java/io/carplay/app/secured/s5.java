@@ -25,7 +25,7 @@ public final class s5 extends w1 {
         m(str6);
         m(str7);
         if (i < 0 || i2 < 0 || i3 < 0 || i4 < 0) {
-            d0.b("invalid real receiver statistics");
+            SyntheticRefs.b("invalid real receiver statistics");
             throw null;
         }
         this.a = str;
@@ -43,7 +43,7 @@ public final class s5 extends w1 {
 
     private static void m(String str) {
         if (str == null || str.isBlank() || str.length() > 1024) {
-            d0.b("real receiver metadata required");
+            SyntheticRefs.b("real receiver metadata required");
         }
     }
 

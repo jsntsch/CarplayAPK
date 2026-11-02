@@ -63,7 +63,7 @@ public final class x1 implements AutoCloseable {
 
     public x1(boolean z, o oVar, int i) {
         if (i < 1 || i > 8388608 || (z && oVar == null)) {
-            d0.b("bounded video contract and explicit negotiated cipher required");
+            SyntheticRefs.b("bounded video contract and explicit negotiated cipher required");
             throw null;
         }
         this.a = z;

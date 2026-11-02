@@ -16,7 +16,7 @@ public final class e4 implements g4 {
 
     public e4(g4 g4Var, Supplier<b.C0003b> supplier) {
         if (g4Var == null || supplier == null) {
-            d0.b("sink/evidence");
+            SyntheticRefs.b("sink/evidence");
             throw null;
         }
         this.a = g4Var;
@@ -26,13 +26,13 @@ public final class e4 implements g4 {
     private void i(long j, g4.g gVar, boolean z) {
         long j2 = this.c;
         if (j2 == 0 || j != j2 || gVar != this.e) {
-            d0.d("stale/wrong media source");
+            SyntheticRefs.d("stale/wrong media source");
             return;
         }
         if (gVar == g4.g.NATIVE_CARPLUS) {
             b.C0003b c0003b = this.b.get();
             if (c0003b == null || c0003b.k() != j || !c0003b.t() || (z && !c0003b.r())) {
-                d0.d("native source not established");
+                SyntheticRefs.d("native source not established");
             }
         }
     }

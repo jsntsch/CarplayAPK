@@ -157,7 +157,7 @@ public final class t1 {
         if (i2 >= 1 && i3 >= 0) {
             return new a(i2, i3);
         }
-        d0.f("invalid version");
+        SyntheticRefs.f("invalid version");
         return null;
     }
 
@@ -169,7 +169,7 @@ public final class t1 {
         if (i2 > 0 && i3 > 0 && i4 > 0) {
             return new b(i2, i3, i4);
         }
-        d0.f("invalid video format");
+        SyntheticRefs.f("invalid video format");
         return null;
     }
 
@@ -181,7 +181,7 @@ public final class t1 {
         if (i2 >= 1 && i3 >= 0) {
             return new ProtobufReader.a().c(1, i2).c(2, i3).g();
         }
-        d0.b("invalid protocol version");
+        SyntheticRefs.b("invalid protocol version");
         return null;
     }
 
@@ -189,7 +189,7 @@ public final class t1 {
         if (i2 > 0 && i3 > 0 && i4 > 0) {
             return new ProtobufReader.a().c(1, i2).c(2, i3).c(3, i4).g();
         }
-        d0.b("invalid video format");
+        SyntheticRefs.b("invalid video format");
         return null;
     }
 }

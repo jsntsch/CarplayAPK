@@ -21,7 +21,7 @@ public final class f6 implements AutoCloseable {
 
     public f6(a aVar) throws NoSuchAlgorithmException {
         if (aVar == null) {
-            d0.b("verified target AES configuration required");
+            SyntheticRefs.b("verified target AES configuration required");
             throw null;
         }
         this.b = aVar;
@@ -31,6 +31,7 @@ public final class f6 implements AutoCloseable {
     }
 
     public synchronized o b(String str) {
+        Throwable th = null;
         byte[] bArrDecode;
         byte[] bArrDoFinal;
         o oVarA;
@@ -61,8 +62,7 @@ public final class f6 implements AutoCloseable {
                                 Arrays.fill(bArrDecode, (byte) 0);
                                 Arrays.fill(bArrDoFinal, (byte) 0);
                                 this.a = null;
-                            } catch (Throwable th) {
-                                th = th;
+                            } catch (Throwable thCaught) {
                                 if (bArrDecode != null) {
                                     Arrays.fill(bArrDecode, (byte) 0);
                                 }
@@ -70,7 +70,7 @@ public final class f6 implements AutoCloseable {
                                     Arrays.fill(bArrDoFinal, (byte) 0);
                                 }
                                 this.a = null;
-                                throw th;
+                                throw thCaught;
                             }
                         } catch (Throwable th2) {
                             th = th2;

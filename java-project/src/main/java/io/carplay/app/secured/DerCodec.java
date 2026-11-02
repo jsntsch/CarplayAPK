@@ -39,16 +39,16 @@ import org.bouncycastle.crypto.signers.Ed25519Signer;
 public final class DerCodec {
     private static final SecureRandom a = new SecureRandom();
 
-    public static final class a {
+    public static final class DerNode {
         final int a;
         final int b;
 
-        public a(int i, int i2) {
+        public DerNode(int i, int i2) {
             this.a = i;
             this.b = i2;
         }
 
-        public static a a(byte[] bArr, int i, int i2) throws GeneralSecurityException {
+        public static DerNode a(byte[] bArr, int i, int i2) throws GeneralSecurityException {
             if (bArr != null && i >= 0 && i <= bArr.length - 2) {
                 int i3 = i + 1;
                 if ((bArr[i] & 255) == i2) {
@@ -72,7 +72,7 @@ public final class DerCodec {
                     if (i6 < 0 || i6 > bArr.length - i4) {
                         throw new GeneralSecurityException("Truncated DER key encoding");
                     }
-                    return new a(i4, i6 + i4);
+                    return new DerNode(i4, i6 + i4);
                 }
             }
             throw new GeneralSecurityException("Invalid DER key encoding");
@@ -94,7 +94,7 @@ public final class DerCodec {
         if (bArr.length == 32) {
             return;
         }
-        d0.b("32-byte key required");
+        SyntheticRefs.b("32-byte key required");
     }
 
     public static byte[] d(byte[]... bArr) {
@@ -109,7 +109,7 @@ public final class DerCodec {
         int i = 0;
         c(bArr);
         if (bArr2.length != 12) {
-            d0.b("nonce length");
+            SyntheticRefs.b("nonce length");
             return null;
         }
         String[] strArr = {"ChaCha20/Poly1305/NoPadding", "ChaCha20-Poly1305"};
@@ -226,7 +226,7 @@ public final class DerCodec {
 
     public static byte[] l(byte[] bArr, byte[] bArr2, byte[] bArr3, int i) throws NoSuchAlgorithmException, InvalidKeyException {
         if (i < 0 || i > 16320) {
-            d0.b("HKDF length");
+            SyntheticRefs.b("HKDF length");
             return null;
         }
         Mac mac = Mac.getInstance("HmacSHA512");
@@ -270,7 +270,7 @@ public final class DerCodec {
         if (bArrA.length == 8) {
             return d(new byte[4], bArrA);
         }
-        d0.b("nonce label");
+        SyntheticRefs.b("nonce label");
         return null;
     }
 
@@ -279,12 +279,12 @@ public final class DerCodec {
     }
 
     private static byte[] p(byte[] bArr) throws GeneralSecurityException {
-        a aVarA = a.a(bArr, a.a(bArr, a.a(bArr, a.a(bArr, 0, 48).a, 2).b, 48).b, 4);
+        DerNode aVarA = DerNode.a(bArr, DerNode.a(bArr, DerNode.a(bArr, DerNode.a(bArr, 0, 48).a, 2).b, 48).b, 4);
         byte[] bArrCopyOfRange = Arrays.copyOfRange(bArr, aVarA.a, aVarA.b);
         if (bArrCopyOfRange.length == 32) {
             return bArrCopyOfRange;
         }
-        a aVarA2 = a.a(bArrCopyOfRange, 0, 4);
+        DerNode aVarA2 = DerNode.a(bArrCopyOfRange, 0, 4);
         int i = aVarA2.b;
         if (i == bArrCopyOfRange.length) {
             int i2 = aVarA2.a;
@@ -318,7 +318,7 @@ public final class DerCodec {
     }
 
     private static byte[] u(byte[] bArr) throws GeneralSecurityException {
-        a aVarA = a.a(bArr, a.a(bArr, a.a(bArr, 0, 48).a, 48).b, 3);
+        DerNode aVarA = DerNode.a(bArr, DerNode.a(bArr, DerNode.a(bArr, 0, 48).a, 48).b, 3);
         int i = aVarA.b;
         int i2 = aVarA.a;
         if (i - i2 == 33 && bArr[i2] == 0) {

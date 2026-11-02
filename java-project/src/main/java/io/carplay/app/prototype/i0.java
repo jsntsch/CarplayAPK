@@ -26,7 +26,7 @@ public final /* synthetic */ class i0 implements Runnable {
     public final void run() {
         switch (this.a) {
             case 0:
-                j0.j((Activity) this.c, this.b, (AtomicBoolean) this.d, (AlertDialog) this.e, (Button) this.f, (TextView) this.g);
+                DonationDialog.j((Activity) this.c, this.b, (AtomicBoolean) this.d, (AlertDialog) this.e, (Button) this.f, (TextView) this.g);
                 break;
             default:
                 ((PairingSession.f) this.c).e((Network) this.d, (String) this.e, (String) this.f, this.b, (String) this.g);

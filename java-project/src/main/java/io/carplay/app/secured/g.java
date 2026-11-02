@@ -16,7 +16,7 @@ public final class g {
         if (s.v(i, 1, 16) != 0) {
             this.a = i;
         } else {
-            d0.c("AUDIO_PACER_RATE");
+            SyntheticRefs.c("AUDIO_PACER_RATE");
             throw null;
         }
     }

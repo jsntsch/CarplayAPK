@@ -37,7 +37,7 @@ public abstract class e {
             throw new NullPointerException("'b' cannot be null");
         }
         if (i < 0) {
-            d0.b("'len' cannot be negative");
+            SyntheticRefs.b("'len' cannot be negative");
             return false;
         }
         if (i2 > bArr.length - i) {

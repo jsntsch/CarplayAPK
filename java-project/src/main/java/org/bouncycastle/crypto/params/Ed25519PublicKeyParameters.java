@@ -1,7 +1,7 @@
 package org.bouncycastle.crypto.params;
 
+import io.carplay.app.secured.SyntheticRefs;
 import io.carplay.app.secured.X25519;
-import io.carplay.app.secured.d0;
 import io.carplay.app.secured.f;
 import io.carplay.app.secured.l6;
 import java.io.EOFException;
@@ -26,7 +26,7 @@ public final class Ed25519PublicKeyParameters extends f {
         if (hVarS != null) {
             return hVarS;
         }
-        d0.b("invalid public key");
+        SyntheticRefs.b("invalid public key");
         return null;
     }
 
@@ -34,7 +34,7 @@ public final class Ed25519PublicKeyParameters extends f {
         if (bArr.length == 32) {
             return bArr;
         }
-        d0.b("'buf' must have length 32");
+        SyntheticRefs.b("'buf' must have length 32");
         return null;
     }
 
@@ -54,7 +54,7 @@ public final class Ed25519PublicKeyParameters extends f {
             if (bArr == null) {
                 return X25519.T(bArr3, i4, this.publicPoint, bArr2, i2, i3);
             }
-            d0.b("ctx");
+            SyntheticRefs.b("ctx");
             return false;
         }
         if (i == 1) {
@@ -64,7 +64,7 @@ public final class Ed25519PublicKeyParameters extends f {
             if (bArr.length <= 255) {
                 return X25519.U(bArr3, i4, this.publicPoint, bArr, bArr2, i2, i3);
             }
-            d0.b("ctx");
+            SyntheticRefs.b("ctx");
             return false;
         }
         if (i != 2) {
@@ -74,7 +74,7 @@ public final class Ed25519PublicKeyParameters extends f {
                 throw new NullPointerException("'ctx' cannot be null");
             }
             if (bArr.length > 255) {
-                d0.b("ctx");
+                SyntheticRefs.b("ctx");
                 return false;
             }
             if (64 == i3) {
@@ -82,7 +82,7 @@ public final class Ed25519PublicKeyParameters extends f {
             }
             str = "msgLen";
         }
-        d0.b(str);
+        SyntheticRefs.b(str);
         return false;
     }
 

@@ -68,7 +68,7 @@ public final class w5 extends w1 {
 
     public static long g(String str) throws IOException {
         if (!str.matches("[0-9]{1,18}")) {
-            d0.c("release integer");
+            SyntheticRefs.c("release integer");
             return 0L;
         }
         try {
@@ -96,7 +96,7 @@ public final class w5 extends w1 {
 
     public static w5 k(String str, String str2, long j, long j2) throws GeneralSecurityException, IOException {
         if (str == null || str2 == null || str.length() > 12000 || str2.length() > 160) {
-            d0.c("release envelope bounds");
+            SyntheticRefs.c("release envelope bounds");
             return null;
         }
         try {
@@ -119,12 +119,12 @@ public final class w5 extends w1 {
                     char c = 3;
                     long jG3 = g(strArrSplit[3]);
                     if (jG < j2 || jG2 > j + 1800 || jG3 <= j || jG3 <= jG2 || jG3 - jG2 > 31968000) {
-                        d0.c("release stale/clock/rollback");
+                        SyntheticRefs.c("release stale/clock/rollback");
                         return null;
                     }
                     int i3 = 4;
                     if (!strArrSplit[4].equals("io.carplay.app.prototype")) {
-                        d0.c("release package mismatch");
+                        SyntheticRefs.c("release package mismatch");
                         return null;
                     }
                     long jG4 = g(strArrSplit[5]);
@@ -135,7 +135,7 @@ public final class w5 extends w1 {
                         int i5 = i2;
                         String[] strArrSplit2 = strArrSplit[i4].split("\t", i);
                         if (strArrSplit2.length != i3) {
-                            d0.c("release entry schema");
+                            SyntheticRefs.c("release entry schema");
                             return null;
                         }
                         int i6 = i4;
@@ -162,12 +162,12 @@ public final class w5 extends w1 {
                                 i = -1;
                             }
                         }
-                        d0.c("release entry invalid");
+                        SyntheticRefs.c("release entry invalid");
                         return null;
                     }
                     int i8 = i3;
                     if (jG4 < 1 || jG4 > j3) {
-                        d0.c("release minimum version");
+                        SyntheticRefs.c("release minimum version");
                         return null;
                     }
                     String str6 = strArrSplit[i8];
@@ -183,7 +183,7 @@ public final class w5 extends w1 {
                     return w5Var;
                 }
             }
-            d0.c("release schema");
+            SyntheticRefs.c("release schema");
             return null;
         } catch (IllegalArgumentException e) {
             throw new IOException("release encoding", e);

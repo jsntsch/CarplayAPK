@@ -24,7 +24,7 @@ import android.os.SystemClock;
 import io.carplay.app.secured.ControlChannel;
 import io.carplay.app.secured.Iap2Csm;
 import io.carplay.app.secured.MfiCertificateVerifier;
-import io.carplay.app.secured.d0;
+import io.carplay.app.secured.SyntheticRefs;
 import io.carplay.app.secured.h5;
 import io.carplay.app.secured.i5;
 import io.carplay.app.secured.s6;
@@ -168,7 +168,7 @@ public final class PairingSession implements AutoCloseable {
             if (!this.c.isClosed()) {
                 return this.c.b.c();
             }
-            d0.c("Cancelled");
+            SyntheticRefs.c("Cancelled");
             return null;
         }
 
@@ -221,7 +221,7 @@ public final class PairingSession implements AutoCloseable {
                 try {
                     if (this.c.D == null) {
                         PairingSession pairingSession = this.c;
-                        pairingSession.D = r.a(pairingSession.a, this.a.getRemoteDevice().getAddress());
+                        pairingSession.D = io.carplay.app.prototype.r.a(pairingSession.a, this.a.getRemoteDevice().getAddress());
                     }
                     aVar = this.c.D;
                 } catch (Throwable th) {
@@ -235,7 +235,7 @@ public final class PairingSession implements AutoCloseable {
         @Override // io.carplay.app.secured.MfiCertificateVerifier.c
         public void write(byte[] bArr) throws IOException {
             if (this.c.isClosed()) {
-                d0.c("Cancelled");
+                SyntheticRefs.c("Cancelled");
                 return;
             }
             try {
@@ -603,10 +603,10 @@ public final class PairingSession implements AutoCloseable {
             s(network, aVar, str, iVar);
         }
 
-        default void g(String str, MfiCertificateVerifier.a aVar, a aVar2) {
+        default void g(String str, MfiCertificateVerifier.DetectionState aVar, a aVar2) {
         }
 
-        default void h(String str, MfiCertificateVerifier.b bVar) {
+        default void h(String str, MfiCertificateVerifier.InputFlags bVar) {
         }
 
         default boolean i() {
@@ -660,15 +660,15 @@ public final class PairingSession implements AutoCloseable {
         VarHandle.storeStoreFence();
         this.S = u6Var;
         if (z && (str == null || !str.matches("[a-fA-F0-9]{64}"))) {
-            d0.b("pinned startup order fallback required");
+            SyntheticRefs.b("pinned startup order fallback required");
             throw null;
         }
         if (z2 && !z) {
-            d0.b("bounded pinned startup recovery required");
+            SyntheticRefs.b("bounded pinned startup recovery required");
             throw null;
         }
         if (z3 && z) {
-            d0.b("initial link and authenticated startup recovery are exclusive");
+            SyntheticRefs.b("initial link and authenticated startup recovery are exclusive");
             throw null;
         }
         this.a = context.getApplicationContext();
@@ -2090,7 +2090,7 @@ public final class PairingSession implements AutoCloseable {
                     }
                     NetworkInterface byName = str == null ? null : NetworkInterface.getByName(str);
                     if (byName == null) {
-                        d0.c("CARPLAY_WIFI_INTERFACE_SCOPE_UNAVAILABLE");
+                        SyntheticRefs.c("CARPLAY_WIFI_INTERFACE_SCOPE_UNAVAILABLE");
                         return null;
                     }
                     numericAddress = Inet6Address.getByAddress((String) null, inet6Address.getAddress(), byName.getIndex());
@@ -2099,7 +2099,7 @@ public final class PairingSession implements AutoCloseable {
             if (!numericAddress.isAnyLocalAddress() && !numericAddress.isLoopbackAddress() && !numericAddress.isMulticastAddress()) {
                 return new InetSocketAddress(numericAddress, aVar.h);
             }
-            d0.c("CARPLAY_INVALID_PEER_ADDRESS_SCOPE");
+            SyntheticRefs.c("CARPLAY_INVALID_PEER_ADDRESS_SCOPE");
             return null;
         } catch (IllegalArgumentException e2) {
             throw new IOException("CARPLAY_INVALID_NUMERIC_ADDRESS", e2);
@@ -2189,7 +2189,7 @@ public final class PairingSession implements AutoCloseable {
                             }
                             this.p = bluetoothRfcommProfiles;
                             bluetoothRfcommProfiles.u();
-                            this.D = r.a(this.a, bluetoothDevice.getAddress());
+                            this.D = io.carplay.app.prototype.r.a(this.a, bluetoothDevice.getAddress());
                             boolean z2 = false;
                             boolean z3 = this.b.p() && this.b.k();
                             if (z3 || (this.c != null && this.b.k() && this.b.i())) {

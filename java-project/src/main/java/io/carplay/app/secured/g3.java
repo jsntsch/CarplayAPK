@@ -27,13 +27,13 @@ public final class g3 implements o {
         this.d = algorithmParameterSpec;
         String[] strArrSplit = str.split("/", -1);
         if (strArrSplit.length != 3 || strArrSplit[0].isBlank() || strArrSplit[1].isBlank() || strArrSplit[2].isBlank()) {
-            d0.b("explicit algorithm/mode/padding required");
+            SyntheticRefs.b("explicit algorithm/mode/padding required");
             throw null;
         }
         if (strArrSplit[1].equalsIgnoreCase("ECB") || algorithmParameterSpec != null) {
             Cipher.getInstance(str, provider);
         } else {
-            d0.b("explicit parameters required for non-ECB mode");
+            SyntheticRefs.b("explicit parameters required for non-ECB mode");
             throw null;
         }
     }

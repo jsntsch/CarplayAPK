@@ -12,7 +12,7 @@ public final class i {
     public static byte[] a(byte[] bArr) throws IOException {
         byte b;
         if (bArr.length < 4 || bArr.length > 4194304) {
-            d0.c("codec AVC buffer bounds");
+            SyntheticRefs.c("codec AVC buffer bounds");
             return null;
         }
         int i = 0;
@@ -22,13 +22,13 @@ public final class i {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         while (i < bArr.length) {
             if (bArr.length - i < 4) {
-                d0.c("truncated AVC length");
+                SyntheticRefs.c("truncated AVC length");
                 return null;
             }
             long j = (((long) (bArr[i] & 255)) << 24) | (((long) (bArr[i + 1] & 255)) << 16) | (((long) (bArr[i + 2] & 255)) << 8) | ((long) (bArr[i + 3] & 255));
             int i2 = i + 4;
             if (j < 1 || j > bArr.length - i2) {
-                d0.c("invalid AVC length");
+                SyntheticRefs.c("invalid AVC length");
                 return null;
             }
             byteArrayOutputStream.writeBytes(new byte[]{0, 0, 0, 1});

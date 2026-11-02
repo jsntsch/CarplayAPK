@@ -8,7 +8,7 @@ import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
 import io.carplay.app.secured.ControlChannel;
 import io.carplay.app.secured.ControlRequestParser;
-import io.carplay.app.secured.d0;
+import io.carplay.app.secured.SyntheticRefs;
 import java.io.Closeable;
 import java.io.IOException;
 import java.lang.invoke.VarHandle;
@@ -167,7 +167,7 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
         Objects.requireNonNull(cVar);
         this.h = cVar;
         if (inetAddressM == null || strA == null) {
-            d0.c("CTRL_SERVICE_VALID_LOCAL_IDENTITY_REQUIRED");
+            SyntheticRefs.c("CTRL_SERVICE_VALID_LOCAL_IDENTITY_REQUIRED");
             throw null;
         }
     }
@@ -276,7 +276,7 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
             if (inetAddress.isLinkLocalAddress()) {
                 NetworkInterface byName = NetworkInterface.getByName(linkProperties.getInterfaceName());
                 if (byName == null) {
-                    d0.c("CTRL_INTERFACE_SCOPE_UNAVAILABLE");
+                    SyntheticRefs.c("CTRL_INTERFACE_SCOPE_UNAVAILABLE");
                     return null;
                 }
                 inetAddress = Inet6Address.getByAddress((String) null, inet6Address.getAddress(), byName.getIndex());

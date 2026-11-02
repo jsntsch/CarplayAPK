@@ -35,7 +35,7 @@ public final class PairingTlv8 {
 
         public a(String str, byte[] bArr, byte[] bArr2) {
             if (str == null || str.isEmpty() || str.length() > 512 || bArr.length != 32 || bArr2.length != 32) {
-                d0.b("Identity");
+                SyntheticRefs.b("Identity");
                 throw null;
             }
             this.a = str;
@@ -67,7 +67,7 @@ public final class PairingTlv8 {
 
         public b(String str, byte[] bArr) {
             if (str == null || str.isEmpty() || str.length() > 512 || bArr.length != 32) {
-                d0.b("Peer identity");
+                SyntheticRefs.b("Peer identity");
                 throw null;
             }
             this.a = str;
@@ -191,7 +191,7 @@ public final class PairingTlv8 {
 
     public static Map<Integer, byte[]> d(byte[] bArr) throws IOException {
         if (bArr.length > 65535) {
-            d0.c("Pairing TLV exceeds bound");
+            SyntheticRefs.c("Pairing TLV exceeds bound");
             return null;
         }
         LinkedHashMap linkedHashMap = new LinkedHashMap();
@@ -200,7 +200,7 @@ public final class PairingTlv8 {
         int i3 = -1;
         while (i2 < bArr.length) {
             if (bArr.length - i2 < 2) {
-                d0.c("Truncated TLV header");
+                SyntheticRefs.c("Truncated TLV header");
                 return null;
             }
             int i4 = i2 + 1;
@@ -208,11 +208,11 @@ public final class PairingTlv8 {
             int i6 = i2 + 2;
             int i7 = bArr[i4] & 255;
             if (i7 > bArr.length - i6) {
-                d0.c("Truncated TLV value");
+                SyntheticRefs.c("Truncated TLV value");
                 return null;
             }
             if (linkedHashMap.containsKey(Integer.valueOf(i5)) && (i != i5 || i3 != 255)) {
-                d0.c(w1.d("Duplicate nonfragment TLV field ", i5));
+                SyntheticRefs.c(w1.d("Duplicate nonfragment TLV field ", i5));
                 return null;
             }
             ((ByteArrayOutputStream) linkedHashMap.computeIfAbsent(Integer.valueOf(i5), new r(3))).write(bArr, i6, i7);
@@ -238,7 +238,7 @@ public final class PairingTlv8 {
         if (bArr2 != null && bArr2.length == 1 && (bArr2[0] & 255) == i) {
             return mapD;
         }
-        d0.c(w1.d("Unexpected pairing state; expected ", i));
+        SyntheticRefs.c(w1.d("Unexpected pairing state; expected ", i));
         return null;
     }
 
@@ -302,7 +302,7 @@ public final class PairingTlv8 {
 
     public static byte[] m(Object... objArr) {
         if ((objArr.length & 1) != 0) {
-            d0.b("TLV pairs");
+            SyntheticRefs.b("TLV pairs");
             return null;
         }
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -310,7 +310,7 @@ public final class PairingTlv8 {
             int iIntValue = ((Integer) objArr[i]).intValue();
             byte[] bArr = (byte[]) objArr[i + 1];
             if (iIntValue < 0 || iIntValue > 255 || bArr.length > 65535) {
-                d0.b("TLV size/type");
+                SyntheticRefs.b("TLV size/type");
                 return null;
             }
             if (bArr.length == 0) {
@@ -330,7 +330,7 @@ public final class PairingTlv8 {
 
     private static void n(String str) {
         if (str == null || str.isEmpty() || str.length() > 64) {
-            d0.b("Setup code");
+            SyntheticRefs.b("Setup code");
         }
     }
 

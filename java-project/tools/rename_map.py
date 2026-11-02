@@ -97,6 +97,23 @@ CORE = [
      "14 行，implements Runnable；蓝牙对话框延迟任务"),
     ("io.carplay.app.secured.btsave", "BluetoothSaveListener",
      "17 行，implements DialogInterface.OnClickListener；保存蓝牙名"),
+
+    # ---------------- 因「类名与字段/局部变量同名」导致编译歧义，必须改名 ----------------
+    # 这 4 个类名与同类里的字段名撞车（Java 里字段遮蔽类型），javac 把
+    # `d0.c(...)` 解析成「字段 d0 上调方法 c」，直接编译不过。字段名要保持
+    # 与 APK 一致不能动，只能改类名。
+    ("io.carplay.app.secured.d0", "SyntheticRefs",
+     "R8 合成的方法引用宿主：静态 b/c/d/f 分别是 IllegalArgumentException::new / "
+     "IOException::new / IllegalStateException::new / r5::new；实例 a(long)=Thread::sleep、"
+     "e(Map)=AirPlaySession.R0 委托"),
+    ("io.carplay.app.prototype.m0", "UiFactory",
+     "653 行、26 个静态方法，全部在拼 LinearLayout / TextView / GradientDrawable / CompoundButton；"
+     "内嵌 a extends CompoundButton、b extends Drawable"),
+    ("io.carplay.app.prototype.k0", "StatusText",
+     "把上游 reason 字符串翻成中文提示语（AUTH/CERT/MFI/TIMEOUT/EOF 分类）；"
+     "a(reason,connected) / b(state,connected,reason) / c(native_foreground) / d"),
+    ("io.carplay.app.prototype.j0", "DonationDialog",
+     "「自愿赞助 / 不影响功能」文案 + AlertDialog 构建；内嵌 Runnable 群"),
 ]
 
 # 已经是语义名、不需要改的（仅登记，便于生成报告）

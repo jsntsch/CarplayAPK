@@ -29,7 +29,7 @@ public final class AacAudioFormat implements t {
 
     public AacAudioFormat(int i, int i2) throws IOException {
         if ((i != 44100 && i != 48000) || i2 != 2) {
-            d0.c("AUDIO_AAC_LOCAL_FORMAT");
+            SyntheticRefs.c("AUDIO_AAC_LOCAL_FORMAT");
             throw null;
         }
         this.a = i;
@@ -57,7 +57,7 @@ public final class AacAudioFormat implements t {
                 return Arrays.copyOfRange(bArr, i3, bArr.length);
             }
         }
-        d0.c("AUDIO_AAC_LOCAL_ADTS_MISMATCH");
+        SyntheticRefs.c("AUDIO_AAC_LOCAL_ADTS_MISMATCH");
         return null;
     }
 

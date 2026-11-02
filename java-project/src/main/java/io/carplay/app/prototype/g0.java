@@ -19,6 +19,6 @@ public final /* synthetic */ class g0 implements View.OnClickListener {
 
     @Override // android.view.View.OnClickListener
     public final void onClick(View view) {
-        j0.i(this.a, this.b, this.c, this.d, this.e, this.f, view);
+        DonationDialog.i(this.a, this.b, this.c, this.d, this.e, this.f, view);
     }
 }

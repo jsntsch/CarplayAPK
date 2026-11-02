@@ -80,7 +80,7 @@ public class Poly1305 implements l3 {
 
     private void i(byte[] bArr, byte[] bArr2) {
         if (bArr.length != 32) {
-            d0.b("Poly1305 key must be 256 bits.");
+            SyntheticRefs.b("Poly1305 key must be 256 bits.");
             return;
         }
         int iF = y4.f(bArr, 0);
@@ -176,7 +176,7 @@ public class Poly1305 implements l3 {
     @Override // io.carplay.app.secured.l3
     public void c(CipherParameters cipherParameters) {
         if (!(cipherParameters instanceof KeyParameter)) {
-            d0.b("Poly1305 requires a key.");
+            SyntheticRefs.b("Poly1305 requires a key.");
         } else {
             i(((KeyParameter) cipherParameters).getKey(), null);
             h();

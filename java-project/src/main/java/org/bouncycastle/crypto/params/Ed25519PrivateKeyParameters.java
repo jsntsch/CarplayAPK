@@ -1,7 +1,7 @@
 package org.bouncycastle.crypto.params;
 
+import io.carplay.app.secured.SyntheticRefs;
 import io.carplay.app.secured.X25519;
-import io.carplay.app.secured.d0;
 import io.carplay.app.secured.e;
 import io.carplay.app.secured.f;
 import io.carplay.app.secured.l6;
@@ -29,7 +29,7 @@ public final class Ed25519PrivateKeyParameters extends f {
         if (bArr.length == 32) {
             return bArr;
         }
-        d0.b("'buf' must have length 32");
+        SyntheticRefs.b("'buf' must have length 32");
         return null;
     }
 
@@ -64,7 +64,7 @@ public final class Ed25519PrivateKeyParameters extends f {
                 X25519.P(this.data, 0, bArr4, 0, bArr2, i2, i3, bArr3, i4);
                 return;
             } else {
-                d0.b("ctx");
+                SyntheticRefs.b("ctx");
                 return;
             }
         }
@@ -76,23 +76,23 @@ public final class Ed25519PrivateKeyParameters extends f {
                 X25519.Q(this.data, 0, bArr4, 0, bArr, bArr2, i2, i3, bArr3, i4);
                 return;
             } else {
-                d0.b("ctx");
+                SyntheticRefs.b("ctx");
                 return;
             }
         }
         if (i != 2) {
-            d0.b("algorithm");
+            SyntheticRefs.b("algorithm");
             return;
         }
         if (bArr == null) {
             throw new NullPointerException("'ctx' cannot be null");
         }
         if (bArr.length > 255) {
-            d0.b("ctx");
+            SyntheticRefs.b("ctx");
         } else if (64 == i3) {
             X25519.R(this.data, 0, bArr4, 0, bArr, bArr2, i2, bArr3, i4);
         } else {
-            d0.b("msgLen");
+            SyntheticRefs.b("msgLen");
         }
     }
 

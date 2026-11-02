@@ -354,7 +354,7 @@ public final class MainActivity extends Activity {
         VarHandle.storeStoreFence();
         button.setOnClickListener(u2Var);
         linearLayout.addView(button);
-        m0.i(button, false);
+        UiFactory.i(button, false);
         return button;
     }
 
@@ -749,7 +749,7 @@ public final class MainActivity extends Activity {
             return true;
         }
         if (this.d && !isFinishing() && !isDestroyed() && !WirelessCarPlayService.L1()) {
-            if (r.a(this, str).g() != null) {
+            if (io.carplay.app.prototype.r.a(this, str).g() != null) {
                 return false;
             }
             this.l = str;
@@ -825,13 +825,13 @@ public final class MainActivity extends Activity {
         SharedPreferences sharedPreferences = getSharedPreferences(WirelessCarPlayService.b1, 0);
         boolean zL1 = WirelessCarPlayService.L1();
         String string = zL1 ? sharedPreferences.getString("state", "CHECKING") : "STOPPED";
-        this.w.setText(k0.a(sharedPreferences.getString("reason", ""), zL1));
-        String strB = k0.b(string, zL1, sharedPreferences.getString("reason", ""));
+        this.w.setText(StatusText.a(sharedPreferences.getString("reason", ""), zL1));
+        String strB = StatusText.b(string, zL1, sharedPreferences.getString("reason", ""));
         if (zL1 && string.equals("WIFI") && !sharedPreferences.getString("connection_route", "bluetooth").equals("bluetooth")) {
             strB = sharedPreferences.getString("connection_route", "").equals("retained_wifi") ? "正在复用这台车仍然连接的 WLAN\n保持当前网络，正在重新发现并完整认证车机" : "正在当前车机 WLAN 查找投屏服务\n保持当前网络，后续仍需完整认证";
         }
         if (zL1) {
-            String strC = k0.c(sharedPreferences.getString("native_foreground_state", ""));
+            String strC = StatusText.c(sharedPreferences.getString("native_foreground_state", ""));
             if (!strC.isEmpty()) {
                 strB = strB + "\n" + strC;
             }
@@ -890,7 +890,7 @@ public final class MainActivity extends Activity {
         }
         TextView textView = this.u;
         if (this.e || zL1) {
-            strD = zL1 ? k0.d(string, true) : "准备连接你的爱车";
+            strD = zL1 ? StatusText.d(string, true) : "准备连接你的爱车";
         } else {
             strD = "当前手机组件暂不可用";
         }
@@ -905,7 +905,7 @@ public final class MainActivity extends Activity {
         Button button = this.I;
         if (zL1 || !UpdateChecker.c()) {
             z = zL1;
-            strD2 = k0.d(string, z);
+            strD2 = StatusText.d(string, z);
         } else {
             strD2 = "正在验证版本…";
             z = zL1;
@@ -1357,7 +1357,7 @@ public final class MainActivity extends Activity {
                 o3Var.b = this;
                 VarHandle.storeStoreFence();
             }
-            AlertDialog alertDialogK = m0.k(this, "免责声明与使用说明", "使用前请仔细阅读。点击“已阅读并同意”表示你已理解以下说明；不同意可退出，之后再次打开仍可阅读。\n\n一、独立项目\nOcarPlay 是独立的第三方车联工具，并非苹果、手机厂商或汽车厂商的官方产品，也不代表与相关品牌存在授权、认可或合作关系。相关名称与标识归其权利人所有。\n\n二、驾驶安全\n请仅在安全停车后完成安装、配对、设置、排障和日志导出。驾驶中遵守当地法律及交通规则，勿操作手机或观看与驾驶无关的内容。乘员也应避免影响驾驶。不得用本软件替代原车安全提示、仪表、驾驶辅助或紧急功能。\n\n三、兼容与使用风险\n功能依赖手机系统、原生 Car+ 组件、车机能力及连接环境，无法保证所有设备、所有功能或持续稳定连接。系统更新可能改变兼容性。可能出现延迟、无声、卡顿、断连、发热及功耗增加；请按实际情况决定是否继续使用。手机端发送帧率不等于车机实际显示帧率。\n\n原生 Car+ 自带录屏的兼容性仍在验证中，首次录屏相关断开、零画面或车机重启等问题的实际原因与效果未全部确认。出现异常请在安全条件下断开连接，必要时停用本软件并使用原车功能。不得仅凭本机测试认为实车已全面验证。\n\n四、数据与隐私\n连接日志自动保存在本机，不自动上传；可能包含设备名称、网络名称及连接阶段。导出位置由你选择。对外分享前请检查并遮盖个人或设备信息。覆盖升级保留本机记录；卸载、清除应用数据或系统清理可能使记录丢失，请自行保管已导出文件。\n\n五、第三方与再分发\n手机系统、原生组件、车机、其他应用及非官方修改包的行为不由本软件作者控制。请使用可信来源的安装包，遵守第三方服务条款与知识产权要求。修改、转售或再分发者应对其修改与承诺负责，不得冒用作者或官方名义作兼容、安全或售后保证。\n\n六、责任范围\n在法律允许范围内，因用户违法或违规操作、第三方改包等非作者原因造成的后果，由相关责任方依法承担，作者不对此作额外保证。本声明不构成对全部设备、全部使用场景或特定目的适用性的承诺。依法不得排除或限制的责任不受本声明影响，也不限制你依法享有的权利。", str, b4Var, str2, o3Var);
+            AlertDialog alertDialogK = UiFactory.k(this, "免责声明与使用说明", "使用前请仔细阅读。点击“已阅读并同意”表示你已理解以下说明；不同意可退出，之后再次打开仍可阅读。\n\n一、独立项目\nOcarPlay 是独立的第三方车联工具，并非苹果、手机厂商或汽车厂商的官方产品，也不代表与相关品牌存在授权、认可或合作关系。相关名称与标识归其权利人所有。\n\n二、驾驶安全\n请仅在安全停车后完成安装、配对、设置、排障和日志导出。驾驶中遵守当地法律及交通规则，勿操作手机或观看与驾驶无关的内容。乘员也应避免影响驾驶。不得用本软件替代原车安全提示、仪表、驾驶辅助或紧急功能。\n\n三、兼容与使用风险\n功能依赖手机系统、原生 Car+ 组件、车机能力及连接环境，无法保证所有设备、所有功能或持续稳定连接。系统更新可能改变兼容性。可能出现延迟、无声、卡顿、断连、发热及功耗增加；请按实际情况决定是否继续使用。手机端发送帧率不等于车机实际显示帧率。\n\n原生 Car+ 自带录屏的兼容性仍在验证中，首次录屏相关断开、零画面或车机重启等问题的实际原因与效果未全部确认。出现异常请在安全条件下断开连接，必要时停用本软件并使用原车功能。不得仅凭本机测试认为实车已全面验证。\n\n四、数据与隐私\n连接日志自动保存在本机，不自动上传；可能包含设备名称、网络名称及连接阶段。导出位置由你选择。对外分享前请检查并遮盖个人或设备信息。覆盖升级保留本机记录；卸载、清除应用数据或系统清理可能使记录丢失，请自行保管已导出文件。\n\n五、第三方与再分发\n手机系统、原生组件、车机、其他应用及非官方修改包的行为不由本软件作者控制。请使用可信来源的安装包，遵守第三方服务条款与知识产权要求。修改、转售或再分发者应对其修改与承诺负责，不得冒用作者或官方名义作兼容、安全或售后保证。\n\n六、责任范围\n在法律允许范围内，因用户违法或违规操作、第三方改包等非作者原因造成的后果，由相关责任方依法承担，作者不对此作额外保证。本声明不构成对全部设备、全部使用场景或特定目的适用性的承诺。依法不得排除或限制的责任不受本声明影响，也不限制你依法享有的权利。", str, b4Var, str2, o3Var);
             this.S = alertDialogK;
             alertDialogK.setCancelable(!z);
             this.S.setCanceledOnTouchOutside(!z);
@@ -1422,7 +1422,7 @@ public final class MainActivity extends Activity {
         LinearLayout linearLayout = new LinearLayout(this);
         linearLayout.setOrientation(1);
         linearLayout.setPadding(O0(20), O0(18), O0(20), O0(16));
-        m0.m(linearLayout, "本机蓝牙标识", "bluetooth");
+        UiFactory.m(linearLayout, "本机蓝牙标识", "bluetooth");
         x2(linearLayout, str == null ? "此处保存这部手机的真实蓝牙地址。已保存的地址会保留，覆盖升级无需重新填写。" : "系统没有提供可用的手机蓝牙地址，部分车机启动时会用到这个标识。请从手机设置查看后填写；点“暂不填写”也可继续连接。", 14);
         EditText editText = new EditText(this);
         editText.setSingleLine(true);
@@ -1433,9 +1433,9 @@ public final class MainActivity extends Activity {
         editText.setAutofillHints(null);
         editText.setImportantForAutofill(2);
         editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(17)});
-        editText.setText(r.b(this));
+        editText.setText(io.carplay.app.prototype.r.b(this));
         editText.setPadding(O0(12), O0(12), O0(12), O0(12));
-        GradientDrawable gradientDrawableB = m0.B(this, -854534, 12);
+        GradientDrawable gradientDrawableB = UiFactory.B(this, -854534, 12);
         gradientDrawableB.setStroke(O0(1), -2300431);
         editText.setBackground(gradientDrawableB);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(-1, -2);
@@ -1598,7 +1598,7 @@ public final class MainActivity extends Activity {
         if (this.U != null || isFinishing() || isDestroyed()) {
             return;
         }
-        AlertDialog alertDialogN = j0.n(this);
+        AlertDialog alertDialogN = DonationDialog.n(this);
         this.U = alertDialogN;
         if (alertDialogN != null) {
             t3 t3Var = new t3(2);
@@ -1669,7 +1669,7 @@ public final class MainActivity extends Activity {
                 return;
             } else {
                 viewArr[i3].setVisibility(i3 == this.F ? 0 : 8);
-                m0.I(this.B[i3], i3 == this.F);
+                UiFactory.I(this.B[i3], i3 == this.F);
                 i3++;
             }
         }
@@ -1710,7 +1710,7 @@ public final class MainActivity extends Activity {
         LinearLayout linearLayout = new LinearLayout(mainActivity);
         linearLayout.setOrientation(1);
         linearLayout.setPadding(mainActivity.O0(20), mainActivity.O0(18), mainActivity.O0(20), mainActivity.O0(16));
-        m0.m(linearLayout, "蓝牙名称", "bluetooth");
+        UiFactory.m(linearLayout, "蓝牙名称", "bluetooth");
         StringBuilder sb = new StringBuilder();
         sb.append("这里填写手机蓝牙的完整名称，ctrl 广播直接用该名称，不加任何前缀。留空则回落到系统蓝牙名。修改后需重新连接生效。\n\n当前已保存：");
         String strManualName = ControlChannel.ManualName();
@@ -1731,7 +1731,7 @@ public final class MainActivity extends Activity {
         editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(32)});
         editText.setText(ControlChannel.ManualName());
         editText.setPadding(mainActivity.O0(12), mainActivity.O0(12), mainActivity.O0(12), mainActivity.O0(12));
-        GradientDrawable gradientDrawableB = m0.B(mainActivity, -854534, 12);
+        GradientDrawable gradientDrawableB = UiFactory.B(mainActivity, -854534, 12);
         gradientDrawableB.setStroke(mainActivity.O0(1), -2300431);
         editText.setBackground(gradientDrawableB);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(-1, -2);
@@ -1804,7 +1804,7 @@ public final class MainActivity extends Activity {
     }
 
     private TextView x2(LinearLayout linearLayout, String str, int i) {
-        return m0.C(linearLayout, str, i, false);
+        return UiFactory.C(linearLayout, str, i, false);
     }
 
     /* JADX INFO: Access modifiers changed from: private */
@@ -1880,17 +1880,17 @@ public final class MainActivity extends Activity {
         if (intArray != null && intArray.length == 3) {
             this.G = (int[]) intArray.clone();
         }
-        LinearLayout linearLayoutH = m0.H(this);
+        LinearLayout linearLayoutH = UiFactory.H(this);
         o3 o3Var = new o3(i);
         o3Var.b = this;
         VarHandle.storeStoreFence();
         o3 o3Var2 = new o3(11);
         o3Var2.b = this;
         VarHandle.storeStoreFence();
-        m0.F(linearLayoutH, o3Var, o3Var2);
-        LinearLayout linearLayoutG = m0.G(this);
-        LinearLayout linearLayoutG2 = m0.G(this);
-        LinearLayout linearLayoutG3 = m0.G(this);
+        UiFactory.F(linearLayoutH, o3Var, o3Var2);
+        LinearLayout linearLayoutG = UiFactory.G(this);
+        LinearLayout linearLayoutG2 = UiFactory.G(this);
+        LinearLayout linearLayoutG3 = UiFactory.G(this);
         FrameLayout frameLayout = new FrameLayout(this);
         linearLayoutH.addView(frameLayout, new LinearLayout.LayoutParams(-1, 0, 1.0f));
         this.A = new View[3];
@@ -1902,17 +1902,17 @@ public final class MainActivity extends Activity {
             frameLayout.addView(bVar, new FrameLayout.LayoutParams(-1, -1));
             this.A[i3] = bVar;
         }
-        LinearLayout linearLayoutJ = m0.j(linearLayoutG);
+        LinearLayout linearLayoutJ = UiFactory.j(linearLayoutG);
         LinearLayout linearLayout = new LinearLayout(this);
         linearLayout.setOrientation(0);
         linearLayout.setBaselineAligned(false);
         linearLayout.setGravity(16);
         linearLayoutJ.addView(linearLayout, new LinearLayout.LayoutParams(-1, -2));
-        TextView textViewM = m0.m(linearLayout, "准备连接你的爱车", "car");
+        TextView textViewM = UiFactory.m(linearLayout, "准备连接你的爱车", "car");
         this.u = textViewM;
         textViewM.setLayoutParams(new LinearLayout.LayoutParams(0, -2, 1.0f));
         this.u.setPadding(0, 0, O0(8), 0);
-        Button buttonG = j0.g(this, linearLayout);
+        Button buttonG = DonationDialog.g(this, linearLayout);
         x3 x3Var = new x3(i);
         x3Var.b = this;
         VarHandle.storeStoreFence();
@@ -1926,7 +1926,7 @@ public final class MainActivity extends Activity {
         o3Var3.b = this;
         VarHandle.storeStoreFence();
         this.P = G0(linearLayoutJ, "恢复车机声音", o3Var3);
-        LinearLayout linearLayoutZ = m0.z(linearLayoutJ);
+        LinearLayout linearLayoutZ = UiFactory.z(linearLayoutJ);
         o3 o3Var4 = new o3(18);
         o3Var4.b = this;
         VarHandle.storeStoreFence();
@@ -1935,8 +1935,8 @@ public final class MainActivity extends Activity {
         o3Var5.b = this;
         VarHandle.storeStoreFence();
         this.O = G0(linearLayoutZ, "返回投屏", o3Var5);
-        LinearLayout linearLayoutJ2 = m0.j(linearLayoutG);
-        m0.m(linearLayoutJ2, "车机与连接方式", "bluetooth");
+        LinearLayout linearLayoutJ2 = UiFactory.j(linearLayoutG);
+        UiFactory.m(linearLayoutJ2, "车机与连接方式", "bluetooth");
         o3 o3Var6 = new o3(20);
         o3Var6.b = this;
         VarHandle.storeStoreFence();
@@ -1946,8 +1946,8 @@ public final class MainActivity extends Activity {
         RadioGroup radioGroup = new RadioGroup(this);
         radioGroup.setOrientation(1);
         linearLayoutJ2.addView(radioGroup);
-        this.C = m0.y(this, "自动连接 · 推荐");
-        this.D = m0.y(this, "当前车机 WLAN");
+        this.C = UiFactory.y(this, "自动连接 · 推荐");
+        this.D = UiFactory.y(this, "当前车机 WLAN");
         this.C.setId(View.generateViewId());
         this.D.setId(View.generateViewId());
         radioGroup.addView(this.C);
@@ -1960,13 +1960,13 @@ public final class MainActivity extends Activity {
         VarHandle.storeStoreFence();
         Button buttonG1 = G0(linearLayoutJ2, "连接车机", o3Var7);
         this.I = buttonG1;
-        m0.i(buttonG1, true);
+        UiFactory.i(buttonG1, true);
         o3 o3Var8 = new o3(22);
         o3Var8.b = this;
         VarHandle.storeStoreFence();
         Button buttonG2 = G0(linearLayoutJ2, "使用当前车机 WLAN 连接", o3Var8);
         this.n = buttonG2;
-        m0.i(buttonG2, true);
+        UiFactory.i(buttonG2, true);
         z3 z3Var = new z3();
         z3Var.a = this;
         VarHandle.storeStoreFence();
@@ -1992,20 +1992,20 @@ public final class MainActivity extends Activity {
         textViewX4.setTextColor(-10193265);
         int i5 = 10;
         textViewX4.setPadding(0, O0(10), 0, 0);
-        m0.A(linearLayoutG2, "连接工具", "调整设置或查看本次连接详情");
-        LinearLayout linearLayoutJ3 = m0.j(linearLayoutG2);
+        UiFactory.A(linearLayoutG2, "连接工具", "调整设置或查看本次连接详情");
+        LinearLayout linearLayoutJ3 = UiFactory.j(linearLayoutG2);
         this.z = linearLayoutJ3;
-        m0.m(linearLayoutJ3, "连接详情", "log");
+        UiFactory.m(linearLayoutJ3, "连接详情", "log");
         TextView textViewX5 = x2(this.z, "", 13);
         this.s = textViewX5;
         textViewX5.setTextIsSelectable(true);
         TextView textViewX6 = x2(this.z, "", 12);
         this.x = textViewX6;
         textViewX6.setTextColor(-10193265);
-        LinearLayout linearLayoutJ4 = m0.j(linearLayoutG2);
+        LinearLayout linearLayoutJ4 = UiFactory.j(linearLayoutG2);
         this.y = linearLayoutJ4;
-        m0.m(linearLayoutJ4, "车机与画面", "car");
-        LinearLayout linearLayoutZ2 = m0.z(this.y);
+        UiFactory.m(linearLayoutJ4, "车机与画面", "car");
+        LinearLayout linearLayoutZ2 = UiFactory.z(this.y);
         o3 o3Var12 = new o3(5);
         o3Var12.b = this;
         VarHandle.storeStoreFence();
@@ -2026,7 +2026,7 @@ public final class MainActivity extends Activity {
             VarHandle.storeStoreFence();
             G0(linearLayout3, "蓝牙名称", bluetoothDialogRunnable);
         }
-        CompoundButton compoundButtonE = m0.E(this, "画面自动适配", getSharedPreferences("wireless-ui", 0).getBoolean("auto_fit", true));
+        CompoundButton compoundButtonE = UiFactory.E(this, "画面自动适配", getSharedPreferences("wireless-ui", 0).getBoolean("auto_fit", true));
         this.Q = compoundButtonE;
         w3 w3Var = new w3();
         w3Var.a = this;
@@ -2038,7 +2038,7 @@ public final class MainActivity extends Activity {
         o3Var15.b = this;
         VarHandle.storeStoreFence();
         this.o = G0(linearLayout4, "画面比例：保持比例", o3Var15);
-        LinearLayout linearLayoutZ3 = m0.z(this.y);
+        LinearLayout linearLayoutZ3 = UiFactory.z(this.y);
         o3 o3Var16 = new o3(9);
         o3Var16.b = this;
         VarHandle.storeStoreFence();
@@ -2047,13 +2047,13 @@ public final class MainActivity extends Activity {
         o3Var17.b = this;
         VarHandle.storeStoreFence();
         G0(linearLayoutZ3, "WLAN 帮助", o3Var17);
-        m0.A(linearLayoutG3, "帮助与支持", "教程、交流与版本更新");
-        Button buttonF = j0.f(this, linearLayoutG3);
+        UiFactory.A(linearLayoutG3, "帮助与支持", "教程、交流与版本更新");
+        Button buttonF = DonationDialog.f(this, linearLayoutG3);
         x3 x3Var2 = new x3(i2);
         x3Var2.b = this;
         VarHandle.storeStoreFence();
         buttonF.setOnClickListener(x3Var2);
-        LinearLayout linearLayoutJ5 = m0.j(linearLayoutG3);
+        LinearLayout linearLayoutJ5 = UiFactory.j(linearLayoutG3);
         o3 o3Var18 = new o3(i4);
         o3Var18.b = this;
         VarHandle.storeStoreFence();
@@ -2062,8 +2062,8 @@ public final class MainActivity extends Activity {
         o3Var19.b = this;
         VarHandle.storeStoreFence();
         G0(linearLayoutJ5, "免责声明", o3Var19);
-        LinearLayout linearLayoutJ6 = m0.j(linearLayoutG3);
-        m0.m(linearLayoutJ6, "版本更新", "refresh");
+        LinearLayout linearLayoutJ6 = UiFactory.j(linearLayoutG3);
+        UiFactory.m(linearLayoutJ6, "版本更新", "refresh");
         this.v = x2(linearLayoutJ6, "连接前自动核对版本、发布签名和安装包完整性。", 12);
         o3 o3Var20 = new o3(16);
         o3Var20.b = this;
@@ -2088,7 +2088,7 @@ public final class MainActivity extends Activity {
         }
         setContentView(linearLayoutH);
         i1(bundle != null ? bundle.getInt("workspace_page", 0) : 0);
-        m0.w(this);
+        UiFactory.w(this);
         H0();
         if (S0()) {
             T1();

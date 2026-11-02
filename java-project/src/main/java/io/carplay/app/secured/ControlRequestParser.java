@@ -84,12 +84,12 @@ public final class ControlRequestParser {
     private static a c(String str) throws IOException {
         String[] strArrSplit = str.split("\r\n", -1);
         if (strArrSplit.length > 67 || strArrSplit.length < 3) {
-            d0.c("CTRL_HEADER_LINES");
+            SyntheticRefs.c("CTRL_HEADER_LINES");
             return null;
         }
         String[] strArrSplit2 = strArrSplit[0].split(" ", -1);
         if (strArrSplit2.length != 3 || (!strArrSplit2[2].equals("HTTP/1.1") && !strArrSplit2[2].equals("HTTP/1.0") && !strArrSplit2[2].equals("RTSP/1.0") && !strArrSplit2[2].equals("EVENT/1.0"))) {
-            d0.c("CTRL_REQUEST_LINE");
+            SyntheticRefs.c("CTRL_REQUEST_LINE");
             return null;
         }
         HashSet hashSet = new HashSet();
@@ -100,24 +100,24 @@ public final class ControlRequestParser {
             if (!str2.isEmpty()) {
                 int iIndexOf = str2.indexOf(58);
                 if (iIndexOf < 1 || str2.startsWith(" ") || str2.startsWith("\t")) {
-                    d0.c("CTRL_HEADER_FIELD");
+                    SyntheticRefs.c("CTRL_HEADER_FIELD");
                     return null;
                 }
                 String lowerCase = str2.substring(0, iIndexOf).toLowerCase(Locale.ROOT);
                 String strTrim = str2.substring(iIndexOf + 1).trim();
                 if (!lowerCase.matches("[a-z0-9-]{1,64}") || strTrim.length() > 1024 || strTrim.chars().anyMatch(new k(i)) || !hashSet.add(lowerCase)) {
-                    d0.c("CTRL_HEADER_FIELD");
+                    SyntheticRefs.c("CTRL_HEADER_FIELD");
                     return null;
                 }
                 if (lowerCase.equals("transfer-encoding") || (lowerCase.equals("content-length") && !strTrim.equals("0"))) {
-                    d0.c("CTRL_BODY_NOT_SUPPORTED");
+                    SyntheticRefs.c("CTRL_BODY_NOT_SUPPORTED");
                     return null;
                 }
                 if (!lowerCase.equals("airplay-receiver-device-id")) {
                     continue;
                 } else {
                     if (strTrim.isEmpty() || strTrim.length() > 128 || !strTrim.matches("[A-Za-z0-9:._-]+")) {
-                        d0.c("CTRL_RECEIVER_IDENTIFIER");
+                        SyntheticRefs.c("CTRL_RECEIVER_IDENTIFIER");
                         return null;
                     }
                     z = true;
@@ -141,11 +141,11 @@ public final class ControlRequestParser {
         while (byteArrayOutputStream.size() < 8192) {
             int i2 = inputStream.read();
             if (i2 < 0) {
-                d0.c("CTRL_HEADER_TRUNCATED");
+                SyntheticRefs.c("CTRL_HEADER_TRUNCATED");
                 return null;
             }
             if (i2 == 0 || i2 > 127) {
-                d0.c("CTRL_HEADER_ENCODING");
+                SyntheticRefs.c("CTRL_HEADER_ENCODING");
                 return null;
             }
             byteArrayOutputStream.write(i2);
@@ -154,7 +154,7 @@ public final class ControlRequestParser {
                 return c(byteArrayOutputStream.toString(StandardCharsets.US_ASCII));
             }
         }
-        d0.c("CTRL_HEADER_LIMIT");
+        SyntheticRefs.c("CTRL_HEADER_LIMIT");
         return null;
     }
 

@@ -691,7 +691,7 @@ public abstract class X25519 {
         if (bArr.length == 32) {
             secureRandom.nextBytes(bArr);
         } else {
-            d0.b("k");
+            SyntheticRefs.b("k");
         }
     }
 
@@ -742,7 +742,7 @@ public abstract class X25519 {
 
     private static void s(byte[] bArr, int i2, byte[] bArr2, int i3, byte[] bArr3, byte b2, byte[] bArr4, int i4, int i5, byte[] bArr5, int i6) {
         if (!b(bArr3, b2)) {
-            d0.b("ctx");
+            SyntheticRefs.b("ctx");
             return;
         }
         q2 q2VarH = h();
@@ -756,7 +756,7 @@ public abstract class X25519 {
 
     private static boolean t(byte[] bArr, int i2, h hVar, byte[] bArr2, byte b2, byte[] bArr3, int i3, int i4) {
         if (!b(bArr2, b2)) {
-            d0.b("ctx");
+            SyntheticRefs.b("ctx");
             return false;
         }
         byte[] bArrG = g(bArr, i2, 32);

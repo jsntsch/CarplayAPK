@@ -6,7 +6,7 @@ import android.os.Looper;
 import android.os.SystemClock;
 import io.carplay.app.secured.EcdsaSignature;
 import io.carplay.app.secured.PcmConverter;
-import io.carplay.app.secured.d0;
+import io.carplay.app.secured.SyntheticRefs;
 import io.carplay.app.secured.w5;
 import io.carplay.app.secured.x5;
 import java.io.ByteArrayOutputStream;
@@ -96,7 +96,7 @@ final class UpdateChecker {
         URI uriCreate = URI.create("https://gitee.com/eyessx/carplus-carplay-updates/raw/master/version.json");
         for (int i = 0; i < 3; i++) {
             if (SystemClock.elapsedRealtime() > jElapsedRealtime) {
-                d0.c("catalog redirect deadline");
+                SyntheticRefs.c("catalog redirect deadline");
                 return null;
             }
             URL url = uriCreate.toURL();
@@ -149,7 +149,7 @@ final class UpdateChecker {
                 throw th3;
             }
         }
-        d0.c("too many catalog redirects");
+        SyntheticRefs.c("too many catalog redirects");
         return null;
     }
 }

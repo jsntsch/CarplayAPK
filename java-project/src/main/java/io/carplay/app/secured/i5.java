@@ -19,12 +19,12 @@ public final class i5 {
 
     public i5(String str, String str2, b bVar) {
         if (str == null || !str.matches("[a-fA-F0-9]{8}(?:-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}")) {
-            d0.b("invalid temporary device UUID");
+            SyntheticRefs.b("invalid temporary device UUID");
             throw null;
         }
         String strD = d(str2);
         if (strD == null) {
-            d0.b("invalid device display name");
+            SyntheticRefs.b("invalid device display name");
             throw null;
         }
         this.a = UUID.fromString(str).toString();

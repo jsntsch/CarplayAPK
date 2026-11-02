@@ -504,16 +504,16 @@ public final class AirPlaySession implements AutoCloseable {
         Objects.requireNonNull(nVar);
         this.n = nVar;
         if (i2 < 1 || i2 > 65535) {
-            d0.c("invalid CarPlay control port");
+            SyntheticRefs.c("invalid CarPlay control port");
             throw null;
         }
         this.d = i2;
         this.c = InetAddress.getByName(str);
         if (this.c.isAnyLocalAddress() || this.c.isLoopbackAddress() || this.c.isMulticastAddress()) {
-            d0.c("invalid accessory endpoint");
+            SyntheticRefs.c("invalid accessory endpoint");
             throw null;
         }
-        this.Q = s.u(map);
+        this.Q = io.carplay.app.secured.s.u(map);
         String hostAddress = this.c.getHostAddress();
         int iIndexOf = hostAddress.indexOf(37);
         hostAddress = iIndexOf >= 0 ? hostAddress.substring(0, iIndexOf) : hostAddress;
@@ -524,7 +524,7 @@ public final class AirPlaySession implements AutoCloseable {
     }
 
     private static String A0(Object obj) {
-        String strB = h1.b(obj);
+        String strB = io.carplay.app.secured.h1.b(obj);
         if (strB == null) {
             return null;
         }
@@ -572,7 +572,7 @@ public final class AirPlaySession implements AutoCloseable {
         if (iM1 >= 1 && iM1 <= 65535) {
             return iM1;
         }
-        d0.c(w1.e("invalid peer ", str));
+        SyntheticRefs.c(w1.e("invalid peer ", str));
         return 0;
     }
 
@@ -875,7 +875,7 @@ public final class AirPlaySession implements AutoCloseable {
         r0Var.b = iD1;
         VarHandle.storeStoreFence();
         c0 c0Var = new c0(0);
-        d0 d0Var = new d0();
+        SyntheticRefs syntheticRefs = new SyntheticRefs();
         AtomicBoolean atomicBoolean = this.o;
         Objects.requireNonNull(atomicBoolean);
         e0 e0Var = new e0();
@@ -884,7 +884,7 @@ public final class AirPlaySession implements AutoCloseable {
         f0 f0Var = new f0();
         f0Var.a = this;
         VarHandle.storeStoreFence();
-        this.b0 = new EventChannel(EventChannelConnector.b(r0Var, c0Var, d0Var, e0Var, f0Var), 15000);
+        this.b0 = new EventChannel(EventChannelConnector.b(r0Var, c0Var, syntheticRefs, e0Var, f0Var), 15000);
         this.b0.i(DerCodec.k(this.m0, "Events-Salt", "Events-Write-Encryption-Key"), DerCodec.k(this.m0, "Events-Salt", "Events-Read-Encryption-Key"));
         ScheduledExecutorService scheduledExecutorService = this.Y;
         b0 b0Var = new b0(1);
@@ -1127,7 +1127,7 @@ public final class AirPlaySession implements AutoCloseable {
         q0();
         EventChannel eventChannel = this.a0;
         if (eventChannel == null) {
-            d0.c("control not ready");
+            SyntheticRefs.c("control not ready");
             return null;
         }
         f4.a aVarD = (str.equals("POST") && str2.equals("/feedback") && eventChannel.n()) ? this.C.d(System.nanoTime()) : null;
@@ -1856,7 +1856,7 @@ public final class AirPlaySession implements AutoCloseable {
             return linkedHashMap;
         }
         str = "expected property-list dictionary";
-        d0.c(str);
+        SyntheticRefs.c(str);
         return null;
     }
 
@@ -2106,7 +2106,7 @@ public final class AirPlaySession implements AutoCloseable {
             for (Integer num : dVarE.h()) {
                 int iIntValue = num.intValue();
                 if (!hashSet.contains(num)) {
-                    int i2 = y0.i(iIntValue);
+                    int i2 = io.carplay.app.secured.y0.i(iIntValue);
                     if (i2 != 0) {
                         try {
                             if (this.n.m(i2)) {
@@ -2147,7 +2147,7 @@ public final class AirPlaySession implements AutoCloseable {
 
     private void m2(Map<String, Object> map) throws IOException {
         try {
-            Integer numB = i1.b(map);
+            Integer numB = io.carplay.app.secured.i1.b(map);
             if (numB == null) {
                 numB = 5020;
                 this.n.a("V170_KEEPALIVE_PORT_FALLBACK port=5020");
@@ -2192,7 +2192,7 @@ public final class AirPlaySession implements AutoCloseable {
             return "";
         }
         Object obj2 = list.get(cVar.p());
-        return (!(obj2 instanceof Map) || (strA = h1.a((Map) obj2)) == null) ? "" : strA;
+        return (!(obj2 instanceof Map) || (strA = io.carplay.app.secured.h1.a((Map) obj2)) == null) ? "" : strA;
     }
 
     private static Map<String, Object> n2(Object obj, int i2) throws IOException {
@@ -2206,7 +2206,7 @@ public final class AirPlaySession implements AutoCloseable {
                 }
             }
         }
-        d0.c(w1.d("peer refused media stream type ", i2));
+        SyntheticRefs.c(w1.d("peer refused media stream type ", i2));
         return null;
     }
 
@@ -2248,7 +2248,7 @@ public final class AirPlaySession implements AutoCloseable {
                 throw new SocketTimeoutException("video sender stalled longer than 2 seconds");
             }
         }
-        d0.c("CarPlay closed while waiting to enqueue video");
+        SyntheticRefs.c("CarPlay closed while waiting to enqueue video");
     }
 
     private void p0Rate() {
@@ -2281,7 +2281,7 @@ public final class AirPlaySession implements AutoCloseable {
     /* JADX INFO: Access modifiers changed from: private */
     public void q0() throws IOException {
         if (this.o.get()) {
-            d0.c("CarPlay connection closed");
+            SyntheticRefs.c("CarPlay connection closed");
         }
     }
 
@@ -2308,7 +2308,7 @@ public final class AirPlaySession implements AutoCloseable {
         if (this.l0) {
             return;
         }
-        d0.c("CarPlay media not ready");
+        SyntheticRefs.c("CarPlay media not ready");
     }
 
     /* JADX INFO: Access modifiers changed from: private */
@@ -2442,6 +2442,7 @@ public final class AirPlaySession implements AutoCloseable {
     /* JADX WARN: Code duplicated, block: B:93:0x02df  */
     /* JADX WARN: Code duplicated, block: B:95:0x02e4  */
     private void w1(r6.a aVar, int i2, int i3, int i4, s.d dVar) throws Throwable {
+        Throwable th = null;
         DatagramSocket datagramSocket;
         t tVar;
         VideoCipher.a aVar2;
@@ -2456,8 +2457,7 @@ public final class AirPlaySession implements AutoCloseable {
                     if (tVarA == null) {
                         try {
                             throw new IOException("AUDIO_AAC_ENCODER_UNAVAILABLE");
-                        } catch (Throwable th) {
-                            th = th;
+                        } catch (Throwable thCaught) {
                             datagramSocket = null;
                             aVar2 = null;
                             tVar = tVarA;
@@ -2473,7 +2473,7 @@ public final class AirPlaySession implements AutoCloseable {
                             if (tVar != null) {
                                 tVar.close();
                             }
-                            throw th;
+                            throw thCaught;
                         }
                     }
                     tVar = tVarA;
@@ -2702,7 +2702,7 @@ public final class AirPlaySession implements AutoCloseable {
 
     /* JADX WARN: Code duplicated, block: B:31:0x00af  */
     /* JADX WARN: Code duplicated, block: B:64:0x0175  */
-    /* JADX WARN: Code duplicated, block: B:65:0x0177 A[Catch: all -> 0x0047, IOException -> 0x01b1, TRY_LEAVE, TryCatch #4 {, blocks: (B:6:0x000f, B:8:0x0030, B:10:0x003a, B:11:0x0041, B:18:0x004a, B:19:0x0054, B:21:0x005a, B:23:0x0064, B:25:0x0078, B:27:0x007c, B:29:0x0089, B:32:0x00b5, B:35:0x00bc, B:37:0x00c4, B:39:0x00cc, B:43:0x00dc, B:45:0x00e8, B:48:0x0109, B:52:0x0123, B:58:0x012f, B:60:0x0136, B:62:0x0167, B:65:0x0177, B:67:0x01b1, B:70:0x01c1, B:72:0x01fc, B:73:0x0229, B:75:0x025d, B:76:0x0287, B:79:0x028a, B:80:0x0291), top: B:96:0x000f, outer: #1, inners: #6 }] */
+    /* JADX WARN: Code duplicated, block: B:65:0x0177 A[Catch: all -> 0x0047, IOException -> 0x01b1, TRY_LEAVE, TryCatch #4 {all -> 0x0047, blocks: (B:6:0x000f, B:8:0x0030, B:10:0x003a, B:11:0x0041, B:18:0x004a, B:19:0x0054, B:21:0x005a, B:23:0x0064, B:25:0x0078, B:27:0x007c, B:29:0x0089, B:32:0x00b5, B:35:0x00bc, B:37:0x00c4, B:39:0x00cc, B:43:0x00dc, B:45:0x00e8, B:48:0x0109, B:52:0x0123, B:58:0x012f, B:60:0x0136, B:62:0x0167, B:65:0x0177, B:67:0x01b1, B:70:0x01c1, B:72:0x01fc, B:73:0x0229, B:75:0x025d, B:76:0x0287, B:79:0x028a, B:80:0x0291), top: B:96:0x000f, outer: #1, inners: #6 }] */
     /* JADX WARN: Instruction removed from duplicated block: B:65:0x0177, please report this as an issue */
     /* JADX WARN: Unreachable blocks removed: 1, instructions: 10 */
     private void x0(Map<String, Object> map) {
@@ -2710,142 +2710,150 @@ public final class AirPlaySession implements AutoCloseable {
         Iterator it;
         x0 x0VarI;
         synchronized (this.H) {
-            this.I++;
-            synchronized (this.U0) {
-                L1();
-                ControlChannel.PendClear();
-                this.I0.clear();
-                this.J0.clear();
-                this.K0.clear();
-                Object obj = map.get("hidDevices");
-                if (!(obj instanceof List)) {
-                    this.n.a("HID_CAPABILITIES devices=0 touch=0");
-                    return;
-                }
-                List list2 = (List) obj;
-                if (list2.size() > 32) {
-                    this.n.a("HID_TOUCH_UNSUPPORTED reason=DEVICE_LIMIT");
-                    return;
-                }
-                HashSet hashSet = new HashSet();
-                int i2 = 0;
-                for (Iterator it2 = list2.iterator(); it2.hasNext(); it2 = it) {
-                    Object next = it2.next();
-                    int i3 = i2 + 1;
-                    if (next instanceof Map) {
-                        Map map2 = (Map) next;
-                        Object obj2 = map2.get("hidDescriptor");
-                        Object obj3 = map2.get("uuid");
-                        String strA0 = A0(obj3);
-                        if (strA0 == null || !(obj2 instanceof byte[])) {
-                            list = list2;
-                            it = it2;
-                        } else {
-                            byte[] bArr = (byte[]) obj2;
-                            ControlChannel.PendAdd(strA0);
-                            Object obj4 = map2.get("displayUUID");
-                            if (obj4 != null) {
-                                h1.c(obj4, this.o0.i());
-                            }
-                            if (!hashSet.contains(strA0)) {
-                                if (this.I0.containsKey(strA0) || this.J0.containsKey(strA0) || this.K0.containsKey(strA0)) {
+            try {
+                this.I++;
+                synchronized (this.U0) {
+                    try {
+                        L1();
+                        ControlChannel.PendClear();
+                        this.I0.clear();
+                        this.J0.clear();
+                        this.K0.clear();
+                        Object obj = map.get("hidDevices");
+                        if (!(obj instanceof List)) {
+                            this.n.a("HID_CAPABILITIES devices=0 touch=0");
+                            return;
+                        }
+                        List list2 = (List) obj;
+                        if (list2.size() > 32) {
+                            this.n.a("HID_TOUCH_UNSUPPORTED reason=DEVICE_LIMIT");
+                            return;
+                        }
+                        HashSet hashSet = new HashSet();
+                        int i2 = 0;
+                        for (Iterator it2 = list2.iterator(); it2.hasNext(); it2 = it) {
+                            Object next = it2.next();
+                            int i3 = i2 + 1;
+                            if (next instanceof Map) {
+                                Map map2 = (Map) next;
+                                Object obj2 = map2.get("hidDescriptor");
+                                Object obj3 = map2.get("uuid");
+                                String strA0 = A0(obj3);
+                                if (strA0 == null || !(obj2 instanceof byte[])) {
                                     list = list2;
                                     it = it2;
-                                    this.I0.remove(strA0);
-                                    this.J0.remove(strA0);
-                                    this.K0.remove(strA0);
-                                    hashSet.add(strA0);
-                                    this.n.a("HID_TOUCH_UNSUPPORTED index=" + i2 + " reason=DUPLICATE_DEVICE");
                                 } else {
-                                    try {
-                                        z0 z0VarE = z0.e(bArr);
-                                        if (this.I0.size() >= 8) {
-                                            this.n.a("HID_TOUCH_UNSUPPORTED index=" + i2 + " reason=TOUCH_DEVICE_LIMIT");
-                                        } else {
-                                            this.I0.put(strA0, new p(obj3, i2, z0VarE));
-                                            n nVar = this.n;
-                                            int length = bArr.length;
-                                            int size = z0VarE.f().size();
-                                            boolean z = obj4 != null;
-                                            String str = obj3 instanceof String ? "STRING" : "INTEGER";
+                                    byte[] bArr = (byte[]) obj2;
+                                    ControlChannel.PendAdd(strA0);
+                                    Object obj4 = map2.get("displayUUID");
+                                    if (obj4 != null) {
+                                        io.carplay.app.secured.h1.c(obj4, this.o0.i());
+                                    }
+                                    if (!hashSet.contains(strA0)) {
+                                        if (this.I0.containsKey(strA0) || this.J0.containsKey(strA0) || this.K0.containsKey(strA0)) {
                                             list = list2;
+                                            it = it2;
+                                            this.I0.remove(strA0);
+                                            this.J0.remove(strA0);
+                                            this.K0.remove(strA0);
+                                            hashSet.add(strA0);
+                                            this.n.a("HID_TOUCH_UNSUPPORTED index=" + i2 + " reason=DUPLICATE_DEVICE");
+                                        } else {
                                             try {
-                                                StringBuilder sb = new StringBuilder();
-                                                it = it2;
-                                                try {
-                                                    sb.append("HID_TOUCH_DESCRIPTOR index=");
-                                                    sb.append(i2);
-                                                    sb.append(" bytes=");
-                                                    sb.append(length);
-                                                    sb.append(" reports=");
-                                                    sb.append(size);
-                                                    sb.append(" display_bound=");
-                                                    sb.append(z);
-                                                    sb.append(" uuid_kind=");
-                                                    sb.append(str);
-                                                    nVar.a(sb.toString());
-                                                } catch (IOException unused) {
+                                                z0 z0VarE = io.carplay.app.secured.z0.e(bArr);
+                                                if (this.I0.size() >= 8) {
+                                                    this.n.a("HID_TOUCH_UNSUPPORTED index=" + i2 + " reason=TOUCH_DEVICE_LIMIT");
+                                                } else {
+                                                    this.I0.put(strA0, new p(obj3, i2, z0VarE));
+                                                    n nVar = this.n;
+                                                    int length = bArr.length;
+                                                    int size = z0VarE.f().size();
+                                                    boolean z = obj4 != null;
+                                                    String str = obj3 instanceof String ? "STRING" : "INTEGER";
+                                                    list = list2;
                                                     try {
+                                                        StringBuilder sb = new StringBuilder();
+                                                        it = it2;
                                                         try {
-                                                            x0VarI = x0.i(bArr);
-                                                            if (this.J0.size() >= 8) {
-                                                                this.J0.put(strA0, new h(obj3, i2, x0VarI));
-                                                                n nVar2 = this.n;
-                                                                String str2 = "HID_BACK_DESCRIPTOR index=" + i2 + " bytes=" + bArr.length + " reports=" + x0VarI.j();
-                                                                nVar2.a(str2);
-                                                                j(str2);
-                                                            }
-                                                        } catch (IOException unused2) {
-                                                            y0 y0VarJ = y0.j(bArr);
-                                                            if (this.K0.size() < 8) {
-                                                                this.K0.put(strA0, new i(obj3, i2, y0VarJ));
-                                                                this.n.a("HID_CONSUMER_DESCRIPTOR index=" + i2 + " bytes=" + bArr.length + " reports=" + y0VarJ.k() + " descriptor_driven=true");
+                                                            sb.append("HID_TOUCH_DESCRIPTOR index=");
+                                                            sb.append(i2);
+                                                            sb.append(" bytes=");
+                                                            sb.append(length);
+                                                            sb.append(" reports=");
+                                                            sb.append(size);
+                                                            sb.append(" display_bound=");
+                                                            sb.append(z);
+                                                            sb.append(" uuid_kind=");
+                                                            sb.append(str);
+                                                            nVar.a(sb.toString());
+                                                        } catch (IOException unused) {
+                                                            try {
+                                                                try {
+                                                                    x0VarI = io.carplay.app.secured.x0.i(bArr);
+                                                                    if (this.J0.size() >= 8) {
+                                                                        this.J0.put(strA0, new h(obj3, i2, x0VarI));
+                                                                        n nVar2 = this.n;
+                                                                        String str2 = "HID_BACK_DESCRIPTOR index=" + i2 + " bytes=" + bArr.length + " reports=" + x0VarI.j();
+                                                                        nVar2.a(str2);
+                                                                        j(str2);
+                                                                    }
+                                                                } catch (IOException unused2) {
+                                                                    y0 y0VarJ = io.carplay.app.secured.y0.j(bArr);
+                                                                    if (this.K0.size() < 8) {
+                                                                        this.K0.put(strA0, new i(obj3, i2, y0VarJ));
+                                                                        this.n.a("HID_CONSUMER_DESCRIPTOR index=" + i2 + " bytes=" + bArr.length + " reports=" + y0VarJ.k() + " descriptor_driven=true");
+                                                                    }
+                                                                }
+                                                            } catch (IOException unused3) {
+                                                                n nVar3 = this.n;
+                                                                int length2 = bArr.length;
+                                                                StringBuilder sb2 = new StringBuilder();
+                                                                sb2.append("HID_TOUCH_UNSUPPORTED index=");
+                                                                sb2.append(i2);
+                                                                sb2.append(" bytes=");
+                                                                sb2.append(length2);
+                                                                StringBuilder sbAppend = sb2.append(Arrays.toString(bArr));
+                                                                sbAppend.append(" reason=DESCRIPTOR");
+                                                                nVar3.a(sbAppend.toString());
                                                             }
                                                         }
-                                                    } catch (IOException unused3) {
-                                                        n nVar3 = this.n;
-                                                        int length2 = bArr.length;
-                                                        StringBuilder sb2 = new StringBuilder();
-                                                        sb2.append("HID_TOUCH_UNSUPPORTED index=");
-                                                        sb2.append(i2);
-                                                        sb2.append(" bytes=");
-                                                        sb2.append(length2);
-                                                        StringBuilder sbAppend = sb2.append(Arrays.toString(bArr));
-                                                        sbAppend.append(" reason=DESCRIPTOR");
-                                                        nVar3.a(sbAppend.toString());
+                                                    } catch (IOException unused4) {
+                                                        it = it2;
+                                                        x0VarI = io.carplay.app.secured.x0.i(bArr);
+                                                        if (this.J0.size() >= 8) {
+                                                            this.J0.put(strA0, new h(obj3, i2, x0VarI));
+                                                            n nVar4 = this.n;
+                                                            String str3 = "HID_BACK_DESCRIPTOR index=" + i2 + " bytes=" + bArr.length + " reports=" + x0VarI.j();
+                                                            nVar4.a(str3);
+                                                            j(str3);
+                                                        }
+                                                        i2 = i3;
+                                                        list2 = list;
                                                     }
                                                 }
-                                            } catch (IOException unused4) {
-                                                it = it2;
-                                                x0VarI = x0.i(bArr);
-                                                if (this.J0.size() >= 8) {
-                                                    this.J0.put(strA0, new h(obj3, i2, x0VarI));
-                                                    n nVar4 = this.n;
-                                                    String str3 = "HID_BACK_DESCRIPTOR index=" + i2 + " bytes=" + bArr.length + " reports=" + x0VarI.j();
-                                                    nVar4.a(str3);
-                                                    j(str3);
-                                                }
-                                                i2 = i3;
-                                                list2 = list;
+                                            } catch (IOException unused5) {
+                                                list = list2;
                                             }
                                         }
-                                    } catch (IOException unused5) {
-                                        list = list2;
                                     }
+                                    list = list2;
+                                    it = it2;
                                 }
+                            } else {
+                                list = list2;
+                                it = it2;
                             }
-                            list = list2;
-                            it = it2;
+                            i2 = i3;
+                            list2 = list;
                         }
-                    } else {
-                        list = list2;
-                        it = it2;
+                        List list3 = list2;
+                        this.n.a("HID_CAPABILITIES devices=" + list3.size() + " touch=" + this.I0.size());
+                    } catch (Throwable th) {
+                        throw th;
                     }
-                    i2 = i3;
-                    list2 = list;
                 }
-                List list3 = list2;
-                this.n.a("HID_CAPABILITIES devices=" + list3.size() + " touch=" + this.I0.size());
+            } catch (Throwable th2) {
+                throw th2;
             }
         }
     }
@@ -2856,7 +2864,7 @@ public final class AirPlaySession implements AutoCloseable {
         while (!G0()) {
             q0();
             if (System.nanoTime() > jNanoTime) {
-                d0.c("control POST iAP before record deadline");
+                SyntheticRefs.c("control POST iAP before record deadline");
                 return null;
             }
             Thread.sleep(10L);
@@ -2962,7 +2970,7 @@ public final class AirPlaySession implements AutoCloseable {
             }
             q0();
             if (System.nanoTime() > jNanoTime) {
-                d0.c("network iAP before record deadline");
+                SyntheticRefs.c("network iAP before record deadline");
                 return null;
             }
             Thread.sleep(10L);
@@ -2987,7 +2995,7 @@ public final class AirPlaySession implements AutoCloseable {
         if (this.a0 == null) {
             this.f1 = i5Var;
         } else {
-            d0.d("phone identification after connect");
+            SyntheticRefs.d("phone identification after connect");
         }
     }
 
@@ -2995,7 +3003,7 @@ public final class AirPlaySession implements AutoCloseable {
         if (this.a0 == null) {
             this.F = z;
         } else {
-            d0.d("screen intent after connect");
+            SyntheticRefs.d("screen intent after connect");
         }
     }
 
@@ -3036,7 +3044,7 @@ public final class AirPlaySession implements AutoCloseable {
         zzLog("CARPLAY_INFO_KEYS", map);
         this.n.a("CARPLAY_INFO_FEATURES value=" + String.valueOf(map.get("features")));
         this.W = map;
-        x xVarK = x.K(map, this.T, Collections.EMPTY_SET);
+        x xVarK = io.carplay.app.secured.x.K(map, this.T, Collections.EMPTY_SET);
         this.S = xVarK;
         z.a aVarG = this.n.g(xVarK);
         if (aVarG != null) {
@@ -3046,13 +3054,13 @@ public final class AirPlaySession implements AutoCloseable {
         ArrayList arrayList = new ArrayList();
         List list = (List) map.get("displays");
         for (x.c cVar : p1VarF.g()) {
-            String strA = h1.a((Map) list.get(cVar.p()));
+            String strA = io.carplay.app.secured.h1.a((Map) list.get(cVar.p()));
             if (strA != null) {
                 arrayList.add(new k(cVar.v(), cVar.j(), Math.min(60, cVar.n()), strA));
             }
         }
         if (arrayList.isEmpty()) {
-            d0.c("CAP_MAIN_DISPLAY_UNAVAILABLE");
+            SyntheticRefs.c("CAP_MAIN_DISPLAY_UNAVAILABLE");
             return;
         }
         this.V = List.copyOf(arrayList);
@@ -3083,7 +3091,7 @@ public final class AirPlaySession implements AutoCloseable {
         if (map.containsKey("modes")) {
             if (!(obj2 instanceof Map)) {
                 this.n.a("CARPLAY_INITIAL_MODES_REJECTED code=MODE_INFO_ENVELOPE_TYPE kind=ENVELOPE row=-1 authentication_already_verified=true");
-                d0.c("CARPLAY_INFO_MODES_UNSUPPORTED");
+                SyntheticRefs.c("CARPLAY_INFO_MODES_UNSUPPORTED");
                 return;
             }
             Map map2 = (Map) obj2;
@@ -3103,7 +3111,7 @@ public final class AirPlaySession implements AutoCloseable {
                 if (strC != null) {
                     this.n.a(strC);
                 }
-                d0.c("CARPLAY_INFO_MODES_UNSUPPORTED");
+                SyntheticRefs.c("CARPLAY_INFO_MODES_UNSUPPORTED");
             }
         }
     }
@@ -3154,7 +3162,7 @@ public final class AirPlaySession implements AutoCloseable {
 
     public void W1(g gVar, int i2, int i3) throws IOException {
         if (i2 < 1 || i3 < 1 || i2 > 4096 || i3 > 4096) {
-            d0.c("encoded video dimensions outside supported bounds");
+            SyntheticRefs.c("encoded video dimensions outside supported bounds");
             return;
         }
         synchronized (this.L) {
@@ -3355,7 +3363,7 @@ public final class AirPlaySession implements AutoCloseable {
         q0();
         EventChannel eventChannel = this.a0;
         if (!this.D || eventChannel == null || !eventChannel.n()) {
-            d0.c("SCREEN_MODES_BEFORE_AUTHENTICATED_SESSION");
+            SyntheticRefs.c("SCREEN_MODES_BEFORE_AUTHENTICATED_SESSION");
             return;
         }
         synchronized (this.t) {
@@ -3365,11 +3373,11 @@ public final class AirPlaySession implements AutoCloseable {
         Map<String, Object> mapG1 = g1(R1("POST", "/command", mapQ));
         Object obj = mapG1.get("status");
         if (obj != null && ((!(obj instanceof Byte) && !(obj instanceof Short) && !(obj instanceof Integer) && !(obj instanceof Long)) || ((Number) obj).longValue() != 0)) {
-            d0.c("SCREEN_MODES_APPLICATION_REJECTED");
+            SyntheticRefs.c("SCREEN_MODES_APPLICATION_REJECTED");
             return;
         }
         if (mapG1.containsKey("status") && obj == null) {
-            d0.c("SCREEN_MODES_APPLICATION_REJECTED");
+            SyntheticRefs.c("SCREEN_MODES_APPLICATION_REJECTED");
             return;
         }
         q0();
@@ -3396,6 +3404,7 @@ public final class AirPlaySession implements AutoCloseable {
 
     /* JADX WARN: Unreachable blocks removed: 1, instructions: 32 */
     public k i0() throws Throwable {
+        Throwable th = null;
         int i2;
         EventChannel eventChannel;
         String str;
@@ -3488,8 +3497,8 @@ public final class AirPlaySession implements AutoCloseable {
                     try {
                         if (this.j != null || (str2 = this.m) == null || str2.matches("[a-fA-F0-9]{64}")) {
                         }
-                    } catch (Throwable th) {
-                        throw th;
+                    } catch (Throwable thCaught) {
+                        throw thCaught;
                     }
                 }
                 return this.o0;
@@ -3524,7 +3533,7 @@ public final class AirPlaySession implements AutoCloseable {
 
     public void k1(int i2, int i3) throws IOException {
         if (i2 < 1 || i3 < 1 || i2 > 4096 || i3 > 4096) {
-            d0.c("native video dimensions outside supported bounds");
+            SyntheticRefs.c("native video dimensions outside supported bounds");
             return;
         }
         synchronized (this.U0) {
@@ -3570,7 +3579,7 @@ public final class AirPlaySession implements AutoCloseable {
         if (this.a0 == null) {
             this.u0 = z;
         } else {
-            d0.d("network iAP setting after connect");
+            SyntheticRefs.d("network iAP setting after connect");
         }
     }
 
@@ -3734,7 +3743,7 @@ public final class AirPlaySession implements AutoCloseable {
     }
 
     public Map<String, Object> s0(EventChannel eventChannel, int i2) {
-        return t0(eventChannel, i2, new d0());
+        return t0(eventChannel, i2, new SyntheticRefs());
     }
 
     public void s2(q6 q6Var) {
@@ -3902,18 +3911,18 @@ public final class AirPlaySession implements AutoCloseable {
 
     public boolean t2(String str, int i2) throws IOException {
         if (str == null || !str.matches("[0-9a-fA-F:.%a-zA-Z0-9_-]+") || i2 < 1 || i2 > 65535) {
-            d0.c("invalid startup endpoint");
+            SyntheticRefs.c("invalid startup endpoint");
             return false;
         }
         int iIndexOf = str.indexOf(37);
         String strSubstring = iIndexOf >= 0 ? str.substring(0, iIndexOf) : str;
         if (!strSubstring.matches("[0-9a-fA-F:.]+") || (strSubstring.indexOf(58) < 0 && !strSubstring.matches("[0-9]{1,3}(\\.[0-9]{1,3}){3}"))) {
-            d0.c("non-numeric startup endpoint");
+            SyntheticRefs.c("non-numeric startup endpoint");
             return false;
         }
         InetAddress byName = InetAddress.getByName(str);
         if (byName.isAnyLocalAddress() || byName.isLoopbackAddress() || byName.isMulticastAddress()) {
-            d0.c("invalid startup endpoint address");
+            SyntheticRefs.c("invalid startup endpoint address");
             return false;
         }
         synchronized (this.f) {

@@ -9,16 +9,16 @@ public final class b {
     private boolean c;
     private boolean d;
     private boolean e;
-    private a f;
-    private a g;
-    private a h;
-    private a i;
+    private VerifyResult f;
+    private VerifyResult g;
+    private VerifyResult h;
+    private VerifyResult i;
     private long j;
     private long k;
     private long l;
     private String m;
 
-    public enum a {
+    public enum VerifyResult {
         UNKNOWN,
         PASSED,
         FAILED,
@@ -29,10 +29,10 @@ public final class b {
     public static final class C0003b extends w1 {
         private final long a;
         private final boolean b;
-        private final a c;
-        private final a d;
-        private final a e;
-        private final a f;
+        private final VerifyResult c;
+        private final VerifyResult d;
+        private final VerifyResult e;
+        private final VerifyResult f;
         private final boolean g;
         private final long h;
         private final long i;
@@ -41,7 +41,7 @@ public final class b {
         private final String l;
         private final boolean m;
 
-        public C0003b(long j, boolean z, a aVar, a aVar2, a aVar3, a aVar4, boolean z2, long j2, long j3, long j4, boolean z3, String str, boolean z4) {
+        public C0003b(long j, boolean z, VerifyResult aVar, VerifyResult aVar2, VerifyResult aVar3, VerifyResult aVar4, boolean z2, long j2, long j3, long j4, boolean z3, String str, boolean z4) {
             this.a = j;
             this.b = z;
             this.c = aVar;
@@ -57,8 +57,8 @@ public final class b {
             this.m = z4;
         }
 
-        private static boolean g(a aVar) {
-            return aVar == a.PASSED || aVar == a.NOT_APPLICABLE;
+        private static boolean g(VerifyResult aVar) {
+            return aVar == VerifyResult.PASSED || aVar == VerifyResult.NOT_APPLICABLE;
         }
 
         public final boolean equals(Object obj) {
@@ -69,7 +69,7 @@ public final class b {
             return this.b == c0003b.b && this.g == c0003b.g && this.k == c0003b.k && this.m == c0003b.m && this.a == c0003b.a && this.h == c0003b.h && this.i == c0003b.i && this.j == c0003b.j && Objects.equals(this.c, c0003b.c) && Objects.equals(this.d, c0003b.d) && Objects.equals(this.e, c0003b.e) && Objects.equals(this.f, c0003b.f) && Objects.equals(this.l, c0003b.l);
         }
 
-        public a h() {
+        public VerifyResult h() {
             return this.e;
         }
 
@@ -82,10 +82,10 @@ public final class b {
             long j2 = this.h;
             long j3 = this.i;
             long j4 = this.j;
-            a aVar = this.c;
-            a aVar2 = this.d;
-            a aVar3 = this.e;
-            a aVar4 = this.f;
+            VerifyResult aVar = this.c;
+            VerifyResult aVar2 = this.d;
+            VerifyResult aVar3 = this.e;
+            VerifyResult aVar4 = this.f;
             String str = this.l;
             return Objects.hashCode(str) + ((Objects.hashCode(aVar4) + ((Objects.hashCode(aVar3) + ((Objects.hashCode(aVar2) + ((Objects.hashCode(aVar) + w1.a(j4, w1.a(j3, w1.a(j2, w1.a(j, (Boolean.hashCode(z4) + ((Boolean.hashCode(z3) + ((Boolean.hashCode(z2) + (Boolean.hashCode(z) * 31)) * 31)) * 31)) * 31, 31), 31), 31), 31)) * 31)) * 31)) * 31)) * 31);
         }
@@ -94,7 +94,7 @@ public final class b {
             return this.k;
         }
 
-        public a j() {
+        public VerifyResult j() {
             return this.d;
         }
 
@@ -102,7 +102,7 @@ public final class b {
             return this.a;
         }
 
-        public a l() {
+        public VerifyResult l() {
             return this.f;
         }
 
@@ -138,8 +138,8 @@ public final class b {
             if (this.k || !this.b) {
                 return false;
             }
-            a aVar = this.c;
-            a aVar2 = a.PASSED;
+            VerifyResult aVar = this.c;
+            VerifyResult aVar2 = VerifyResult.PASSED;
             return aVar == aVar2 && this.d == aVar2 && g(this.e) && g(this.f);
         }
 
@@ -168,13 +168,13 @@ public final class b {
             return this.b;
         }
 
-        public a w() {
+        public VerifyResult w() {
             return this.c;
         }
     }
 
     public b() {
-        a aVar = a.UNKNOWN;
+        VerifyResult aVar = VerifyResult.UNKNOWN;
         this.f = aVar;
         this.g = aVar;
         this.h = aVar;
@@ -185,9 +185,9 @@ public final class b {
     private void b(long j) {
         long j2 = this.a;
         if (j != j2 || j2 == 0) {
-            d0.d("stale session generation");
+            SyntheticRefs.d("stale session generation");
         } else if (this.d) {
-            d0.d("session already failed");
+            SyntheticRefs.d("session already failed");
         }
     }
 
@@ -196,7 +196,7 @@ public final class b {
         if (m().r()) {
             return;
         }
-        d0.d("native source not established");
+        SyntheticRefs.d("native source not established");
     }
 
     public synchronized long a() {
@@ -207,7 +207,7 @@ public final class b {
         this.c = false;
         this.b = false;
         this.e = false;
-        a aVar = a.UNKNOWN;
+        VerifyResult aVar = VerifyResult.UNKNOWN;
         this.i = aVar;
         this.h = aVar;
         this.g = aVar;
@@ -219,13 +219,13 @@ public final class b {
         return jIncrementExact;
     }
 
-    public synchronized void c(long j, a aVar) {
+    public synchronized void c(long j, VerifyResult aVar) {
         b(j);
         if (aVar == null) {
             throw new IllegalArgumentException("missing encryption verdict");
         }
         this.h = aVar;
-        if (aVar == a.FAILED) {
+        if (aVar == VerifyResult.FAILED) {
             d(j, "content key exchange failed");
         }
     }
@@ -249,7 +249,7 @@ public final class b {
     public synchronized void e(long j, boolean z) {
         try {
             b(j);
-            this.g = z ? a.PASSED : a.FAILED;
+            this.g = z ? VerifyResult.PASSED : VerifyResult.FAILED;
             if (!z) {
                 d(j, "feature contract failed");
             }
@@ -258,13 +258,13 @@ public final class b {
         }
     }
 
-    public synchronized void f(long j, a aVar) {
+    public synchronized void f(long j, VerifyResult aVar) {
         b(j);
         if (aVar == null) {
             throw new IllegalArgumentException("missing identity verdict");
         }
         this.i = aVar;
-        if (aVar == a.FAILED) {
+        if (aVar == VerifyResult.FAILED) {
             d(j, "identity proof rejected");
         }
     }
@@ -309,7 +309,7 @@ public final class b {
     public synchronized void o(long j, boolean z) {
         try {
             b(j);
-            this.f = z ? a.PASSED : a.FAILED;
+            this.f = z ? VerifyResult.PASSED : VerifyResult.FAILED;
             if (!z) {
                 d(j, "version rejected");
             }

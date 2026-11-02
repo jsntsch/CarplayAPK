@@ -119,7 +119,7 @@ public final class t5 {
 
     public static a a(String str, b bVar, b bVar2, String str2, Supplier<b> supplier) {
         if (str == null || str.isBlank()) {
-            d0.b("selected receiver key required");
+            SyntheticRefs.b("selected receiver key required");
             return null;
         }
         boolean z = false;
@@ -133,7 +133,7 @@ public final class t5 {
             bVar2 = supplier.get();
         }
         if (!b(bVar2)) {
-            d0.b("invalid generated native identity");
+            SyntheticRefs.b("invalid generated native identity");
             return null;
         }
         LinkedHashMap linkedHashMap = new LinkedHashMap();

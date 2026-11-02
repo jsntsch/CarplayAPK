@@ -1,7 +1,7 @@
 package org.bouncycastle.crypto.signers;
 
 import io.carplay.app.secured.Iap2Csm;
-import io.carplay.app.secured.d0;
+import io.carplay.app.secured.SyntheticRefs;
 import io.carplay.app.secured.e;
 import io.carplay.app.secured.i2;
 import java.io.ByteArrayOutputStream;
@@ -51,7 +51,7 @@ public class Ed25519Signer {
         if (this.forSigning && (ed25519PrivateKeyParameters = this.privateKey) != null) {
             return this.buffer.b(ed25519PrivateKeyParameters);
         }
-        d0.d("Ed25519Signer not initialised for signature generation.");
+        SyntheticRefs.d("Ed25519Signer not initialised for signature generation.");
         return null;
     }
 
@@ -82,7 +82,7 @@ public class Ed25519Signer {
         if (!this.forSigning && (ed25519PublicKeyParameters = this.publicKey) != null) {
             return this.buffer.c(ed25519PublicKeyParameters, bArr);
         }
-        d0.d("Ed25519Signer not initialised for verification");
+        SyntheticRefs.d("Ed25519Signer not initialised for verification");
         return false;
     }
 

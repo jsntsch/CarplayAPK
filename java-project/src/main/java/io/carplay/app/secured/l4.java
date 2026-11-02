@@ -16,7 +16,7 @@ public final class l4 implements AutoCloseable {
     private c e;
     private String f;
 
-    public static /* synthetic */ class a {
+    public static /* synthetic */ class SwitchMap {
         static final /* synthetic */ int[] a;
 
         static {
@@ -171,7 +171,7 @@ public final class l4 implements AutoCloseable {
     public l4(long j, l5 l5Var, SecureRandom secureRandom) {
         this.d = d.WAITING_FOR_MD_INFO;
         if (j < 1) {
-            d0.b("positive session generation required");
+            SyntheticRefs.b("positive session generation required");
             throw null;
         }
         this.a = j;
@@ -185,7 +185,7 @@ public final class l4 implements AutoCloseable {
         if (bArr != null) {
             return ProtobufReader.a(bArr);
         }
-        d0.f("missing protobuf body");
+        SyntheticRefs.f("missing protobuf body");
         return null;
     }
 
@@ -193,7 +193,7 @@ public final class l4 implements AutoCloseable {
         if (j == this.a) {
             return;
         }
-        d0.f("stale or foreign generation");
+        SyntheticRefs.f("stale or foreign generation");
     }
 
     private void l(d dVar) throws r5 {
@@ -201,7 +201,7 @@ public final class l4 implements AutoCloseable {
         if (dVar2 == dVar) {
             return;
         }
-        d0.f("unexpected modern proof state: ".concat(String.valueOf(dVar2)));
+        SyntheticRefs.f("unexpected modern proof state: ".concat(String.valueOf(dVar2)));
     }
 
     public synchronized void b(long j, int i2, byte[] bArr) {
@@ -241,7 +241,7 @@ public final class l4 implements AutoCloseable {
             if (this.d != d.VERIFYING) {
                 return l5.a.REJECTED;
             }
-            int i3 = a.a[aVarF.ordinal()];
+            int i3 = SwitchMap.a[aVarF.ordinal()];
             if (i3 == 1) {
                 dVar = d.VERIFIED;
             } else if (i3 == 2) {

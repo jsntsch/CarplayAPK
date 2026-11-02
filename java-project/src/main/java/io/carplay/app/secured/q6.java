@@ -73,7 +73,7 @@ public final class q6 extends w1 {
         int iMax;
         int iMax2;
         if (i < 1 || i2 < 1 || i3 < 1 || i4 < 1 || i > 8192 || i2 > 8192 || i3 > 8192 || i4 > 8192) {
-            d0.b("video geometry bounds");
+            SyntheticRefs.b("video geometry bounds");
             return null;
         }
         long j = i;

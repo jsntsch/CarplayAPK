@@ -21,7 +21,7 @@ public final class z {
 
         public a(String str, int i, int i2, int i3, int i4) {
             if (str == null || !str.matches("[0-9a-f]{64}") || i < 1 || i > 1000000 || i2 < 1 || i3 < 1 || i2 > 8192 || i3 > 8192 || i4 < 1 || i4 > 240) {
-                d0.b("CAP_HINT_INVALID");
+                SyntheticRefs.b("CAP_HINT_INVALID");
                 throw null;
             }
             this.a = str;
@@ -87,7 +87,7 @@ public final class z {
 
     public z(int i) {
         if (i < 1 || i > 32) {
-            d0.b("CAP_HINT_CACHE_BOUND");
+            SyntheticRefs.b("CAP_HINT_CACHE_BOUND");
             throw null;
         }
         this.a = i;

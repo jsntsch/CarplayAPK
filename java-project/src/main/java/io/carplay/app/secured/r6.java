@@ -112,7 +112,7 @@ public final class r6 {
             Objects.requireNonNull(bArr);
             byte[] bArr2 = (byte[]) bArr.clone();
             if (bArr2.length != bVar.g()) {
-                d0.b("body length mismatch");
+                SyntheticRefs.b("body length mismatch");
                 throw null;
             }
             this.a = aVar;
@@ -178,7 +178,7 @@ public final class r6 {
         if (i >= 0) {
             return;
         }
-        d0.b("negative body limit");
+        SyntheticRefs.b("negative body limit");
     }
 
     public static b c(a aVar, byte[] bArr, int i) throws r5 {
@@ -186,7 +186,7 @@ public final class r6 {
         Objects.requireNonNull(bArr);
         b(aVar, i);
         if (bArr.length != aVar.b()) {
-            d0.f("wrong header size");
+            SyntheticRefs.f("wrong header size");
             return null;
         }
         long j = aVar.d() ? j(bArr, 0) : k(bArr, 0);
@@ -200,17 +200,17 @@ public final class r6 {
         b(aVar, i);
         a(aVar, bVar.g(), i);
         if (bVar.i() < 0 || bVar.i() > 65535) {
-            d0.f("reserved outside uint16");
+            SyntheticRefs.f("reserved outside uint16");
             return null;
         }
         if (bVar.j() < 0 || bVar.j() > 4294967295L) {
-            d0.f("timestamp outside uint32");
+            SyntheticRefs.f("timestamp outside uint32");
             return null;
         }
         byte[] bArr = new byte[aVar.b()];
         if (aVar.d()) {
             if (bVar.j() != 0) {
-                d0.f("8-byte header has no timestamp");
+                SyntheticRefs.f("8-byte header has no timestamp");
                 return null;
             }
             e(bArr, 0, bVar.g());
@@ -219,7 +219,7 @@ public final class r6 {
             return bArr;
         }
         if (bVar.i() != 0) {
-            d0.f("12-byte header has no reserved field");
+            SyntheticRefs.f("12-byte header has no reserved field");
             return null;
         }
         f(bArr, 0, bVar.g());
@@ -264,7 +264,7 @@ public final class r6 {
 
     public static byte[] h(InputStream inputStream, int i) throws IOException {
         if (i < 0) {
-            d0.b("negative length");
+            SyntheticRefs.b("negative length");
             return null;
         }
         byte[] bArr = new byte[i];
@@ -300,7 +300,7 @@ public final class r6 {
         Objects.requireNonNull(outputStream);
         Objects.requireNonNull(bArr);
         if (bArr.length != bVar.g()) {
-            d0.f("body length mismatch");
+            SyntheticRefs.f("body length mismatch");
         } else {
             outputStream.write(d(aVar, bVar, i));
             outputStream.write(bArr);

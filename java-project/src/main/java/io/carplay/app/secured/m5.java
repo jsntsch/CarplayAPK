@@ -37,20 +37,20 @@ public final class m5 {
 
     private m5(byte[] bArr, boolean z) throws NoSuchAlgorithmException, SignatureException, IOException, InvalidKeyException, CertificateException, NoSuchProviderException {
         if (bArr.length == 0 || bArr.length > 60000) {
-            d0.c("MFi certificate size");
+            SyntheticRefs.c("MFi certificate size");
             throw null;
         }
         Collection<? extends Certificate> collectionGenerateCertificates = CertificateFactory.getInstance("X.509").generateCertificates(new ByteArrayInputStream(bArr));
         ArrayList arrayList = new ArrayList();
         for (Certificate certificate : collectionGenerateCertificates) {
             if (!(certificate instanceof X509Certificate)) {
-                d0.c("MFi non-X509 certificate");
+                SyntheticRefs.c("MFi non-X509 certificate");
                 throw null;
             }
             arrayList.add((X509Certificate) certificate);
         }
         if (arrayList.isEmpty() || arrayList.size() > 8) {
-            d0.c("MFi certificate count");
+            SyntheticRefs.c("MFi certificate count");
             throw null;
         }
         int size = arrayList.size();
@@ -62,28 +62,28 @@ public final class m5 {
             X509Certificate x509Certificate2 = (X509Certificate) obj;
             if (x509Certificate2.getBasicConstraints() < 0) {
                 if (x509Certificate != null) {
-                    d0.c("Ambiguous MFi leaf certificate");
+                    SyntheticRefs.c("Ambiguous MFi leaf certificate");
                     throw null;
                 }
                 x509Certificate = x509Certificate2;
             }
         }
         if (x509Certificate == null) {
-            d0.c("MFi leaf certificate missing");
+            SyntheticRefs.c("MFi leaf certificate missing");
             throw null;
         }
         Date date = new Date();
         boolean zC = c(x509Certificate, date, z);
         boolean[] keyUsage = x509Certificate.getKeyUsage();
         if (keyUsage != null && (keyUsage.length == 0 || !keyUsage[0])) {
-            d0.c("MFi key disallows signing");
+            SyntheticRefs.c("MFi key disallows signing");
             throw null;
         }
         ArrayList arrayList2 = new ArrayList();
         X509Certificate x509Certificate3 = x509Certificate;
         while (true) {
             if (arrayList2.contains(x509Certificate3)) {
-                d0.c("MFi certificate chain loop");
+                SyntheticRefs.c("MFi certificate chain loop");
                 throw null;
             }
             arrayList2.add(x509Certificate3);
@@ -100,7 +100,7 @@ public final class m5 {
                 X509Certificate x509Certificate5 = (X509Certificate) obj2;
                 if (x509Certificate3.getIssuerX500Principal().equals(x509Certificate5.getSubjectX500Principal())) {
                     if (x509Certificate4 != null) {
-                        d0.c("Ambiguous MFi issuer");
+                        SyntheticRefs.c("Ambiguous MFi issuer");
                         throw null;
                     }
                     x509Certificate4 = x509Certificate5;
@@ -111,7 +111,7 @@ public final class m5 {
             }
             zC = c(x509Certificate4, date, z) ? true : zC;
             if (x509Certificate4.getBasicConstraints() < 0) {
-                d0.c("MFi issuer is not CA");
+                SyntheticRefs.c("MFi issuer is not CA");
                 throw null;
             }
             x509Certificate3.verify(x509Certificate4.getPublicKey());
@@ -124,18 +124,18 @@ public final class m5 {
         if ("EC".equals(algorithm)) {
             PublicKey publicKey = x509Certificate.getPublicKey();
             if (!(publicKey instanceof ECPublicKey) || ((ECPublicKey) publicKey).getParams().getCurve().getField().getFieldSize() != 256) {
-                d0.c("MFi EC key must be P-256");
+                SyntheticRefs.c("MFi EC key must be P-256");
                 throw null;
             }
             this.b = new byte[32];
         } else {
             if (!"RSA".equals(algorithm)) {
-                d0.c(w1.e("Unsupported MFi public key algorithm ", algorithm));
+                SyntheticRefs.c(w1.e("Unsupported MFi public key algorithm ", algorithm));
                 throw null;
             }
             PublicKey publicKey2 = x509Certificate.getPublicKey();
             if (!(publicKey2 instanceof RSAPublicKey) || ((RSAPublicKey) publicKey2).getModulus().bitLength() < 1024) {
-                d0.c("MFi RSA key too short");
+                SyntheticRefs.c("MFi RSA key too short");
                 throw null;
             }
             this.b = new byte[20];
@@ -219,7 +219,7 @@ public final class m5 {
 
     public boolean j(byte[] bArr) throws NoSuchPaddingException, NoSuchAlgorithmException, SignatureException, InvalidKeyException, IOException {
         if (bArr.length == 0 || bArr.length > 1024) {
-            d0.c("MFi response size");
+            SyntheticRefs.c("MFi response size");
             return false;
         }
         if ("EC".equals(this.a.getPublicKey().getAlgorithm())) {

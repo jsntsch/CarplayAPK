@@ -26,7 +26,7 @@ public final class ProtobufReader {
 
         private void f(int i, int i2) {
             if (i <= 0 || i > 536870911) {
-                d0.b("invalid field number");
+                SyntheticRefs.b("invalid field number");
             } else {
                 h(((long) i2) | (((long) i) << 3));
             }
@@ -99,7 +99,7 @@ public final class ProtobufReader {
                     return bArrCopyOfRange;
                 }
             }
-            d0.f("truncated protobuf field");
+            SyntheticRefs.f("truncated protobuf field");
             return null;
         }
 
@@ -109,13 +109,13 @@ public final class ProtobufReader {
                 int i2 = this.b;
                 byte[] bArr = this.a;
                 if (i2 >= bArr.length) {
-                    d0.f("truncated protobuf varint");
+                    SyntheticRefs.f("truncated protobuf varint");
                     return 0L;
                 }
                 this.b = i2 + 1;
                 byte b = bArr[i2];
                 if (i == 9 && (b & 254) != 0) {
-                    d0.f("protobuf varint overflow");
+                    SyntheticRefs.f("protobuf varint overflow");
                     return 0L;
                 }
                 j |= ((long) (b & 127)) << (i * 7);
@@ -123,7 +123,7 @@ public final class ProtobufReader {
                     return j;
                 }
             }
-            d0.f("protobuf varint overflow");
+            SyntheticRefs.f("protobuf varint overflow");
             return 0L;
         }
     }
@@ -135,7 +135,7 @@ public final class ProtobufReader {
 
         public d(int i, int i2, int i3) {
             if (i < 0 || i2 < 0 || i3 < 0) {
-                d0.b("negative protobuf limit");
+                SyntheticRefs.b("negative protobuf limit");
                 throw null;
             }
             this.a = i;
@@ -203,26 +203,26 @@ public final class ProtobufReader {
         Objects.requireNonNull(bArr);
         Objects.requireNonNull(dVar);
         if (bArr.length > dVar.a) {
-            d0.f("protobuf exceeds byte limit");
+            SyntheticRefs.f("protobuf exceeds byte limit");
             return null;
         }
         b bVar = new b(bArr);
         ArrayList arrayList = new ArrayList();
         while (bVar.b < bArr.length) {
             if (arrayList.size() >= dVar.b) {
-                d0.f("protobuf exceeds field limit");
+                SyntheticRefs.f("protobuf exceeds field limit");
                 return null;
             }
             long jC = bVar.c();
             long jC2 = 0;
             if (jC < 0 || jC > 4294967295L) {
-                d0.f("invalid protobuf tag");
+                SyntheticRefs.f("invalid protobuf tag");
                 return null;
             }
             int i = (int) (jC >>> 3);
             int i2 = ((int) jC) & 7;
             if (i == 0 || i > 536870911) {
-                d0.f("invalid protobuf field number");
+                SyntheticRefs.f("invalid protobuf field number");
                 return null;
             }
             if (i2 != 0) {
@@ -231,13 +231,13 @@ public final class ProtobufReader {
                 } else if (i2 == 2) {
                     long jC3 = bVar.c();
                     if (jC3 < 0 || jC3 > dVar.c || jC3 > 2147483647L) {
-                        d0.f("protobuf field length overflow/limit");
+                        SyntheticRefs.f("protobuf field length overflow/limit");
                         return null;
                     }
                     bArrB = bVar.b((int) jC3);
                 } else {
                     if (i2 != 5) {
-                        d0.f(w1.d("unsupported protobuf wire type ", i2));
+                        SyntheticRefs.f(w1.d("unsupported protobuf wire type ", i2));
                         return null;
                     }
                     bArrB = bVar.b(4);
@@ -272,13 +272,13 @@ public final class ProtobufReader {
         private c k(int i, int i2) throws r5 {
             c cVarB = b(i);
             if (cVarB == null) {
-                d0.f(w1.d("missing protobuf field ", i));
+                SyntheticRefs.f(w1.d("missing protobuf field ", i));
                 return null;
             }
             if (cVarB.b == i2) {
                 return cVarB;
             }
-            d0.f(w1.d("wrong wire type for field ", i));
+            SyntheticRefs.f(w1.d("wrong wire type for field ", i));
             return null;
         }
 
@@ -291,7 +291,7 @@ public final class ProtobufReader {
             for (c cVar : this.a) {
                 if (cVar.a == i) {
                     if (cVar.b != 2) {
-                        d0.f("wrong submessage wire");
+                        SyntheticRefs.f("wrong submessage wire");
                         return null;
                     }
                     arrayList.add(ProtobufReader.b(cVar.d, dVar));
@@ -317,7 +317,7 @@ public final class ProtobufReader {
             if (j == 0 || j == 1) {
                 return j == 1;
             }
-            d0.f(w1.d("invalid bool at field ", i));
+            SyntheticRefs.f(w1.d("invalid bool at field ", i));
             return false;
         }
 
@@ -330,7 +330,7 @@ public final class ProtobufReader {
             if (j <= 2147483647L && j >= -2147483648L) {
                 return (int) j;
             }
-            d0.f(w1.d("int32 overflow at field ", i));
+            SyntheticRefs.f(w1.d("int32 overflow at field ", i));
             return 0;
         }
 

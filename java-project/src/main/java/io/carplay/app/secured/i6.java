@@ -8,7 +8,7 @@ public final class i6 {
     private final int b;
     private boolean c;
 
-    public enum a {
+    public enum TouchAction {
         DOWN,
         MOVE,
         UP
@@ -65,19 +65,19 @@ public final class i6 {
 
     public i6(int i, int i2) {
         if (i < 1 || i2 < 1 || i > 8192 || i2 > 8192) {
-            d0.b("touch dimensions");
+            SyntheticRefs.b("touch dimensions");
             throw null;
         }
         this.a = i;
         this.b = i2;
     }
 
-    public synchronized b a(a aVar, int i, int i2) {
+    public synchronized b a(TouchAction aVar, int i, int i2) {
         int i3;
         if (aVar != null && i >= 0 && i2 >= 0) {
             try {
                 if (i < this.a && i2 < this.b) {
-                    a aVar2 = a.DOWN;
+                    TouchAction aVar2 = TouchAction.DOWN;
                     if (aVar == aVar2 && this.c) {
                         throw new IllegalStateException("duplicate down");
                     }
@@ -95,7 +95,7 @@ public final class i6 {
                         }
                         i3 = 425987;
                     }
-                    this.c = aVar != a.UP;
+                    this.c = aVar != TouchAction.UP;
                 }
             } catch (Throwable th) {
                 throw th;

@@ -40,20 +40,20 @@ public final class CarLifeBridge {
     private static final long i = 536870912;
     private static volatile a j;
 
-    public enum c {
+    public enum ReviewState {
         REVIEWED,
         CANDIDATE,
         BLOCKED
     }
 
     public static final class d extends w1 {
-        private final c a;
+        private final ReviewState a;
         private final String b;
         private final long c;
         private final long d;
         private final boolean e;
 
-        public d(c cVar, String str, long j, long j2, boolean z) {
+        public d(ReviewState cVar, String str, long j, long j2, boolean z) {
             this.a = cVar;
             this.b = str;
             this.c = j;
@@ -70,7 +70,7 @@ public final class CarLifeBridge {
         }
 
         public boolean g() {
-            return this.a != c.BLOCKED;
+            return this.a != ReviewState.BLOCKED;
         }
 
         public String h() {
@@ -81,7 +81,7 @@ public final class CarLifeBridge {
             boolean z = this.e;
             long j = this.c;
             long j2 = this.d;
-            c cVar = this.a;
+            ReviewState cVar = this.a;
             String str = this.b;
             return Objects.hashCode(str) + ((Objects.hashCode(cVar) + w1.a(j2, w1.a(j, Boolean.hashCode(z) * 31, 31), 31)) * 31);
         }
@@ -90,7 +90,7 @@ public final class CarLifeBridge {
             return this.c;
         }
 
-        public c j() {
+        public ReviewState j() {
             return this.a;
         }
 
@@ -107,7 +107,7 @@ public final class CarLifeBridge {
         }
 
         public boolean n() {
-            return this.a == c.REVIEWED;
+            return this.a == ReviewState.REVIEWED;
         }
 
         public String o() {
@@ -149,7 +149,7 @@ public final class CarLifeBridge {
 
     private static d a(String str, long j2, long j3) {
         j = null;
-        return new d(c.BLOCKED, str, j2, j3, false);
+        return new d(ReviewState.BLOCKED, str, j2, j3, false);
     }
 
     private static boolean b(PackageManager packageManager, ComponentName componentName) {
@@ -376,9 +376,9 @@ public final class CarLifeBridge {
 
     public static final class a extends w1 {
         private final b a;
-        private final c b;
+        private final ReviewState b;
 
-        private a(b bVar, c cVar) {
+        private a(b bVar, ReviewState cVar) {
             this.a = bVar;
             this.b = cVar;
         }
@@ -393,7 +393,7 @@ public final class CarLifeBridge {
 
         public final int hashCode() {
             b bVar = this.a;
-            c cVar = this.b;
+            ReviewState cVar = this.b;
             return Objects.hashCode(cVar) + (Objects.hashCode(bVar) * 31);
         }
 
@@ -401,7 +401,7 @@ public final class CarLifeBridge {
             return this.a;
         }
 
-        public c j() {
+        public ReviewState j() {
             return this.b;
         }
 
@@ -422,7 +422,7 @@ public final class CarLifeBridge {
             return sb.toString();
         }
 
-        public /* synthetic */ a(b bVar, c cVar, int i) {
+        public /* synthetic */ a(b bVar, ReviewState cVar, int i) {
             this(bVar, cVar);
         }
     }

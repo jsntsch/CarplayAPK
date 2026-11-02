@@ -18,10 +18,10 @@ public final /* synthetic */ class o0 implements View.OnClickListener {
     public final void onClick(View view) {
         switch (this.a) {
             case 0:
-                m0.o(this.b, this.c, view);
+                UiFactory.o(this.b, this.c, view);
                 break;
             default:
-                m0.p(this.b, this.c, view);
+                UiFactory.p(this.b, this.c, view);
                 break;
         }
     }

@@ -11,7 +11,7 @@ public abstract class z1 extends ChaCha20 {
             throw new IllegalArgumentException();
         }
         if (i % 2 != 0) {
-            d0.b("Number of rounds must be even");
+            SyntheticRefs.b("Number of rounds must be even");
             return;
         }
         int i3 = iArr[0];

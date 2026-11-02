@@ -19,7 +19,7 @@ public final class h {
 
     public h(List<byte[]> list, byte[] bArr, byte[] bArr2, boolean z, long j, long j2, long j3) {
         if (list == null || list.isEmpty() || list.size() > 4096 || j3 < 0) {
-            d0.b("AVC unit bounds");
+            SyntheticRefs.b("AVC unit bounds");
             throw null;
         }
         ArrayList arrayList = new ArrayList();
@@ -28,12 +28,12 @@ public final class h {
         int iAddExact = 0;
         for (byte[] bArr3 : list) {
             if (bArr3 == null || bArr3.length == 0 || bArr3.length > 2097152) {
-                d0.b("AVC NAL bounds");
+                SyntheticRefs.b("AVC NAL bounds");
                 throw null;
             }
             iAddExact = Math.addExact(iAddExact, bArr3.length + 4);
             if (iAddExact > 4194304) {
-                d0.b("AVC unit limit");
+                SyntheticRefs.b("AVC unit limit");
                 throw null;
             }
             byte b = bArr3[0];
@@ -46,7 +46,7 @@ public final class h {
             arrayList.add((byte[]) bArr3.clone());
         }
         if (!z2 || z3 != z) {
-            d0.b("AVC unit picture mismatch");
+            SyntheticRefs.b("AVC unit picture mismatch");
             throw null;
         }
         this.a = List.copyOf(arrayList);
@@ -64,7 +64,7 @@ public final class h {
         ArrayList arrayList = new ArrayList();
         int iM = m(bArrA, 0);
         if (iM != 0) {
-            d0.c("AVC complete unit prefix");
+            SyntheticRefs.c("AVC complete unit prefix");
             return null;
         }
         byte[] bArr4 = bArr2;

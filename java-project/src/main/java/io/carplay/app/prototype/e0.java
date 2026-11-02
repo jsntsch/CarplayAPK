@@ -18,6 +18,6 @@ public final /* synthetic */ class e0 implements Runnable {
 
     @Override // java.lang.Runnable
     public final void run() {
-        j0.k(this.a, this.b, this.c, this.d, this.e, this.f);
+        DonationDialog.k(this.a, this.b, this.c, this.d, this.e, this.f);
     }
 }

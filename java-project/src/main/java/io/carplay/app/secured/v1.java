@@ -39,10 +39,10 @@ public final class v1 implements AutoCloseable {
     private final Map<Long, b> h = new HashMap();
     private final Map<Long, Long> i = new HashMap();
     private c2 j = new c2(false, null);
-    private e B = e.UNKNOWN;
-    private io.carplay.app.secured.b.a C = io.carplay.app.secured.b.a.UNKNOWN;
+    private VerifyState B = VerifyState.UNKNOWN;
+    private io.carplay.app.secured.b.VerifyResult C = io.carplay.app.secured.b.VerifyResult.UNKNOWN;
 
-    public static /* synthetic */ class a {
+    public static /* synthetic */ class SwitchMap {
         static final /* synthetic */ int[] a;
 
         static {
@@ -66,11 +66,11 @@ public final class v1 implements AutoCloseable {
     public static final class b extends w1 {
         private final long a;
         private final long b;
-        private final f c;
+        private final TlvTag c;
         private final int d;
         private final byte[] e;
 
-        public b(long j, long j2, f fVar, int i, byte[] bArr) {
+        public b(long j, long j2, TlvTag fVar, int i, byte[] bArr) {
             byte[] bArr2 = (byte[]) bArr.clone();
             this.a = j;
             this.b = j2;
@@ -99,7 +99,7 @@ public final class v1 implements AutoCloseable {
             int i = this.d;
             long j = this.a;
             long j2 = this.b;
-            f fVar = this.c;
+            TlvTag fVar = this.c;
             byte[] bArr = this.e;
             return Objects.hashCode(bArr) + ((Objects.hashCode(fVar) + w1.a(j2, w1.a(j, i * 31, 31), 31)) * 31);
         }
@@ -112,7 +112,7 @@ public final class v1 implements AutoCloseable {
             return (byte[]) this.e.clone();
         }
 
-        public f k() {
+        public TlvTag k() {
             return this.c;
         }
 
@@ -135,11 +135,11 @@ public final class v1 implements AutoCloseable {
     }
 
     public static final class c extends w1 {
-        private final e a;
-        private final io.carplay.app.secured.b.a b;
+        private final VerifyState a;
+        private final io.carplay.app.secured.b.VerifyResult b;
         private final boolean c;
 
-        public c(e eVar, io.carplay.app.secured.b.a aVar, boolean z) {
+        public c(VerifyState eVar, io.carplay.app.secured.b.VerifyResult aVar, boolean z) {
             this.a = eVar;
             this.b = aVar;
             this.c = z;
@@ -153,18 +153,18 @@ public final class v1 implements AutoCloseable {
             return this.c == cVar.c && Objects.equals(this.a, cVar.a) && Objects.equals(this.b, cVar.b);
         }
 
-        public io.carplay.app.secured.b.a g() {
+        public io.carplay.app.secured.b.VerifyResult g() {
             return this.b;
         }
 
-        public e h() {
+        public VerifyState h() {
             return this.a;
         }
 
         public final int hashCode() {
             boolean z = this.c;
-            e eVar = this.a;
-            io.carplay.app.secured.b.a aVar = this.b;
+            VerifyState eVar = this.a;
+            io.carplay.app.secured.b.VerifyResult aVar = this.b;
             return Objects.hashCode(aVar) + ((Objects.hashCode(eVar) + (Boolean.hashCode(z) * 31)) * 31);
         }
 
@@ -197,7 +197,7 @@ public final class v1 implements AutoCloseable {
 
         public d(long j, String str, boolean z) {
             if (str == null || str.isBlank()) {
-                d0.b("actual peer evidence reference required");
+                SyntheticRefs.b("actual peer evidence reference required");
                 throw null;
             }
             this.a = j;
@@ -250,14 +250,14 @@ public final class v1 implements AutoCloseable {
         }
     }
 
-    public enum e {
+    public enum VerifyState {
         UNKNOWN,
         VERIFIED,
         REJECTED,
         CONTRACT_UNAVAILABLE
     }
 
-    public enum f {
+    public enum TlvTag {
         VERSION,
         RECEIVER_INFO,
         RECEIVER_STATISTICS,
@@ -278,7 +278,7 @@ public final class v1 implements AutoCloseable {
             Objects.requireNonNull(map);
             LinkedHashMap linkedHashMap = new LinkedHashMap();
             if (map.size() > 128) {
-                d0.b("too many capabilities");
+                SyntheticRefs.b("too many capabilities");
                 throw null;
             }
             s1 s1Var = new s1(1);
@@ -288,7 +288,7 @@ public final class v1 implements AutoCloseable {
             Map<String, Integer> mapCopyOf = Map.copyOf(linkedHashMap);
             Integer num = mapCopyOf.get("CONTENT_ENCRYPTION");
             if (num != null && num.intValue() != 0 && num.intValue() != 1) {
-                d0.b("CONTENT_ENCRYPTION must be explicit0/1");
+                SyntheticRefs.b("CONTENT_ENCRYPTION must be explicit0/1");
                 throw null;
             }
             this.a = mapCopyOf;
@@ -298,7 +298,7 @@ public final class v1 implements AutoCloseable {
         /* JADX INFO: Access modifiers changed from: private */
         public static /* synthetic */ void i(Map map, String str, Integer num) {
             if (str == null || str.isBlank() || str.length() > 128 || num == null) {
-                d0.b("capability");
+                SyntheticRefs.b("capability");
             } else {
                 map.put(str, num);
             }
@@ -348,7 +348,7 @@ public final class v1 implements AutoCloseable {
         Objects.requireNonNull(bVar);
         this.b = bVar;
         if (j < 1 || bVar.m().k() != j || bVar.m().i()) {
-            d0.b("active ledger generation required");
+            SyntheticRefs.b("active ledger generation required");
             throw null;
         }
         this.a = j;
@@ -363,13 +363,13 @@ public final class v1 implements AutoCloseable {
 
     private void c(long j) throws r5 {
         if (j != this.a || this.b.m().k() != this.a) {
-            d0.f("stale session generation");
+            SyntheticRefs.f("stale session generation");
         } else if (this.o || this.p || this.b.m().i()) {
-            d0.f("closed/failed negotiation session");
+            SyntheticRefs.f("closed/failed negotiation session");
         }
     }
 
-    private b e(f fVar, int i, byte[] bArr) {
+    private b e(TlvTag fVar, int i, byte[] bArr) {
         b bVar = new b(this.a, Math.incrementExact(this.m), fVar, i, bArr);
         this.m = bVar.h();
         this.h.put(Long.valueOf(bVar.h()), bVar);
@@ -380,7 +380,7 @@ public final class v1 implements AutoCloseable {
         if (bArr.length == 0) {
             return;
         }
-        d0.f("expected empty command body");
+        SyntheticRefs.f("expected empty command body");
     }
 
     private void k(String str) {
@@ -403,7 +403,7 @@ public final class v1 implements AutoCloseable {
 
     /* JADX INFO: Access modifiers changed from: private */
     public static /* synthetic */ boolean m(b bVar) {
-        return bVar.k() == f.VERIFIED_PHONE_RESULT;
+        return bVar.k() == TlvTag.VERIFIED_PHONE_RESULT;
     }
 
     private void v(b bVar) throws r5 {
@@ -412,13 +412,13 @@ public final class v1 implements AutoCloseable {
         if (this.h.get(Long.valueOf(bVar.h())) == bVar) {
             return;
         }
-        d0.f("foreign/already sent command");
+        SyntheticRefs.f("foreign/already sent command");
     }
 
     private void y() {
-        if (this.B == e.VERIFIED) {
-            io.carplay.app.secured.b.a aVar = this.C;
-            io.carplay.app.secured.b.a aVar2 = io.carplay.app.secured.b.a.PASSED;
+        if (this.B == VerifyState.VERIFIED) {
+            io.carplay.app.secured.b.VerifyResult aVar = this.C;
+            io.carplay.app.secured.b.VerifyResult aVar2 = io.carplay.app.secured.b.VerifyResult.PASSED;
             if (aVar == aVar2 && this.y) {
                 this.b.f(this.a, aVar2);
             }
@@ -480,7 +480,7 @@ public final class v1 implements AutoCloseable {
     }
 
     public synchronized List<b> o(long j, r6.c cVar) {
-        e eVar;
+        VerifyState eVar;
         try {
             c(j);
             Objects.requireNonNull(cVar);
@@ -505,8 +505,8 @@ public final class v1 implements AutoCloseable {
                             }
                             this.s = true;
                             if (this.d) {
-                                arrayList.add(e(f.RECEIVER_INFO, t1.c, this.c.k()));
-                                arrayList.add(e(f.RECEIVER_STATISTICS, 98343, this.c.q()));
+                                arrayList.add(e(TlvTag.RECEIVER_INFO, t1.c, this.c.k()));
+                                arrayList.add(e(TlvTag.RECEIVER_STATISTICS, 98343, this.c.q()));
                             }
                             break;
                         case 65540:
@@ -526,31 +526,31 @@ public final class v1 implements AutoCloseable {
                             }
                             l5.a aVarC = this.g.c(this.a, iH, bArrA);
                             c(this.a);
-                            int i2 = a.a[aVarC.ordinal()];
+                            int i2 = SwitchMap.a[aVarC.ordinal()];
                             if (i2 == 1) {
-                                eVar = e.VERIFIED;
+                                eVar = VerifyState.VERIFIED;
                             } else if (i2 == 2) {
-                                eVar = e.REJECTED;
+                                eVar = VerifyState.REJECTED;
                             } else {
                                 if (i2 != 3) {
                                     throw new IncompatibleClassChangeError();
                                 }
-                                eVar = e.CONTRACT_UNAVAILABLE;
+                                eVar = VerifyState.CONTRACT_UNAVAILABLE;
                             }
                             this.B = eVar;
                             if (aVarC != l5.a.REJECTED) {
                                 y();
                             } else {
-                                this.b.f(this.a, io.carplay.app.secured.b.a.FAILED);
+                                this.b.f(this.a, io.carplay.app.secured.b.VerifyResult.FAILED);
                                 k("modern phone proof rejected");
                             }
                             break;
                             break;
                         case 65611:
                             boolean zG = ProtobufReader.a(bArrA).g(1);
-                            this.C = zG ? io.carplay.app.secured.b.a.PASSED : io.carplay.app.secured.b.a.FAILED;
+                            this.C = zG ? io.carplay.app.secured.b.VerifyResult.PASSED : io.carplay.app.secured.b.VerifyResult.FAILED;
                             if (!zG) {
-                                this.b.f(this.a, io.carplay.app.secured.b.a.FAILED);
+                                this.b.f(this.a, io.carplay.app.secured.b.VerifyResult.FAILED);
                                 k("phone eligibility result rejected");
                             } else {
                                 y();
@@ -567,7 +567,7 @@ public final class v1 implements AutoCloseable {
                                 if (num.intValue() == 1 && this.f == null) {
                                     throw new r5("verified AES factory is required before advertising encryption");
                                 }
-                                arrayList.add(e(f.FEATURES, t1.i, t1.d(this.e.j())));
+                                arrayList.add(e(TlvTag.FEATURES, t1.i, t1.d(this.e.j())));
                             }
                             break;
                         case t1.j /* 65642 */:
@@ -577,7 +577,7 @@ public final class v1 implements AutoCloseable {
                                 if (num2.equals(this.e.j().get("CONTENT_ENCRYPTION")) && this.k == null && !this.x) {
                                     this.k = new f6(this.f);
                                     c(this.a);
-                                    arrayList.add(e(f.RSA_PUBLIC_KEY, t1.k, t1.i(this.k.c())));
+                                    arrayList.add(e(TlvTag.RSA_PUBLIC_KEY, t1.k, t1.i(this.k.c())));
                                 }
                                 break;
                             }
@@ -590,7 +590,7 @@ public final class v1 implements AutoCloseable {
                             o oVarB = f6Var.b(ProtobufReader.a(bArrA).j(1));
                             c(this.a);
                             this.l = oVarB;
-                            arrayList.add(e(f.AES_RECEIVED, t1.m, new byte[0]));
+                            arrayList.add(e(TlvTag.AES_RECEIVED, t1.m, new byte[0]));
                             break;
                             break;
                         case t1.n /* 65646 */:
@@ -599,7 +599,7 @@ public final class v1 implements AutoCloseable {
                                 throw new r5("ENCRYPT_READY before actual key/ack or duplicate");
                             }
                             this.x = true;
-                            this.b.c(this.a, io.carplay.app.secured.b.a.PASSED);
+                            this.b.c(this.a, io.carplay.app.secured.b.VerifyResult.PASSED);
                             this.b.e(this.a, true);
                             break;
                     }
@@ -639,7 +639,7 @@ public final class v1 implements AutoCloseable {
             throw new r5("modern challenge requires actual matched version");
         }
         bVarF = this.g.f(this.a);
-        return e(f.PHONE_CHALLENGE, bVarF.i(), bVarF.g());
+        return e(TlvTag.PHONE_CHALLENGE, bVarF.i(), bVarF.g());
     }
 
     public synchronized b r() {
@@ -650,7 +650,7 @@ public final class v1 implements AutoCloseable {
         if (this.y || this.h.values().stream().anyMatch(new w0(19))) {
             throw new r5("proof result already issued");
         }
-        return e(f.VERIFIED_PHONE_RESULT, 98378, new ProtobufReader.a().a(1, true).g());
+        return e(TlvTag.VERIFIED_PHONE_RESULT, 98378, new ProtobufReader.a().a(1, true).g());
     }
 
     public synchronized b s(int i, int i2) {
@@ -661,17 +661,17 @@ public final class v1 implements AutoCloseable {
         }
         bArrJ = t1.j(i, i2);
         this.q = true;
-        return e(f.VERSION, t1.a, bArrJ);
+        return e(TlvTag.VERSION, t1.a, bArrJ);
     }
 
     public synchronized b t(int i, int i2, int i3) {
         c(this.a);
-        return e(f.VIDEO_INIT, t1.e, t1.k(i, i2, i3));
+        return e(TlvTag.VIDEO_INIT, t1.e, t1.k(i, i2, i3));
     }
 
     public synchronized b u() {
         c(this.a);
-        return e(f.VIDEO_START, t1.g, new byte[0]);
+        return e(TlvTag.VIDEO_START, t1.g, new byte[0]);
     }
 
     public synchronized void w(b bVar) {
@@ -689,7 +689,7 @@ public final class v1 implements AutoCloseable {
                         this.u = true;
                         Integer num = 0;
                         if (num.equals(this.e.j().get("CONTENT_ENCRYPTION"))) {
-                            this.b.c(this.a, io.carplay.app.secured.b.a.NOT_APPLICABLE);
+                            this.b.c(this.a, io.carplay.app.secured.b.VerifyResult.NOT_APPLICABLE);
                         }
                         break;
                     case 4:

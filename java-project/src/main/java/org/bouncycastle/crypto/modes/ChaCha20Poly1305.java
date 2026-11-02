@@ -1,8 +1,8 @@
 package org.bouncycastle.crypto.modes;
 
 import io.carplay.app.secured.Poly1305;
+import io.carplay.app.secured.SyntheticRefs;
 import io.carplay.app.secured.c5;
-import io.carplay.app.secured.d0;
 import io.carplay.app.secured.e;
 import io.carplay.app.secured.f3;
 import io.carplay.app.secured.k3;
@@ -48,7 +48,7 @@ public class ChaCha20Poly1305 {
             throw new NullPointerException("'poly1305' cannot be null");
         }
         if (16 != l3Var.e()) {
-            d0.b("'poly1305' must be a 128-bit MAC");
+            SyntheticRefs.b("'poly1305' must be a 128-bit MAC");
             throw null;
         }
         this.chacha20 = new y1();
@@ -63,7 +63,7 @@ public class ChaCha20Poly1305 {
         }
         if (i != 2) {
             if (i == 4) {
-                d0.d("ChaCha20Poly1305 cannot be reused for encryption");
+                SyntheticRefs.d("ChaCha20Poly1305 cannot be reused for encryption");
             } else if (i == 5) {
                 this.state = 6;
             } else if (i != 6) {
@@ -82,7 +82,7 @@ public class ChaCha20Poly1305 {
             case 7:
                 return;
             case 4:
-                d0.d("ChaCha20Poly1305 cannot be reused for encryption");
+                SyntheticRefs.d("ChaCha20Poly1305 cannot be reused for encryption");
                 return;
             case 5:
             case 6:
@@ -113,7 +113,7 @@ public class ChaCha20Poly1305 {
         if (k3.b(j, j2 - j3) <= 0) {
             return j + j3;
         }
-        d0.d("Limit exceeded");
+        SyntheticRefs.d("Limit exceeded");
         return 0L;
     }
 
@@ -184,7 +184,7 @@ public class ChaCha20Poly1305 {
             throw new NullPointerException("'out' cannot be null");
         }
         if (i < 0) {
-            d0.b("'outOff' cannot be negative");
+            SyntheticRefs.b("'outOff' cannot be negative");
             return 0;
         }
         checkData();
@@ -272,7 +272,7 @@ public class ChaCha20Poly1305 {
             AEADParameters aEADParameters = (AEADParameters) cipherParameters;
             int macSize = aEADParameters.getMacSize();
             if (128 != macSize) {
-                d0.b(w1.d("Invalid value for MAC size: ", macSize));
+                SyntheticRefs.b(w1.d("Invalid value for MAC size: ", macSize));
                 return;
             }
             key = aEADParameters.getKey();
@@ -281,7 +281,7 @@ public class ChaCha20Poly1305 {
             this.initialAAD = aEADParameters.getAssociatedText();
         } else {
             if (!(cipherParameters instanceof c5)) {
-                d0.b("invalid parameters passed to ChaCha20Poly1305");
+                SyntheticRefs.b("invalid parameters passed to ChaCha20Poly1305");
                 return;
             }
             c5Var = (c5) cipherParameters;
@@ -291,19 +291,19 @@ public class ChaCha20Poly1305 {
         }
         if (key == null) {
             if (this.state == 0) {
-                d0.b("Key must be specified in initial init");
+                SyntheticRefs.b("Key must be specified in initial init");
                 return;
             }
         } else if (32 != key.getKeyLength()) {
-            d0.b("Key must be 256 bits");
+            SyntheticRefs.b("Key must be 256 bits");
             return;
         }
         if (bArrA == null || NONCE_SIZE != bArrA.length) {
-            d0.b("Nonce must be 96 bits");
+            SyntheticRefs.b("Nonce must be 96 bits");
             return;
         }
         if (this.state != 0 && z && e.b(this.nonce, bArrA) && (key == null || e.b(this.key, key.getKey()))) {
-            d0.b("cannot reuse nonce for ChaCha20Poly1305 encryption");
+            SyntheticRefs.b("cannot reuse nonce for ChaCha20Poly1305 encryption");
             return;
         }
         if (key != null) {
@@ -326,11 +326,11 @@ public class ChaCha20Poly1305 {
             throw new NullPointerException("'in' cannot be null");
         }
         if (i < 0) {
-            d0.b("'inOff' cannot be negative");
+            SyntheticRefs.b("'inOff' cannot be negative");
             return;
         }
         if (i2 < 0) {
-            d0.b("'len' cannot be negative");
+            SyntheticRefs.b("'len' cannot be negative");
             return;
         }
         if (i > bArr.length - i2) {
@@ -479,7 +479,7 @@ public class ChaCha20Poly1305 {
             }
             str = "'outOff' cannot be negative";
         }
-        d0.b(str);
+        SyntheticRefs.b(str);
         return 0;
     }
 

@@ -19,7 +19,7 @@ public abstract class k7 {
 
     public static void b(byte[] bArr) {
         if (bArr.length != 32) {
-            d0.b("k");
+            SyntheticRefs.b("k");
             return;
         }
         bArr[0] = (byte) (bArr[0] & 248);
@@ -40,7 +40,7 @@ public abstract class k7 {
 
     public static void d(SecureRandom secureRandom, byte[] bArr) {
         if (bArr.length != 32) {
-            d0.b("k");
+            SyntheticRefs.b("k");
         } else {
             secureRandom.nextBytes(bArr);
             b(bArr);

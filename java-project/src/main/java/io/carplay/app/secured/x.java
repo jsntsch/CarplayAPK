@@ -212,12 +212,12 @@ public final class x {
         private final int e;
         private final int f;
         private final long g;
-        private final g h;
+        private final HidTouchType h;
         private final boolean i;
         private final List<a> j;
         private final int k;
 
-        public c(int i, int i2, boolean z, int i3, int i4, int i5, long j, g gVar, boolean z2, List<a> list, int i6) {
+        public c(int i, int i2, boolean z, int i3, int i4, int i5, long j, HidTouchType gVar, boolean z2, List<a> list, int i6) {
             List<a> listCopyOf = List.copyOf(list);
             this.a = i;
             this.b = i2;
@@ -255,7 +255,7 @@ public final class x {
             int i5 = this.f;
             int i6 = this.k;
             long j = this.g;
-            g gVar = this.h;
+            HidTouchType gVar = this.h;
             List<a> list = this.j;
             return Objects.hashCode(list) + ((Objects.hashCode(gVar) + w1.a(j, (((((((((((((Boolean.hashCode(z2) + (Boolean.hashCode(z) * 31)) * 31) + i) * 31) + i2) * 31) + i3) * 31) + i4) * 31) + i5) * 31) + i6) * 31, 31)) * 31);
         }
@@ -277,7 +277,7 @@ public final class x {
         }
 
         public boolean m() {
-            return (this.g & 2) != 0 || this.h == g.KNOB;
+            return (this.g & 2) != 0 || this.h == HidTouchType.KNOB;
         }
 
         public int n() {
@@ -297,11 +297,11 @@ public final class x {
         }
 
         public boolean r() {
-            return (this.g & 12) != 0 || this.h == g.TOUCH_SCREEN;
+            return (this.g & 12) != 0 || this.h == HidTouchType.TOUCH_SCREEN;
         }
 
         public boolean s() {
-            return (this.g & 16) != 0 || this.h == g.TOUCHPAD;
+            return (this.g & 16) != 0 || this.h == HidTouchType.TOUCHPAD;
         }
 
         public boolean t() {
@@ -432,7 +432,7 @@ public final class x {
         }
     }
 
-    public enum g {
+    public enum HidTouchType {
         UNKNOWN,
         TOUCH_SCREEN,
         TOUCHPAD,
@@ -563,7 +563,7 @@ public final class x {
         List<?> list;
         int i2;
         int iM;
-        g gVar;
+        HidTouchType gVar;
         ArrayList arrayList2;
         HashMap map5;
         String strB;
@@ -647,12 +647,12 @@ public final class x {
                 ArrayList arrayList7 = arrayList4;
                 ArrayList arrayList8 = new ArrayList();
                 try {
-                    sVarU = s.u(map);
+                    sVarU = io.carplay.app.secured.s.u(map);
                     str = str14;
                     z = true;
                 } catch (IOException unused2) {
                     str = str14;
-                    sVarU = s.u(Map.of(str, Collections.EMPTY_LIST));
+                    sVarU = io.carplay.app.secured.s.u(Map.of(str, Collections.EMPTY_LIST));
                     z = false;
                 }
                 String str15 = "UNSPECIFIED";
@@ -799,13 +799,13 @@ public final class x {
                         long jLongValue = C(map13.get("features")).longValue();
                         int iV2 = v(map13.get("primaryInputDevice"), 0);
                         if (iV2 == 1) {
-                            gVar = g.TOUCH_SCREEN;
+                            gVar = HidTouchType.TOUCH_SCREEN;
                         } else if (iV2 != 2) {
-                            gVar = iV2 != 3 ? g.UNKNOWN : g.KNOB;
+                            gVar = iV2 != 3 ? HidTouchType.UNKNOWN : HidTouchType.KNOB;
                         } else {
-                            gVar = g.TOUCHPAD;
+                            gVar = HidTouchType.TOUCHPAD;
                         }
-                        g gVar2 = gVar;
+                        HidTouchType gVar2 = gVar;
                         ArrayList arrayList11 = new ArrayList();
                         Iterator<?> it3 = B(map13, "viewAreas", 16).iterator();
                         while (it3.hasNext()) {
@@ -1277,7 +1277,7 @@ public final class x {
         } else {
             str = cVarL.v() + "x" + cVarL.j() + "@" + cVarL.n();
         }
-        return "CAPS schema=1 displays=" + size + " rejected_displays=" + i + " main=" + str + " input=" + String.valueOf(cVarL == null ? g.UNKNOWN : cVarL.o()) + " hid=" + this.b.size() + " hid_valid=" + this.f + " touch=" + jCount + " knobs=" + this.b.stream().filter(new w0(7)).count() + " keys=" + this.b.stream().filter(new w0(8)).count() + " audio_rows=" + this.c.size() + " audio_valid=" + this.e + " audio_legacy=" + this.d.l() + " modes_declared=" + this.h + " modes_valid=" + this.i + " feature_bits=" + this.k.toString(16) + " feature_lists_valid=" + this.g + " negotiated=" + this.m.size() + " iap_channel=" + u() + " fingerprint=" + this.n;
+        return "CAPS schema=1 displays=" + size + " rejected_displays=" + i + " main=" + str + " input=" + String.valueOf(cVarL == null ? HidTouchType.UNKNOWN : cVarL.o()) + " hid=" + this.b.size() + " hid_valid=" + this.f + " touch=" + jCount + " knobs=" + this.b.stream().filter(new w0(7)).count() + " keys=" + this.b.stream().filter(new w0(8)).count() + " audio_rows=" + this.c.size() + " audio_valid=" + this.e + " audio_legacy=" + this.d.l() + " modes_declared=" + this.h + " modes_valid=" + this.i + " feature_bits=" + this.k.toString(16) + " feature_lists_valid=" + this.g + " negotiated=" + this.m.size() + " iap_channel=" + u() + " fingerprint=" + this.n;
     }
 
     public s f() {

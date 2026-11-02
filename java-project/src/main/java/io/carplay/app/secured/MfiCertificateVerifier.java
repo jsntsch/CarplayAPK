@@ -127,11 +127,11 @@ public final class MfiCertificateVerifier {
     private int z;
     private String z0;
 
-    public enum a {
+    public enum DetectionState {
         COMPLETE_DETECTION_WITHOUT_LINK
     }
 
-    public enum b {
+    public enum InputFlags {
         NO_PROTOCOL_INPUT
     }
 
@@ -194,7 +194,7 @@ public final class MfiCertificateVerifier {
 
         public e(String str) {
             if (str == null || !str.matches("[a-fA-F0-9]{64}")) {
-                d0.b("invalid verified leaf");
+                SyntheticRefs.b("invalid verified leaf");
                 throw null;
             }
             this.a = str;
@@ -259,7 +259,7 @@ public final class MfiCertificateVerifier {
         this.I0 = -1L;
         this.J0 = new j5();
         if (str != null && !str.matches("[a-fA-F0-9]{64}")) {
-            d0.b("Certificate pin must be SHA-256 hex");
+            SyntheticRefs.b("Certificate pin must be SHA-256 hex");
             throw null;
         }
         this.e = str;
@@ -318,7 +318,7 @@ public final class MfiCertificateVerifier {
 
     private static Set<Integer> P(byte[] bArr) throws IOException {
         if (bArr.length > 2048) {
-            d0.c("IAP2_IDENTIFICATION_MESSAGE_LIST_LIMIT");
+            SyntheticRefs.c("IAP2_IDENTIFICATION_MESSAGE_LIST_LIMIT");
             return null;
         }
         HashSet hashSet = new HashSet();
@@ -368,7 +368,7 @@ public final class MfiCertificateVerifier {
 
     public static MfiCertificateVerifier S(String str, String str2, c cVar) {
         if (str == null || !str.matches("[a-fA-F0-9]{64}")) {
-            d0.b("pinned network identity required");
+            SyntheticRefs.b("pinned network identity required");
             return null;
         }
         MfiCertificateVerifier mfiCertificateVerifier = new MfiCertificateVerifier(str, str2, false, cVar);
@@ -422,7 +422,7 @@ public final class MfiCertificateVerifier {
                         str = "RETRY_COUNT";
                     }
                     if (str != null) {
-                        d0.c("IAP2_LSP_RANGE_".concat(str));
+                        SyntheticRefs.c("IAP2_LSP_RANGE_".concat(str));
                         return;
                     }
                     if (z) {
@@ -437,7 +437,7 @@ public final class MfiCertificateVerifier {
                     for (int i7 = 10; i7 < bArr.length; i7 += 3) {
                         if (bArr[i7 + 1] == 0) {
                             if (i6 != -1) {
-                                d0.c("IAP2_MULTIPLE_CONTROL_SESSIONS");
+                                SyntheticRefs.c("IAP2_MULTIPLE_CONTROL_SESSIONS");
                                 return;
                             }
                             i6 = bArr[i7] & 255;
@@ -446,12 +446,12 @@ public final class MfiCertificateVerifier {
                                 if ((b2 & 255) < 1 || (b2 & 255) > 2) {
                                 }
                             }
-                            d0.c("IAP2_CONTROL_SESSION_INVALID");
+                            SyntheticRefs.c("IAP2_CONTROL_SESSION_INVALID");
                             return;
                         }
                     }
                     if (i6 < 0) {
-                        d0.c("IAP2_CONTROL_SESSION_MISSING");
+                        SyntheticRefs.c("IAP2_CONTROL_SESSION_MISSING");
                         return;
                     }
                     this.p = i6;
@@ -461,7 +461,7 @@ public final class MfiCertificateVerifier {
                 }
             }
         }
-        d0.c("IAP2_LSP_INVALID");
+        SyntheticRefs.c("IAP2_LSP_INVALID");
     }
 
     private void V(String str) {
@@ -478,7 +478,7 @@ public final class MfiCertificateVerifier {
             return;
         }
         if (!this.t || !this.s) {
-            d0.c("IAP2_PUBLISH_BEFORE_AUTHENTICATION_IDENTIFICATION");
+            SyntheticRefs.c("IAP2_PUBLISH_BEFORE_AUTHENTICATION_IDENTIFICATION");
             return;
         }
         this.F0 = true;
@@ -604,7 +604,7 @@ public final class MfiCertificateVerifier {
         int i2 = cVar.a;
         if (i2 == 7425) {
             if (this.C0 && (!this.t || !this.D0)) {
-                d0.c("IAP2_IDENTIFICATION_OUT_OF_ORDER");
+                SyntheticRefs.c("IAP2_IDENTIFICATION_OUT_OF_ORDER");
                 return;
             }
             if (this.s) {
@@ -613,14 +613,14 @@ public final class MfiCertificateVerifier {
             int[] iArr = {0, 1, 2, 3, 4, 5};
             for (int i3 = 0; i3 < 6; i3++) {
                 if (Iap2Csm.z(Iap2Csm.v(cVar.b, iArr[i3])).isEmpty()) {
-                    d0.c("IAP2_IDENTIFICATION_EMPTY");
+                    SyntheticRefs.c("IAP2_IDENTIFICATION_EMPTY");
                     return;
                 }
             }
             byte[] bArrV = Iap2Csm.v(cVar.b, 6);
             byte[] bArrV2 = Iap2Csm.v(cVar.b, 7);
             if (bArrV.length % 2 != 0 || bArrV2.length % 2 != 0) {
-                d0.c("IAP2_IDENTIFICATION_MESSAGE_LIST");
+                SyntheticRefs.c("IAP2_IDENTIFICATION_MESSAGE_LIST");
                 return;
             }
             this.m = P(bArrV);
@@ -648,16 +648,16 @@ public final class MfiCertificateVerifier {
         }
         if (i2 == 43526) {
             if ((!this.s && !this.C0) || !this.E0 || this.I != null || this.t) {
-                d0.c("MFI_SERIAL_OUT_OF_ORDER");
+                SyntheticRefs.c("MFI_SERIAL_OUT_OF_ORDER");
                 return;
             }
             byte[] bArrV3 = Iap2Csm.v(cVar.b, 0);
             if (bArrV3.length == 0 || bArrV3.length > 64) {
-                d0.c("MFI_SERIAL_SIZE");
+                SyntheticRefs.c("MFI_SERIAL_SIZE");
                 return;
             } else {
                 if (this.x) {
-                    d0.c("MFI_FULL_CERTIFICATE_NOT_PROVIDED");
+                    SyntheticRefs.c("MFI_FULL_CERTIFICATE_NOT_PROVIDED");
                     return;
                 }
                 this.x = true;
@@ -668,7 +668,7 @@ public final class MfiCertificateVerifier {
         }
         if (i2 == 43521) {
             if ((!this.s && !this.C0) || !this.E0 || this.I != null) {
-                d0.c("MFI_CERTIFICATE_OUT_OF_ORDER");
+                SyntheticRefs.c("MFI_CERTIFICATE_OUT_OF_ORDER");
                 return;
             }
             byte[] bArrV4 = Iap2Csm.v(cVar.b, 0);
@@ -702,7 +702,7 @@ public final class MfiCertificateVerifier {
         if (i2 == 43523) {
             m5 m5Var = this.I;
             if (m5Var == null || this.t) {
-                d0.c("MFI_RESPONSE_OUT_OF_ORDER");
+                SyntheticRefs.c("MFI_RESPONSE_OUT_OF_ORDER");
                 return;
             }
             try {
@@ -734,7 +734,7 @@ public final class MfiCertificateVerifier {
             }
         }
         if (i2 == 43524) {
-            d0.c("MFI_PEER_AUTHENTICATION_FAILED");
+            SyntheticRefs.c("MFI_PEER_AUTHENTICATION_FAILED");
             return;
         }
         int i4 = 4;
@@ -773,11 +773,11 @@ public final class MfiCertificateVerifier {
         if (i2 != 17153) {
             if (i2 == 22275) {
                 if (this.b) {
-                    d0.c("IAP2_NETWORK_UNEXPECTED_WIFI_CREDENTIALS");
+                    SyntheticRefs.c("IAP2_NETWORK_UNEXPECTED_WIFI_CREDENTIALS");
                     return;
                 }
                 if (!this.t || (this.C0 && !this.s)) {
-                    d0.c("IAP2_WIFI_CONFIGURATION_BEFORE_AUTHENTICATION");
+                    SyntheticRefs.c("IAP2_WIFI_CONFIGURATION_BEFORE_AUTHENTICATION");
                     return;
                 }
                 Iap2Csm.g gVarD = Iap2Csm.D(cVar);
@@ -786,7 +786,7 @@ public final class MfiCertificateVerifier {
                     if (gVar.d(gVarD)) {
                         return;
                     }
-                    d0.c("IAP2_WIFI_CONFIGURATION_CHANGED_RESTART_REQUIRED");
+                    SyntheticRefs.c("IAP2_WIFI_CONFIGURATION_CHANGED_RESTART_REQUIRED");
                     return;
                 }
                 this.n0 = gVarD;
@@ -797,11 +797,11 @@ public final class MfiCertificateVerifier {
             return;
         }
         if (this.b) {
-            d0.c("IAP2_NETWORK_UNEXPECTED_BOOTSTRAP");
+            SyntheticRefs.c("IAP2_NETWORK_UNEXPECTED_BOOTSTRAP");
             return;
         }
         if (!this.t || (this.C0 && !this.s)) {
-            d0.c("CARPLAY_BOOTSTRAP_BEFORE_AUTHENTICATION");
+            SyntheticRefs.c("CARPLAY_BOOTSTRAP_BEFORE_AUTHENTICATION");
             return;
         }
         boolean z = this.u;
@@ -923,7 +923,7 @@ public final class MfiCertificateVerifier {
 
     public static MfiCertificateVerifier i(String str, String str2, c cVar) {
         if (str == null || !str.matches("[a-fA-F0-9]{64}")) {
-            d0.b("pinned identity required for startup order fallback");
+            SyntheticRefs.b("pinned identity required for startup order fallback");
             return null;
         }
         MfiCertificateVerifier mfiCertificateVerifier = new MfiCertificateVerifier(str, str2, false, cVar);
@@ -1067,7 +1067,7 @@ public final class MfiCertificateVerifier {
         if (this.j.size() < 32) {
             this.j.add(new d(i, Iap2Csm.o(i, bArr)));
         } else {
-            d0.c("IAP2_TX_QUEUE_LIMIT");
+            SyntheticRefs.c("IAP2_TX_QUEUE_LIMIT");
         }
     }
 
@@ -1081,7 +1081,7 @@ public final class MfiCertificateVerifier {
             this.p0 = true;
             if (R()) {
                 try {
-                    this.r0 = n.a(this.a.l());
+                    this.r0 = io.carplay.app.secured.n.a(this.a.l());
                 } catch (RuntimeException unused) {
                     this.r0 = null;
                 }
@@ -1144,7 +1144,7 @@ public final class MfiCertificateVerifier {
         if (this.b || this.N != 0 || this.O != 0 || this.r || this.v || this.y != null || !this.j.isEmpty() || A() || this.H0) {
             return null;
         }
-        return b.NO_PROTOCOL_INPUT;
+        return InputFlags.NO_PROTOCOL_INPUT;
     }
 
     public boolean F(long j) {
@@ -1242,11 +1242,11 @@ public final class MfiCertificateVerifier {
                     }
                     int i8 = bVar.a;
                     if ((i8 & 16) != 0) {
-                        d0.c("IAP2_PEER_RESET");
+                        SyntheticRefs.c("IAP2_PEER_RESET");
                         return;
                     }
                     if ((i8 & 32) != 0) {
-                        d0.c("IAP2_EXTENDED_ACK_RECOVERY_REQUIRED");
+                        SyntheticRefs.c("IAP2_EXTENDED_ACK_RECOVERY_REQUIRED");
                         return;
                     }
                     if (this.x0 && (i8 & 128) == 0) {
@@ -1294,15 +1294,15 @@ public final class MfiCertificateVerifier {
                         if ((i10 & 128) != 0) {
                             D("LINK_SYN");
                             if (this.r) {
-                                d0.c("IAP2_PEER_RESTARTED");
+                                SyntheticRefs.c("IAP2_PEER_RESTARTED");
                                 return;
                             }
                             if (this.k.size() >= 8) {
-                                d0.c("IAP2_LINK_NEGOTIATION_LIMIT");
+                                SyntheticRefs.c("IAP2_LINK_NEGOTIATION_LIMIT");
                                 return;
                             }
                             if (this.H0 && !this.x0 && !this.v && this.k.isEmpty() && bVar.a == 192 && !z4) {
-                                d0.c("IAP2_INITIAL_SYN_ACK_MISMATCH");
+                                SyntheticRefs.c("IAP2_INITIAL_SYN_ACK_MISMATCH");
                                 return;
                             }
                             U(bArrB);
@@ -1361,11 +1361,11 @@ public final class MfiCertificateVerifier {
                                 } else {
                                     if (i12 != ((i13 + 1) & 255)) {
                                         D("OUT_OF_ORDER");
-                                        d0.c("IAP2_OUT_OF_ORDER_PACKET");
+                                        SyntheticRefs.c("IAP2_OUT_OF_ORDER_PACKET");
                                         return;
                                     }
                                     if (bArrB.length + 10 > 4096) {
-                                        d0.c("IAP2_PEER_EXCEEDED_RECEIVE_LIMIT");
+                                        SyntheticRefs.c("IAP2_PEER_EXCEEDED_RECEIVE_LIMIT");
                                         return;
                                     }
                                     this.o = i12;
@@ -1420,7 +1420,7 @@ public final class MfiCertificateVerifier {
                 int i = this.B + 1;
                 this.B = i;
                 if (i > this.D) {
-                    d0.c(w1.e("IAP2_ACK_TIMEOUT_", j0(this.A)));
+                    SyntheticRefs.c(w1.e("IAP2_ACK_TIMEOUT_", j0(this.A)));
                     return;
                 } else {
                     n0((byte[]) bArr.clone(), this.A, this.B);
@@ -1441,7 +1441,7 @@ public final class MfiCertificateVerifier {
             d dVarPeek = this.j.peek();
             int i2 = this.q - 10;
             if (i2 < 1) {
-                d0.c("IAP2_TX_LIMIT");
+                SyntheticRefs.c("IAP2_TX_LIMIT");
                 return;
             }
             if (dVarPeek.a == 17152 && dVarPeek.c == 0) {
@@ -1490,11 +1490,11 @@ public final class MfiCertificateVerifier {
         this.J0.a();
     }
 
-    public a v() {
+    public DetectionState v() {
         if (this.b || !r()) {
             return null;
         }
-        return a.COMPLETE_DETECTION_WITHOUT_LINK;
+        return DetectionState.COMPLETE_DETECTION_WITHOUT_LINK;
     }
 
     /* JADX WARN: Code duplicated, block: B:38:0x0094  */

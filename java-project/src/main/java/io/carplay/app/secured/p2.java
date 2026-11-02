@@ -12,7 +12,7 @@ public class p2 implements e2 {
         this.b = i;
         this.c = obj;
         if (obj instanceof f2) {
-            d0.b("params should not be CryptoServicePurpose");
+            SyntheticRefs.b("params should not be CryptoServicePurpose");
             throw null;
         }
         this.d = f2Var;

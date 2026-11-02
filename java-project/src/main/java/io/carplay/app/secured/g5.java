@@ -14,7 +14,7 @@ public final class g5 extends w1 {
 
     public g5(long j, int i, int i2) {
         if (j < 0 || i < -32768 || i > 32767 || i2 < -128 || i2 > 127) {
-            d0.b("DEVICE_TIME_RANGE");
+            SyntheticRefs.b("DEVICE_TIME_RANGE");
             throw null;
         }
         this.a = j;
@@ -29,7 +29,7 @@ public final class g5 extends w1 {
         if (totalSeconds % 60 == 0 && seconds % 60 == 0) {
             return new g5(instant.getEpochSecond(), totalSeconds / 60, Math.toIntExact(seconds / 60));
         }
-        d0.b("DEVICE_TIME_MINUTE_PRECISION");
+        SyntheticRefs.b("DEVICE_TIME_MINUTE_PRECISION");
         return null;
     }
 

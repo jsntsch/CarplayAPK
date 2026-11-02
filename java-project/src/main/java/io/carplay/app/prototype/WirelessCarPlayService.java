@@ -36,12 +36,12 @@ import io.carplay.app.secured.MfiCertificateVerifier;
 import io.carplay.app.secured.MfiSap;
 import io.carplay.app.secured.PairingTlv8;
 import io.carplay.app.secured.StagedPeer;
+import io.carplay.app.secured.SyntheticRefs;
 import io.carplay.app.secured.a4;
 import io.carplay.app.secured.a7;
 import io.carplay.app.secured.b5;
 import io.carplay.app.secured.b7;
 import io.carplay.app.secured.c0;
-import io.carplay.app.secured.d0;
 import io.carplay.app.secured.d7;
 import io.carplay.app.secured.e7;
 import io.carplay.app.secured.f1;
@@ -396,12 +396,12 @@ public final class WirelessCarPlayService extends Service {
         }
 
         @Override // io.carplay.app.prototype.PairingSession.k
-        public void g(String str, MfiCertificateVerifier.a aVar, PairingSession.k.a aVar2) {
+        public void g(String str, MfiCertificateVerifier.DetectionState aVar, PairingSession.k.a aVar2) {
             this.d.m1(this.a, str, aVar, aVar2);
         }
 
         @Override // io.carplay.app.prototype.PairingSession.k
-        public void h(String str, MfiCertificateVerifier.b bVar) {
+        public void h(String str, MfiCertificateVerifier.InputFlags bVar) {
             this.d.n1(this.a, str, bVar);
         }
 
@@ -849,12 +849,12 @@ public final class WirelessCarPlayService extends Service {
         @Override // io.carplay.app.secured.AirPlaySession.n
         public void r(int i, int i2, boolean z) throws IOException {
             t4 t4Var;
-            i6.a aVar;
+            i6.TouchAction aVar;
             synchronized (this.b.s) {
                 t4Var = this.b.G;
             }
             if (!this.b.g1(this.a) || t4Var == null) {
-                d0.c("native source not ready; touch rejected");
+                SyntheticRefs.c("native source not ready; touch rejected");
                 return;
             }
             synchronized (this.b.O0) {
@@ -866,9 +866,9 @@ public final class WirelessCarPlayService extends Service {
                         throw new IOException("touch UP without active native gesture");
                     }
                     if (z) {
-                        aVar = this.b.P0 ? i6.a.MOVE : i6.a.DOWN;
+                        aVar = this.b.P0 ? i6.TouchAction.MOVE : i6.TouchAction.DOWN;
                     } else {
-                        aVar = i6.a.UP;
+                        aVar = i6.TouchAction.UP;
                     }
                     t4Var.T(aVar, i, i2);
                     this.b.P0 = z;
@@ -1040,7 +1040,7 @@ public final class WirelessCarPlayService extends Service {
         @Override // io.carplay.app.secured.t4.d
         public void g(r6.a aVar, int i, int i2, int i3) throws IOException {
             if (WirelessCarPlayService.this.t.get()) {
-                d0.c("wireless session cancelled");
+                SyntheticRefs.c("wireless session cancelled");
                 return;
             }
             WirelessCarPlayService.this.I2(aVar, i, i2, i3);
@@ -1050,7 +1050,7 @@ public final class WirelessCarPlayService extends Service {
         @Override // io.carplay.app.secured.t4.h
         public void h(byte[] bArr, long j) throws IOException {
             if (WirelessCarPlayService.this.t.get()) {
-                d0.c("wireless session cancelled");
+                SyntheticRefs.c("wireless session cancelled");
             } else {
                 WirelessCarPlayService.this.K2(bArr, j);
             }
@@ -1070,7 +1070,7 @@ public final class WirelessCarPlayService extends Service {
         @Override // io.carplay.app.secured.t4.d
         public void k(r6.a aVar, byte[] bArr, long j) throws IOException {
             if (WirelessCarPlayService.this.t.get()) {
-                d0.c("wireless session cancelled");
+                SyntheticRefs.c("wireless session cancelled");
             } else {
                 WirelessCarPlayService.this.J2(aVar, bArr, j);
             }
@@ -1130,12 +1130,12 @@ public final class WirelessCarPlayService extends Service {
         public void c(PairingTlv8.b bVar) throws IOException {
             PairingTlv8.b bVarB = b(bVar.c());
             if (bVarB != null && !MessageDigest.isEqual(bVarB.e(), bVar.e())) {
-                d0.c("stored peer key changed; explicit unpair required");
+                SyntheticRefs.c("stored peer key changed; explicit unpair required");
             } else {
                 if (this.a.edit().putString(a(bVar.c()), Base64.encodeToString(bVar.e(), 2)).commit()) {
                     return;
                 }
-                d0.c("authenticated peer persistence failed");
+                SyntheticRefs.c("authenticated peer persistence failed");
             }
         }
     }
@@ -1357,7 +1357,7 @@ public final class WirelessCarPlayService extends Service {
                 editorEdit.putString(entry.getKey(), entry.getValue());
             }
             if (!editorEdit.commit()) {
-                d0.c("receiver identity persistence failed");
+                SyntheticRefs.c("receiver identity persistence failed");
                 return null;
             }
             i1("NATIVE_PROFILE_SAVED legacy_migrated=" + aVarA.h());
@@ -1446,7 +1446,7 @@ public final class WirelessCarPlayService extends Service {
                                         this.P0 = false;
                                     } else {
                                         try {
-                                            t4Var.T(i6.a.UP, this.Q0, this.R0);
+                                            t4Var.T(i6.TouchAction.UP, this.Q0, this.R0);
                                         } catch (IOException unused) {
                                             i1("Interrupted native gesture could not be released");
                                         }
@@ -1508,7 +1508,7 @@ public final class WirelessCarPlayService extends Service {
         CarLifeBridge.d dVarF = CarLifeBridge.f(this);
         i1(dVarF.h());
         if (!dVarF.g()) {
-            d0.c(w1.e("NATIVE_COMPONENT_", dVarF.m()));
+            SyntheticRefs.c(w1.e("NATIVE_COMPONENT_", dVarF.m()));
             return;
         }
         try {
@@ -1571,7 +1571,7 @@ public final class WirelessCarPlayService extends Service {
         r6.a aVar2;
         byte[] bArr2;
         if (this.t.get()) {
-            d0.c("wireless session cancelled");
+            SyntheticRefs.c("wireless session cancelled");
             return;
         }
         synchronized (this.W.get(aVar)) {
@@ -2010,7 +2010,7 @@ public final class WirelessCarPlayService extends Service {
     /* JADX INFO: Access modifiers changed from: private */
     public void U2(io.carplay.app.secured.h hVar, boolean z) throws IOException {
         if (this.t.get()) {
-            d0.c("wireless session cancelled");
+            SyntheticRefs.c("wireless session cancelled");
             return;
         }
         AirPlaySession airPlaySessionF1 = F1();
@@ -2456,191 +2456,17 @@ public final class WirelessCarPlayService extends Service {
     }
 
     /* JADX INFO: Access modifiers changed from: private */
+    /* JADX WARN: Bottom block not found for handler: all -> 0x01bf */
+    /*
+        Code decompiled incorrectly, please refer to instructions dump.
+        To view partially-correct add '--show-bad-code' argument
+    */
     public /* synthetic */ void b2() {
-        k kVar;
-        synchronized (this.s) {
-            kVar = this.B0;
-        }
-        Object obj = this.s;
-        boolean z = true;
-        try {
-            if (kVar == null) {
-                synchronized (obj) {
-                    try {
-                        if (this.B0 == kVar) {
-                            this.B0 = null;
-                        }
-                    } catch (Throwable th) {
-                        throw th;
-                    }
-                }
-                this.D0.set(false);
-                synchronized (this.s) {
-                    try {
-                        if (this.B0 == null || this.t.get()) {
-                            z = false;
-                        }
-                    } catch (Throwable th2) {
-                        throw th2;
-                    }
-                }
-                if (z) {
-                    T2();
-                    return;
-                }
-                return;
-            }
-            try {
-                synchronized (obj) {
-                    if (g1(kVar.i()) && this.H == kVar.h() && this.D == kVar.h() && this.I && kVar.h().G0() && kVar.g().equals(kVar.h().f2())) {
-                        h hVarI2 = i2(kVar.g());
-                        synchronized (this.I0) {
-                            try {
-                                synchronized (this.s) {
-                                    try {
-                                        if (g1(kVar.i()) && this.H == kVar.h() && this.D == kVar.h() && this.I && kVar.h().G0() && kVar.g().equals(kVar.h().f2())) {
-                                            this.f0 = hVarI2.h().j();
-                                            this.g0 = hVarI2.h().h();
-                                            this.h0 = hVarI2.h().g();
-                                            this.L0 = hVarI2.g();
-                                            boolean z2 = this.c0;
-                                            getSharedPreferences(b1, 0).edit().putInt("receiver_width", kVar.g().j()).putInt("receiver_height", kVar.g().h()).putInt("receiver_fps", kVar.g().g()).putInt("requested_width", this.f0).putInt("requested_height", this.g0).putInt("requested_fps", this.h0).apply();
-                                            this.C0 = kVar;
-                                            i1("VIDEO_SELECTED_GEOMETRY target=" + kVar.g().j() + "x" + kVar.g().h() + " target_fps=" + kVar.g().g() + " planned_source_request=" + hVarI2.h().j() + "x" + hVarI2.h().h() + " exact_candidate=" + hVarI2.g() + " native_source_retained=" + z2 + " native_init_reissued=false actual_source_pending=" + (!this.x0));
-                                            if (this.x0) {
-                                                x1(kVar.h());
-                                            }
-                                            synchronized (this.s) {
-                                                try {
-                                                    if (this.B0 == kVar) {
-                                                        this.B0 = null;
-                                                    }
-                                                } catch (Throwable th3) {
-                                                    throw th3;
-                                                }
-                                            }
-                                            this.D0.set(false);
-                                            synchronized (this.s) {
-                                                try {
-                                                    if (this.B0 == null || this.t.get()) {
-                                                        z = false;
-                                                    }
-                                                } catch (Throwable th4) {
-                                                    throw th4;
-                                                }
-                                            }
-                                            if (z) {
-                                                T2();
-                                            }
-                                        } else {
-                                            synchronized (this.s) {
-                                                try {
-                                                    if (this.B0 == kVar) {
-                                                        this.B0 = null;
-                                                    }
-                                                } catch (Throwable th5) {
-                                                    throw th5;
-                                                }
-                                            }
-                                            this.D0.set(false);
-                                            synchronized (this.s) {
-                                                try {
-                                                    if (this.B0 == null || this.t.get()) {
-                                                        z = false;
-                                                    }
-                                                } catch (Throwable th6) {
-                                                    throw th6;
-                                                }
-                                            }
-                                            if (z) {
-                                                T2();
-                                            }
-                                        }
-                                    } catch (Throwable th7) {
-                                        throw th7;
-                                    }
-                                }
-                            } catch (Throwable th8) {
-                                throw th8;
-                            }
-                        }
-                    } else {
-                        synchronized (this.s) {
-                            try {
-                                if (this.B0 == kVar) {
-                                    this.B0 = null;
-                                }
-                            } catch (Throwable th9) {
-                                throw th9;
-                            }
-                        }
-                        this.D0.set(false);
-                        synchronized (this.s) {
-                            try {
-                                if (this.B0 == null || this.t.get()) {
-                                    z = false;
-                                }
-                            } catch (Throwable th10) {
-                                throw th10;
-                            }
-                        }
-                        if (z) {
-                            T2();
-                        }
-                    }
-                }
-            } catch (IOException e2) {
-                if (g1(kVar.i())) {
-                    x2("SELECTED_GEOMETRY_" + e2.getClass().getSimpleName(), kVar.i());
-                }
-                synchronized (this.s) {
-                    try {
-                        if (this.B0 == kVar) {
-                            this.B0 = null;
-                        }
-                        this.D0.set(false);
-                        synchronized (this.s) {
-                            try {
-                                if (this.B0 == null || this.t.get()) {
-                                    z = false;
-                                }
-                                if (z) {
-                                    T2();
-                                }
-                            } catch (Throwable th11) {
-                                throw th11;
-                            }
-                        }
-                    } catch (Throwable th12) {
-                        throw th12;
-                    }
-                }
-            }
-        } catch (Throwable th13) {
-            synchronized (this.s) {
-                try {
-                    if (this.B0 == kVar) {
-                        this.B0 = null;
-                    }
-                    this.D0.set(false);
-                    synchronized (this.s) {
-                        try {
-                            if (this.B0 == null || this.t.get()) {
-                                z = false;
-                            }
-                            if (z) {
-                                T2();
-                            }
-                            throw th13;
-                        } catch (Throwable th14) {
-                            throw th14;
-                        }
-                    }
-                } catch (Throwable th15) {
-                    throw th15;
-                }
-            }
-        }
+        /*
+            Method dump skipped, instruction units count: 754
+            To view this dump add '--comments-level debug' option
+        */
+        throw new UnsupportedOperationException("Method not decompiled: io.carplay.app.prototype.WirelessCarPlayService.b2():void");
     }
 
     private void b3(long j2, String str, String str2) {
@@ -2759,7 +2585,7 @@ public final class WirelessCarPlayService extends Service {
         boolean z;
         try {
             I1();
-            String strG = r.a(this, this.A).g();
+            String strG = io.carplay.app.prototype.r.a(this, this.A).g();
             BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(BluetoothManager.class);
             BluetoothAdapter adapter = bluetoothManager == null ? null : bluetoothManager.getAdapter();
             try {
@@ -3054,7 +2880,7 @@ public final class WirelessCarPlayService extends Service {
                 if (this.t.get()) {
                     return;
                 }
-                i1(v.d(this, this.C) + " stage=" + str);
+                i1(io.carplay.app.prototype.v.d(this, this.C) + " stage=" + str);
             } catch (Throwable th) {
                 throw th;
             }
@@ -3116,11 +2942,11 @@ public final class WirelessCarPlayService extends Service {
     }
 
     /* JADX INFO: Access modifiers changed from: private */
-    public void m1(long j2, String str, MfiCertificateVerifier.a aVar, PairingSession.k.a aVar2) {
+    public void m1(long j2, String str, MfiCertificateVerifier.DetectionState aVar, PairingSession.k.a aVar2) {
         String str2;
         synchronized (this.s) {
             try {
-                if (h1(j2) && g1(this.c) && !this.m && this.g == null && !this.c0 && this.H == null && this.C == null && l1 == null && !h1 && aVar == MfiCertificateVerifier.a.COMPLETE_DETECTION_WITHOUT_LINK && aVar2 != null && (str2 = this.A) != null && str2.equalsIgnoreCase(str)) {
+                if (h1(j2) && g1(this.c) && !this.m && this.g == null && !this.c0 && this.H == null && this.C == null && l1 == null && !h1 && aVar == MfiCertificateVerifier.DetectionState.COMPLETE_DETECTION_WITHOUT_LINK && aVar2 != null && (str2 = this.A) != null && str2.equalsIgnoreCase(str)) {
                     this.g = this.A;
                     this.h = "DETECT_ONLY_" + aVar2.name();
                     i1("IAP2_DETECT_ONLY_FALLBACK_ELIGIBLE termination=" + aVar2.name() + " next_existing_retry_only=true");
@@ -3136,7 +2962,7 @@ public final class WirelessCarPlayService extends Service {
     }
 
     /* JADX INFO: Access modifiers changed from: private */
-    public void n1(long j2, String str, MfiCertificateVerifier.b bVar) {
+    public void n1(long j2, String str, MfiCertificateVerifier.InputFlags bVar) {
         String str2;
         synchronized (this.s) {
             try {
@@ -3197,7 +3023,7 @@ public final class WirelessCarPlayService extends Service {
             }
         }
         if (string == null || string2 == null || string3 == null) {
-            d0.c("incomplete own pairing identity; explicit reset required");
+            SyntheticRefs.c("incomplete own pairing identity; explicit reset required");
             return null;
         }
         byte[] bArrDecode = Base64.decode(string2, 2);
@@ -3349,7 +3175,7 @@ public final class WirelessCarPlayService extends Service {
 
     private void u1(StagedPeer stagedPeer, AirPlaySession airPlaySession) throws IOException {
         if (!airPlaySession.G0()) {
-            d0.c("PAIRING_COMMIT_BEFORE_READY");
+            SyntheticRefs.c("PAIRING_COMMIT_BEFORE_READY");
             return;
         }
         PairingTlv8.b bVarB2 = airPlaySession.b2();

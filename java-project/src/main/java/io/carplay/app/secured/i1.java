@@ -27,7 +27,7 @@ final class i1 implements AutoCloseable {
             return null;
         }
         if (!(obj instanceof Byte) && !(obj instanceof Short) && !(obj instanceof Integer) && !(obj instanceof Long)) {
-            d0.c("KEEPALIVE_PORT_INVALID");
+            SyntheticRefs.c("KEEPALIVE_PORT_INVALID");
             return null;
         }
         long jLongValue = ((Number) obj).longValue();
@@ -37,7 +37,7 @@ final class i1 implements AutoCloseable {
         if (jLongValue >= 1 && jLongValue <= 65535) {
             return Integer.valueOf((int) jLongValue);
         }
-        d0.c("KEEPALIVE_PORT_INVALID");
+        SyntheticRefs.c("KEEPALIVE_PORT_INVALID");
         return null;
     }
 

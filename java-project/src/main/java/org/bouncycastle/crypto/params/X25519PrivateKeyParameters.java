@@ -1,6 +1,6 @@
 package org.bouncycastle.crypto.params;
 
-import io.carplay.app.secured.d0;
+import io.carplay.app.secured.SyntheticRefs;
 import io.carplay.app.secured.e;
 import io.carplay.app.secured.f;
 import io.carplay.app.secured.k7;
@@ -28,7 +28,7 @@ public final class X25519PrivateKeyParameters extends f {
         if (bArr.length == 32) {
             return bArr;
         }
-        d0.b("'buf' must have length 32");
+        SyntheticRefs.b("'buf' must have length 32");
         return null;
     }
 
@@ -48,7 +48,7 @@ public final class X25519PrivateKeyParameters extends f {
         if (k7.a(this.data, 0, bArr2, 0, bArr, i)) {
             return;
         }
-        d0.d("X25519 agreement failed");
+        SyntheticRefs.d("X25519 agreement failed");
     }
 
     public byte[] getEncoded() {

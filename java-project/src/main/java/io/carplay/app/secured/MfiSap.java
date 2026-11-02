@@ -81,14 +81,14 @@ public final class MfiSap {
 
     private static int d(byte[] bArr, int i, int i2) throws IOException {
         if (i < 0 || i > bArr.length - 4) {
-            d0.c("Truncated MFiSAP length");
+            SyntheticRefs.c("Truncated MFiSAP length");
             return 0;
         }
         long j = (((long) bArr[i + 3]) & 255) | ((((long) bArr[i]) & 255) << 24) | ((((long) bArr[i + 1]) & 255) << 16) | ((((long) bArr[i + 2]) & 255) << 8);
         if (j >= 1 && j <= i2) {
             return (int) j;
         }
-        d0.c("MFiSAP field length exceeds bound");
+        SyntheticRefs.c("MFiSAP field length exceeds bound");
         return 0;
     }
 
@@ -114,6 +114,7 @@ public final class MfiSap {
     }
 
     public static a f(byte[] bArr, byte[] bArr2, byte[] bArr3, String str) throws Throwable {
+        Throwable th = null;
         byte[] bArr4;
         byte[] bArrB;
         String str2;
@@ -122,7 +123,7 @@ public final class MfiSap {
         }
         byte[] bArr5 = null;
         if (bArr3.length < 40 || bArr3.length > 65000) {
-            d0.c("MFiSAP response size out of bounds");
+            SyntheticRefs.c("MFiSAP response size out of bounds");
             return null;
         }
         int i = 0;
@@ -130,14 +131,14 @@ public final class MfiSap {
         int iD = d(bArr3, 32, 60000);
         int i2 = iD + 36;
         if (i2 > bArr3.length - 4) {
-            d0.c("Truncated MFiSAP certificate");
+            SyntheticRefs.c("Truncated MFiSAP certificate");
             return null;
         }
         byte[] bArrCopyOfRange2 = Arrays.copyOfRange(bArr3, 36, i2);
         int iD2 = d(bArr3, i2, 1024);
         int i3 = iD + 40;
         if (iD2 < 1 || iD2 > bArr3.length - i3) {
-            d0.c("Truncated or empty MFiSAP signature");
+            SyntheticRefs.c("Truncated or empty MFiSAP signature");
             return null;
         }
         if (iD2 + i3 != bArr3.length) {
@@ -188,8 +189,7 @@ public final class MfiSap {
                         Arrays.fill(bArrDoFinal, (byte) 0);
                     }
                     return aVar;
-                } catch (Throwable th) {
-                    th = th;
+                } catch (Throwable thCaught) {
                     bArr4 = null;
                     bArr5 = bArrB2;
                     Arrays.fill(bArrX, (byte) 0);
@@ -202,7 +202,7 @@ public final class MfiSap {
                     if (bArr4 != null) {
                         Arrays.fill(bArr4, (byte) 0);
                     }
-                    throw th;
+                    throw thCaught;
                 }
             } catch (Throwable th2) {
                 th = th2;

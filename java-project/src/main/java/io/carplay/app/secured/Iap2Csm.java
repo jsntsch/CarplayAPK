@@ -87,7 +87,7 @@ public final class Iap2Csm {
         public List<c> c(byte[] bArr) throws IOException {
             byte[] bArr2 = this.a;
             if (bArr2.length + bArr.length > 131072) {
-                d0.c("CSM reassembly limit");
+                SyntheticRefs.c("CSM reassembly limit");
                 return null;
             }
             byte[] bArrA = a(bArr2, bArr);
@@ -95,12 +95,12 @@ public final class Iap2Csm {
             int i = 0;
             while (bArrA.length - i >= 6) {
                 if (bArrA[i] != 64 || bArrA[i + 1] != 64) {
-                    d0.c("CSM magic");
+                    SyntheticRefs.c("CSM magic");
                     return null;
                 }
                 int iC = Iap2Csm.C(bArrA, i + 2);
                 if (iC < 6) {
-                    d0.c("CSM length");
+                    SyntheticRefs.c("CSM length");
                     return null;
                 }
                 if (iC > bArrA.length - i) {
@@ -170,7 +170,7 @@ public final class Iap2Csm {
                     int i3 = 0;
                     while (i3 < bArrCopyOf.length) {
                         if ((bArrCopyOf[i3] & 255) != 255) {
-                            d0.c("Unexpected iAP2 synchronization byte");
+                            SyntheticRefs.c("Unexpected iAP2 synchronization byte");
                             return null;
                         }
                         if (bArrCopyOf.length - i3 < 2) {
@@ -190,7 +190,7 @@ public final class Iap2Csm {
                                     break;
                                 }
                                 if (bArrCopyOf[i3 + i4] != bArr3[i4]) {
-                                    d0.c("Invalid iAP2 detect");
+                                    SyntheticRefs.c("Invalid iAP2 detect");
                                     return null;
                                 }
                                 i4++;
@@ -198,19 +198,19 @@ public final class Iap2Csm {
                             i3 += iC;
                         } else {
                             if (b != 90) {
-                                d0.c("Invalid iAP2 magic");
+                                SyntheticRefs.c("Invalid iAP2 magic");
                                 return null;
                             }
                             if (bArrCopyOf.length - i3 < 9) {
                                 break;
                             }
                             if (Iap2Csm.e(bArrCopyOf, i3, 9) != 0) {
-                                d0.c("iAP2 header checksum");
+                                SyntheticRefs.c("iAP2 header checksum");
                                 return null;
                             }
                             iC = Iap2Csm.C(bArrCopyOf, i3 + 2);
                             if (iC < 9) {
-                                d0.c("iAP2 invalid length");
+                                SyntheticRefs.c("iAP2 invalid length");
                                 return null;
                             }
                             if (bArrCopyOf.length - i3 < iC) {
@@ -219,7 +219,7 @@ public final class Iap2Csm {
                             if (iC > 9) {
                                 int i5 = i3 + 9;
                                 if (Iap2Csm.e(bArrCopyOf, i5, iC - 9) != 0) {
-                                    d0.c("iAP2 payload checksum");
+                                    SyntheticRefs.c("iAP2 payload checksum");
                                     return null;
                                 }
                                 bArrCopyOfRange = Arrays.copyOfRange(bArrCopyOf, i5, (i3 + iC) - 1);
@@ -234,7 +234,7 @@ public final class Iap2Csm {
                     return arrayList;
                 }
             }
-            d0.c("iAP2 receive limit");
+            SyntheticRefs.c("iAP2 receive limit");
             return null;
         }
 
@@ -253,7 +253,7 @@ public final class Iap2Csm {
 
     public static byte[] B(int i, byte[] bArr) throws IOException {
         if (bArr.length > 65531) {
-            d0.c("iAP2 TLV too large");
+            SyntheticRefs.c("iAP2 TLV too large");
             return null;
         }
         int length = bArr.length + 4;
@@ -270,14 +270,14 @@ public final class Iap2Csm {
 
     public static g D(c cVar) throws IOException {
         if (cVar.a != 22275) {
-            d0.c("Not AccessoryWiFiConfigurationInformation");
+            SyntheticRefs.c("Not AccessoryWiFiConfigurationInformation");
             return null;
         }
         String strZ = z(v(cVar.b, 1));
         byte[] bArrQ = q(cVar.b, 2);
         byte[] bArrV = v(cVar.b, 3);
         if (bArrV.length != 1) {
-            d0.c("IAP2_WIFI_CONFIG_SECURITY_WIDTH");
+            SyntheticRefs.c("IAP2_WIFI_CONFIG_SECURITY_WIDTH");
             return null;
         }
         int i = 0;
@@ -285,13 +285,13 @@ public final class Iap2Csm {
         if (i2 == 0 || i2 == 2) {
             return new g(i2, i, strZ, bArrQ == null ? "" : z(bArrQ));
         }
-        d0.c(w1.d("IAP2_WIFI_CONFIG_SECURITY_UNSUPPORTED_", i2));
+        SyntheticRefs.c(w1.d("IAP2_WIFI_CONFIG_SECURITY_UNSUPPORTED_", i2));
         return null;
     }
 
     private static String d(byte[] bArr) throws IOException {
         if (bArr.length == 0 || bArr.length > 128 || bArr[bArr.length - 1] != 0) {
-            d0.c("CARPLAY_ADDRESS_TERMINATOR_LIMIT");
+            SyntheticRefs.c("CARPLAY_ADDRESS_TERMINATOR_LIMIT");
             return null;
         }
         int length = bArr.length;
@@ -302,7 +302,7 @@ public final class Iap2Csm {
         if (p(strZ)) {
             return strZ;
         }
-        d0.c("Non-numeric CarPlay peer address");
+        SyntheticRefs.c("Non-numeric CarPlay peer address");
         return null;
     }
 
@@ -319,7 +319,7 @@ public final class Iap2Csm {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         for (byte[] bArr2 : bArr) {
             if (byteArrayOutputStream.size() + bArr2.length > 65535) {
-                d0.c("iAP2 message limit");
+                SyntheticRefs.c("iAP2 message limit");
                 return null;
             }
             byteArrayOutputStream.write(bArr2);
@@ -329,7 +329,7 @@ public final class Iap2Csm {
 
     private static a g(g gVar, String str, int i, String str2) throws IOException {
         if (str == null) {
-            d0.c("CARPLAY_DISCOVERY_ENDPOINT_MISSING");
+            SyntheticRefs.c("CARPLAY_DISCOVERY_ENDPOINT_MISSING");
             return null;
         }
         int iIndexOf = str.indexOf(37);
@@ -337,7 +337,7 @@ public final class Iap2Csm {
             str = str.substring(0, iIndexOf);
         }
         if (!p(str) || i < 1 || i > 65535) {
-            d0.c("CARPLAY_DISCOVERY_ENDPOINT_INVALID");
+            SyntheticRefs.c("CARPLAY_DISCOVERY_ENDPOINT_INVALID");
             return null;
         }
         if (str2 == null || str2.isBlank()) {
@@ -346,7 +346,7 @@ public final class Iap2Csm {
         if (str2.length() <= 128) {
             return new a(gVar, str, i, str2);
         }
-        d0.c("CARPLAY_DISCOVERY_IDENTIFIER_SIZE");
+        SyntheticRefs.c("CARPLAY_DISCOVERY_IDENTIFIER_SIZE");
         return null;
     }
 
@@ -358,7 +358,7 @@ public final class Iap2Csm {
         if (gVar != null && str != null) {
             return g(gVar, str, i, str2);
         }
-        d0.c("CARPLAY_DISCOVERY_ENDPOINT_MISSING");
+        SyntheticRefs.c("CARPLAY_DISCOVERY_ENDPOINT_MISSING");
         return null;
     }
 
@@ -366,7 +366,7 @@ public final class Iap2Csm {
         byte[] bArr = bVar.e;
         int length = bArr == null ? 9 : bArr.length + 10;
         if (length > 65535) {
-            d0.c("iAP2 frame too large");
+            SyntheticRefs.c("iAP2 frame too large");
             return null;
         }
         byte[] bArr2 = new byte[length];
@@ -398,7 +398,7 @@ public final class Iap2Csm {
         if (aVar.k.d(gVar)) {
             return m(aVar, aVarI);
         }
-        d0.c("IAP2_WIFI_CONFIGURATION_CHANGED_RESTART_REQUIRED");
+        SyntheticRefs.c("IAP2_WIFI_CONFIGURATION_CHANGED_RESTART_REQUIRED");
         return null;
     }
 
@@ -410,7 +410,7 @@ public final class Iap2Csm {
             }
         }
         if (arrayList.size() > 8) {
-            d0.c("CARPLAY_ENDPOINT_ADDRESS_LIMIT");
+            SyntheticRefs.c("CARPLAY_ENDPOINT_ADDRESS_LIMIT");
             return null;
         }
         g gVar = aVar.k;
@@ -434,20 +434,20 @@ public final class Iap2Csm {
             return aVar2;
         }
         if (!aVar.k.d(aVar2.k)) {
-            d0.c("IAP2_WIFI_CONFIGURATION_CHANGED_RESTART_REQUIRED");
+            SyntheticRefs.c("IAP2_WIFI_CONFIGURATION_CHANGED_RESTART_REQUIRED");
             return null;
         }
         int i2 = aVar.h;
         if ((i2 <= 0 || (i = aVar2.h) <= 0 || i2 == i) && (aVar.c.isEmpty() || aVar2.c.isEmpty() || aVar.c.equals(aVar2.c))) {
             return m(aVar, aVar2);
         }
-        d0.c("CARPLAY_ENDPOINT_CHANGED_RESTART_REQUIRED");
+        SyntheticRefs.c("CARPLAY_ENDPOINT_CHANGED_RESTART_REQUIRED");
         return null;
     }
 
     public static byte[] o(int i, byte[] bArr) throws IOException {
         if (bArr.length > 65529) {
-            d0.c("CSM message limit");
+            SyntheticRefs.c("CSM message limit");
             return null;
         }
         int length = bArr.length + 6;
@@ -489,7 +489,7 @@ public final class Iap2Csm {
         for (e eVar : list) {
             if (eVar.a == i) {
                 if (bArr != null) {
-                    d0.c(w1.d("Duplicate iAP2 field ", i));
+                    SyntheticRefs.c(w1.d("Duplicate iAP2 field ", i));
                     return null;
                 }
                 bArr = eVar.b;
@@ -506,17 +506,17 @@ public final class Iap2Csm {
         int i = 0;
         while (i < bArr.length) {
             if (bArr.length - i < 4) {
-                d0.c("Truncated iAP2 TLV");
+                SyntheticRefs.c("Truncated iAP2 TLV");
                 return null;
             }
             int iC = C(bArr, i);
             int iC2 = C(bArr, i + 2);
             if (iC < 4 || iC > bArr.length - i) {
-                d0.c("Invalid iAP2 TLV length");
+                SyntheticRefs.c("Invalid iAP2 TLV length");
                 return null;
             }
             if (arrayList.size() >= 512) {
-                d0.c("iAP2 TLV count limit");
+                SyntheticRefs.c("iAP2 TLV count limit");
                 return null;
             }
             int i2 = i + 4;
@@ -546,11 +546,11 @@ public final class Iap2Csm {
             return aVar2;
         }
         if (!aVar.k.d(aVar2.k)) {
-            d0.c("IAP2_WIFI_CONFIGURATION_CHANGED_RESTART_REQUIRED");
+            SyntheticRefs.c("IAP2_WIFI_CONFIGURATION_CHANGED_RESTART_REQUIRED");
             return null;
         }
         if (!aVar.c.isEmpty() && !aVar2.c.isEmpty() && !aVar.c.equals(aVar2.c)) {
-            d0.c("CARPLAY_ENDPOINT_IDENTITY_CHANGED");
+            SyntheticRefs.c("CARPLAY_ENDPOINT_IDENTITY_CHANGED");
             return null;
         }
         g gVar = aVar.k;
@@ -563,7 +563,7 @@ public final class Iap2Csm {
         if (aVar3.e()) {
             return aVar3;
         }
-        d0.c("CARPLAY_ENDPOINT_INCOMPLETE");
+        SyntheticRefs.c("CARPLAY_ENDPOINT_INCOMPLETE");
         return null;
     }
 
@@ -572,7 +572,7 @@ public final class Iap2Csm {
         for (e eVar : list) {
             if (eVar.a == i) {
                 if (bArr != null) {
-                    d0.c(w1.d("Duplicate iAP2 field ", i));
+                    SyntheticRefs.c(w1.d("Duplicate iAP2 field ", i));
                     return null;
                 }
                 bArr = eVar.b;
@@ -581,7 +581,7 @@ public final class Iap2Csm {
         if (bArr != null) {
             return (byte[]) bArr.clone();
         }
-        d0.c(w1.d("Missing iAP2 field ", i));
+        SyntheticRefs.c(w1.d("Missing iAP2 field ", i));
         return null;
     }
 
@@ -594,7 +594,7 @@ public final class Iap2Csm {
         if (aVarY.e()) {
             return aVarY;
         }
-        d0.c("CARPLAY_ENDPOINT_INCOMPLETE");
+        SyntheticRefs.c("CARPLAY_ENDPOINT_INCOMPLETE");
         return null;
     }
 
@@ -605,7 +605,7 @@ public final class Iap2Csm {
         int i2;
         byte[] bArr = null;
         if (cVar.a != 17153) {
-            d0.c("Not CarPlayStartSession");
+            SyntheticRefs.c("Not CarPlayStartSession");
             return null;
         }
         byte[] bArrQ = q(cVar.b, 1);
@@ -616,24 +616,24 @@ public final class Iap2Csm {
         byte[] bArrQ4 = q(listR, 4);
         if (bArrQ2 == null && bArrQ3 == null) {
             if (bArrQ4 != null && (bArrQ4.length != 1 || gVar == null || g.e(bArrQ4[0] & 255) != g.e(gVar.b))) {
-                d0.c("CARPLAY_START_WIFI_SECURITY");
+                SyntheticRefs.c("CARPLAY_START_WIFI_SECURITY");
                 return null;
             }
             gVar2 = gVar;
         } else {
             if (bArrQ2 == null || bArrQ3 == null || bArrQ4 == null || bArrQ4.length != 1) {
-                d0.c("CARPLAY_START_WIFI_FIELDS");
+                SyntheticRefs.c("CARPLAY_START_WIFI_FIELDS");
                 return null;
             }
             g gVar3 = new g(bArrQ4[0] & 255, i3, z(bArrQ2), z(bArrQ3));
             if (gVar != null && !gVar.d(gVar3)) {
-                d0.c("IAP2_WIFI_CONFIGURATION_CHANGED_RESTART_REQUIRED");
+                SyntheticRefs.c("IAP2_WIFI_CONFIGURATION_CHANGED_RESTART_REQUIRED");
                 return null;
             }
             gVar2 = gVar3;
         }
         if (gVar2 == null) {
-            d0.c("CARPLAY_START_WIFI_CREDENTIALS_MISSING");
+            SyntheticRefs.c("CARPLAY_START_WIFI_CREDENTIALS_MISSING");
             return null;
         }
         ArrayList arrayList = new ArrayList();
@@ -644,7 +644,7 @@ public final class Iap2Csm {
                     arrayList.add(strD);
                 }
                 if (arrayList.size() > 8) {
-                    d0.c("CARPLAY_ENDPOINT_ADDRESS_LIMIT");
+                    SyntheticRefs.c("CARPLAY_ENDPOINT_ADDRESS_LIMIT");
                     return null;
                 }
             }
@@ -654,12 +654,12 @@ public final class Iap2Csm {
             i = 0;
         } else {
             if (bArrQ5.length != 4) {
-                d0.c("CarPlay port width");
+                SyntheticRefs.c("CarPlay port width");
                 return null;
             }
             long jC = (((long) C(bArrQ5, 0)) << 16) | ((long) C(bArrQ5, 2));
             if (jC < 1 || jC > 65535) {
-                d0.c("CarPlay port range");
+                SyntheticRefs.c("CarPlay port range");
                 return null;
             }
             i = (int) jC;
@@ -667,7 +667,7 @@ public final class Iap2Csm {
         byte[] bArrQ6 = q(cVar.b, 3);
         String strZ = bArrQ6 == null ? "" : z(bArrQ6);
         if (bArrQ6 != null && (strZ.isBlank() || strZ.length() > 128)) {
-            d0.c("Accessory identifier size");
+            SyntheticRefs.c("Accessory identifier size");
             return null;
         }
         byte[] bArrQ7 = q(cVar.b, 4);
@@ -705,12 +705,12 @@ public final class Iap2Csm {
 
     public static String z(byte[] bArr) throws IOException {
         if (bArr.length == 0 || bArr.length > 1024 || bArr[bArr.length - 1] != 0) {
-            d0.c("iAP2 string terminator/limit");
+            SyntheticRefs.c("iAP2 string terminator/limit");
             return null;
         }
         for (int i = 0; i < bArr.length - 1; i++) {
             if (bArr[i] == 0) {
-                d0.c("iAP2 embedded string terminator");
+                SyntheticRefs.c("iAP2 embedded string terminator");
                 return null;
             }
         }
@@ -778,7 +778,7 @@ public final class Iap2Csm {
 
         public a i(String str) throws IOException {
             if (!this.l.contains(str)) {
-                d0.c("CARPLAY_ENDPOINT_ADDRESS_NOT_ADVERTISED");
+                SyntheticRefs.c("CARPLAY_ENDPOINT_ADDRESS_NOT_ADVERTISED");
                 return null;
             }
             ArrayList arrayList = new ArrayList();
@@ -831,19 +831,19 @@ public final class Iap2Csm {
         private g(String str, String str2, int i) throws IOException {
             int length = str.getBytes(StandardCharsets.UTF_8).length;
             if (length == 0 || length > 32) {
-                d0.c("Invalid SSID size");
+                SyntheticRefs.c("Invalid SSID size");
                 throw null;
             }
             if (i != 0 && i != 2 && i != 3 && i != 4) {
-                d0.c(w1.d("Unsupported Wi-Fi security ", i));
+                SyntheticRefs.c(w1.d("Unsupported Wi-Fi security ", i));
                 throw null;
             }
             if (i != 0 && (str2.length() < 8 || str2.length() > 63)) {
-                d0.c("Unsupported Wi-Fi passphrase size");
+                SyntheticRefs.c("Unsupported Wi-Fi passphrase size");
                 throw null;
             }
             if (i == 0 && !str2.isEmpty()) {
-                d0.c("Open Wi-Fi must not include a passphrase");
+                SyntheticRefs.c("Open Wi-Fi must not include a passphrase");
                 throw null;
             }
             this.a = str;

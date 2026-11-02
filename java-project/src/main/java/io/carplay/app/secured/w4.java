@@ -42,6 +42,7 @@ public final class w4 {
     }
 
     public synchronized void d(byte[] bArr, a aVar) throws Throwable {
+        Throwable th = null;
         try {
             try {
                 long jNanoTime = System.nanoTime();
@@ -49,9 +50,8 @@ public final class w4 {
                 k1Var.b = aVar;
                 VarHandle.storeStoreFence();
                 e(bArr, 0L, jNanoTime, 0L, k1Var);
-            } catch (Throwable th) {
-                th = th;
-                throw th;
+            } catch (Throwable thCaught) {
+                throw thCaught;
             }
         } catch (Throwable th2) {
             th = th2;

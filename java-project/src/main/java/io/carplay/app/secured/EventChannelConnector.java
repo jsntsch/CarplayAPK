@@ -23,12 +23,12 @@ final class EventChannelConnector {
 
     @FunctionalInterface
     public interface a {
-        Socket a(int i);
+        Socket a(int i) throws IOException;
     }
 
     @FunctionalInterface
     public interface b {
-        void a(long j);
+        void a(long j) throws InterruptedException;
     }
 
     private EventChannelConnector() {

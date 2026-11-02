@@ -204,7 +204,7 @@ public final class l4 implements AutoCloseable {
         SyntheticRefs.f("unexpected modern proof state: ".concat(String.valueOf(dVar2)));
     }
 
-    public synchronized void b(long j, int i2, byte[] bArr) {
+    public synchronized void b(long j, int i2, byte[] bArr) throws r5 {
         k(j);
         l(d.WAITING_FOR_MD_INFO);
         if (i2 != 65540) {
@@ -215,7 +215,7 @@ public final class l4 implements AutoCloseable {
         this.d = d.READY;
     }
 
-    public synchronized l5.a c(long j, int i2, byte[] bArr) {
+    public synchronized l5.a c(long j, int i2, byte[] bArr) throws r5 {
         l5.a aVarF;
         d dVar;
         k(j);
@@ -234,7 +234,7 @@ public final class l4 implements AutoCloseable {
                 if (aVarF == null) {
                     aVarF = l5.a.CONTRACT_UNAVAILABLE;
                 }
-            } catch (RuntimeException | GeneralSecurityException unused) {
+            } catch (RuntimeException unused) {
                 aVarF = l5.a.REJECTED;
             }
             this.f = null;
@@ -272,10 +272,9 @@ public final class l4 implements AutoCloseable {
         return this.a;
     }
 
-    public synchronized b f(long j) {
+    public synchronized b f(long j) throws r5 {
         String str;
         byte[] bArrG;
-        try {
             k(j);
             l(d.READY);
             byte[] bArr = new byte[16];
@@ -293,9 +292,6 @@ public final class l4 implements AutoCloseable {
             str = "2.0;" + str2;
             bArrG = new ProtobufReader.a().e(1, str).g();
             this.d = d.CHALLENGE_ISSUED;
-        } catch (Throwable th) {
-            throw th;
-        }
         return new b(this.a, h, str, bArrG);
     }
 

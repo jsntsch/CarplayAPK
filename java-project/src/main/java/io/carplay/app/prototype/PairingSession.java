@@ -145,7 +145,7 @@ public final class PairingSession implements AutoCloseable {
         }
 
         @Override // io.carplay.app.secured.MfiCertificateVerifier.c
-        public void a(String str, byte[] bArr) {
+        public void a(String str, byte[] bArr) throws IOException {
             synchronized (this.c.i) {
                 try {
                     if (this.c.u) {
@@ -587,7 +587,7 @@ public final class PairingSession implements AutoCloseable {
 
         void b(String str);
 
-        default i5 c() {
+        default i5 c() throws IOException {
             return null;
         }
 
@@ -871,7 +871,6 @@ public final class PairingSession implements AutoCloseable {
                     } else {
                         connectivityManager.registerNetworkCallback(networkRequest, networkCallback);
                     }
-                    this = 1;
                     return true;
                 } catch (RuntimeException e2) {
                     this.s = null;
@@ -1007,7 +1006,7 @@ public final class PairingSession implements AutoCloseable {
     /* JADX WARN: Code duplicated, block: B:71:0x00a4  */
     /* JADX WARN: Code duplicated, block: B:98:0x008a A[EXC_TOP_SPLITTER, SYNTHETIC] */
     /* JADX INFO: renamed from: F0, reason: merged with bridge method [inline-methods] */
-    public void c1(BluetoothDevice bluetoothDevice, AtomicInteger atomicInteger, int i2) throws Throwable {
+    public void c1(BluetoothDevice bluetoothDevice, AtomicInteger atomicInteger, int i2) {
         Exception e2;
         BluetoothSocket bluetoothSocketCreateRfcommSocketToServiceRecord;
         String str;
@@ -1346,7 +1345,7 @@ public final class PairingSession implements AutoCloseable {
         Code decompiled incorrectly, please refer to instructions dump.
         To view partially-correct add '--show-bad-code' argument
     */
-    public void k1(android.bluetooth.BluetoothSocket r23) throws java.lang.Throwable {
+    public void k1(android.bluetooth.BluetoothSocket r23) {
         /*
             Method dump skipped, instruction units count: 861
             To view this dump add '--comments-level debug' option
@@ -1575,6 +1574,20 @@ public final class PairingSession implements AutoCloseable {
                 throw th;
             }
         }
+    }
+
+    /* JADX INFO: Access modifiers changed from: private */
+    public /* synthetic */ void V0(BluetoothSocket bluetoothSocket) {
+        I1(bluetoothSocket);
+    }
+
+    /* JADX INFO: Access modifiers changed from: private */
+    public /* synthetic */ void g1(BluetoothSocket bluetoothSocket) {
+        I1(bluetoothSocket);
+    }
+
+    private void I1(BluetoothSocket bluetoothSocket) {
+        throw new UnsupportedOperationException("Method not decompiled: io.carplay.app.prototype.PairingSession.I1(android.bluetooth.BluetoothSocket):void");
     }
 
     /* JADX INFO: Access modifiers changed from: private */
@@ -1828,7 +1841,7 @@ public final class PairingSession implements AutoCloseable {
     }
 
     /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void Y0(BluetoothDevice bluetoothDevice, AtomicInteger atomicInteger) throws Throwable {
+    public /* synthetic */ void Y0(BluetoothDevice bluetoothDevice, AtomicInteger atomicInteger) {
         c1(bluetoothDevice, atomicInteger, 4);
     }
 
@@ -1949,7 +1962,7 @@ public final class PairingSession implements AutoCloseable {
     }
 
     /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void n1(BluetoothDevice bluetoothDevice, AtomicInteger atomicInteger) throws Throwable {
+    public /* synthetic */ void n1(BluetoothDevice bluetoothDevice, AtomicInteger atomicInteger) {
         c1(bluetoothDevice, atomicInteger, 1);
     }
 
@@ -2065,7 +2078,7 @@ public final class PairingSession implements AutoCloseable {
         return z;
     }
 
-    public static InetSocketAddress w1(Context context, Network network, Iap2Csm.a aVar) {
+    public static InetSocketAddress w1(Context context, Network network, Iap2Csm.a aVar) throws IOException {
         return x1(context, network, aVar, null);
     }
 
@@ -2145,11 +2158,12 @@ public final class PairingSession implements AutoCloseable {
             if (!this.t && !this.u) {
                 this.n = h5Var;
                 this.t = true;
+            } else {
+                if (h5Var != null) {
+                    h5Var.close();
+                }
+                throw new IllegalStateException("Bootstrap instance already used");
             }
-            if (h5Var != null) {
-                h5Var.close();
-            }
-            throw new IllegalStateException("Bootstrap instance already used");
         }
         if (this.a.checkSelfPermission("android.permission.BLUETOOTH_CONNECT") != 0) {
             T1("BLUETOOTH_CONNECT_PERMISSION_REQUIRED");

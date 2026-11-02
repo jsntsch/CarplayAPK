@@ -1,6 +1,7 @@
 package io.carplay.app.prototype;
 
 import io.carplay.app.secured.VideoCipher;
+import java.io.IOException;
 import java.util.List;
 
 /* JADX INFO: compiled from: CarPlus */
@@ -28,7 +29,7 @@ public final /* synthetic */ class s implements UpdateChecker.a, VideoCipher.b.c
     }
 
     @Override // io.carplay.app.secured.VideoCipher.b.c
-    public void c(List list, long j, long j2, long j3) {
+    public void c(List list, long j, long j2, long j3) throws IOException {
         ((AvcEncoder) this.b).x(list, j, j2, j3);
     }
 }

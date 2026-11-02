@@ -116,7 +116,7 @@ public final class z {
         return cVar.q() == 110 && cVar.k() && cVar.v() == aVar.k() && cVar.j() == aVar.i() && cVar.n() >= aVar.h();
     }
 
-    public synchronized x.c b(x xVar, int i) {
+    public synchronized x.c b(x xVar, int i) throws IOException {
         Optional<a> optionalD = d(xVar, i);
         if (optionalD.isPresent()) {
             for (x.c cVar : xVar.i()) {
@@ -138,7 +138,7 @@ public final class z {
         return (aVar == null || !c(xVar, aVar)) ? Optional.empty() : Optional.of(aVar);
     }
 
-    public synchronized a g(x xVar, int i, x.c cVar, int i2) {
+    public synchronized a g(x xVar, int i, x.c cVar, int i2) throws IOException {
         a aVar;
         aVar = new a(xVar.o(), i, cVar.v(), cVar.j(), i2);
         if (!c(xVar, aVar) || !xVar.i().contains(cVar)) {

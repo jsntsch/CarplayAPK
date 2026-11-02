@@ -59,14 +59,13 @@ public final class h5 implements AutoCloseable {
     public void p(BluetoothServerSocket bluetoothServerSocket) {
         boolean z;
         int iMax;
-        BluetoothSocket bluetoothSocketAccept;
+        BluetoothSocket bluetoothSocketAccept = null;
         Runnable runnable;
         boolean z2 = false;
         while (true) {
             synchronized (this.a) {
                 try {
                     if (this.k || !this.d.contains(bluetoothServerSocket)) {
-                        break;
                         break;
                     } else {
                         z = this.n && bluetoothServerSocket == this.e;
@@ -79,39 +78,40 @@ public final class h5 implements AutoCloseable {
             if (z) {
                 z2 = true;
             }
-            if (z) {
-                try {
+            try {
+                if (z) {
                     bluetoothSocketAccept = bluetoothServerSocket.accept();
-                } catch (IOException | RuntimeException unused) {
-                    synchronized (this.a) {
-                        try {
-                            if (this.k || !this.d.contains(bluetoothServerSocket) || !this.n || bluetoothServerSocket != this.e || z2) {
-                                if (this.k || !this.d.remove(bluetoothServerSocket)) {
-                                    runnable = null;
+                } else {
+                    bluetoothSocketAccept = bluetoothServerSocket.accept(iMax);
+                }
+            } catch (IOException | RuntimeException unused) {
+                synchronized (this.a) {
+                    try {
+                        if (this.k || !this.d.contains(bluetoothServerSocket) || !this.n || bluetoothServerSocket != this.e || z2) {
+                            if (this.k || !this.d.remove(bluetoothServerSocket)) {
+                                runnable = null;
+                            } else {
+                                int i = this.o - 1;
+                                this.o = i;
+                                if (i == 0) {
+                                    runnable = this.h;
                                 } else {
-                                    int i = this.o - 1;
-                                    this.o = i;
-                                    if (i == 0) {
-                                        runnable = this.h;
-                                    } else {
-                                        runnable = null;
-                                    }
+                                    runnable = null;
                                 }
-                                if (runnable != null) {
-                                    close();
-                                    runnable.run();
-                                    return;
-                                }
+                            }
+                            if (runnable != null) {
+                                close();
+                                runnable.run();
                                 return;
                             }
-                            z2 = true;
-                        } catch (Throwable th2) {
-                            throw th2;
+                            return;
                         }
+                        z2 = true;
+                    } catch (Throwable th2) {
+                        throw th2;
                     }
                 }
-            } else {
-                bluetoothSocketAccept = bluetoothServerSocket.accept(iMax);
+                continue;
             }
             k(bluetoothSocketAccept);
         }
@@ -188,7 +188,7 @@ public final class h5 implements AutoCloseable {
         }
     }
 
-    private void u(Context context, int i) {
+    private void u(Context context, int i) throws IOException {
         synchronized (this.a) {
             if (this.l || this.k) {
                 throw new IOException("DISCOVERY_ALREADY_USED");
@@ -277,7 +277,7 @@ public final class h5 implements AutoCloseable {
         }
     }
 
-    public void i(String str, Consumer<BluetoothSocket> consumer, Runnable runnable) {
+    public void i(String str, Consumer<BluetoothSocket> consumer, Runnable runnable) throws IOException {
         ArrayList arrayList;
         int i;
         BluetoothSocket bluetoothSocket;
@@ -378,15 +378,15 @@ public final class h5 implements AutoCloseable {
         }
     }
 
-    public void s(Context context) {
+    public void s(Context context) throws IOException {
         u(context, 0);
     }
 
-    public void t(Context context) {
+    public void t(Context context) throws IOException {
         u(context, 2);
     }
 
-    public void v(Context context) {
+    public void v(Context context) throws IOException {
         u(context, 1);
     }
 }

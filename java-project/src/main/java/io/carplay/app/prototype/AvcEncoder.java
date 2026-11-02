@@ -273,14 +273,14 @@ final class AvcEncoder implements AutoCloseable {
     public interface f {
         void a(String str);
 
-        default void b(io.carplay.app.secured.h hVar) {
+        default void b(io.carplay.app.secured.h hVar) throws IOException {
             d(hVar.a(), hVar.n());
         }
 
         default void c(int i) {
         }
 
-        void d(byte[] bArr, long j);
+        void d(byte[] bArr, long j) throws IOException;
 
         void e(String str);
     }
@@ -294,7 +294,7 @@ final class AvcEncoder implements AutoCloseable {
                 byte[] bArr2 = (byte[]) bArr.clone();
                 this.a = bArr2;
                 this.b++;
-                return j.a(bArr2, i, i2);
+                return io.carplay.app.secured.j.a(bArr2, i, i2);
             }
             return null;
         }
@@ -822,7 +822,7 @@ final class AvcEncoder implements AutoCloseable {
         return false;
     }
 
-    private void n() {
+    private void n() throws IOException {
         long jNanoTime = System.nanoTime() + 2000000000;
         synchronized (this.q) {
             while (!this.t && !this.o.get()) {
@@ -832,6 +832,8 @@ final class AvcEncoder implements AutoCloseable {
                         throw new IOException("decoder surface timeout");
                     }
                     TimeUnit.NANOSECONDS.timedWait(this.q, jNanoTime2);
+                } catch (InterruptedException e) {
+                    throw new IOException(e);
                 } catch (Throwable th) {
                     throw th;
                 }
@@ -857,7 +859,7 @@ final class AvcEncoder implements AutoCloseable {
         return bArr;
     }
 
-    public static c q(Supplier<ByteBuffer> supplier, Runnable runnable, int i, int i2, long j, int i3) {
+    public static c q(Supplier<ByteBuffer> supplier, Runnable runnable, int i, int i2, long j, int i3) throws IOException {
         Throwable th = null;
         try {
             try {
@@ -1050,7 +1052,7 @@ final class AvcEncoder implements AutoCloseable {
     }
 
     /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void x(List list, long j, long j2, long j3) {
+    public /* synthetic */ void x(List list, long j, long j2, long j3) throws IOException {
         this.u = this.i.m();
         this.v = this.i.i();
         m(new io.carplay.app.secured.h(list, this.u, this.v, list.stream().anyMatch(new io.carplay.app.prototype.e()), j, j2, j3));
@@ -1074,7 +1076,7 @@ final class AvcEncoder implements AutoCloseable {
         return true;
     }
 
-    public synchronized void J(byte[] bArr, byte[] bArr2) {
+    public synchronized void J(byte[] bArr, byte[] bArr2) throws IOException {
         this.i.l(bArr, bArr2);
         this.u = (byte[]) bArr.clone();
         this.v = (byte[]) bArr2.clone();
@@ -1113,7 +1115,7 @@ final class AvcEncoder implements AutoCloseable {
     	at jadx.core.dex.visitors.typeinference.FixTypesVisitor.applyFieldType(FixTypesVisitor.java:309)
     	at jadx.core.dex.visitors.typeinference.FixTypesVisitor.visit(FixTypesVisitor.java:94)
      */
-    public synchronized void l(byte[] bArr) {
+    public synchronized void l(byte[] bArr) throws IOException {
         if (this.o.get()) {
             return;
         }
@@ -1133,7 +1135,7 @@ final class AvcEncoder implements AutoCloseable {
         }
     }
 
-    public synchronized void m(io.carplay.app.secured.h hVar) {
+    public synchronized void m(io.carplay.app.secured.h hVar) throws IOException {
         try {
             if (this.o.get()) {
                 return;

@@ -98,10 +98,13 @@ public final class PcmQueue implements AutoCloseable {
         return !this.j && aVar != null && aVar.a == this && aVar.b() == this.h;
     }
 
-    public synchronized long i(byte[] bArr) {
-        long j;
+    public synchronized long i(byte[] bArr) throws IOException {
+        long j = 0L;
         c();
-        if (bArr != null && bArr.length <= 1048576) {
+        if (bArr == null || bArr.length > 1048576 || bArr.length % this.b != 0) {
+            throw f("PCM_QUEUE_INPUT");
+        }
+        {
             int length = bArr.length;
             int i = this.b;
             if (length % i == 0) {
@@ -136,7 +139,6 @@ public final class PcmQueue implements AutoCloseable {
                 }
             }
         }
-        throw f("PCM_QUEUE_INPUT");
         return j;
     }
 
@@ -148,11 +150,11 @@ public final class PcmQueue implements AutoCloseable {
         return this.g;
     }
 
-    public synchronized void n(long j) {
+    public synchronized void n(long j) throws IOException {
         o(j);
     }
 
-    public synchronized long o(long j) {
+    public synchronized long o(long j) throws IOException {
         long jAddExact;
         c();
         if (j <= this.h) {
@@ -174,17 +176,18 @@ public final class PcmQueue implements AutoCloseable {
 
     public synchronized a p() {
         while (true) {
+            int i = this.g;
+            if (i != 0 && (!this.d || i >= this.c)) {
+                break;
+            }
+            if (this.j) {
+                break;
+            }
             try {
-                int i = this.g;
-                if (i != 0 && (!this.d || i >= this.c)) {
-                    break;
-                }
-                if (this.j) {
-                    break;
-                }
                 wait();
-            } catch (Throwable th) {
-                throw th;
+            } catch (InterruptedException unused) {
+                Thread.currentThread().interrupt();
+                return null;
             }
         }
         return m();
@@ -226,15 +229,15 @@ public final class PcmQueue implements AutoCloseable {
         }
     }
 
-    public PcmQueue(int i, int i2, long j) {
+    public PcmQueue(int i, int i2, long j) throws IOException {
         this(i, i2, j, 240, false);
     }
 
-    public PcmQueue(int i, int i2, long j, int i3) {
+    public PcmQueue(int i, int i2, long j, int i3) throws IOException {
         this(i, i2, j, i3, true);
     }
 
-    public PcmQueue(int i, int i2) {
+    public PcmQueue(int i, int i2) throws IOException {
         this(i, i2, 0L);
     }
 }

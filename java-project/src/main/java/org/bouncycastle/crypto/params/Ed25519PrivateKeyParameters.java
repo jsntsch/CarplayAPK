@@ -6,6 +6,7 @@ import io.carplay.app.secured.e;
 import io.carplay.app.secured.f;
 import io.carplay.app.secured.l6;
 import java.io.EOFException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.security.SecureRandom;
 
@@ -16,7 +17,7 @@ public final class Ed25519PrivateKeyParameters extends f {
     private Ed25519PublicKeyParameters cachedPublicKey;
     private final byte[] data;
 
-    public Ed25519PrivateKeyParameters(InputStream inputStream) throws EOFException {
+    public Ed25519PrivateKeyParameters(InputStream inputStream) throws IOException {
         super(true);
         byte[] bArr = new byte[32];
         this.data = bArr;

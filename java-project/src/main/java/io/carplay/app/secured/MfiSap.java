@@ -35,7 +35,7 @@ public final class MfiSap {
     private MfiSap() {
     }
 
-    public static a a(EventChannel eventChannel, String str) throws GeneralSecurityException {
+    public static a a(EventChannel eventChannel, String str) throws GeneralSecurityException, IOException {
         if (str == null || !str.matches("(?i)[0-9a-f]{64}")) {
             throw new c("MFiSAP requires the explicit 64-hex leaf certificate fingerprint from this accessory's normal pairing");
         }
@@ -45,7 +45,14 @@ public final class MfiSap {
         DerCodec.b bVarW = DerCodec.w();
         EventChannel.b bVarV = eventChannel.v("POST", "/auth-setup", "application/octet-stream", DerCodec.d(new byte[]{1}, bVarW.b()));
         bVarV.g();
-        return f(bVarW.a(), bVarW.b(), bVarV.c(), str);
+        try {
+            return f(bVarW.a(), bVarW.b(), bVarV.c(), str);
+        } catch (GeneralSecurityException | IOException e) {
+            throw e;
+        } catch (Throwable th) {
+            n(th);
+            throw new GeneralSecurityException("MFiSAP verification failed", th);
+        }
     }
 
     private static byte[] b(byte[] bArr, byte[] bArr2) throws NoSuchAlgorithmException {
@@ -92,7 +99,7 @@ public final class MfiSap {
         return 0;
     }
 
-    public static void e(EventChannel eventChannel) {
+    public static void e(EventChannel eventChannel) throws GeneralSecurityException, IOException {
         if (!eventChannel.n()) {
             throw new GeneralSecurityException("Candidate proof requires pair-verified encrypted control");
         }
@@ -109,11 +116,18 @@ public final class MfiSap {
             throw new IOException("Truncated MFiSAP candidate certificate");
         }
         m5 m5VarF = m5.f(Arrays.copyOfRange(bArrC, 36, iD + 36));
-        f(bVarW.a(), bVarW.b(), bArrC, m5VarF.e());
+        try {
+            f(bVarW.a(), bVarW.b(), bArrC, m5VarF.e());
+        } catch (GeneralSecurityException | IOException e) {
+            throw e;
+        } catch (Throwable th) {
+            n(th);
+            throw new GeneralSecurityException("MFiSAP verification failed", th);
+        }
         throw new b(m5VarF, i);
     }
 
-    public static a f(byte[] bArr, byte[] bArr2, byte[] bArr3, String str) throws Throwable {
+    public static a f(byte[] bArr, byte[] bArr2, byte[] bArr3, String str) throws GeneralSecurityException, IOException {
         Throwable th = null;
         byte[] bArr4;
         byte[] bArrB;
@@ -202,7 +216,8 @@ public final class MfiSap {
                     if (bArr4 != null) {
                         Arrays.fill(bArr4, (byte) 0);
                     }
-                    throw thCaught;
+                    n(thCaught);
+                    throw new GeneralSecurityException("MFiSAP verification failed", thCaught);
                 }
             } catch (Throwable th2) {
                 th = th2;
@@ -214,6 +229,24 @@ public final class MfiSap {
             bArr4 = null;
             bArrB = null;
         }
+        n(th);
+        throw new GeneralSecurityException("MFiSAP verification failed", th);
+    }
+
+    private static void n(Throwable th) throws GeneralSecurityException, IOException {
+        if (th instanceof GeneralSecurityException) {
+            throw (GeneralSecurityException) th;
+        }
+        if (th instanceof IOException) {
+            throw (IOException) th;
+        }
+        if (th instanceof RuntimeException) {
+            throw (RuntimeException) th;
+        }
+        if (th instanceof Error) {
+            throw (Error) th;
+        }
+        throw new GeneralSecurityException("MFiSAP verification failed", th);
     }
 
     public static final class a {
@@ -251,7 +284,7 @@ public final class MfiSap {
         private final byte[] a;
         private final String b;
 
-        private b(m5 m5Var) {
+        private b(m5 m5Var) throws GeneralSecurityException {
             super("Explicit current-WLAN certificate confirmation required");
             this.a = m5Var.a();
             this.b = m5Var.e();
@@ -265,7 +298,7 @@ public final class MfiSap {
             return this.b;
         }
 
-        public /* synthetic */ b(m5 m5Var, int i) {
+        public /* synthetic */ b(m5 m5Var, int i) throws GeneralSecurityException {
             this(m5Var);
         }
     }

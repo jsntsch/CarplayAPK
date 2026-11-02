@@ -269,7 +269,7 @@ public interface g4 {
             return this.f;
         }
 
-        public b k() {
+        public Endian k() {
             return this.e;
         }
 
@@ -311,7 +311,7 @@ public interface g4 {
         }
 
         public e(a aVar, int i, int i2, int i3, Endian bVar) {
-            this(aVar, i, i2, i3, bVar, f.UNKNOWN);
+            this(aVar, i, i2, i3, bVar, g4.f.UNKNOWN);
         }
     }
 }

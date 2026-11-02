@@ -102,16 +102,16 @@ public final class t4 implements AutoCloseable, j6 {
             a();
         }
 
-        default void d(r6.a aVar) {
+        default void d(r6.a aVar) throws IOException {
         }
 
-        default void e(int i, int i2, int i3) {
+        default void e(int i, int i2, int i3) throws IOException {
         }
 
         default void f(int i) {
         }
 
-        void g(r6.a aVar, int i, int i2, int i3);
+        void g(r6.a aVar, int i, int i2, int i3) throws IOException;
 
         default boolean i(r6.a aVar, int i, int i2, int i3) {
             return true;
@@ -121,7 +121,7 @@ public final class t4 implements AutoCloseable, j6 {
             f(i);
         }
 
-        void k(r6.a aVar, byte[] bArr, long j);
+        void k(r6.a aVar, byte[] bArr, long j) throws IOException;
 
         default void l(j6 j6Var, j6.b bVar) {
         }
@@ -276,7 +276,7 @@ public final class t4 implements AutoCloseable, j6 {
 
     @FunctionalInterface
     public interface h {
-        void h(byte[] bArr, long j);
+        void h(byte[] bArr, long j) throws IOException;
     }
 
     private t4(c cVar, f fVar, h hVar, d dVar, VideoConfig gVar) {
@@ -347,9 +347,13 @@ public final class t4 implements AutoCloseable, j6 {
 
     /* JADX INFO: Access modifiers changed from: private */
     public /* synthetic */ o G(Provider provider, byte[] bArr) {
-        g3 g3Var = new g3("AES/ECB/PKCS5Padding", provider, new SecretKeySpec(bArr, "AES"), null);
-        this.E = g3Var;
-        return g3Var;
+        try {
+            g3 g3Var = new g3("AES/ECB/PKCS5Padding", provider, new SecretKeySpec(bArr, "AES"), null);
+            this.E = g3Var;
+            return g3Var;
+        } catch (GeneralSecurityException e) {
+            return null;
+        }
     }
 
     private void H(r6.a aVar, Exception exc) {
@@ -595,9 +599,8 @@ public final class t4 implements AutoCloseable, j6 {
         return exc instanceof r5 ? exc.getMessage() : "bounded session ended";
     }
 
-    private void S(int i, byte[] bArr) {
+    private void S(int i, byte[] bArr) throws IOException {
         synchronized (this.A) {
-            try {
                 if (this.h.get()) {
                     throw new IOException("cancelled");
                 }
@@ -607,9 +610,6 @@ public final class t4 implements AutoCloseable, j6 {
                 r6.l(W(aVar).getOutputStream(), aVar, cVarB.i(), cVarB.g(), 32767);
                 W(aVar).getOutputStream().flush();
                 this.a.a(String.format(Locale.ROOT, "TX CMD 0x%x body=%d encrypted=%s", Integer.valueOf(i), Integer.valueOf(cVarB.g().length), Boolean.valueOf(this.F)));
-            } catch (Throwable th) {
-                throw th;
-            }
         }
     }
 
@@ -627,16 +627,12 @@ public final class t4 implements AutoCloseable, j6 {
         return "AnnexB_start_code_observed_codec_unconfirmed";
     }
 
-    private Socket W(r6.a aVar) {
+    private Socket W(r6.a aVar) throws IOException {
         Socket socket;
         synchronized (this.f) {
-            try {
-                socket = this.f.get(aVar);
-                if (socket == null) {
-                    throw new IOException("closed socket");
-                }
-            } catch (Throwable th) {
-                throw th;
+            socket = this.f.get(aVar);
+            if (socket == null) {
+                throw new IOException("closed socket");
             }
         }
         return socket;
@@ -673,11 +669,11 @@ public final class t4 implements AutoCloseable, j6 {
         }
     }
 
-    public static /* bridge */ /* synthetic */ int v(t4 t4Var) {
+    public static /* bridge */ /* synthetic */ int v(t4 t4Var) throws SocketTimeoutException {
         return t4Var.N(500);
     }
 
-    private void x() {
+    private void x() throws IOException {
         if (this.M) {
             return;
         }
@@ -885,11 +881,9 @@ public final class t4 implements AutoCloseable, j6 {
     /* JADX WARN: Type inference failed for: r9v25 */
     /* JADX WARN: Type inference failed for: r9v3, types: [io.carplay.app.secured.o5] */
     /* JADX WARN: Type inference failed for: r9v5, types: [io.carplay.app.secured.o5] */
-    public e P() throws Throwable {
+    public e P() throws IOException {
         Exception e = null;
         Throwable th = null;
-        o5 o5Var;
-        o5 o5Var2;
         o5 r9;
         String str;
         f6 f6Var;
@@ -901,13 +895,11 @@ public final class t4 implements AutoCloseable, j6 {
         f6 f6Var2;
         Iterator<Thread> it3;
         Iterator<AudioRelay> it4;
-        o5 o5Var3;
-        o5 o5Var4;
         r6.a aVar;
         r6.c cVarI;
         byte[] bArrA;
         int iH;
-        int i;
+        int i = 3;
         int iIntValue;
         int i2;
         l5.a aVarC;
@@ -1002,12 +994,10 @@ public final class t4 implements AutoCloseable, j6 {
                     b bVar = new b(W(r6.a.CMD));
                     HashMap map = new HashMap();
                     long j3 = 0;
-                    o5VarG = o5VarG;
                     while (true) {
                         if (this.h.get()) {
-                            o5Var3 = o5VarG;
+                            break;
                         } else {
-                            o5Var3 = o5VarG;
                             try {
                                 try {
                                     if (System.nanoTime() < this.G) {
@@ -1048,12 +1038,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                             }
                                                             if (this.e.h()) {
                                                             }
-                                                            o5VarG = o5Var3;
                                                             j2 = j;
                                                             num = num;
                                                             map = map;
                                                             exc = null;
-                                                            break;
                                                             break;
                                                         case t1.f /* 65544 */:
                                                             if (this.O) {
@@ -1074,12 +1062,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                             }
                                                             if (this.e.h()) {
                                                             }
-                                                            o5VarG = o5Var3;
                                                             j2 = j;
                                                             num = num;
                                                             map = map;
                                                             exc = null;
-                                                            break;
                                                             break;
                                                         case 65574:
                                                             K(bArrA);
@@ -1093,12 +1079,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                             }
                                                             if (this.e.h()) {
                                                             }
-                                                            o5VarG = o5Var3;
                                                             j2 = j;
                                                             num = num;
                                                             map = map;
                                                             exc = null;
-                                                            break;
                                                             break;
                                                         case l4.i /* 65609 */:
                                                             if (this.N) {
@@ -1127,12 +1111,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                             }
                                                             if (this.e.h()) {
                                                             }
-                                                            o5VarG = o5Var3;
                                                             j2 = j;
                                                             num = num;
                                                             map = map;
                                                             exc = null;
-                                                            break;
                                                             break;
                                                         case 65611:
                                                             zG = ProtobufReader.a(bArrA).g(1);
@@ -1155,12 +1137,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                             }
                                                             if (this.e.h()) {
                                                             }
-                                                            o5VarG = o5Var3;
                                                             j2 = j;
                                                             num = num;
                                                             map = map;
                                                             exc = null;
-                                                            break;
                                                             break;
                                                         case t1.h /* 65617 */:
                                                             if ("VERIFIED".equals(this.Y)) {
@@ -1176,12 +1156,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                             }
                                                             if (this.e.h()) {
                                                             }
-                                                            o5VarG = o5Var3;
                                                             j2 = j;
                                                             num = num;
                                                             map = map;
                                                             exc = null;
-                                                            break;
                                                             break;
                                                         case t1.j /* 65642 */:
                                                             if (this.M) {
@@ -1207,12 +1185,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                             }
                                                             if (this.e.h()) {
                                                             }
-                                                            o5VarG = o5Var3;
                                                             j2 = j;
                                                             num = num;
                                                             map = map;
                                                             exc = null;
-                                                            break;
                                                             break;
                                                     }
                                                 } else {
@@ -1243,12 +1219,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                         }
                                                         if (this.e.h()) {
                                                         }
-                                                        o5VarG = o5Var3;
                                                         j2 = j;
                                                         num = num;
                                                         map = map;
                                                         exc = null;
-                                                        break;
                                                         break;
                                                     case t1.f /* 65544 */:
                                                         if (this.O) {
@@ -1269,12 +1243,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                         }
                                                         if (this.e.h()) {
                                                         }
-                                                        o5VarG = o5Var3;
                                                         j2 = j;
                                                         num = num;
                                                         map = map;
                                                         exc = null;
-                                                        break;
                                                         break;
                                                     case 65574:
                                                         K(bArrA);
@@ -1288,12 +1260,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                         }
                                                         if (this.e.h()) {
                                                         }
-                                                        o5VarG = o5Var3;
                                                         j2 = j;
                                                         num = num;
                                                         map = map;
                                                         exc = null;
-                                                        break;
                                                         break;
                                                     case l4.i /* 65609 */:
                                                         if (this.N) {
@@ -1322,12 +1292,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                         }
                                                         if (this.e.h()) {
                                                         }
-                                                        o5VarG = o5Var3;
                                                         j2 = j;
                                                         num = num;
                                                         map = map;
                                                         exc = null;
-                                                        break;
                                                         break;
                                                     case 65611:
                                                         zG = ProtobufReader.a(bArrA).g(1);
@@ -1350,12 +1318,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                         }
                                                         if (this.e.h()) {
                                                         }
-                                                        o5VarG = o5Var3;
                                                         j2 = j;
                                                         num = num;
                                                         map = map;
                                                         exc = null;
-                                                        break;
                                                         break;
                                                     case t1.h /* 65617 */:
                                                         if ("VERIFIED".equals(this.Y)) {
@@ -1371,12 +1337,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                         }
                                                         if (this.e.h()) {
                                                         }
-                                                        o5VarG = o5Var3;
                                                         j2 = j;
                                                         num = num;
                                                         map = map;
                                                         exc = null;
-                                                        break;
                                                         break;
                                                     case t1.j /* 65642 */:
                                                         if (this.M) {
@@ -1402,12 +1366,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                         }
                                                         if (this.e.h()) {
                                                         }
-                                                        o5VarG = o5Var3;
                                                         j2 = j;
                                                         num = num;
                                                         map = map;
                                                         exc = null;
-                                                        break;
                                                         break;
                                                 }
                                             } else {
@@ -1452,16 +1414,13 @@ public final class t4 implements AutoCloseable, j6 {
                                                                         throw new IOException(this.H);
                                                                     }
                                                                     if (this.e.h() || !this.T || this.j.get() < 8388608) {
-                                                                        o5VarG = o5Var3;
                                                                         j2 = j;
                                                                         num = num;
                                                                         map = map;
                                                                         exc = null;
                                                                     } else {
                                                                         str3 = "8MiB actual video received; bounded experiment complete";
-                                                                        o5Var4 = o5Var3;
                                                                     }
-                                                                    break;
                                                                     break;
                                                                 case 65540:
                                                                     if (!this.L) {
@@ -1479,12 +1438,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                                     }
                                                                     if (this.e.h()) {
                                                                     }
-                                                                    o5VarG = o5Var3;
                                                                     j2 = j;
                                                                     num = num;
                                                                     map = map;
                                                                     exc = null;
-                                                                    break;
                                                                     break;
                                                                 case t1.f /* 65544 */:
                                                                     if (this.O || this.R) {
@@ -1538,12 +1495,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                                     }
                                                                     if (this.e.h()) {
                                                                     }
-                                                                    o5VarG = o5Var3;
                                                                     j2 = j;
                                                                     num = num;
                                                                     map = map;
                                                                     exc = null;
-                                                                    break;
                                                                     break;
                                                                 case 65563:
                                                                 case 65564:
@@ -1560,12 +1515,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                                     }
                                                                     if (this.e.h()) {
                                                                     }
-                                                                    o5VarG = o5Var3;
                                                                     j2 = j;
                                                                     num = num;
                                                                     map = map;
                                                                     exc = null;
-                                                                    break;
                                                                     break;
                                                                 case 65574:
                                                                     K(bArrA);
@@ -1579,12 +1532,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                                     }
                                                                     if (this.e.h()) {
                                                                     }
-                                                                    o5VarG = o5Var3;
                                                                     j2 = j;
                                                                     num = num;
                                                                     map = map;
                                                                     exc = null;
-                                                                    break;
                                                                     break;
                                                                 case l4.i /* 65609 */:
                                                                     if (this.N) {
@@ -1613,12 +1564,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                                     }
                                                                     if (this.e.h()) {
                                                                     }
-                                                                    o5VarG = o5Var3;
                                                                     j2 = j;
                                                                     num = num;
                                                                     map = map;
                                                                     exc = null;
-                                                                    break;
                                                                     break;
                                                                 case 65611:
                                                                     zG = ProtobufReader.a(bArrA).g(1);
@@ -1641,12 +1590,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                                     }
                                                                     if (this.e.h()) {
                                                                     }
-                                                                    o5VarG = o5Var3;
                                                                     j2 = j;
                                                                     num = num;
                                                                     map = map;
                                                                     exc = null;
-                                                                    break;
                                                                     break;
                                                                 case t1.h /* 65617 */:
                                                                     if ("VERIFIED".equals(this.Y)) {
@@ -1662,12 +1609,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                                     }
                                                                     if (this.e.h()) {
                                                                     }
-                                                                    o5VarG = o5Var3;
                                                                     j2 = j;
                                                                     num = num;
                                                                     map = map;
                                                                     exc = null;
-                                                                    break;
                                                                     break;
                                                                 case t1.j /* 65642 */:
                                                                     if (this.M || this.c0 != null || this.S) {
@@ -1687,12 +1632,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                                     }
                                                                     if (this.e.h()) {
                                                                     }
-                                                                    o5VarG = o5Var3;
                                                                     j2 = j;
                                                                     num = num;
                                                                     map = map;
                                                                     exc = null;
-                                                                    break;
                                                                     break;
                                                                 case t1.l /* 65644 */:
                                                                     f6Var3 = this.c0;
@@ -1714,12 +1657,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                                     }
                                                                     if (this.e.h()) {
                                                                     }
-                                                                    o5VarG = o5Var3;
                                                                     j2 = j;
                                                                     num = num;
                                                                     map = map;
                                                                     exc = null;
-                                                                    break;
                                                                     break;
                                                                 case t1.n /* 65646 */:
                                                                     if (bArrA.length == 0 || !this.Q || this.S) {
@@ -1739,12 +1680,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                                     }
                                                                     if (this.e.h()) {
                                                                     }
-                                                                    o5VarG = o5Var3;
                                                                     j2 = j;
                                                                     num = num;
                                                                     map = map;
                                                                     exc = null;
-                                                                    break;
                                                                     break;
                                                                 default:
                                                                     if (this.K) {
@@ -1757,12 +1696,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                                     }
                                                                     if (this.e.h()) {
                                                                     }
-                                                                    o5VarG = o5Var3;
                                                                     j2 = j;
                                                                     num = num;
                                                                     map = map;
                                                                     exc = null;
-                                                                    break;
                                                                     break;
                                                             }
                                                         } else {
@@ -1793,12 +1730,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                                 }
                                                                 if (this.e.h()) {
                                                                 }
-                                                                o5VarG = o5Var3;
                                                                 j2 = j;
                                                                 num = num;
                                                                 map = map;
                                                                 exc = null;
-                                                                break;
                                                                 break;
                                                             case t1.f /* 65544 */:
                                                                 if (this.O) {
@@ -1819,12 +1754,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                                 }
                                                                 if (this.e.h()) {
                                                                 }
-                                                                o5VarG = o5Var3;
                                                                 j2 = j;
                                                                 num = num;
                                                                 map = map;
                                                                 exc = null;
-                                                                break;
                                                                 break;
                                                             case 65574:
                                                                 K(bArrA);
@@ -1838,12 +1771,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                                 }
                                                                 if (this.e.h()) {
                                                                 }
-                                                                o5VarG = o5Var3;
                                                                 j2 = j;
                                                                 num = num;
                                                                 map = map;
                                                                 exc = null;
-                                                                break;
                                                                 break;
                                                             case l4.i /* 65609 */:
                                                                 if (this.N) {
@@ -1872,12 +1803,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                                 }
                                                                 if (this.e.h()) {
                                                                 }
-                                                                o5VarG = o5Var3;
                                                                 j2 = j;
                                                                 num = num;
                                                                 map = map;
                                                                 exc = null;
-                                                                break;
                                                                 break;
                                                             case 65611:
                                                                 zG = ProtobufReader.a(bArrA).g(1);
@@ -1900,12 +1829,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                                 }
                                                                 if (this.e.h()) {
                                                                 }
-                                                                o5VarG = o5Var3;
                                                                 j2 = j;
                                                                 num = num;
                                                                 map = map;
                                                                 exc = null;
-                                                                break;
                                                                 break;
                                                             case t1.h /* 65617 */:
                                                                 if ("VERIFIED".equals(this.Y)) {
@@ -1921,12 +1848,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                                 }
                                                                 if (this.e.h()) {
                                                                 }
-                                                                o5VarG = o5Var3;
                                                                 j2 = j;
                                                                 num = num;
                                                                 map = map;
                                                                 exc = null;
-                                                                break;
                                                                 break;
                                                             case t1.j /* 65642 */:
                                                                 if (this.M) {
@@ -1952,12 +1877,10 @@ public final class t4 implements AutoCloseable, j6 {
                                                                 }
                                                                 if (this.e.h()) {
                                                                 }
-                                                                o5VarG = o5Var3;
                                                                 j2 = j;
                                                                 num = num;
                                                                 map = map;
                                                                 exc = null;
-                                                                break;
                                                                 break;
                                                         }
                                                     } else {
@@ -1972,8 +1895,7 @@ public final class t4 implements AutoCloseable, j6 {
                                         }
                                     }
                                 } catch (Throwable thCaught) {
-                                    o5Var = o5Var3;
-                                    r10 = o5Var;
+                                    r10 = o5VarG;
                                     this.a.a("NATIVE_SOURCE_FINAL first_channel_end=" + ((String) Objects.requireNonNullElse(this.p.get(), "NONE")) + " " + X());
                                     close();
                                     scheduledExecutorService.shutdownNow();
@@ -2008,8 +1930,7 @@ public final class t4 implements AutoCloseable, j6 {
                                 }
                             } catch (Exception e3) {
                                 e = e3;
-                                o5Var2 = o5Var3;
-                                r9 = o5Var2;
+                                r9 = o5VarG;
                                 if (this.H != null) {
                                     str = this.H;
                                 } else {
@@ -2041,7 +1962,6 @@ public final class t4 implements AutoCloseable, j6 {
                                 c2Var = new c2(false, null);
                             }
                         }
-                        o5Var4 = o5Var3;
                     }
                     if (this.h.get()) {
                         str3 = this.H == null ? "stopped/deadline" : this.H;
@@ -2050,7 +1970,7 @@ public final class t4 implements AutoCloseable, j6 {
                     close();
                     scheduledExecutorService.shutdownNow();
                     l4Var.close();
-                    o5Var4.close();
+                    o5VarG.close();
                     f6 f6Var5 = this.c0;
                     if (f6Var5 != null) {
                         f6Var5.close();
@@ -2076,7 +1996,7 @@ public final class t4 implements AutoCloseable, j6 {
                     return eVar;
                 } catch (Exception e4) {
                     e = e4;
-                    r9 = o5Var2;
+                    r9 = o5VarG;
                     if (this.H != null) {
                         str = this.H;
                     } else {
@@ -2105,7 +2025,7 @@ public final class t4 implements AutoCloseable, j6 {
                 }
             } catch (Throwable th2) {
                 th = th2;
-                r10 = o5Var;
+                r10 = o5VarG;
                 this.a.a("NATIVE_SOURCE_FINAL first_channel_end=" + ((String) Objects.requireNonNullElse(this.p.get(), "NONE")) + " " + X());
                 close();
                 scheduledExecutorService.shutdownNow();
@@ -2129,12 +2049,11 @@ public final class t4 implements AutoCloseable, j6 {
             }
         } catch (Exception e5) {
             e = e5;
-            o5Var2 = o5VarG;
+            
         } catch (Throwable th3) {
             th = th3;
-            o5Var = o5VarG;
         }
-        r9 = o5Var2;
+        r9 = o5VarG;
         if (this.H != null) {
             str = this.H;
         } else {
@@ -2152,7 +2071,11 @@ public final class t4 implements AutoCloseable, j6 {
         }
         it = this.g.iterator();
         while (it.hasNext()) {
-            it.next().join(500L);
+            try {
+                it.next().join(500L);
+            } catch (InterruptedException unused4) {
+                Thread.currentThread().interrupt();
+            }
         }
         it2 = this.n.values().iterator();
         while (it2.hasNext()) {
@@ -2167,61 +2090,51 @@ public final class t4 implements AutoCloseable, j6 {
         return eVar2;
     }
 
-    public void T(i6.TouchAction aVar, int i, int i2) {
+    public void T(i6.TouchAction aVar, int i, int i2) throws IOException {
         long jNanoTime = System.nanoTime();
         synchronized (this.B) {
-            try {
-                long jNanoTime2 = System.nanoTime();
-                if (!J() || this.b0 == null) {
-                    if (this.C.a(TouchFlow.b.NOT_READY)) {
-                        O();
-                    }
-                    throw new IOException("native session not ready for touch");
+            long jNanoTime2 = System.nanoTime();
+            if (!J() || this.b0 == null) {
+                if (this.C.a(TouchFlow.b.NOT_READY)) {
+                    O();
                 }
+                throw new IOException("native session not ready for touch");
+            }
+            try {
+                i6.b bVarA = this.b0.a(aVar, i, i2);
                 try {
-                    i6.b bVarA = this.b0.a(aVar, i, i2);
-                    try {
-                        c2 c2Var = this.a0;
-                        r6.a aVar2 = r6.a.TOUCH;
-                        r6.c cVarB = c2Var.b(aVar2, bVarA.g(), bVarA.h());
-                        Socket socketW = W(aVar2);
-                        r6.l(socketW.getOutputStream(), aVar2, cVarB.i(), cVarB.g(), 32767);
-                        socketW.getOutputStream().flush();
-                        this.C.e(aVar, jNanoTime, jNanoTime2, System.nanoTime());
-                        long j = this.D + 1;
-                        this.D = j;
-                        if (j <= 4 || j % 100 == 0) {
-                            this.a.a("NATIVE_TOUCH_SENT action=" + aVar.name() + " count=" + j);
-                            O();
-                        }
-                    } catch (IOException e2) {
-                        close();
-                        if (!this.C.a(TouchFlow.b.IO)) {
-                            throw e2;
-                        }
+                    c2 c2Var = this.a0;
+                    r6.a aVar2 = r6.a.TOUCH;
+                    r6.c cVarB = c2Var.b(aVar2, bVarA.g(), bVarA.h());
+                    Socket socketW = W(aVar2);
+                    r6.l(socketW.getOutputStream(), aVar2, cVarB.i(), cVarB.g(), 32767);
+                    socketW.getOutputStream().flush();
+                    this.C.e(aVar, jNanoTime, jNanoTime2, System.nanoTime());
+                    long j = this.D + 1;
+                    this.D = j;
+                    if (j <= 4 || j % 100 == 0) {
+                        this.a.a("NATIVE_TOUCH_SENT action=" + aVar.name() + " count=" + j);
                         O();
-                        throw e2;
-                    } catch (GeneralSecurityException e3) {
-                        close();
-                        if (this.C.a(TouchFlow.b.CRYPTO)) {
-                            O();
-                        }
-                        throw new IOException("touch encryption failed", e3);
                     }
-                } catch (IllegalArgumentException | IllegalStateException e4) {
-                    if (!this.C.a(TouchFlow.b.INPUT)) {
-                        throw e4;
+                } catch (IOException e2) {
+                    close();
+                    if (!this.C.a(TouchFlow.b.IO)) {
+                        throw e2;
                     }
                     O();
+                    throw e2;
+                }
+            } catch (IllegalArgumentException | IllegalStateException e4) {
+                if (!this.C.a(TouchFlow.b.INPUT)) {
                     throw e4;
                 }
-            } catch (Throwable th) {
-                throw th;
+                O();
+                throw e4;
             }
         }
     }
 
-    public void U() {
+    public void U() throws IOException {
         synchronized (this.A) {
             if (this.h.get() || !this.S || !this.R || this.T) {
                 throw new r5("native video START not eligible");
@@ -2267,7 +2180,7 @@ public final class t4 implements AutoCloseable, j6 {
     }
 
     @Override // io.carplay.app.secured.j6
-    public boolean e() {
+    public boolean e() throws IOException {
         synchronized (this.A) {
             try {
                 if (J() && this.T && this.j.get() != 0 && !this.U) {
@@ -2286,7 +2199,7 @@ public final class t4 implements AutoCloseable, j6 {
     }
 
     @Override // io.carplay.app.secured.j6
-    public boolean f() {
+    public boolean f() throws IOException {
         synchronized (this.A) {
             try {
                 if (J() && this.T && this.j.get() != 0 && !this.U) {
@@ -2310,7 +2223,7 @@ public final class t4 implements AutoCloseable, j6 {
     }
 
     @Override // io.carplay.app.secured.j6
-    public boolean g() {
+    public boolean g() throws IOException {
         if (this.h.get() || !this.S || !this.R || !this.T) {
             return false;
         }
@@ -2352,7 +2265,7 @@ public final class t4 implements AutoCloseable, j6 {
     }
 
     @Override // io.carplay.app.secured.j6
-    public boolean i() {
+    public boolean i() throws IOException {
         synchronized (this.A) {
             try {
                 if (J() && this.T && this.U) {
@@ -2406,24 +2319,21 @@ public final class t4 implements AutoCloseable, j6 {
                 break;
         }
         synchronized (this.B) {
+            if (!J() || !this.T) {
+                return false;
+            }
             try {
-                if (!J() || !this.T) {
-                    return false;
-                }
-                try {
-                    c2 c2Var = this.a0;
-                    r6.a aVar = r6.a.TOUCH;
-                    r6.c cVarB = c2Var.b(aVar, 425992, new ProtobufReader.a().c(1, i).g());
-                    Socket socketW = W(aVar);
-                    r6.l(socketW.getOutputStream(), aVar, cVarB.i(), cVarB.g(), 32767);
-                    socketW.getOutputStream().flush();
-                    this.a.a("NATIVE_HARD_KEY_WRITTEN kind=" + str + " response_confirmed=false");
-                    return true;
-                } catch (GeneralSecurityException e2) {
-                    throw new IOException("native key encryption failed", e2);
-                }
-            } catch (Throwable th) {
-                throw th;
+                c2 c2Var = this.a0;
+                r6.a aVar = r6.a.TOUCH;
+                r6.c cVarB = c2Var.b(aVar, 425992, new ProtobufReader.a().c(1, i).g());
+                Socket socketW = W(aVar);
+                r6.l(socketW.getOutputStream(), aVar, cVarB.i(), cVarB.g(), 32767);
+                socketW.getOutputStream().flush();
+                this.a.a("NATIVE_HARD_KEY_WRITTEN kind=" + str + " response_confirmed=false");
+                return true;
+            } catch (IOException e2) {
+                this.a.a("NATIVE_HARD_KEY_FAILED kind=" + str);
+                return false;
             }
         }
     }
@@ -2610,7 +2520,7 @@ public final class t4 implements AutoCloseable, j6 {
             this.d = audioRelay;
         }
 
-        private void b() {
+        private void b() throws IOException {
             this.b.g(this.a, this.e, this.f, this.g);
             this.l = true;
         }
@@ -2623,18 +2533,14 @@ public final class t4 implements AutoCloseable, j6 {
                 SyntheticRefs.f("audio AES negotiated without cipher");
                 return null;
             }
-            try {
-                byte[] bArrB = oVar.b(bArr);
-                if (bArrB != null) {
-                    return bArrB;
-                }
-                throw new r5("null decrypted audio body");
-            } catch (GeneralSecurityException e) {
-                throw new r5("native audio AES failed", e);
+            byte[] bArrB = oVar.b(bArr);
+            if (bArrB != null) {
+                return bArrB;
             }
+            throw new r5("null decrypted audio body");
         }
 
-        public void a(r6.c cVar, boolean z, o oVar, boolean z2) throws r5 {
+        public void a(r6.c cVar, boolean z, o oVar, boolean z2) throws IOException {
             int i;
             int i2;
             int i3;
@@ -2791,7 +2697,7 @@ public final class t4 implements AutoCloseable, j6 {
         private final Socket a;
         private final InputStream b;
 
-        public b(Socket socket) {
+        public b(Socket socket) throws IOException {
             this.a = socket;
             this.b = socket.getInputStream();
         }
@@ -2816,7 +2722,7 @@ public final class t4 implements AutoCloseable, j6 {
         }
 
         @Override // java.io.InputStream
-        public int read() {
+        public int read() throws IOException {
             byte[] bArr = new byte[1];
             if (read(bArr, 0, 1) < 0) {
                 return -1;

@@ -1,5 +1,7 @@
 package io.carplay.app.secured;
 
+import java.io.IOException;
+
 /* JADX INFO: loaded from: classes.dex */
 public interface j6 {
 
@@ -101,13 +103,13 @@ public interface j6 {
         return false;
     }
 
-    boolean e();
+    boolean e() throws IOException;
 
-    boolean f();
+    boolean f() throws IOException;
 
-    boolean g();
+    boolean g() throws IOException;
 
-    boolean i();
+    boolean i() throws IOException;
 
     a k();
 

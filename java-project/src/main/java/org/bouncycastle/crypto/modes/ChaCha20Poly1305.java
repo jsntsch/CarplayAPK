@@ -427,13 +427,13 @@ public class ChaCha20Poly1305 {
                     }
                     return i9;
                 }
-                if (this.bufPos == 0) {
-                    bArr3 = bArr2;
-                    i4 = i7;
-                    i5 = 0;
-                    break;
-                }
                 while (true) {
+                    if (this.bufPos == 0) {
+                        bArr3 = bArr2;
+                        i4 = i7;
+                        i5 = 0;
+                        break;
+                    }
                     if (i7 <= 0) {
                         bArr3 = bArr2;
                         i4 = i7;

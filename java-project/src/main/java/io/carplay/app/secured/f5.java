@@ -332,7 +332,7 @@ public final class f5 {
                 throw new r5("invalid decrypted body");
             }
             return bArrB;
-        } catch (GeneralSecurityException e) {
+        } catch (RuntimeException e) {
             throw new r5("audio decryption failed", e);
         }
     }
@@ -349,15 +349,15 @@ public final class f5 {
         return new b(cVar, i, j, this.l, this.f, bArr);
     }
 
-    public synchronized b a(r6.c cVar) {
+    public synchronized b a(r6.c cVar) throws r5 {
         if (this.i) {
             throw new r5("audio stream is failed; create a fresh session");
         }
         try {
+            return b(cVar);
         } catch (r5 e) {
             this.i = true;
             throw e;
         }
-        return b(cVar);
     }
 }

@@ -22,7 +22,7 @@ public final /* synthetic */ class k1 implements VideoCipher.b.c, w4.b, AirPlayS
     }
 
     @Override // io.carplay.app.secured.w4.b
-    public void b(h hVar) {
+    public void b(h hVar) throws IOException {
         int i = this.a;
         Object obj = this.b;
         switch (i) {
@@ -36,7 +36,7 @@ public final /* synthetic */ class k1 implements VideoCipher.b.c, w4.b, AirPlayS
     }
 
     @Override // io.carplay.app.secured.VideoCipher.b.c
-    public void c(List list, long j, long j2, long j3) {
+    public void c(List list, long j, long j2, long j3) throws IOException {
         VideoCipher.b.g((VideoCipher.b.a) this.b, list, j, j2, j3);
     }
 }

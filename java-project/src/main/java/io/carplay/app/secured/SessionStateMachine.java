@@ -606,7 +606,7 @@ public final class SessionStateMachine {
 
     /* JADX WARN: Code duplicated, block: B:11:0x000f  */
     public synchronized boolean J() {
-        boolean z;
+        boolean z = false;
         if (this.b) {
             z = this.e.a == 1;
         }
@@ -755,14 +755,14 @@ public final class SessionStateMachine {
         if (mapI == null) {
             return false;
         }
-        b bVar2 = new b(i);
-        b bVar3 = new b(i);
+        b bVar2 = new b(0);
+        b bVar3 = new b(0);
         HashSet hashSet = new HashSet();
         Iterator<?> it = listE.iterator();
         int i2 = 0;
         while (true) {
             if (!it.hasNext()) {
-                boolean z = i;
+                boolean z = true;
                 if (!h(listE2, bVar2, bVar3)) {
                     return z;
                 }

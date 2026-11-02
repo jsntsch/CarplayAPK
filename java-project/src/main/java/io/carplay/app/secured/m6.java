@@ -7,7 +7,7 @@ import java.security.PrivilegedAction;
 public abstract class m6 {
     private static String a;
 
-    public class a implements PrivilegedAction<String> {
+    public static class a implements PrivilegedAction<String> {
         @Override // java.security.PrivilegedAction
         /* JADX INFO: renamed from: a, reason: merged with bridge method [inline-methods] */
         public String run() {

@@ -65,7 +65,7 @@ public final class r {
 
     /* JADX WARN: Code duplicated, block: B:12:0x0028  */
     public static a a(Context context, String str) {
-        String strA;
+        String strA = null;
         String strA2 = io.carplay.app.secured.n.a(str);
         try {
             if (context.checkSelfPermission("android.permission.BLUETOOTH_CONNECT") != 0) {

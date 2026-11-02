@@ -342,25 +342,21 @@ public final class IccoaBridge {
     }
 
     public synchronized g o(long j, String str, String str2, int i, int i2) {
-        try {
-            p(j, str);
-            this.d = Math.incrementExact(this.d);
-            this.p = null;
-            this.f = ConfigState.UNCONFIGURED;
-            this.j = null;
-            if ("video/avc".equals(str2) || "video/hevc".equals(str2)) {
-                if (i >= 1 && i2 >= 1 && i <= 8192 && i2 <= 8192) {
-                    this.j = str2;
-                    this.l = i;
-                    this.m = i2;
-                }
+        p(j, str);
+        this.d = Math.incrementExact(this.d);
+        this.p = null;
+        this.f = ConfigState.UNCONFIGURED;
+        this.j = null;
+        if ("video/avc".equals(str2) || "video/hevc".equals(str2)) {
+            if (i >= 1 && i2 >= 1 && i <= 8192 && i2 <= 8192) {
+                this.j = str2;
+                this.l = i;
+                this.m = i2;
+                return new g(this, j, str, this.d, 0);
             }
-            this.j = null;
-            throw new IllegalArgumentException("unsupported ICCOA video initialization");
-        } catch (Throwable th) {
-            throw th;
         }
-        return new g(this, j, str, this.d, 0);
+        this.j = null;
+        throw new IllegalArgumentException("unsupported ICCOA video initialization");
     }
 
     public synchronized void t(b bVar) {

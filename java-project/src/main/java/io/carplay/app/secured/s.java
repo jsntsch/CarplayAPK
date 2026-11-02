@@ -366,7 +366,7 @@ public final class s {
         return Integer.MAX_VALUE;
     }
 
-    public d A(String str, int i, int i2, int i3) {
+    public d A(String str, int i, int i2, int i3) throws IOException {
         return x(str, i, i2, i3).get(0);
     }
 

@@ -109,7 +109,7 @@ public final class EventChannel implements Closeable {
             return strArrSplit.length > 1 ? strArrSplit[1] : "";
         }
 
-        public void g() {
+        public void g() throws IOException {
             if (h() == 200) {
                 return;
             }
@@ -129,7 +129,7 @@ public final class EventChannel implements Closeable {
     }
 
     public interface c {
-        byte[] a(b bVar);
+        byte[] a(b bVar) throws IOException;
     }
 
     @FunctionalInterface
@@ -483,7 +483,7 @@ public final class EventChannel implements Closeable {
                 this.H = 0;
                 this.I = -1;
                 this.J = this.h.length;
-            } catch (GeneralSecurityException e2) {
+            } catch (GeneralSecurityException | RuntimeException e2) {
                 throw new IOException("Control record authentication failed", e2);
             }
         }
@@ -511,7 +511,7 @@ public final class EventChannel implements Closeable {
         return i2;
     }
 
-    public synchronized void D(String str, Map<String, String> map, byte[] bArr) {
+    public synchronized void D(String str, Map<String, String> map, byte[] bArr) throws IOException {
         AppleHttpHeaders.Apply(map);
         try {
             k();
@@ -558,19 +558,19 @@ public final class EventChannel implements Closeable {
                         this.b.write(bArr2);
                         this.b.write(bArrS);
                         i = i2;
-                    } catch (GeneralSecurityException e2) {
+                    } catch (GeneralSecurityException | RuntimeException e2) {
                         throw new IOException("Control encryption failed", e2);
                     }
                 }
             }
             this.b.flush();
-        } catch (Throwable th) {
+        } catch (RuntimeException th) {
             throw th;
         }
     }
 
     @Override // java.io.Closeable, java.lang.AutoCloseable
-    public void close() {
+    public void close() throws IOException {
         a[] aVarArr;
         this.o = true;
         int i = 0;
@@ -593,7 +593,7 @@ public final class EventChannel implements Closeable {
                     if (bArr2 != null) {
                         Arrays.fill(bArr2, (byte) 0);
                     }
-                } catch (Throwable th) {
+                } catch (RuntimeException th) {
                     throw th;
                 }
             }
@@ -624,14 +624,14 @@ public final class EventChannel implements Closeable {
                         i++;
                     }
                     throw th2;
-                } catch (Throwable th3) {
+                } catch (RuntimeException th3) {
                     throw th3;
                 }
             }
         }
     }
 
-    public synchronized CompletableFuture<b> g(String str, String str2, String str3, byte[] bArr) {
+    public synchronized CompletableFuture<b> g(String str, String str2, String str3, byte[] bArr) throws IOException {
         CompletableFuture<b> completableFuture;
         try {
             k();
@@ -665,13 +665,13 @@ public final class EventChannel implements Closeable {
                 close();
                 throw e2;
             }
-        } catch (Throwable th) {
+        } catch (RuntimeException th) {
             throw th;
         }
         return completableFuture;
     }
 
-    public synchronized void i(byte[] bArr, byte[] bArr2) {
+    public synchronized void i(byte[] bArr, byte[] bArr2) throws IOException {
         k();
         if (this.t) {
             throw new IOException("Encryption change on event connection");
@@ -688,7 +688,7 @@ public final class EventChannel implements Closeable {
         this.k = 0L;
     }
 
-    public CompletableFuture<b> l(String str, String str2, String str3, byte[] bArr) {
+    public CompletableFuture<b> l(String str, String str2, String str3, byte[] bArr) throws IOException {
         CompletableFuture<b> completableFuture = new CompletableFuture<>();
         // jadx 漏了方法级声明：下面 try/catch 里用 `e = null;` / `e = e2;` 转发异常，
         // 但没有 `Throwable e;`，于是 `e` 落到字段 `private final int e;` 上。
@@ -722,7 +722,7 @@ public final class EventChannel implements Closeable {
                         this.r.remove(Integer.valueOf(iO));
                         this.o = true;
                     }
-                } catch (Throwable th) {
+                } catch (RuntimeException th) {
                     throw th;
                 }
             } catch (IOException | RuntimeException e3) {
@@ -748,7 +748,7 @@ public final class EventChannel implements Closeable {
         return (this.o || this.f == null || this.g == null) ? false : true;
     }
 
-    public synchronized b r() {
+    public synchronized b r() throws IOException {
         b bVarS;
         k();
         if (this.t) {
@@ -765,20 +765,11 @@ public final class EventChannel implements Closeable {
         return bVarS;
     }
 
-    public synchronized b v(String str, String str2, String str3, byte[] bArr) {
-        Throwable th = null;
-        try {
-            try {
-                return w(str, str2, str3, bArr, Collections.EMPTY_MAP);
-            } catch (Throwable thCaught) {
-                throw thCaught;
-            }
-        } catch (Throwable th2) {
-            th = th2;
-        }
+    public synchronized b v(String str, String str2, String str3, byte[] bArr) throws IOException {
+        return w(str, str2, str3, bArr, Collections.EMPTY_MAP);
     }
 
-    public synchronized b w(String str, String str2, String str3, byte[] bArr, Map<String, String> map) {
+    public synchronized b w(String str, String str2, String str3, byte[] bArr, Map<String, String> map) throws IOException {
         b bVarS;
         try {
             k();
@@ -836,10 +827,9 @@ public final class EventChannel implements Closeable {
                 this.m = 0L;
                 throw th;
             }
-        } catch (Throwable th2) {
+        } catch (RuntimeException th2) {
             throw th2;
         }
-        return bVarS;
     }
 
     public synchronized void x(c cVar) {
@@ -850,7 +840,7 @@ public final class EventChannel implements Closeable {
         this.q = eVar;
     }
 
-    public void z(c cVar) {
+    public void z(c cVar) throws IOException {
         if (cVar == null) {
             throw new NullPointerException("handler");
         }
@@ -891,7 +881,7 @@ public final class EventChannel implements Closeable {
                                     bArrA = new byte[0];
                                 }
                                 D(str2, linkedHashMap, bArrA);
-                            } catch (Throwable th) {
+                            } catch (RuntimeException th) {
                                 throw th;
                             }
                         }

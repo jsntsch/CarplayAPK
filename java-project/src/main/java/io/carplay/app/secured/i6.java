@@ -74,34 +74,28 @@ public final class i6 {
 
     public synchronized b a(TouchAction aVar, int i, int i2) {
         int i3;
-        if (aVar != null && i >= 0 && i2 >= 0) {
-            try {
-                if (i < this.a && i2 < this.b) {
-                    TouchAction aVar2 = TouchAction.DOWN;
-                    if (aVar == aVar2 && this.c) {
-                        throw new IllegalStateException("duplicate down");
-                    }
-                    if (aVar != aVar2 && !this.c) {
-                        throw new IllegalStateException("no active gesture");
-                    }
-                    int iOrdinal = aVar.ordinal();
-                    if (iOrdinal == 0) {
-                        i3 = 425986;
-                    } else if (iOrdinal == 1) {
-                        i3 = 425988;
-                    } else {
-                        if (iOrdinal != 2) {
-                            throw new IncompatibleClassChangeError();
-                        }
-                        i3 = 425987;
-                    }
-                    this.c = aVar != TouchAction.UP;
-                }
-            } catch (Throwable th) {
-                throw th;
-            }
+        if (aVar == null || i < 0 || i2 < 0 || i >= this.a || i2 >= this.b) {
+            throw new IllegalArgumentException("touch coordinates/action");
         }
-        throw new IllegalArgumentException("touch coordinates/action");
+        TouchAction aVar2 = TouchAction.DOWN;
+        if (aVar == aVar2 && this.c) {
+            throw new IllegalStateException("duplicate down");
+        }
+        if (aVar != aVar2 && !this.c) {
+            throw new IllegalStateException("no active gesture");
+        }
+        int iOrdinal = aVar.ordinal();
+        if (iOrdinal == 0) {
+            i3 = 425986;
+        } else if (iOrdinal == 1) {
+            i3 = 425988;
+        } else {
+            if (iOrdinal != 2) {
+                throw new IncompatibleClassChangeError();
+            }
+            i3 = 425987;
+        }
+        this.c = aVar != TouchAction.UP;
         return new b(i3, new ProtobufReader.a().c(1, i).c(2, i2).g());
     }
 

@@ -808,9 +808,9 @@ public final class MainActivity extends Activity {
         String strD;
         boolean z;
         String strD2;
-        Object obj;
-        String str;
-        String str2;
+        Object obj = null;
+        String str = null;
+        String str2 = null;
         int i;
         boolean z2;
         boolean z3;
@@ -926,6 +926,8 @@ public final class MainActivity extends Activity {
             obj = "needs_user";
             if (sharedPreferences.getString(str, str2).equals(obj)) {
                 i = 0;
+            } else {
+                i = 8;
             }
             button2.setVisibility(i);
             Button button3 = this.P;
@@ -1009,9 +1011,6 @@ public final class MainActivity extends Activity {
             }
             textView3.setVisibility(i6);
         }
-        obj = r10;
-        str = r3;
-        str2 = r7;
         i = 8;
         button2.setVisibility(i);
         Button button10 = this.P;

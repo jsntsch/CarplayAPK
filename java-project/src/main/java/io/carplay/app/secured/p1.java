@@ -12,7 +12,7 @@ import java.util.Set;
 public final class p1 {
     public static final int c = 1;
     public static final int d = 3;
-    private final x a;
+    private final x a2;
     private final List<x.c> b;
 
     public static /* synthetic */ class a {
@@ -91,7 +91,7 @@ public final class p1 {
     }
 
     private p1(x xVar, List<x.c> list) {
-        this.a = xVar;
+        this.a2 = xVar;
         this.b = List.copyOf(list);
     }
 
@@ -121,7 +121,7 @@ public final class p1 {
         return List.copyOf(arrayList);
     }
 
-    public static p1 f(x xVar, z zVar) {
+    public static p1 f(x xVar, z zVar) throws IOException {
         Objects.requireNonNull(xVar);
         Objects.requireNonNull(zVar);
         x.c cVarB = zVar.b(xVar, 1);
@@ -167,7 +167,7 @@ public final class p1 {
     }
 
     public s e() {
-        return this.a.f();
+        return this.a2.f();
     }
 
     public List<x.c> g() {
@@ -175,6 +175,6 @@ public final class p1 {
     }
 
     public String m() {
-        return "CAPABILITY_PLAN policy=1 fingerprint=" + this.a.o() + " display_candidates=" + this.b.size() + " audio_table_valid=" + this.a.h() + " max_route_attempts=3 physical_receipt_confirmed=false";
+        return "CAPABILITY_PLAN policy=1 fingerprint=" + this.a2.o() + " display_candidates=" + this.b.size() + " audio_table_valid=" + this.a2.h() + " max_route_attempts=3 physical_receipt_confirmed=false";
     }
 }

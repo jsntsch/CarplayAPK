@@ -16,18 +16,18 @@ public final class w4 {
 
     @FunctionalInterface
     public interface b {
-        void b(h hVar);
+        void b(h hVar) throws IOException;
     }
 
     /* JADX INFO: Access modifiers changed from: private */
-    public static /* synthetic */ void f(a aVar, h hVar) {
+    public static /* synthetic */ void f(a aVar, h hVar) throws IOException {
         byte[] bArrK = hVar.k();
         byte[] bArrH = hVar.h();
         aVar.a(i.b((bArrK == null || bArrH == null) ? null : i.c(List.of(bArrK, bArrH)), hVar.a(), hVar.e()));
     }
 
     /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void g(b bVar, List list, long j, long j2, long j3) {
+    public /* synthetic */ void g(b bVar, List list, long j, long j2, long j3) throws IOException {
         byte[] bArrM = this.a.m();
         byte[] bArrI = this.a.i();
         if (bArrM != null && bArrI != null) {
@@ -69,7 +69,7 @@ public final class w4 {
     	at jadx.core.dex.visitors.typeinference.FixTypesVisitor.applyFieldType(FixTypesVisitor.java:309)
     	at jadx.core.dex.visitors.typeinference.FixTypesVisitor.visit(FixTypesVisitor.java:94)
      */
-    public synchronized void e(byte[] bArr, long j, long j2, long j3, b bVar) {
+    public synchronized void e(byte[] bArr, long j, long j2, long j3, b bVar) throws IOException {
         if (j3 < 0) {
             throw new IOException("native AVC generation invalid");
         }

@@ -711,7 +711,7 @@ public final class y0 {
         return ((int) j) | (i2 << 16);
     }
 
-    public d e(byte[] bArr) {
+    public d e(byte[] bArr) throws IOException {
         if (bArr == null || bArr.length == 0 || bArr.length > 1025) {
             throw f("HID_CONSUMER_REPORT_LENGTH");
         }

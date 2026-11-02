@@ -86,7 +86,7 @@ public final class DerCodec {
         return str.getBytes(StandardCharsets.US_ASCII);
     }
 
-    private static Object b(Object obj, String str) {
+    private static Object b(Object obj, String str) throws ReflectiveOperationException {
         return obj.getClass().getMethod(str, null).invoke(obj, null);
     }
 
@@ -135,20 +135,20 @@ public final class DerCodec {
                 cipher.init(z ? 1 : 2, new SecretKeySpec(bArr, "ChaCha20"), new IvParameterSpec(bArr2));
                 cipher.updateAAD(bArr4);
                 return cipher.doFinal(bArr3);
+            } catch (AEADBadTagException e5) {
+                throw e5;
             } catch (IllegalStateException | GeneralSecurityException | ProviderException e4) {
                 e = e4;
                 i++;
-            } catch (AEADBadTagException e5) {
-                throw e5;
             }
         }
     }
 
-    public static b f() {
+    public static b f() throws GeneralSecurityException {
         return i("Ed25519");
     }
 
-    public static byte[] g(byte[] bArr, byte[] bArr2) {
+    public static byte[] g(byte[] bArr, byte[] bArr2) throws GeneralSecurityException {
         c(bArr);
         try {
             Signature signature = Signature.getInstance("Ed25519");
@@ -220,7 +220,7 @@ public final class DerCodec {
         return bArr;
     }
 
-    public static byte[] k(byte[] bArr, String str, String str2) {
+    public static byte[] k(byte[] bArr, String str, String str2) throws NoSuchAlgorithmException, InvalidKeyException {
         return l(bArr, a(str), a(str2), 32);
     }
 
@@ -274,7 +274,7 @@ public final class DerCodec {
         return null;
     }
 
-    public static byte[] o(byte[] bArr, byte[] bArr2, byte[] bArr3, byte[] bArr4) {
+    public static byte[] o(byte[] bArr, byte[] bArr2, byte[] bArr3, byte[] bArr4) throws GeneralSecurityException {
         return e(false, bArr, bArr2, bArr3, bArr4);
     }
 
@@ -301,15 +301,15 @@ public final class DerCodec {
         return bArr;
     }
 
-    private static Object r(String str, byte[] bArr) {
+    private static Object r(String str, byte[] bArr) throws ReflectiveOperationException {
         return Class.forName("org.bouncycastle.crypto.params." + str).getConstructor(byte[].class, Integer.TYPE).newInstance(bArr, 0);
     }
 
-    public static byte[] s(byte[] bArr, byte[] bArr2, byte[] bArr3, byte[] bArr4) {
+    public static byte[] s(byte[] bArr, byte[] bArr2, byte[] bArr3, byte[] bArr4) throws GeneralSecurityException {
         return e(true, bArr, bArr2, bArr3, bArr4);
     }
 
-    public static byte[] t(byte[]... bArr) {
+    public static byte[] t(byte[]... bArr) throws NoSuchAlgorithmException {
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
         for (byte[] bArr2 : bArr) {
             messageDigest.update(bArr2);
@@ -335,11 +335,11 @@ public final class DerCodec {
         return generalSecurityException;
     }
 
-    public static b w() {
+    public static b w() throws GeneralSecurityException {
         return i("X25519");
     }
 
-    public static byte[] x(byte[] bArr, byte[] bArr2) {
+    public static byte[] x(byte[] bArr, byte[] bArr2) throws GeneralSecurityException {
         byte[] bArrGenerateSecret;
         c(bArr);
         c(bArr2);

@@ -284,7 +284,7 @@ public final class x {
             return this.f;
         }
 
-        public g o() {
+        public HidTouchType o() {
             return this.h;
         }
 
@@ -442,7 +442,7 @@ public final class x {
     static {
         BigInteger bigInteger = BigInteger.ONE;
         q = bigInteger.shiftLeft(64).subtract(bigInteger);
-        r = Set.of((Object[]) new String[]{"uiContext", "viewAreas", "cornerMasks", "focusTransfer", "h.264Level5.1", "mainBuffered", "altScreen", "enhancedSiri", "hevc", "sessionManagement", "logTransfer", "iAPChannel", "vehicleStateProtocol", "videoPlayback"});
+        r = Set.of("uiContext", "viewAreas", "cornerMasks", "focusTransfer", "h.264Level5.1", "mainBuffered", "altScreen", "enhancedSiri", "hevc", "sessionManagement", "logTransfer", "iAPChannel", "vehicleStateProtocol", "videoPlayback");
         s = Set.of("enhancedRequestCarUI", "vocoderInfo", "ProvidesHighAccuracyTimeStamps");
         t = Set.of("default", "compatibility", "media", "alert", "telephony", "speechRecognition");
     }
@@ -518,13 +518,15 @@ public final class x {
                 str = str2 + "=" + ((Boolean) obj);
             } else if ((obj instanceof Byte) || (obj instanceof Short) || (obj instanceof Integer) || (obj instanceof Long)) {
                 str = str2 + "=" + ((Number) obj).longValue();
+            } else {
+                continue;
             }
             treeSet.add(str);
         }
         return treeSet.toString();
     }
 
-    private static int H(Map<?, ?> map, String str, int i, int i2, int i3) {
+    private static int H(Map<?, ?> map, String str, int i, int i2, int i3) throws IOException {
         return map.containsKey(str) ? M(map, str, i2, i3) : i;
     }
 
@@ -536,7 +538,7 @@ public final class x {
         }
     }
 
-    public static x J(Map<?, ?> map) {
+    public static x J(Map<?, ?> map) throws IOException {
         return K(map, Collections.EMPTY_MAP, Collections.EMPTY_SET);
     }
 
@@ -544,7 +546,7 @@ public final class x {
     /* JADX WARN: Code duplicated, block: B:174:0x04a2  */
     /* JADX WARN: Code duplicated, block: B:175:0x04a5  */
     /* JADX WARN: Code duplicated, block: B:187:0x051f  */
-    public static x K(Map<?, ?> map, Map<?, ?> map2, Set<String> set) {
+    public static x K(Map<?, ?> map, Map<?, ?> map2, Set<String> set) throws IOException {
         String str;
         s sVarU;
         boolean z;
@@ -562,7 +564,7 @@ public final class x {
         HashMap map4;
         List<?> list;
         int i2;
-        int iM;
+        int iM = 110;
         HidTouchType gVar;
         ArrayList arrayList2;
         HashMap map5;
@@ -577,6 +579,8 @@ public final class x {
         ArrayList arrayList3 = new ArrayList();
         ArrayList arrayList4 = new ArrayList();
         HashMap map6 = new HashMap();
+        arrayList = arrayList3;
+        map4 = map6;
         List<?> listB = B(map, "displays", 16);
         HashMap map7 = new HashMap();
         for (Object obj : listB) {
@@ -610,7 +614,7 @@ public final class x {
                         if (fVarS.a) {
                             try {
                                 z2 = !z0.e(bArr).f().isEmpty();
-                            } catch (IOException unused) {
+                            } catch (RuntimeException unused) {
                                 z2 = false;
                             }
                         } else {
@@ -714,7 +718,7 @@ public final class x {
                     if (obj8 instanceof Map) {
                         Map map12 = (Map) obj8;
                         LinkedHashMap linkedHashMap = new LinkedHashMap();
-                        for (Map.Entry entry : map12.entrySet()) {
+                        for (Map.Entry entry : ((Map<?, ?>) map12).entrySet()) {
                             Object key = entry.getKey();
                             if (key instanceof String) {
                                 linkedHashMap.put((String) key, entry.getValue());
@@ -734,9 +738,9 @@ public final class x {
                     }
                 }
                 ArrayList arrayList10 = arrayList8;
+                map3 = map2;
+                boolean z4 = Q(map3, "enabledFeatures", 32);
                 if (Q(map, "extendedFeatures", 32)) {
-                    map3 = map2;
-                    boolean z4 = Q(map3, "enabledFeatures", 32);
                     BigInteger bigIntegerC = C(map.get("features"));
                     Set<String> setN = n(map, "extendedFeatures", s);
                     Set<String> setN2 = n(map3, "enabledFeatures", r);
@@ -874,7 +878,7 @@ public final class x {
                                                             str9 = str5;
                                                             i4 = i9 + 1;
                                                         }
-                                                    } catch (IOException unused5) {
+                                                    } catch (RuntimeException unused5) {
                                                         str5 = str9;
                                                     }
                                                 }
@@ -890,7 +894,7 @@ public final class x {
                                         map4 = map5;
                                         arrayList = arrayList2;
                                     }
-                                } catch (IOException unused8) {
+                                } catch (RuntimeException unused8) {
                                     str5 = str9;
                                     str6 = str10;
                                     arrayList = arrayList3;
@@ -927,17 +931,17 @@ public final class x {
                                     map4 = map5;
                                     try {
                                         map4.put(strB3, Integer.valueOf(i9));
-                                    } catch (IOException unused10) {
+                                    } catch (RuntimeException unused10) {
                                         i3 = i5 + 1;
                                     }
                                 } else {
                                     map4 = map5;
                                 }
                                 i3 = i5;
-                            } catch (IOException unused11) {
+                            } catch (RuntimeException unused11) {
                                 map4 = map5;
                             }
-                        } catch (IOException unused12) {
+                        } catch (RuntimeException unused12) {
                             map4 = map5;
                             arrayList = arrayList2;
                         }
@@ -946,7 +950,7 @@ public final class x {
                         str6 = str10;
                         str7 = str11;
                     }
-                } catch (IOException unused14) {
+                } catch (RuntimeException unused14) {
                     str5 = str9;
                     str6 = str10;
                     str7 = str11;
@@ -1032,7 +1036,7 @@ public final class x {
     }
 
     /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
-    private static f s(byte[] bArr) {
+    private static f s(byte[] bArr) throws IOException {
         int i;
         int i2;
         int i3;
@@ -1108,7 +1112,6 @@ public final class x {
                                     throw j("CAP_HID_STACK");
                                 }
                                 arrayDeque.push(dVar.a());
-                                break;
                                 break;
                             case 11:
                                 if (arrayDeque.isEmpty()) {
@@ -1252,8 +1255,9 @@ public final class x {
         return this.m;
     }
 
-    public c L() {
-        return this.a.stream().filter(new w0(9)).min(Comparator.comparing(new r(2)).thenComparing(Comparator.comparingLong(new p(2)).reversed()).thenComparingInt(new q(1))).orElseThrow(new f1(2));
+    public c L() throws IOException {
+        java.util.Optional<c> optionalMin = this.a.stream().filter(new w0(9)).min(Comparator.comparing(new r(2)).thenComparing(Comparator.comparingLong(new p(2)).reversed()).thenComparingInt(new q(1)));
+        return optionalMin.orElseThrow(x::z);
     }
 
     public String O() {

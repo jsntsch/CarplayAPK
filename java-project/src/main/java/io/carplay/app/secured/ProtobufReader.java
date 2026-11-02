@@ -193,11 +193,11 @@ public final class ProtobufReader {
     private ProtobufReader() {
     }
 
-    public static e a(byte[] bArr) {
+    public static e a(byte[] bArr) throws r5 {
         return b(bArr, d.j());
     }
 
-    public static e b(byte[] bArr, d dVar) {
+    public static e b(byte[] bArr, d dVar) throws r5 {
         byte[] bArr2;
         byte[] bArrB;
         Objects.requireNonNull(bArr);
@@ -286,7 +286,7 @@ public final class ProtobufReader {
             return b(i) != null;
         }
 
-        public List<e> c(int i, d dVar) {
+        public List<e> c(int i, d dVar) throws r5 {
             ArrayList arrayList = new ArrayList();
             for (c cVar : this.a) {
                 if (cVar.a == i) {
@@ -300,15 +300,15 @@ public final class ProtobufReader {
             return List.copyOf(arrayList);
         }
 
-        public boolean d(int i, boolean z) {
+        public boolean d(int i, boolean z) throws r5 {
             return a(i) ? g(i) : z;
         }
 
-        public int e(int i, int i2) {
+        public int e(int i, int i2) throws r5 {
             return a(i) ? i(i) : i2;
         }
 
-        public String f(int i, String str) {
+        public String f(int i, String str) throws r5 {
             return a(i) ? j(i) : str;
         }
 
@@ -321,11 +321,11 @@ public final class ProtobufReader {
             return false;
         }
 
-        public byte[] h(int i) {
+        public byte[] h(int i) throws r5 {
             return (byte[]) k(i, 2).d.clone();
         }
 
-        public int i(int i) {
+        public int i(int i) throws r5 {
             long j = k(i, 0).c;
             if (j <= 2147483647L && j >= -2147483648L) {
                 return (int) j;
@@ -344,9 +344,6 @@ public final class ProtobufReader {
             }
         }
 
-        public /* synthetic */ e(ArrayList arrayList) {
-            this((List<c>) arrayList);
-        }
     }
 
     public static final class c extends w1 {

@@ -1,6 +1,7 @@
 package io.carplay.app.prototype;
 
 import android.net.LinkProperties;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 
@@ -10,7 +11,7 @@ public final /* synthetic */ class i implements CarPlayCtrlAdvertiser.c {
     public /* synthetic */ LinkProperties a;
 
     @Override // io.carplay.app.prototype.CarPlayCtrlAdvertiser.c
-    public final ServerSocket a(InetAddress inetAddress, int i) {
+    public final ServerSocket a(InetAddress inetAddress, int i) throws IOException {
         return CarPlayCtrlAdvertiser.k(this.a, inetAddress, i);
     }
 }

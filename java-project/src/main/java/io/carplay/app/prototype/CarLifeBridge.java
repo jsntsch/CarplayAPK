@@ -198,7 +198,7 @@ public final class CarLifeBridge {
         return List.copyOf(arrayList2);
     }
 
-    private static byte[] e(ZipFile zipFile, String str, int i2) throws IOException {
+    private static byte[] e(ZipFile zipFile, String str, int i2) throws IOException, f {
         ZipEntry entry = zipFile.getEntry(str);
         int i3 = 0;
         if (entry == null || entry.isDirectory() || entry.getSize() < i2) {
@@ -284,7 +284,7 @@ public final class CarLifeBridge {
         return i2 == 0 || i2 == 1;
     }
 
-    private static String i(e eVar) throws NoSuchAlgorithmException, IOException {
+    private static String i(e eVar) throws NoSuchAlgorithmException, IOException, f {
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
         FileInputStream fileInputStream = new FileInputStream(eVar.a);
         try {
@@ -337,18 +337,16 @@ public final class CarLifeBridge {
                 HashSet hashSet = new HashSet();
                 Enumeration<? extends ZipEntry> enumerationEntries = zipFile.entries();
                 int i3 = 0;
-                while (true) {
-                    if (enumerationEntries.hasMoreElements()) {
-                        ZipEntry zipEntryNextElement = enumerationEntries.nextElement();
-                        i3++;
-                        if (i3 > 50000) {
-                            throw new f("APK_ENTRY_BOUNDS");
-                        }
-                        String name = zipEntryNextElement.getName();
-                        if (name.equals("AndroidManifest.xml") || name.equals("classes.dex")) {
-                            if (!hashSet.add(name)) {
-                                throw new f("APK_DUPLICATE_CAPABILITY_ENTRY");
-                            }
+                while (enumerationEntries.hasMoreElements()) {
+                    ZipEntry zipEntryNextElement = enumerationEntries.nextElement();
+                    i3++;
+                    if (i3 > 50000) {
+                        throw new f("APK_ENTRY_BOUNDS");
+                    }
+                    String name = zipEntryNextElement.getName();
+                    if (name.equals("AndroidManifest.xml") || name.equals("classes.dex")) {
+                        if (!hashSet.add(name)) {
+                            throw new f("APK_DUPLICATE_CAPABILITY_ENTRY");
                         }
                     }
                 }

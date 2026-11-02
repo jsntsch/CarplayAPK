@@ -107,7 +107,7 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
     }
 
     public interface c {
-        ServerSocket a(InetAddress inetAddress, int i);
+        ServerSocket a(InetAddress inetAddress, int i) throws IOException;
     }
 
     public class y implements Runnable {
@@ -484,10 +484,14 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
         }
     }
 
-    public CarPlayCtrlAdvertiser(Context context, Network network, LinkProperties linkProperties, String str, b bVar) {
+    public CarPlayCtrlAdvertiser(Context context, Network network, LinkProperties linkProperties, String str, b bVar) throws IOException {
+        this(context, network, linkProperties, str, bVar, a0(linkProperties));
+    }
+
+    private static i a0(LinkProperties linkProperties) {
         i iVar = new i();
         iVar.a = linkProperties;
         VarHandle.storeStoreFence();
-        this(context, network, linkProperties, str, bVar, iVar);
+        return iVar;
     }
 }

@@ -1,7 +1,7 @@
 package io.carplay.app.secured;
 
+import java.io.IOException;
 import java.io.OutputStream;
-import java.security.GeneralSecurityException;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -120,7 +120,7 @@ public final class u1 implements AutoCloseable {
         }
     }
 
-    public synchronized boolean e(long j2, r6.c cVar) {
+    public synchronized boolean e(long j2, r6.c cVar) throws r5 {
         k(j2);
         Objects.requireNonNull(cVar);
         int iH = cVar.i().h();
@@ -138,43 +138,39 @@ public final class u1 implements AutoCloseable {
         return true;
     }
 
-    public synchronized b f(a aVar, byte[] bArr, long j2) {
+    public synchronized b f(a aVar, byte[] bArr, long j2) throws r5 {
         byte[] bArrA;
         r6.b bVar;
         r6.a aVar2;
-        try {
-            l(aVar);
-            Objects.requireNonNull(bArr);
-            if (bArr.length == 0 || bArr.length > 5000 || bArr.length % this.b.h() != 0) {
-                throw new r5("mic PCM length exceeds reader limit or sample alignment");
-            }
-            if (j2 < 0 || j2 > 4294967295L) {
-                throw new r5("mic timestamp must be explicit opaque uint32");
-            }
-            bArrA = (byte[]) bArr.clone();
-            if (this.c) {
-                try {
-                    bArrA = this.d.a(bArrA);
-                    if (bArrA == null) {
-                        m();
-                        throw new r5("mic payload encryption returned null");
-                    }
-                } catch (RuntimeException | GeneralSecurityException e) {
-                    m();
-                    throw new r5("mic payload encryption failed", e);
-                }
-            }
-            if (bArrA.length == 0 || bArrA.length > 5000) {
-                m();
-                throw new r5("mic wire body exceeds official reader buffer");
-            }
-            bVar = new r6.b(bArrA.length, j2, 0, m);
-            aVar2 = r6.a.VR;
-            r6.d(aVar2, bVar, n);
-            l(aVar);
-        } catch (Throwable th) {
-            throw th;
+        l(aVar);
+        Objects.requireNonNull(bArr);
+        if (bArr.length == 0 || bArr.length > 5000 || bArr.length % this.b.h() != 0) {
+            throw new r5("mic PCM length exceeds reader limit or sample alignment");
         }
+        if (j2 < 0 || j2 > 4294967295L) {
+            throw new r5("mic timestamp must be explicit opaque uint32");
+        }
+        bArrA = (byte[]) bArr.clone();
+        if (this.c) {
+            try {
+                bArrA = this.d.a(bArrA);
+                if (bArrA == null) {
+                    m();
+                    throw new r5("mic payload encryption returned null");
+                }
+            } catch (RuntimeException e) {
+                m();
+                throw new r5("mic payload encryption failed", e);
+            }
+        }
+        if (bArrA.length == 0 || bArrA.length > 5000) {
+            m();
+            throw new r5("mic wire body exceeds official reader buffer");
+        }
+        bVar = new r6.b(bArrA.length, j2, 0, m);
+        aVar2 = r6.a.VR;
+        r6.d(aVar2, bVar, n);
+        l(aVar);
         return new b(this, aVar, new r6.c(aVar2, bVar, bArrA), 0);
     }
 
@@ -182,7 +178,7 @@ public final class u1 implements AutoCloseable {
         return this.f && !this.g;
     }
 
-    public synchronized void n(b bVar, OutputStream outputStream) {
+    public synchronized void n(b bVar, OutputStream outputStream) throws IOException {
         if (bVar != null) {
             if (bVar.a == this) {
                 l(bVar.b);
@@ -199,10 +195,10 @@ public final class u1 implements AutoCloseable {
                     r6.l(outputStream, cVar.h(), cVar.i(), cVar.g(), n);
                     outputStream.flush();
                     this.h = false;
-                } catch (Throwable th) {
+                } catch (IOException | RuntimeException e) {
                     this.h = false;
                     m();
-                    throw th;
+                    throw e;
                 }
             }
         }

@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -155,7 +156,7 @@ public final class m5 {
         }
     }
 
-    public static m5 f(byte[] bArr) {
+    public static m5 f(byte[] bArr) throws GeneralSecurityException, IOException {
         return new m5(bArr, true);
     }
 
@@ -192,7 +193,7 @@ public final class m5 {
         return byteArrayOutputStream2.toByteArray();
     }
 
-    public byte[] a() {
+    public byte[] a() throws GeneralSecurityException {
         return this.a.getEncoded();
     }
 
@@ -217,7 +218,7 @@ public final class m5 {
         return MessageDigest.isEqual(str2.getBytes(charset), str.toLowerCase(Locale.ROOT).getBytes(charset));
     }
 
-    public boolean j(byte[] bArr) throws NoSuchPaddingException, NoSuchAlgorithmException, SignatureException, InvalidKeyException, IOException {
+    public boolean j(byte[] bArr) throws GeneralSecurityException, IOException {
         if (bArr.length == 0 || bArr.length > 1024) {
             SyntheticRefs.c("MFi response size");
             return false;
@@ -239,7 +240,7 @@ public final class m5 {
         return MessageDigest.isEqual(bArr2, cipher.doFinal(bArr));
     }
 
-    public m5(byte[] bArr) {
+    public m5(byte[] bArr) throws GeneralSecurityException, IOException {
         this(bArr, false);
     }
 }

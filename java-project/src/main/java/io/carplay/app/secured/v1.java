@@ -449,7 +449,7 @@ public final class v1 implements AutoCloseable {
         }
     }
 
-    public synchronized r6.c g(b bVar) {
+    public synchronized r6.c g(b bVar) throws r5 {
         r6.c cVarB;
         v(bVar);
         try {
@@ -460,7 +460,7 @@ public final class v1 implements AutoCloseable {
                 throw new r5("crypto state changed during encoding");
             }
             this.i.put(Long.valueOf(bVar.h()), Long.valueOf(j));
-        } catch (RuntimeException | GeneralSecurityException e2) {
+        } catch (RuntimeException e2) {
             k("control encryption failed");
             throw new r5("control encryption failed", e2);
         }
@@ -479,10 +479,9 @@ public final class v1 implements AutoCloseable {
         return this.g.m();
     }
 
-    public synchronized List<b> o(long j, r6.c cVar) {
+    public synchronized List<b> o(long j, r6.c cVar) throws r5 {
         VerifyState eVar;
-        try {
-            c(j);
+        c(j);
             Objects.requireNonNull(cVar);
             if (cVar.h() != r6.a.CMD) {
                 throw new r5("engine accepts this session CMD only");
@@ -519,7 +518,6 @@ public final class v1 implements AutoCloseable {
                             t1.h(bArrA);
                             this.b.g(this.a);
                             break;
-                            break;
                         case l4.i /* 65609 */:
                             if (!this.z) {
                                 throw new r5("proof before actual challenge transmission");
@@ -544,7 +542,6 @@ public final class v1 implements AutoCloseable {
                                 this.b.f(this.a, io.carplay.app.secured.b.VerifyResult.FAILED);
                                 k("modern phone proof rejected");
                             }
-                            break;
                             break;
                         case 65611:
                             boolean zG = ProtobufReader.a(bArrA).g(1);
@@ -592,7 +589,6 @@ public final class v1 implements AutoCloseable {
                             this.l = oVarB;
                             arrayList.add(e(TlvTag.AES_RECEIVED, t1.m, new byte[0]));
                             break;
-                            break;
                         case t1.n /* 65646 */:
                             f(bArrA);
                             if (!this.w || this.l == null || this.x) {
@@ -612,12 +608,9 @@ public final class v1 implements AutoCloseable {
                 k("negotiation state/crypto failure");
                 throw new r5("negotiation failed", e3);
             }
-        } catch (Throwable th) {
-            throw th;
-        }
     }
 
-    public synchronized void p(d dVar) {
+    public synchronized void p(d dVar) throws r5 {
         Objects.requireNonNull(dVar);
         c(dVar.h());
         if (this.u && this.e.h()) {
@@ -632,7 +625,7 @@ public final class v1 implements AutoCloseable {
         throw new r5("this contract requires actual ENCRYPT_READY instead of external feature completion");
     }
 
-    public synchronized b q() {
+    public synchronized b q() throws r5 {
         l4.b bVarF;
         c(this.a);
         if (!this.s) {
@@ -642,7 +635,7 @@ public final class v1 implements AutoCloseable {
         return e(TlvTag.PHONE_CHALLENGE, bVarF.i(), bVarF.g());
     }
 
-    public synchronized b r() {
+    public synchronized b r() throws r5 {
         c(this.a);
         if (this.g.m() != l4.d.VERIFIED) {
             throw new r5("no verified phone proof");
@@ -653,7 +646,7 @@ public final class v1 implements AutoCloseable {
         return e(TlvTag.VERIFIED_PHONE_RESULT, 98378, new ProtobufReader.a().a(1, true).g());
     }
 
-    public synchronized b s(int i, int i2) {
+    public synchronized b s(int i, int i2) throws r5 {
         byte[] bArrJ;
         c(this.a);
         if (this.q) {
@@ -664,19 +657,18 @@ public final class v1 implements AutoCloseable {
         return e(TlvTag.VERSION, t1.a, bArrJ);
     }
 
-    public synchronized b t(int i, int i2, int i3) {
+    public synchronized b t(int i, int i2, int i3) throws r5 {
         c(this.a);
         return e(TlvTag.VIDEO_INIT, t1.e, t1.k(i, i2, i3));
     }
 
-    public synchronized b u() {
+    public synchronized b u() throws r5 {
         c(this.a);
         return e(TlvTag.VIDEO_START, t1.g, new byte[0]);
     }
 
-    public synchronized void w(b bVar) {
-        try {
-            v(bVar);
+    public synchronized void w(b bVar) throws r5 {
+        v(bVar);
             if (!Long.valueOf(this.n).equals(this.i.get(Long.valueOf(bVar.h())))) {
                 throw new r5("command not encoded in current crypto epoch");
             }
@@ -704,7 +696,6 @@ public final class v1 implements AutoCloseable {
                         this.w = true;
                         this.n = Math.incrementExact(this.n);
                         break;
-                        break;
                     case 6:
                         this.z = true;
                         break;
@@ -719,9 +710,6 @@ public final class v1 implements AutoCloseable {
             } else {
                 this.r = true;
             }
-        } catch (Throwable th) {
-            throw th;
-        }
     }
 
     public synchronized io.carplay.app.secured.b.C0003b x() {

@@ -1,6 +1,5 @@
 package io.carplay.app.secured;
 
-import java.security.GeneralSecurityException;
 import java.util.Objects;
 
 /* JADX INFO: loaded from: classes.dex */
@@ -78,46 +77,38 @@ public final class x1 implements AutoCloseable {
         return new r6.c(aVar, bVar, new byte[0]);
     }
 
-    public synchronized a b(r6.c cVar) {
-        byte[] bArrG;
-        long j;
-        try {
-            if (this.d) {
-                throw new r5("closed video stream");
-            }
-            if (cVar != null) {
-                try {
-                    try {
-                        if (cVar.h() == r6.a.VIDEO && cVar.i().h() == 131073) {
-                            bArrG = cVar.g();
-                            if (bArrG.length < 1 || bArrG.length > this.c || cVar.i().g() != bArrG.length) {
-                                throw new r5("video wire payload length");
-                            }
-                            if (this.a) {
-                                bArrG = this.b.b(bArrG);
-                            }
-                            if (bArrG == null || bArrG.length < 1 || bArrG.length > this.c) {
-                                throw new r5("invalid decoded video payload");
-                            }
-                            j = cVar.i().j();
-                            if (j < 0 || j > 4294967295L) {
-                                throw new r5("video timestamp is not uint32");
-                            }
-                        }
-                    } catch (RuntimeException | GeneralSecurityException e2) {
-                        this.d = true;
-                        throw new r5("video payload decode failed", e2);
-                    }
-                } catch (r5 e3) {
-                    this.d = true;
-                    throw e3;
-                }
-            }
-            throw new r5("not a normal phone video payload");
-        } catch (Throwable th) {
-            throw th;
+    public synchronized a b(r6.c cVar) throws r5 {
+        if (this.d) {
+            throw new r5("closed video stream");
         }
-        return new a(bArrG, j);
+        if (cVar != null) {
+            try {
+                if (cVar.h() == r6.a.VIDEO && cVar.i().h() == 131073) {
+                    byte[] bArrG = cVar.g();
+                    if (bArrG.length < 1 || bArrG.length > this.c || cVar.i().g() != bArrG.length) {
+                        throw new r5("video wire payload length");
+                    }
+                    if (this.a) {
+                        bArrG = this.b.b(bArrG);
+                    }
+                    if (bArrG == null || bArrG.length < 1 || bArrG.length > this.c) {
+                        throw new r5("invalid decoded video payload");
+                    }
+                    long j = cVar.i().j();
+                    if (j < 0 || j > 4294967295L) {
+                        throw new r5("video timestamp is not uint32");
+                    }
+                    return new a(bArrG, j);
+                }
+            } catch (RuntimeException e2) {
+                this.d = true;
+                throw new r5("video payload decode failed", e2);
+            } catch (r5 e3) {
+                this.d = true;
+                throw e3;
+            }
+        }
+        throw new r5("not a normal phone video payload");
     }
 
     @Override // java.lang.AutoCloseable

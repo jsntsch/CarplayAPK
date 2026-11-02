@@ -59,7 +59,7 @@ public final class h {
         this.h = iAddExact;
     }
 
-    public static h d(byte[] bArr, byte[] bArr2, byte[] bArr3, long j, long j2, long j3) {
+    public static h d(byte[] bArr, byte[] bArr2, byte[] bArr3, long j, long j2, long j3) throws IOException {
         byte[] bArrA = i.a(bArr);
         ArrayList arrayList = new ArrayList();
         int iM = m(bArrA, 0);

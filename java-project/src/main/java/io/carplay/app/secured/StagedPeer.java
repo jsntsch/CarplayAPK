@@ -44,7 +44,7 @@ public final class StagedPeer implements PairingTlv8.c, AutoCloseable {
     }
 
     @Override // io.carplay.app.secured.PairingTlv8.c
-    public synchronized PairingTlv8.b b(String str) {
+    public synchronized PairingTlv8.b b(String str) throws IOException {
         i();
         PairingTlv8.b bVarB = this.a.b(str);
         PairingTlv8.b bVar = this.b;
@@ -56,7 +56,7 @@ public final class StagedPeer implements PairingTlv8.c, AutoCloseable {
     }
 
     @Override // io.carplay.app.secured.PairingTlv8.c
-    public synchronized void c(PairingTlv8.b bVar) {
+    public synchronized void c(PairingTlv8.b bVar) throws IOException {
         i();
         if (this.e) {
             throw k("STAGED_PEER_ALREADY_COMMITTED");
@@ -81,7 +81,7 @@ public final class StagedPeer implements PairingTlv8.c, AutoCloseable {
         g();
     }
 
-    public synchronized void e() {
+    public synchronized void e() throws IOException {
         i();
         if (this.f) {
             return;
@@ -108,7 +108,7 @@ public final class StagedPeer implements PairingTlv8.c, AutoCloseable {
         }
     }
 
-    public synchronized void f(PairingTlv8.b bVar) {
+    public synchronized void f(PairingTlv8.b bVar) throws IOException {
         i();
         if (bVar == null) {
             throw k("STAGED_EXISTING_PEER_MISSING");

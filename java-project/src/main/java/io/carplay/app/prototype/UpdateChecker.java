@@ -18,6 +18,7 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -45,7 +46,7 @@ final class UpdateChecker {
     private UpdateChecker() {
     }
 
-    public static String a(String str) {
+    public static String a(String str) throws NoSuchAlgorithmException, IOException {
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
         FileInputStream fileInputStream = new FileInputStream(str);
         try {

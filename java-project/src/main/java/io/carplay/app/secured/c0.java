@@ -8,6 +8,11 @@ import java.util.function.LongSupplier;
 public final /* synthetic */ class c0 implements LongSupplier {
     public final /* synthetic */ int a;
 
+    /* smali 中为 public synthetic constructor <init>(I)V，jadx 漏生成 */
+    public c0(int i) {
+        this.a = i;
+    }
+
     @Override // java.util.function.LongSupplier
     public final long getAsLong() {
         switch (this.a) {

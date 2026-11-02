@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * <p>命名依据：SHA256withECDSA / release receipt signature invalid
  */
 public final class EcdsaSignature {
-    public byte[] a;
+    public byte[] a2;
     public byte[] b;
 
     public static final class a {
@@ -39,7 +39,7 @@ public final class EcdsaSignature {
             if (obj == null || ecdsaSignature == null) {
                 return null;
             }
-            byte[] bArr = ecdsaSignature.a;
+            byte[] bArr = ecdsaSignature.a2;
             try {
                 byte[] bArrDecode = Base64.getDecoder().decode(str);
                 Signature signature = Signature.getInstance("SHA256withECDSA");
@@ -213,7 +213,7 @@ public final class EcdsaSignature {
             byte[] bArrDecode = Base64.getDecoder().decode(str);
             byte[] bArrDecode2 = Base64.getDecoder().decode(str2);
             EcdsaSignature ecdsaSignature = new EcdsaSignature();
-            ecdsaSignature.a = bArrDecode;
+            ecdsaSignature.a2 = bArrDecode;
             ecdsaSignature.b = bArrDecode2;
             VarHandle.storeStoreFence();
             return ecdsaSignature;

@@ -11,7 +11,7 @@ import java.util.Set;
 
 /* JADX INFO: loaded from: classes.dex */
 final class c3 {
-    private static final Set<String> a = Set.of((Object[]) new String[]{"resourceID", "entity", "permanentEntity", "transferType", "transferPriority", "takeConstraint", "borrowConstraint", "unborrowConstraint", "appStateID", "state", "speechMode"});
+    private static final Set<String> a = Set.of("resourceID", "entity", "permanentEntity", "transferType", "transferPriority", "takeConstraint", "borrowConstraint", "unborrowConstraint", "appStateID", "state", "speechMode");
 
     private c3() {
     }
@@ -102,7 +102,7 @@ final class c3 {
                             return null;
                         }
                         int i2 = 0;
-                        for (Map.Entry entry : map2.entrySet()) {
+                        for (Map.Entry entry : ((Map<?, ?>) map2).entrySet()) {
                             Object key = entry.getKey();
                             if (key instanceof String) {
                                 if (a.contains((String) key)) {

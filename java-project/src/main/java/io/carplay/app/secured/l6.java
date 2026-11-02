@@ -5,7 +5,7 @@ import java.io.InputStream;
 
 /* JADX INFO: loaded from: classes.dex */
 public abstract class l6 {
-    public static int a(InputStream inputStream, byte[] bArr) {
+    public static int a(InputStream inputStream, byte[] bArr) throws IOException {
         return b(inputStream, bArr, 0, bArr.length);
     }
 

@@ -154,12 +154,10 @@ public final class PcmConverter implements AutoCloseable {
         for (int i3 = 0; i3 < this.d; i3++) {
             double dT = 0.0d;
             int i4 = 0;
-            while (true) {
-                int i5 = this.h;
-                if (i4 < i5 * 2) {
-                    dT += ((double) t(((((long) i4) + j2) - ((long) i5)) + 1, i3)) * this.m[i2][i4];
-                    i4++;
-                }
+            int i5 = this.h;
+            while (i4 < i5 * 2) {
+                dT += ((double) t(((((long) i4) + j2) - ((long) i5)) + 1, i3)) * this.m[i2][i4];
+                i4++;
             }
             int iMax = (int) Math.max(-32768L, Math.min(32767L, Math.round(dT)));
             byteArrayOutputStream.write(iMax);
@@ -216,9 +214,9 @@ public final class PcmConverter implements AutoCloseable {
         this.o++;
     }
 
-    public synchronized byte[] c(byte[] bArr) {
+    public synchronized byte[] c(byte[] bArr) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream;
-        try {
+        {
             g();
             if (bArr == null || bArr.length > 65536) {
                 throw i("PCM_CONVERTER_INPUT_LIMIT");
@@ -238,8 +236,6 @@ public final class PcmConverter implements AutoCloseable {
                     this.q = 0;
                 }
             }
-        } catch (Throwable th) {
-            throw th;
         }
         return byteArrayOutputStream.toByteArray();
     }
@@ -253,9 +249,9 @@ public final class PcmConverter implements AutoCloseable {
         e();
     }
 
-    public synchronized byte[] k() {
+    public synchronized byte[] k() throws IOException {
         ByteArrayOutputStream byteArrayOutputStream;
-        try {
+        {
             g();
             if (this.q != 0) {
                 throw i("PCM_CONVERTER_TRUNCATED_FRAME");
@@ -265,8 +261,6 @@ public final class PcmConverter implements AutoCloseable {
                 f(byteArrayOutputStream);
             }
             this.r = true;
-        } catch (Throwable th) {
-            throw th;
         }
         return byteArrayOutputStream.toByteArray();
     }
@@ -295,7 +289,7 @@ public final class PcmConverter implements AutoCloseable {
         return this.o;
     }
 
-    public synchronized void reset() {
+    public synchronized void reset() throws IOException {
         g();
         this.n = 0L;
         this.o = 0L;

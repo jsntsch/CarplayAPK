@@ -16,23 +16,23 @@ import java.util.function.Supplier;
 public final class PcmEndpoint {
     private final d a;
     private final Supplier<io.carplay.app.secured.b.C0003b> b;
-    private final Map<c, a> c = new LinkedHashMap();
+    private final Map<StreamIdentity, PcmStream> c = new LinkedHashMap();
     private long d;
     private long e;
     private g4.g f;
 
-    public final class a implements g4 {
-        private final c a;
+    public final class PcmStream implements g4 {
+        private final StreamIdentity a;
         private final long b;
         private final e4 c;
         private boolean d = true;
 
         /* JADX INFO: renamed from: io.carplay.app.secured.PcmEndpoint$a$a, reason: collision with other inner class name */
         public class C0001a implements g4 {
-            final /* synthetic */ c a;
-            final /* synthetic */ a b;
+            final /* synthetic */ StreamIdentity a;
+            final /* synthetic */ PcmStream b;
 
-            public C0001a(a aVar, c cVar) {
+            public C0001a(PcmStream aVar, StreamIdentity cVar) {
                 this.a = cVar;
                 this.b = aVar;
             }
@@ -63,7 +63,7 @@ public final class PcmEndpoint {
             }
         }
 
-        public a(c cVar, long j, g4.g gVar) {
+        public PcmStream(StreamIdentity cVar, long j, g4.g gVar) {
             this.a = cVar;
             this.b = j;
             e4 e4Var = new e4(new C0001a(this, cVar), PcmEndpoint.this.b);
@@ -137,12 +137,12 @@ public final class PcmEndpoint {
         ICCOA
     }
 
-    public static final class c extends w1 {
+    public static final class StreamIdentity extends w1 {
         private final b a;
         private final int b;
         private final g4.a c;
 
-        public c(b bVar, int i, g4.a aVar) {
+        public StreamIdentity(b bVar, int i, g4.a aVar) {
             if (bVar == null || aVar == null || i < 0 || i > 65535) {
                 SyntheticRefs.b("explicit stream identity required");
                 throw null;
@@ -153,10 +153,10 @@ public final class PcmEndpoint {
         }
 
         public final boolean equals(Object obj) {
-            if (!(obj instanceof c)) {
+            if (!(obj instanceof StreamIdentity)) {
                 return false;
             }
-            c cVar = (c) obj;
+            StreamIdentity cVar = (StreamIdentity) obj;
             return this.b == cVar.b && Objects.equals(this.a, cVar.a) && Objects.equals(this.c, cVar.c);
         }
 
@@ -184,7 +184,7 @@ public final class PcmEndpoint {
             Object[] objArr = {this.a, Integer.valueOf(this.b), this.c};
             String[] strArrSplit = "a;b;c".length() == 0 ? new String[0] : "a;b;c".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(c.class, sb, "[");
+            w1.f(StreamIdentity.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");
@@ -199,11 +199,11 @@ public final class PcmEndpoint {
     }
 
     public interface d {
-        void a(c cVar, g4.c cVar2);
+        void a(StreamIdentity cVar, g4.c cVar2);
 
-        void b(c cVar, long j, g4.g gVar, g4.e eVar);
+        void b(StreamIdentity cVar, long j, g4.g gVar, g4.e eVar);
 
-        void c(c cVar, long j, String str);
+        void c(StreamIdentity cVar, long j, String str);
     }
 
     public PcmEndpoint(d dVar, Supplier<io.carplay.app.secured.b.C0003b> supplier) {
@@ -216,8 +216,8 @@ public final class PcmEndpoint {
     }
 
     /* JADX INFO: Access modifiers changed from: private */
-    public static /* synthetic */ a[] h(int i) {
-        return new a[i];
+    public static /* synthetic */ PcmStream[] h(int i) {
+        return new PcmStream[i];
     }
 
     public synchronized void f(long j, g4.g gVar) {
@@ -235,9 +235,9 @@ public final class PcmEndpoint {
             this.d = 0L;
             RuntimeException e = null;
             this.f = null;
-            a[] aVarArr = (a[]) this.c.values().toArray(new h4());
+            PcmStream[] aVarArr = (PcmStream[]) this.c.values().toArray(new h4());
             this.c.clear();
-            for (a aVar : aVarArr) {
+            for (PcmStream aVar : aVarArr) {
                 try {
                     aVar.i(str);
                 } catch (RuntimeException e2) {
@@ -250,21 +250,21 @@ public final class PcmEndpoint {
         }
     }
 
-    public synchronized g4 i(c cVar) throws Throwable {
+    public synchronized g4 i(StreamIdentity cVar) throws Throwable {
         Throwable th = null;
         try {
             try {
                 if (this.d == 0 || cVar == null) {
                     throw new IllegalStateException("no active stream session");
                 }
-                a aVar = this.c.get(cVar);
+                PcmStream aVar = this.c.get(cVar);
                 if (aVar != null) {
                     return aVar;
                 }
                 if (this.c.size() >= 16) {
                     throw new IllegalStateException("too many active PCM streams");
                 }
-                a aVar2 = new a(cVar, this.d, this.f);
+                PcmStream aVar2 = new PcmStream(cVar, this.d, this.f);
                 this.c.put(cVar, aVar2);
                 return aVar2;
             } catch (Throwable thCaught) {

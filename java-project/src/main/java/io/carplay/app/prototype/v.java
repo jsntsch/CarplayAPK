@@ -52,7 +52,7 @@ final class v {
     }
 
     public static String d(Context context, Network network) {
-        String string;
+        String string = "UNKNOWN";
         ConnectivityManager connectivityManager;
         Network activeNetwork;
         boolean z;

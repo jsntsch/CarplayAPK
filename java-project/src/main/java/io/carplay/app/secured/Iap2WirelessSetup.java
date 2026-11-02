@@ -1,6 +1,7 @@
 package io.carplay.app.secured;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.io.OutputStream;
 import java.lang.invoke.VarHandle;
 import java.nio.ByteBuffer;
@@ -95,7 +96,7 @@ final class Iap2WirelessSetup implements AutoCloseable {
     }
 
     public interface b extends AutoCloseable {
-        void a(byte[] bArr);
+        void a(byte[] bArr) throws IOException;
 
         @Override // java.lang.AutoCloseable
         void close();
@@ -103,7 +104,7 @@ final class Iap2WirelessSetup implements AutoCloseable {
 
     @FunctionalInterface
     public interface c {
-        b b();
+        b b() throws IOException, InterruptedException;
     }
 
     public static final class d implements b {
@@ -121,7 +122,7 @@ final class Iap2WirelessSetup implements AutoCloseable {
         }
 
         @Override // io.carplay.app.secured.Iap2WirelessSetup.b
-        public synchronized void a(byte[] bArr) {
+        public synchronized void a(byte[] bArr) throws IOException {
             if (this.f || bArr == null || bArr.length == 0 || bArr.length > 4096 || this.d == -1) {
                 throw new IOException("network iAP output bounds");
             }
@@ -137,7 +138,12 @@ final class Iap2WirelessSetup implements AutoCloseable {
             byte[] bArr3 = this.c;
             long j2 = this.d;
             this.d = 1 + j2;
-            byte[] bArrS = DerCodec.s(bArr3, DerCodec.m(j2), bArrArray, bArr2);
+            byte[] bArrS;
+            try {
+                bArrS = DerCodec.s(bArr3, DerCodec.m(j2), bArrArray, bArr2);
+            } catch (GeneralSecurityException e) {
+                throw new IOException("network iAP output encryption failed", e);
+            }
             this.a.write(bArr2);
             this.a.write(bArrS);
             this.a.flush();

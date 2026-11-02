@@ -39,7 +39,7 @@ public final class i {
         return byteArrayOutputStream.toByteArray();
     }
 
-    public static byte[] b(byte[] bArr, byte[] bArr2, boolean z) {
+    public static byte[] b(byte[] bArr, byte[] bArr2, boolean z) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         if (z && bArr != null) {
             byteArrayOutputStream.writeBytes(bArr);

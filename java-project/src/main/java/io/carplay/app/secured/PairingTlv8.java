@@ -43,7 +43,7 @@ public final class PairingTlv8 {
             this.c = (byte[]) bArr2.clone();
         }
 
-        public static a d(String str) {
+        public static a d(String str) throws GeneralSecurityException {
             DerCodec.b bVarF = DerCodec.f();
             return new a(str, bVarF.a(), bVarF.b());
         }
@@ -88,9 +88,9 @@ public final class PairingTlv8 {
     }
 
     public interface c {
-        b b(String str);
+        b b(String str) throws IOException;
 
-        void c(b bVar);
+        void c(b bVar) throws IOException;
     }
 
     public static final class d {
@@ -221,7 +221,7 @@ public final class PairingTlv8 {
             i = i5;
         }
         LinkedHashMap linkedHashMap2 = new LinkedHashMap();
-        for (Map.Entry entry : linkedHashMap.entrySet()) {
+        for (Map.Entry entry : ((Map<?, ?>) linkedHashMap).entrySet()) {
             linkedHashMap2.put((Integer) entry.getKey(), ((ByteArrayOutputStream) entry.getValue()).toByteArray());
         }
         return linkedHashMap2;
@@ -334,16 +334,16 @@ public final class PairingTlv8 {
         }
     }
 
-    public MfiSap.a b(EventChannel eventChannel, String str) {
+    public MfiSap.a b(EventChannel eventChannel, String str) throws GeneralSecurityException, IOException {
         return MfiSap.a(eventChannel, str);
     }
 
-    public b g(EventChannel eventChannel, String str) {
+    public b g(EventChannel eventChannel, String str) throws GeneralSecurityException, IOException {
         n(str);
         return c(eventChannel, str, e(eventChannel, "/pair-setup", m(0, new byte[]{0}, 6, new byte[]{1}), 2));
     }
 
-    public e h(EventChannel eventChannel, String str, String str2) {
+    public e h(EventChannel eventChannel, String str, String str2) throws GeneralSecurityException, IOException {
         n(str);
         try {
             return i(eventChannel, c(eventChannel, str, e(eventChannel, "/pair-setup", m(0, new byte[]{0}, 6, new byte[]{1}), 2)));
@@ -355,7 +355,7 @@ public final class PairingTlv8 {
         }
     }
 
-    public e i(EventChannel eventChannel, b bVar) throws GeneralSecurityException {
+    public e i(EventChannel eventChannel, b bVar) throws GeneralSecurityException, IOException {
         if (bVar != null) {
             return j(eventChannel, bVar, false);
         }

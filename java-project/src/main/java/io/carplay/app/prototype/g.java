@@ -38,18 +38,18 @@ public final /* synthetic */ class g implements Runnable {
     /* JADX WARN: Code duplicated, block: B:94:0x027c  */
     @Override // java.lang.Runnable
     public final void run() {
-        EcdsaSignature ecdsaSignatureA;
-        q qVarA;
-        String strA;
-        boolean z;
-        String strConcat;
-        String str;
-        String str2;
-        boolean z2;
-        x5 x5Var;
-        String str3;
-        SharedPreferences sharedPreferences;
-        w5 w5Var;
+        EcdsaSignature ecdsaSignatureA = null;
+        q qVarA = null;
+        String strA = null;
+        boolean z = false;
+        String strConcat = null;
+        String str = null;
+        String str2 = null;
+        boolean z2 = false;
+        x5 x5Var = null;
+        String str3 = null;
+        SharedPreferences sharedPreferences = null;
+        w5 w5Var = null;
         // jadx 漏了方法级声明：下面多处 catch 用 `e = eN;` 转发异常，再取 e.getClass()，
         // 但方法里没有 `Exception e;`，e 会报「找不到符号」。
         Exception e = null;
@@ -117,38 +117,6 @@ public final /* synthetic */ class g implements Runnable {
                                                     str2 = strA;
                                                     sharedPreferences.edit().putString("installed_sha256", strA).putString("latest_version", w5Var.h().b).putLong("latest_code", w5Var.h().a).putLong("last_success", System.currentTimeMillis()).apply();
                                                     break;
-                                                } catch (q.a unused) {
-                                                    str = "无法确认原安装包身份或安装文件已变化，请重新覆盖安装原安装包；日志仍可导出。";
-                                                    strConcat = "INSTALLATION_IDENTITY_INVALID";
-                                                    str2 = strA;
-                                                    z2 = z;
-                                                    context.getSharedPreferences("release-verification", 0).edit().putString("message", str).putString("result", strConcat).putBoolean("allowed", z2).apply();
-                                                    AppLogger.g(context, "RELEASE_CHECK result=" + strConcat + " new_session_allowed=" + z2);
-                                                    x5Var = UpdateChecker.b;
-                                                    synchronized (x5Var) {
-                                                        if (!z2) {
-                                                            qVarA = null;
-                                                        }
-                                                        UpdateChecker.c = qVarA;
-                                                        if (z2) {
-                                                            ecdsaSignatureA = null;
-                                                        }
-                                                        UpdateChecker.d = ecdsaSignatureA;
-                                                        if (z2) {
-                                                            str3 = str2;
-                                                        } else {
-                                                            str3 = null;
-                                                        }
-                                                        UpdateChecker.e = str3;
-                                                        x5Var.a(z2, SystemClock.elapsedRealtime());
-                                                        Handler handler = new Handler(Looper.getMainLooper());
-                                                        y yVar = new y();
-                                                        yVar.a = aVar;
-                                                        yVar.b = z2;
-                                                        VarHandle.storeStoreFence();
-                                                        handler.post(yVar);
-                                                        return;
-                                                    }
                                                 } catch (SecurityException unused2) {
                                                     str = "安装包签名与发布者不符，请重新覆盖安装原安装包。";
                                                     strConcat = "APK_SIGNER_MISMATCH";
@@ -179,38 +147,6 @@ public final /* synthetic */ class g implements Runnable {
                                                         yVar2.b = z2;
                                                         VarHandle.storeStoreFence();
                                                         handler2.post(yVar2);
-                                                        return;
-                                                    }
-                                                } catch (GeneralSecurityException unused3) {
-                                                    str = "发布签名验证失败，请稍后重试。暂不能新建连接，日志与教程仍可查看。";
-                                                    strConcat = "CATALOG_SIGNATURE_INVALID";
-                                                    str2 = strA;
-                                                    z2 = z;
-                                                    context.getSharedPreferences("release-verification", 0).edit().putString("message", str).putString("result", strConcat).putBoolean("allowed", z2).apply();
-                                                    AppLogger.g(context, "RELEASE_CHECK result=" + strConcat + " new_session_allowed=" + z2);
-                                                    x5Var = UpdateChecker.b;
-                                                    synchronized (x5Var) {
-                                                        if (!z2) {
-                                                            qVarA = null;
-                                                        }
-                                                        UpdateChecker.c = qVarA;
-                                                        if (z2) {
-                                                            ecdsaSignatureA = null;
-                                                        }
-                                                        UpdateChecker.d = ecdsaSignatureA;
-                                                        if (z2) {
-                                                            str3 = str2;
-                                                        } else {
-                                                            str3 = null;
-                                                        }
-                                                        UpdateChecker.e = str3;
-                                                        x5Var.a(z2, SystemClock.elapsedRealtime());
-                                                        Handler handler3 = new Handler(Looper.getMainLooper());
-                                                        y yVar3 = new y();
-                                                        yVar3.a = aVar;
-                                                        yVar3.b = z2;
-                                                        VarHandle.storeStoreFence();
-                                                        handler3.post(yVar3);
                                                         return;
                                                     }
                                                 } catch (Exception eCaught) {
@@ -246,35 +182,6 @@ public final /* synthetic */ class g implements Runnable {
                                                         return;
                                                     }
                                                 }
-                                                z2 = z;
-                                                context.getSharedPreferences("release-verification", 0).edit().putString("message", str).putString("result", strConcat).putBoolean("allowed", z2).apply();
-                                                AppLogger.g(context, "RELEASE_CHECK result=" + strConcat + " new_session_allowed=" + z2);
-                                                x5Var = UpdateChecker.b;
-                                                synchronized (x5Var) {
-                                                    if (!z2) {
-                                                        qVarA = null;
-                                                    }
-                                                    UpdateChecker.c = qVarA;
-                                                    if (z2) {
-                                                        ecdsaSignatureA = null;
-                                                    }
-                                                    UpdateChecker.d = ecdsaSignatureA;
-                                                    if (z2) {
-                                                        str3 = str2;
-                                                    } else {
-                                                        str3 = null;
-                                                    }
-                                                    UpdateChecker.e = str3;
-                                                    x5Var.a(z2, SystemClock.elapsedRealtime());
-                                                    break;
-                                                }
-                                                Handler handler5 = new Handler(Looper.getMainLooper());
-                                                y yVar5 = new y();
-                                                yVar5.a = aVar;
-                                                yVar5.b = z2;
-                                                VarHandle.storeStoreFence();
-                                                handler5.post(yVar5);
-                                                return;
                                             }
                                             str = "当前版本已停用，请覆盖升级至 " + w5Var.h().b + " 后连接。已运行的连接不受影响。";
                                             strConcat = "OLD_VERSION_DISABLED";
@@ -291,11 +198,6 @@ public final /* synthetic */ class g implements Runnable {
                                     strA = str2;
                                     str = "安装包签名与发布者不符，请重新覆盖安装原安装包。";
                                     strConcat = "APK_SIGNER_MISMATCH";
-                                    str2 = strA;
-                                } catch (GeneralSecurityException unused6) {
-                                    strA = str2;
-                                    str = "发布签名验证失败，请稍后重试。暂不能新建连接，日志与教程仍可查看。";
-                                    strConcat = "CATALOG_SIGNATURE_INVALID";
                                     str2 = strA;
                                 } catch (Exception e2) {
                                     e = e2;
@@ -347,11 +249,6 @@ public final /* synthetic */ class g implements Runnable {
                                     throw th;
                                 }
                             }
-                            ecdsaSignatureA = null;
-                            str2 = null;
-                            qVarA = null;
-                            z = false;
-                            z2 = z;
                         } catch (q.a e3) {
                             throw e3;
                         } catch (Exception e4) {
@@ -368,11 +265,6 @@ public final /* synthetic */ class g implements Runnable {
                     strA = null;
                     z = false;
                 } catch (SecurityException unused8) {
-                    ecdsaSignatureA = null;
-                    qVarA = null;
-                    strA = null;
-                    z = false;
-                } catch (GeneralSecurityException unused9) {
                     ecdsaSignatureA = null;
                     qVarA = null;
                     strA = null;

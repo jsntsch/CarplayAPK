@@ -16,7 +16,7 @@ public final /* synthetic */ class j0 implements Iap2WirelessSetup.c, AirPlaySes
     }
 
     @Override // io.carplay.app.secured.EventChannel.c
-    public byte[] a(EventChannel.b bVar) {
+    public byte[] a(EventChannel.b bVar) throws IOException {
         int i = this.a;
         AirPlaySession airPlaySession = this.b;
         switch (i) {
@@ -28,7 +28,7 @@ public final /* synthetic */ class j0 implements Iap2WirelessSetup.c, AirPlaySes
     }
 
     @Override // io.carplay.app.secured.Iap2WirelessSetup.c
-    public Iap2WirelessSetup.b b() {
+    public Iap2WirelessSetup.b b() throws IOException, InterruptedException {
         int i = this.a;
         AirPlaySession airPlaySession = this.b;
         switch (i) {

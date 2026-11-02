@@ -41,7 +41,7 @@ final class UiFactory {
     static final int c = -14328088;
     static final int d = -854534;
 
-    public class a extends CompoundButton {
+    public static class a extends CompoundButton {
         final Paint a;
 
         public a(Context context) {
@@ -137,7 +137,6 @@ final class UiFactory {
                         a(canvas, 9.0f, 16.0f, 13.0f, 16.0f);
                         break;
                     }
-                    break;
                 case "shield":
                     b(canvas, 12.0f, 2.0f, 21.0f, 6.0f, 20.0f, 14.0f, 17.0f, 19.0f, 12.0f, 22.0f, 7.0f, 19.0f, 4.0f, 14.0f, 3.0f, 6.0f, 12.0f, 2.0f);
                     b(canvas, 8.0f, 12.0f, 11.0f, 15.0f, 16.0f, 9.0f);

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.lang.invoke.VarHandle;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -30,7 +31,7 @@ public final class VideoCipher {
             this.a = VideoCipher.b(bArr, j);
         }
 
-        public synchronized byte[] b(List<byte[]> list, long j) {
+        public synchronized byte[] b(List<byte[]> list, long j) throws IOException {
             byte[] byteArray;
             byte[] bArr;
             byte[] bArr2;
@@ -63,7 +64,11 @@ public final class VideoCipher {
             } catch (Throwable th) {
                 throw th;
             }
-            return DerCodec.d(bArr, DerCodec.s(bArr2, DerCodec.m(j2), byteArray, bArr));
+            try {
+                return DerCodec.d(bArr, DerCodec.s(bArr2, DerCodec.m(j2), byteArray, bArr));
+            } catch (GeneralSecurityException e) {
+                throw new IOException("video access unit encryption failed", e);
+            }
         }
 
         @Override // java.lang.AutoCloseable
@@ -85,10 +90,14 @@ public final class VideoCipher {
             SyntheticRefs.b("positive own stream identifier required");
             return null;
         }
-        return DerCodec.k(bArr, "DataStream-Salt" + j, "DataStream-Output-Encryption-Key");
+        try {
+            return DerCodec.k(bArr, "DataStream-Salt" + j, "DataStream-Output-Encryption-Key");
+        } catch (GeneralSecurityException e) {
+            throw new IllegalStateException("DataStream-Output-Encryption-Key unavailable", e);
+        }
     }
 
-    public static byte[] c(byte[] bArr, byte[] bArr2) {
+    public static byte[] c(byte[] bArr, byte[] bArr2) throws IOException {
         return e(bArr, bArr2, 0, 0);
     }
 
@@ -142,12 +151,12 @@ public final class VideoCipher {
 
         @FunctionalInterface
         public interface a {
-            void d(List<byte[]> list);
+            void d(List<byte[]> list) throws IOException;
         }
 
         @FunctionalInterface
         public interface c {
-            void c(List<byte[]> list, long j, long j2, long j3);
+            void c(List<byte[]> list, long j, long j2, long j3) throws IOException;
         }
 
         private static List<byte[]> d(List<byte[]> list) {
@@ -159,7 +168,7 @@ public final class VideoCipher {
             return List.copyOf(arrayList);
         }
 
-        private void e(c cVar) {
+        private void e(c cVar) throws IOException {
             if (this.c) {
                 C0002b c0002b = this.g;
                 cVar.c(List.copyOf(this.b), c0002b.a, c0002b.b, c0002b.c);
@@ -220,7 +229,7 @@ public final class VideoCipher {
         }
 
         /* JADX INFO: Access modifiers changed from: private */
-        public static /* synthetic */ void g(a aVar, List list, long j, long j2, long j3) {
+        public static /* synthetic */ void g(a aVar, List list, long j, long j2, long j3) throws IOException {
             aVar.d(d(list));
         }
 
@@ -486,7 +495,7 @@ public final class VideoCipher {
             this.c = i2;
         }
 
-        public synchronized byte[] b(byte[] bArr) {
+        public synchronized byte[] b(byte[] bArr) throws IOException {
             byte[] bArrArray;
             byte[] bArrM;
             if (this.g || this.f == -1) {
@@ -504,13 +513,14 @@ public final class VideoCipher {
             long j = this.f;
             this.f = 1 + j;
             bArrM = DerCodec.m(j);
-            return DerCodec.d(bArrArray, DerCodec.s(this.a, bArrM, bArr, Arrays.copyOfRange(bArrArray, 4, 12)), Arrays.copyOfRange(bArrM, 4, 12));
+            try {
+                return DerCodec.d(bArrArray, DerCodec.s(this.a, bArrM, bArr, Arrays.copyOfRange(bArrArray, 4, 12)), Arrays.copyOfRange(bArrM, 4, 12));
+            } catch (GeneralSecurityException e) {
+                throw new IOException("audio access unit encryption failed", e);
+            }
         }
 
-        public synchronized byte[] c(byte[] bArr, int i) {
-            byte[] bArrArray;
-            byte[] bArr2;
-            byte[] bArrM;
+        public synchronized byte[] c(byte[] bArr, int i) throws IOException {
             try {
                 if (this.g || this.f == -1) {
                     throw new IOException("closed/exhausted audio cipher");
@@ -524,9 +534,9 @@ public final class VideoCipher {
                         ByteBuffer byteBufferPut = ByteBuffer.allocate(12).order(ByteOrder.BIG_ENDIAN).put((byte) -128).put((byte) this.c);
                         int i3 = this.d;
                         this.d = i3 + 1;
-                        bArrArray = byteBufferPut.putShort((short) i3).putInt((int) this.e).putInt(this.b).array();
+                        byte[] bArrArray = byteBufferPut.putShort((short) i3).putInt((int) this.e).putInt(this.b).array();
                         this.e += (long) (bArr.length / i2);
-                        bArr2 = (byte[]) bArr.clone();
+                        byte[] bArr2 = (byte[]) bArr.clone();
                         for (int i4 = 0; i4 < bArr2.length; i4 += 2) {
                             byte b = bArr2[i4];
                             int i5 = i4 + 1;
@@ -535,14 +545,18 @@ public final class VideoCipher {
                         }
                         long j = this.f;
                         this.f = 1 + j;
-                        bArrM = DerCodec.m(j);
+                        byte[] bArrM = DerCodec.m(j);
+                        try {
+                            return DerCodec.d(bArrArray, DerCodec.s(this.a, bArrM, bArr2, Arrays.copyOfRange(bArrArray, 4, 12)), Arrays.copyOfRange(bArrM, 4, 12));
+                        } catch (GeneralSecurityException e) {
+                            throw new IOException("PCM access unit encryption failed", e);
+                        }
                     }
                 }
                 throw new IOException("aligned bounded PCM16 packet required");
             } catch (Throwable th) {
                 throw th;
             }
-            return DerCodec.d(bArrArray, DerCodec.s(this.a, bArrM, bArr2, Arrays.copyOfRange(bArrArray, 4, 12)), Arrays.copyOfRange(bArrM, 4, 12));
         }
 
         @Override // java.lang.AutoCloseable
@@ -551,7 +565,7 @@ public final class VideoCipher {
             Arrays.fill(this.a, (byte) 0);
         }
 
-        public synchronized void e(long j) {
+        public synchronized void e(long j) throws IOException {
             if (this.g || this.f == -1) {
                 throw new IOException("closed/exhausted audio cipher");
             }

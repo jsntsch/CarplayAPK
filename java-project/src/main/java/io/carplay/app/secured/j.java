@@ -16,7 +16,7 @@ public final class j {
             this.a = bArr;
         }
 
-        public boolean a() {
+        public boolean a() throws c {
             return b(1) != 0;
         }
 

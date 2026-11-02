@@ -10,7 +10,7 @@ import java.util.Map;
 public abstract class p5 {
     private static final ThreadLocal a = new ThreadLocal();
 
-    public class a implements PrivilegedAction {
+    public static class a implements PrivilegedAction {
         final /* synthetic */ String a;
 
         public a(String str) {
@@ -23,7 +23,7 @@ public abstract class p5 {
         }
     }
 
-    public class b implements PrivilegedAction {
+    public static class b implements PrivilegedAction {
         final /* synthetic */ String a;
 
         public b(String str) {

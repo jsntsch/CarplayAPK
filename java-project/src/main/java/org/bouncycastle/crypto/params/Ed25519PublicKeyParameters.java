@@ -5,6 +5,7 @@ import io.carplay.app.secured.X25519;
 import io.carplay.app.secured.f;
 import io.carplay.app.secured.l6;
 import java.io.EOFException;
+import java.io.IOException;
 import java.io.InputStream;
 
 /* JADX INFO: loaded from: classes.dex */
@@ -12,7 +13,7 @@ public final class Ed25519PublicKeyParameters extends f {
     public static final int KEY_SIZE = 32;
     private final X25519.h publicPoint;
 
-    public Ed25519PublicKeyParameters(InputStream inputStream) throws EOFException {
+    public Ed25519PublicKeyParameters(InputStream inputStream) throws IOException {
         super(false);
         byte[] bArr = new byte[32];
         if (32 != l6.a(inputStream, bArr)) {

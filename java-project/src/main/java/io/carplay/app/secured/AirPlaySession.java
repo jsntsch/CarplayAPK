@@ -16,6 +16,7 @@ import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.ClosedByInterruptException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -212,13 +213,13 @@ public final class AirPlaySession implements AutoCloseable {
         }
 
         @Override // io.carplay.app.secured.Iap2WirelessSetup.b
-        public synchronized void a(byte[] bArr) {
+        public synchronized void a(byte[] bArr) throws IOException {
             this.c.q0();
             EventChannel eventChannel = this.c.a0;
             if (this.a || bArr == null || bArr.length < 1 || bArr.length > 4096 || !this.c.D || eventChannel == null || !eventChannel.n()) {
                 throw new IOException("control POST iAP unavailable");
             }
-            byte[] bArrA = c1.a(AirPlaySession.R(this.c, Map.of("type", "iAPSendMessage", "params", Map.of("data", (byte[]) bArr.clone()))));
+            byte[] bArrA = io.carplay.app.secured.c1.a(AirPlaySession.R(this.c, Map.of("type", "iAPSendMessage", "params", Map.of("data", (byte[]) bArr.clone()))));
             if (bArrA != null) {
                 try {
                     synchronized (this.c.q0) {
@@ -323,7 +324,7 @@ public final class AirPlaySession implements AutoCloseable {
 
     @FunctionalInterface
     public interface j {
-        void a(DatagramSocket datagramSocket);
+        void a(DatagramSocket datagramSocket) throws IOException;
     }
 
     public static final class k extends w1 {
@@ -390,7 +391,7 @@ public final class AirPlaySession implements AutoCloseable {
 
     @FunctionalInterface
     public interface l {
-        void e(Map<String, Object> map);
+        void e(Map<String, Object> map) throws IOException;
     }
 
     public interface n {
@@ -445,7 +446,7 @@ public final class AirPlaySession implements AutoCloseable {
         default void q(x xVar) {
         }
 
-        void r(int i, int i2, boolean z);
+        void r(int i, int i2, boolean z) throws IOException;
     }
 
     public static final class p {
@@ -618,7 +619,7 @@ public final class AirPlaySession implements AutoCloseable {
         }
     }
 
-    private void H1() throws EventChannel.d {
+    private void H1() throws EventChannel.d, IOException {
         if (!this.E || this.o.get()) {
             return;
         }
@@ -885,7 +886,11 @@ public final class AirPlaySession implements AutoCloseable {
         f0Var.a = this;
         VarHandle.storeStoreFence();
         this.b0 = new EventChannel(EventChannelConnector.b(r0Var, c0Var, syntheticRefs, e0Var, f0Var), 15000);
-        this.b0.i(DerCodec.k(this.m0, "Events-Salt", "Events-Write-Encryption-Key"), DerCodec.k(this.m0, "Events-Salt", "Events-Read-Encryption-Key"));
+        try {
+            this.b0.i(DerCodec.k(this.m0, "Events-Salt", "Events-Write-Encryption-Key"), DerCodec.k(this.m0, "Events-Salt", "Events-Read-Encryption-Key"));
+        } catch (GeneralSecurityException e2) {
+            throw new IOException("EVENT_CHANNEL_KEY_UNAVAILABLE", e2);
+        }
         ScheduledExecutorService scheduledExecutorService = this.Y;
         b0 b0Var = new b0(1);
         b0Var.b = this;
@@ -898,7 +903,7 @@ public final class AirPlaySession implements AutoCloseable {
         scheduledExecutorService2.execute(b0Var2);
     }
 
-    private byte[] K1(String str) {
+    private byte[] K1(String str) throws IOException {
         J1(str);
         return BinaryPlist.f(Map.of("status", 1));
     }
@@ -1025,7 +1030,7 @@ public final class AirPlaySession implements AutoCloseable {
     }
 
     /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ byte[] O0(EventChannel.b bVar) {
+    public /* synthetic */ byte[] O0(EventChannel.b bVar) throws IOException {
         ControlChannel.Log("INBOUND_REQ chan=EVENT uri=" + bVar.a + " keys=" + bVar.b.keySet() + " bodyLen=" + bVar.c().length);
         return s1(bVar, "EVENT");
     }
@@ -1115,7 +1120,7 @@ public final class AirPlaySession implements AutoCloseable {
         this.E0 = this.F0;
     }
 
-    public static /* bridge */ /* synthetic */ Object R(AirPlaySession airPlaySession, Map map) {
+    public static /* bridge */ /* synthetic */ Object R(AirPlaySession airPlaySession, Map map) throws IOException {
         return airPlaySession.R1("POST", "/command", map);
     }
 
@@ -1140,7 +1145,7 @@ public final class AirPlaySession implements AutoCloseable {
     }
 
     /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ byte[] S0(EventChannel.b bVar) {
+    public /* synthetic */ byte[] S0(EventChannel.b bVar) throws IOException {
         ControlChannel.Log("INBOUND_REQ chan=CONTROL uri=" + bVar.a + " keys=" + bVar.b.keySet() + " bodyLen=" + bVar.c().length);
         return s1(bVar, "CONTROL");
     }
@@ -1218,7 +1223,7 @@ public final class AirPlaySession implements AutoCloseable {
         this.n.a(str2);
     }
 
-    private static void T1(d dVar) {
+    private static void T1(d dVar) throws IOException {
         long jNanoTime = System.nanoTime();
         dVar.H++;
         try {
@@ -1313,7 +1318,13 @@ public final class AirPlaySession implements AutoCloseable {
                 return;
             }
             synchronized (this.H) {
-                listZ0 = z0();
+                try {
+                    listZ0 = z0();
+                } catch (IOException e2) {
+                    this.n.a("HID_INPUT_MODE_UNAVAILABLE reason=AUDIO_DESCRIPTOR");
+                    j("HID_INPUT_MODE_UNAVAILABLE reason=AUDIO_DESCRIPTOR");
+                    return;
+                }
                 j2 = this.I;
             }
             if (!listZ0.isEmpty()) {
@@ -1543,7 +1554,12 @@ public final class AirPlaySession implements AutoCloseable {
         if (qVar.l() != null && qVar.j() != null) {
             this.v0 = new g(qVar.l(), qVar.j());
         }
-        p0(qVar);
+        try {
+            p0(qVar);
+        } catch (InterruptedException e2) {
+            Thread.currentThread().interrupt();
+            throw new IOException("VIDEO_QUEUE_INTERRUPTED", e2);
+        }
     }
 
     /* JADX INFO: Access modifiers changed from: private */
@@ -1674,9 +1690,6 @@ public final class AirPlaySession implements AutoCloseable {
                 if (Thread.currentThread().isInterrupted()) {
                     return;
                 }
-            } catch (InterruptedException unused) {
-                Thread.currentThread().interrupt();
-                return;
             } catch (Exception e2) {
                 String str2 = str;
                 if (this.o.get() || dVar.i.isClosed()) {
@@ -1701,9 +1714,9 @@ public final class AirPlaySession implements AutoCloseable {
 
     /* JADX INFO: Access modifiers changed from: private */
     public /* synthetic */ void c1() {
-        boolean z;
-        long j2;
+        boolean z = false;
         long j3 = this.w.get();
+        long j2 = j3;
         try {
             if (this.o.get()) {
                 if (z) {
@@ -1756,7 +1769,7 @@ public final class AirPlaySession implements AutoCloseable {
         }
     }
 
-    private void c2() {
+    private void c2() throws IOException {
         synchronized (this.G) {
             try {
                 Socket socket = this.c0;
@@ -1808,7 +1821,7 @@ public final class AirPlaySession implements AutoCloseable {
         }
         try {
             i1Var.e(System.nanoTime() / 1000000);
-        } catch (IOException unused) {
+        } catch (RuntimeException unused) {
             long jC = i1Var.c();
             if (jC <= 3 || jC % 100 == 0) {
                 this.n.a("CARPLAY_UDP_KEEPALIVE_SEND_UNCONFIRMED attempts=" + jC);
@@ -1882,7 +1895,7 @@ public final class AirPlaySession implements AutoCloseable {
         return !this.o.get() && this.a0 == eventChannel && eventChannel.n() && G0() && this.X && this.E && socket != null && !socket.isClosed() && this.c0 == socket && this.r0 == null;
     }
 
-    private void h2() {
+    private void h2() throws IOException {
         long jNanoTime = System.nanoTime();
         synchronized (this.M) {
             try {
@@ -1940,7 +1953,7 @@ public final class AirPlaySession implements AutoCloseable {
         Log.d("CarPlayHID", "CarPlayHID " + str + "=" + z);
     }
 
-    private Socket k0(int i2) {
+    private Socket k0(int i2) throws IOException {
         return L0(i2, 10000);
     }
 
@@ -2119,7 +2132,7 @@ public final class AirPlaySession implements AutoCloseable {
                             } else {
                                 hashSet2.remove(num);
                             }
-                        } catch (IOException unused) {
+                        } catch (RuntimeException unused) {
                             hashSet2.remove(num);
                         }
                     } else if (!iVar.g) {
@@ -2231,7 +2244,7 @@ public final class AirPlaySession implements AutoCloseable {
         dVar.w = fVar.h();
     }
 
-    private void p0(q qVar) throws IOException {
+    private void p0(q qVar) throws IOException, InterruptedException {
         this.F0++;
         q qVarPeek = this.K.peek();
         if ((this.K.size() >= 8 || (qVarPeek != null && System.nanoTime() - qVarPeek.g() > 100000000)) && qVar.i().stream().anyMatch(new w0(10))) {
@@ -2399,7 +2412,7 @@ public final class AirPlaySession implements AutoCloseable {
         w0(str, u5.l(th));
     }
 
-    private boolean v2(Socket socket, byte[] bArr) {
+    private boolean v2(Socket socket, byte[] bArr) throws IOException {
         this.H0 = socket;
         this.G0 = System.nanoTime();
         boolean z = false;
@@ -2786,7 +2799,7 @@ public final class AirPlaySession implements AutoCloseable {
                                                             sb.append(" uuid_kind=");
                                                             sb.append(str);
                                                             nVar.a(sb.toString());
-                                                        } catch (IOException unused) {
+                                                        } catch (RuntimeException unused) {
                                                             try {
                                                                 try {
                                                                     x0VarI = io.carplay.app.secured.x0.i(bArr);
@@ -2797,14 +2810,14 @@ public final class AirPlaySession implements AutoCloseable {
                                                                         nVar2.a(str2);
                                                                         j(str2);
                                                                     }
-                                                                } catch (IOException unused2) {
+                                                                } catch (RuntimeException unused2) {
                                                                     y0 y0VarJ = io.carplay.app.secured.y0.j(bArr);
                                                                     if (this.K0.size() < 8) {
                                                                         this.K0.put(strA0, new i(obj3, i2, y0VarJ));
                                                                         this.n.a("HID_CONSUMER_DESCRIPTOR index=" + i2 + " bytes=" + bArr.length + " reports=" + y0VarJ.k() + " descriptor_driven=true");
                                                                     }
                                                                 }
-                                                            } catch (IOException unused3) {
+                                                            } catch (RuntimeException unused3) {
                                                                 n nVar3 = this.n;
                                                                 int length2 = bArr.length;
                                                                 StringBuilder sb2 = new StringBuilder();
@@ -2817,7 +2830,7 @@ public final class AirPlaySession implements AutoCloseable {
                                                                 nVar3.a(sbAppend.toString());
                                                             }
                                                         }
-                                                    } catch (IOException unused4) {
+                                                    } catch (RuntimeException unused4) {
                                                         it = it2;
                                                         x0VarI = io.carplay.app.secured.x0.i(bArr);
                                                         if (this.J0.size() >= 8) {
@@ -2831,7 +2844,7 @@ public final class AirPlaySession implements AutoCloseable {
                                                         list2 = list;
                                                     }
                                                 }
-                                            } catch (IOException unused5) {
+                                            } catch (RuntimeException unused5) {
                                                 list = list2;
                                             }
                                         }
@@ -2916,7 +2929,7 @@ public final class AirPlaySession implements AutoCloseable {
         Code decompiled incorrectly, please refer to instructions dump.
         To view partially-correct add '--show-bad-code' argument
     */
-    private java.net.Socket y1() throws java.lang.Throwable {
+    private java.net.Socket y1() throws java.io.IOException {
         /*
             Method dump skipped, instruction units count: 409
             To view this dump add '--comments-level debug' option
@@ -2925,7 +2938,7 @@ public final class AirPlaySession implements AutoCloseable {
     }
 
     /* JADX INFO: Access modifiers changed from: private */
-    public Iap2WirelessSetup.b z1() throws Exception {
+    public Iap2WirelessSetup.b z1() throws IOException, InterruptedException {
         long jNanoTime = System.nanoTime() + 5000000000L;
         while (true) {
             Socket socketK0 = null;
@@ -3139,7 +3152,7 @@ public final class AirPlaySession implements AutoCloseable {
         return this.v0;
     }
 
-    public void V1(g gVar) {
+    public void V1(g gVar) throws IOException {
         synchronized (this.L) {
             synchronized (this.M) {
                 try {
@@ -3233,7 +3246,7 @@ public final class AirPlaySession implements AutoCloseable {
         this.R = aVar;
     }
 
-    public void a2(g gVar) {
+    public void a2(g gVar) throws IOException {
         synchronized (this.L) {
             this.N.l(gVar.h(), gVar.g());
             this.v0 = gVar;
@@ -3277,17 +3290,17 @@ public final class AirPlaySession implements AutoCloseable {
                 this.g0.close();
             }
             this.Z.shutdownNow();
-            try {
-                if (this.b0 != null) {
+            if (this.b0 != null) {
+                try {
                     this.b0.close();
+                } catch (IOException unusedIo) {
                 }
-            } catch (IOException unused) {
             }
-            try {
-                if (this.a0 != null) {
+            if (this.a0 != null) {
+                try {
                     this.a0.close();
+                } catch (IOException unusedIo2) {
                 }
-            } catch (IOException unused2) {
             }
             synchronized (this.U0) {
                 L1();
@@ -3516,6 +3529,7 @@ public final class AirPlaySession implements AutoCloseable {
             th = th3;
             eventChannel = null;
         }
+        throw th;
     }
 
     public boolean i1(int i2, int i3) {
@@ -3583,7 +3597,7 @@ public final class AirPlaySession implements AutoCloseable {
         }
     }
 
-    public void p1(r6.a aVar, int i2, int i3, int i4) throws Throwable {
+    public void p1(r6.a aVar, int i2, int i3, int i4) throws IOException {
         Throwable th;
         AirPlaySession airPlaySession;
         AirPlaySession airPlaySession2;
@@ -3675,13 +3689,11 @@ public final class AirPlaySession implements AutoCloseable {
                                             }
                                             airPlaySession2.n.a("AUDIO_PLAN_REJECTED channel=" + String.valueOf(aVar2) + " attempt=" + i6 + " status=" + e5.a);
                                             i5 = i6;
-                                            eVar = e5;
-                                            this = airPlaySession2;
+                                            exc = e5;
                                         }
                                     } catch (Exception e6) {
-                                        e = e6;
+                                        exc = e6;
                                     }
-                                    exc = e;
                                     if (u5.l(exc)) {
                                         airPlaySession2.v0("AUDIO_SETUP_" + exc.getClass().getSimpleName(), exc);
                                     }
@@ -3689,11 +3701,11 @@ public final class AirPlaySession implements AutoCloseable {
                                     throw new e("CarPlay audio route unavailable", exc);
                                 }
                             } catch (Exception e7) {
-                                e = e7;
+                                exc = e7;
                                 airPlaySession2 = this;
                             }
                         } catch (Exception e8) {
-                            e = e8;
+                            exc = e8;
                             airPlaySession2 = this;
                             aVar2 = aVar;
                         }
@@ -3710,7 +3722,7 @@ public final class AirPlaySession implements AutoCloseable {
         }
     }
 
-    public void q1(r6.a aVar) {
+    public void q1(r6.a aVar) throws IOException {
         synchronized (this.P.get(aVar)) {
             try {
                 d dVar = this.O.get(aVar);
@@ -3738,11 +3750,11 @@ public final class AirPlaySession implements AutoCloseable {
         }
     }
 
-    public byte[] r1(EventChannel.b bVar) {
+    public byte[] r1(EventChannel.b bVar) throws IOException {
         return s1(bVar, "UNSPECIFIED");
     }
 
-    public Map<String, Object> s0(EventChannel eventChannel, int i2) {
+    public Map<String, Object> s0(EventChannel eventChannel, int i2) throws IOException, GeneralSecurityException {
         return t0(eventChannel, i2, new SyntheticRefs());
     }
 
@@ -3773,7 +3785,7 @@ public final class AirPlaySession implements AutoCloseable {
         }
     }
 
-    public Map<String, Object> t0(EventChannel eventChannel, int i2, l lVar) throws IOException {
+    public Map<String, Object> t0(EventChannel eventChannel, int i2, l lVar) throws IOException, GeneralSecurityException {
         q0();
         synchronized (this.f) {
             this.g = true;
@@ -3857,7 +3869,7 @@ public final class AirPlaySession implements AutoCloseable {
         return mapG1;
     }
 
-    public void t1(r6.a aVar, byte[] bArr, long j2) {
+    public void t1(r6.a aVar, byte[] bArr, long j2) throws IOException {
         synchronized (this.P.get(aVar)) {
             try {
                 r0();
@@ -4028,7 +4040,7 @@ public final class AirPlaySession implements AutoCloseable {
         }
     }
 
-    public List<Map<String, Object>> z0() {
+    public List<Map<String, Object>> z0() throws IOException {
         List<Map<String, Object>> listCopyOf;
         Integer numValueOf = Integer.valueOf(ControlChannel.MODE);
         synchronized (this.U0) {
@@ -4206,10 +4218,6 @@ public final class AirPlaySession implements AutoCloseable {
             sb.append("]");
             return sb.toString();
         }
-
-        public /* synthetic */ f(int i, long j, boolean z) {
-            this(z, j);
-        }
     }
 
     public static final class d implements AutoCloseable {
@@ -4251,7 +4259,7 @@ public final class AirPlaySession implements AutoCloseable {
         long y;
         long z;
 
-        public d(s.d dVar, int i, int i2, int i3, DatagramSocket datagramSocket, DatagramSocket datagramSocket2, VideoCipher.a aVar, t tVar) {
+        public d(s.d dVar, int i, int i2, int i3, DatagramSocket datagramSocket, DatagramSocket datagramSocket2, VideoCipher.a aVar, t tVar) throws IOException {
             this.r = new Object();
             this.w = -1L;
             this.I = System.nanoTime();
@@ -4304,7 +4312,7 @@ public final class AirPlaySession implements AutoCloseable {
             }
         }
 
-        public d(s.d dVar, int i, int i2, int i3, DatagramSocket datagramSocket, DatagramSocket datagramSocket2, VideoCipher.a aVar) {
+        public d(s.d dVar, int i, int i2, int i3, DatagramSocket datagramSocket, DatagramSocket datagramSocket2, VideoCipher.a aVar) throws IOException {
             this(dVar, i, i2, i3, datagramSocket, datagramSocket2, aVar, null);
         }
     }
@@ -4445,7 +4453,7 @@ public final class AirPlaySession implements AutoCloseable {
             return sb.toString();
         }
 
-        public /* synthetic */ q(List list, byte[] bArr, byte[] bArr2, long j, long j2, int i) {
+        public /* synthetic */ q(List<byte[]> list, byte[] bArr, byte[] bArr2, long j, long j2, int i) {
             this(list, bArr, bArr2, j, j2);
         }
 

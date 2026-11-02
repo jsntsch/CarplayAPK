@@ -350,7 +350,7 @@ public final class Iap2Csm {
         return null;
     }
 
-    public static a h(String str, int i, String str2) {
+    public static a h(String str, int i, String str2) throws IOException {
         return g(null, str, i, str2);
     }
 
@@ -888,7 +888,7 @@ public final class Iap2Csm {
             return w1.d("Authenticated Wi-Fi credentials; security=", this.b);
         }
 
-        public /* synthetic */ g(int i, int i2, String str, String str2) {
+        public /* synthetic */ g(int i, int i2, String str, String str2) throws IOException {
             this(str, str2, i);
         }
     }

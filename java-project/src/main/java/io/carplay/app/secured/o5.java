@@ -2,6 +2,7 @@ package io.carplay.app.secured;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 /* JADX INFO: loaded from: classes.dex */
@@ -89,7 +90,12 @@ public final class o5 implements l5, AutoCloseable {
                     return l5.a.REJECTED;
                 }
             }
-            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+            MessageDigest messageDigest;
+            try {
+                messageDigest = MessageDigest.getInstance("MD5");
+            } catch (NoSuchAlgorithmException e) {
+                return l5.a.CONTRACT_UNAVAILABLE;
+            }
             messageDigest.update(this.a);
             for (int i3 = 0; i3 < 4; i3++) {
                 messageDigest.update(i(strArr[i3]));

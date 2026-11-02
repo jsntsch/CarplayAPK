@@ -87,14 +87,14 @@ public final class AacAudioFormat implements t {
                 mediaCodecCreateEncoderByType.start();
                 this.c = mediaCodecCreateEncoderByType;
                 this.d = 0L;
-            } catch (IOException | RuntimeException e) {
-                e = e;
+            } catch (RuntimeException e) {
                 mediaCodec = mediaCodecCreateEncoderByType;
                 c(mediaCodec);
                 throw new IOException("AUDIO_AAC_LOCAL_ENCODER_UNAVAILABLE", e);
             }
         } catch (IOException | RuntimeException e2) {
-            e = e2;
+            c(mediaCodec);
+            throw new IOException("AUDIO_AAC_LOCAL_ENCODER_UNAVAILABLE", e2);
         }
     }
 
@@ -110,11 +110,10 @@ public final class AacAudioFormat implements t {
     }
 
     @Override // io.carplay.app.secured.t
-    public synchronized List<byte[]> j(byte[] bArr) {
+    public synchronized List<byte[]> j(byte[] bArr) throws IOException {
         MediaCodec mediaCodec;
         ArrayList arrayList;
         int i;
-        try {
             if (this.e || (mediaCodec = this.c) == null || bArr == null || bArr.length != this.b * 2048) {
                 throw new IOException("AUDIO_AAC_LOCAL_INPUT");
             }
@@ -180,14 +179,11 @@ public final class AacAudioFormat implements t {
             } catch (RuntimeException e) {
                 throw new IOException("AUDIO_AAC_LOCAL_ENCODE_FAILED", e);
             }
-        } catch (Throwable th2) {
-            throw th2;
-        }
         return List.copyOf(arrayList);
     }
 
     @Override // io.carplay.app.secured.t
-    public synchronized void reset() {
+    public synchronized void reset() throws IOException {
         if (this.e) {
             throw new IOException("AUDIO_AAC_LOCAL_CLOSED");
         }

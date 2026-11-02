@@ -1,5 +1,6 @@
 package io.carplay.app.secured;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
 
@@ -21,7 +22,7 @@ final class i1 implements AutoCloseable {
         this.a = aVar;
     }
 
-    public static Integer b(Map<?, ?> map) {
+    public static Integer b(Map<?, ?> map) throws IOException {
         Object obj = map.get("keepAlivePort");
         if (obj == null) {
             return null;

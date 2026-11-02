@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.VarHandle;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 
 /* JADX INFO: loaded from: classes.dex */
@@ -36,7 +37,7 @@ final class q {
         }
     }
 
-    public static q a(Context context) throws a, PackageManager.NameNotFoundException {
+    public static q a(Context context) throws a, PackageManager.NameNotFoundException, NoSuchAlgorithmException {
         ApplicationInfo applicationInfo;
         SigningInfo signingInfo;
         String packageName = context.getPackageName();

@@ -140,9 +140,9 @@ public final class MfiCertificateVerifier {
             throw new IOException("MFI_FIRST_USE_TRUST_STORAGE_UNAVAILABLE");
         }
 
-        void b(Iap2Csm.a aVar);
+        void b(Iap2Csm.a aVar) throws IOException;
 
-        default i5 c() {
+        default i5 c() throws IOException {
             return null;
         }
 
@@ -175,7 +175,7 @@ public final class MfiCertificateVerifier {
             return null;
         }
 
-        void write(byte[] bArr);
+        void write(byte[] bArr) throws IOException;
     }
 
     public static final class d {
@@ -302,7 +302,7 @@ public final class MfiCertificateVerifier {
     }
 
     /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void M(j5.c cVar) {
+    public /* synthetic */ void M(j5.c cVar) throws IOException {
         x(44545, Iap2Csm.B(4, new byte[]{cVar.g() ? (byte) 1 : (byte) 0}));
     }
 
@@ -340,7 +340,7 @@ public final class MfiCertificateVerifier {
         int iMax = Math.max(1, (array.length + 31) / 32);
         int i2 = 0;
         while (i2 < iMax) {
-            Object sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             int i3 = i2 * 32;
             while (true) {
                 i = i2 + 1;
@@ -354,10 +354,10 @@ public final class MfiCertificateVerifier {
                 i3++;
             }
             int length = array.length;
-            if (array.length == 0) {
-                sb = "NONE";
-            }
-            c0("IAP2_PEER_MESSAGE_IDS direction=" + str + " count=" + length + " part=" + i + "/" + iMax + " ids=" + String.valueOf(sb));
+            // smali 在循环结束后把同一寄存器复用给 String：空数组时为常量 "NONE"，
+            // 否则为 StringBuilder 的字符串值；随后以 StringBuilder.append(String) 拼接。
+            String ids = array.length == 0 ? "NONE" : String.valueOf(sb);
+            c0("IAP2_PEER_MESSAGE_IDS direction=" + str + " count=" + length + " part=" + i + "/" + iMax + " ids=" + ids);
             i2 = i;
         }
     }
@@ -714,7 +714,7 @@ public final class MfiCertificateVerifier {
                         this.a.a(this.I.e(), this.I.a());
                         this.B0 = false;
                         this.a.h("MFI_FIRST_USE_PROOF_VERIFIED_AND_REMEMBERED");
-                    } catch (GeneralSecurityException e3) {
+                    } catch (IOException e3) {
                         throw new IOException("MFI_FIRST_USE_CERTIFICATE_ENCODING_FAILED", e3);
                     }
                 }
@@ -839,7 +839,7 @@ public final class MfiCertificateVerifier {
         this.a.k(aVarN);
     }
 
-    private void b0() {
+    private void b0() throws IOException {
         this.z0 = this.I.e();
         this.w0++;
         c cVar = this.a;
@@ -903,7 +903,7 @@ public final class MfiCertificateVerifier {
         g0(bVar, j, i, false);
     }
 
-    private void g() {
+    private void g() throws IOException {
         if (this.w) {
             return;
         }
@@ -980,11 +980,11 @@ public final class MfiCertificateVerifier {
         }
     }
 
-    private boolean m(long j, String str) {
+    private boolean m(long j, String str) throws IOException {
         return n(j, str, true);
     }
 
-    private void m0(byte[] bArr) {
+    private void m0(byte[] bArr) throws IOException {
         this.a.write(bArr);
         this.O = d0(this.O, bArr.length);
         if (Arrays.equals(bArr, Iap2Csm.a)) {
@@ -1063,7 +1063,7 @@ public final class MfiCertificateVerifier {
         return mfiCertificateVerifierS;
     }
 
-    private void x(int i, byte[] bArr) {
+    private void x(int i, byte[] bArr) throws IOException {
         if (this.j.size() < 32) {
             this.j.add(new d(i, Iap2Csm.o(i, bArr)));
         } else {
@@ -1140,18 +1140,18 @@ public final class MfiCertificateVerifier {
         return "IAP2_INPUT control_sid=" + i + " rx_data_frames=" + i2 + " rx_duplicate_frames=" + i3 + " rx_other_session_frames=" + i4 + " rx_last_ctl=" + i5 + " rx_last_seq=" + i6 + " rx_last_ack=" + i7 + " rx_last_sid=" + i8 + " rx_last_payload_bytes=" + i9 + " rx_last_route=" + str2 + " rx_parse_failure=" + str3 + " link_pending_bytes=" + iD + " link_expected_bytes=" + iB + " lsp_seen=" + z + str + " csm_pending_bytes=" + this.i.d() + " csm_expected_bytes=" + this.i.b() + " rx_diagnostic_suppressed=" + this.X;
     }
 
-    public b E() {
+    public InputFlags E() {
         if (this.b || this.N != 0 || this.O != 0 || this.r || this.v || this.y != null || !this.j.isEmpty() || A() || this.H0) {
             return null;
         }
         return InputFlags.NO_PROTOCOL_INPUT;
     }
 
-    public boolean F(long j) {
+    public boolean F(long j) throws IOException {
         return G(j, true);
     }
 
-    public boolean G(long j, boolean z) {
+    public boolean G(long j, boolean z) throws IOException {
         if (!this.c) {
             return false;
         }
@@ -1170,21 +1170,21 @@ public final class MfiCertificateVerifier {
         return false;
     }
 
-    public boolean H(long j) {
+    public boolean H(long j) throws IOException {
         if (v() == null) {
             return false;
         }
         return m(j, "DETECT_ONLY");
     }
 
-    public boolean I(long j) {
+    public boolean I(long j) throws IOException {
         if (E() == null) {
             return false;
         }
         return m(j, "NO_INPUT");
     }
 
-    public void Y(byte[] bArr, int i, int i2, long j) {
+    public void Y(byte[] bArr, int i, int i2, long j) throws IOException {
         f next;
         if (i2 >= 0 && i >= 0 && i <= bArr.length - i2) {
             this.N = d0(this.N, i2);
@@ -1413,7 +1413,7 @@ public final class MfiCertificateVerifier {
         return null;
     }
 
-    public void i0(long j) {
+    public void i0(long j) throws IOException {
         byte[] bArr = this.y;
         if (bArr != null) {
             if (j - this.E >= this.C) {
@@ -1472,7 +1472,7 @@ public final class MfiCertificateVerifier {
         return this.n0 != null;
     }
 
-    public void l0() {
+    public void l0() throws IOException {
         if (!this.t || this.n0 == null || this.o0 || this.u) {
             return;
         }
@@ -1532,9 +1532,10 @@ public final class MfiCertificateVerifier {
         boolean z4 = this.x0;
         int i9 = this.G;
         int i10 = this.H;
+        // smali: iget v15,A; const/16 0x4300; if-ne -> false，否则 true，汇合点只求值一次
+        boolean z5 = this.A == 17152;
         if (this.y != null) {
             z = z3;
-            boolean z5 = this.A == 17152;
             if (this.C0) {
                 str2 = "AUTH_FIRST";
             } else {

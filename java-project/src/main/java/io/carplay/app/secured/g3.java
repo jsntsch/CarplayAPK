@@ -1,6 +1,7 @@
 package io.carplay.app.secured;
 
 import java.security.InvalidAlgorithmParameterException;
+import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
@@ -38,7 +39,7 @@ public final class g3 implements o {
         }
     }
 
-    private byte[] c(int i, byte[] bArr) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, InvalidAlgorithmParameterException {
+    private byte[] c(int i, byte[] bArr) throws GeneralSecurityException {
         Cipher cipher = Cipher.getInstance(this.a, this.b);
         AlgorithmParameterSpec algorithmParameterSpec = this.d;
         SecretKey secretKey = this.c;
@@ -53,11 +54,19 @@ public final class g3 implements o {
 
     @Override // io.carplay.app.secured.o
     public byte[] a(byte[] bArr) {
-        return c(1, bArr);
+        try {
+            return c(1, bArr);
+        } catch (GeneralSecurityException e) {
+            throw new IllegalStateException("AES encryption failed", e);
+        }
     }
 
     @Override // io.carplay.app.secured.o
     public byte[] b(byte[] bArr) {
-        return c(2, bArr);
+        try {
+            return c(2, bArr);
+        } catch (GeneralSecurityException e) {
+            throw new IllegalStateException("AES decryption failed", e);
+        }
     }
 }

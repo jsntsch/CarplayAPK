@@ -24,7 +24,7 @@ public abstract class i2 {
     private static final boolean k;
     private static final AtomicReference<g2> l;
 
-    public class a implements g2 {
+    public static class a implements g2 {
         @Override // io.carplay.app.secured.g2
         public void a(e2 e2Var) {
         }

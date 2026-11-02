@@ -275,7 +275,7 @@ public final class BinaryPlist {
             return CopyOfRange;
         }
 
-        public Object d() {
+        public Object d() throws IOException {
             return b(this.c, 0);
         }
     }
@@ -432,7 +432,7 @@ public final class BinaryPlist {
         }
         int[] iArr3 = new int[map.size() * 2];
         int i6 = 0;
-        for (Map.Entry entry : map.entrySet()) {
+        for (Map.Entry entry : ((Map<?, ?>) map).entrySet()) {
             Object key = entry.getKey();
             if (!(key instanceof String)) {
                 SyntheticRefs.c("plist dictionary key must be string");
@@ -454,11 +454,11 @@ public final class BinaryPlist {
         return bArrCopyOf;
     }
 
-    public static Object e(byte[] bArr) {
+    public static Object e(byte[] bArr) throws IOException {
         return new a(bArr).d();
     }
 
-    public static byte[] f(Object obj) {
+    public static byte[] f(Object obj) throws IOException {
         ArrayList arrayList = new ArrayList();
         int iC = c(obj, arrayList, new IdentityHashMap(), 0);
         int i = i(arrayList.size() - 1);

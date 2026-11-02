@@ -13,13 +13,13 @@ public final /* synthetic */ class a implements Runnable {
     @Override // java.lang.Runnable
     public final void run() {
         int i = this.a;
-        AvcEncoder fVar = this.b;
+        AvcEncoder avcEncoder = this.b;
         switch (i) {
             case 0:
-                fVar.I();
+                avcEncoder.I();
                 break;
             default:
-                fVar.B();
+                avcEncoder.B();
                 break;
         }
     }

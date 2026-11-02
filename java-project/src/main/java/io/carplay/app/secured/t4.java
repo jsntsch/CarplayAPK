@@ -62,7 +62,7 @@ public final class t4 implements AutoCloseable, j6 {
     private volatile i6 b0;
     private final h c;
     private f6 c0;
-    private final AacAudioFormat d;
+    private final d d;
     private final g e;
     private final Map<r6.a, Socket> f;
     private final List<Thread> g;
@@ -72,7 +72,7 @@ public final class t4 implements AutoCloseable, j6 {
     private final AtomicLong k;
     private final AtomicLong l;
     private final AtomicLong m;
-    private final Map<r6.a, o4> n;
+    private final Map<r6.a, AudioRelay> n;
     private volatile long o;
     private final AtomicReference<String> p;
     private final AtomicBoolean q;
@@ -91,7 +91,7 @@ public final class t4 implements AutoCloseable, j6 {
         void a(String str);
     }
 
-    public interface AacAudioFormat extends h {
+    public interface d extends h {
         default void a() {
         }
 
@@ -197,7 +197,7 @@ public final class t4 implements AutoCloseable, j6 {
             String str = this.d;
             String str2 = this.e;
             String str3 = this.p;
-            return Objects.hashCode(str3) + w1.b(str2, w1.b(str, w1.a(j5, w1.a(j4, w1.a(j3, w1.a(j2, w1.a(j, (((((((Boolean.hashCode(z5) + ((Boolean.hashCode(DerCodec) + ((Boolean.hashCode(z3) + ((Boolean.hashCode(z2) + (Boolean.hashCode(z) * 31)) * 31)) * 31)) * 31)) * 31) + i) * 31) + i2) * 31) + i3) * 31, 31), 31), 31), 31), 31), 31), 31);
+            return Objects.hashCode(str3) + w1.b(str2, w1.b(str, w1.a(j5, w1.a(j4, w1.a(j3, w1.a(j2, w1.a(j, (((((((Boolean.hashCode(z5) + ((Boolean.hashCode(z4) + ((Boolean.hashCode(z3) + ((Boolean.hashCode(z2) + (Boolean.hashCode(z) * 31)) * 31)) * 31)) * 31)) * 31) + i) * 31) + i2) * 31) + i3) * 31, 31), 31), 31), 31), 31), 31), 31);
         }
 
         public boolean i() {
@@ -279,7 +279,7 @@ public final class t4 implements AutoCloseable, j6 {
         void h(byte[] bArr, long j);
     }
 
-    private t4(c cVar, f fVar, h hVar, AacAudioFormat dVar, g gVar) {
+    private t4(c cVar, f fVar, h hVar, d dVar, g gVar) {
         this.f = new EnumMap(r6.a.class);
         this.g = new ArrayList();
         this.h = new AtomicBoolean();
@@ -310,7 +310,7 @@ public final class t4 implements AutoCloseable, j6 {
         r6.a[] aVarArr = {r6.a.MEDIA, r6.a.TTS, r6.a.VR};
         for (int i2 = 0; i2 < 3; i2++) {
             r6.a aVar = aVarArr[i2];
-            Map<r6.a, o4> map = this.n;
+            Map<r6.a, AudioRelay> map = this.n;
             c cVar2 = this.a;
             Objects.requireNonNull(cVar2);
             r4 r4Var = new r4(i);
@@ -434,19 +434,19 @@ public final class t4 implements AutoCloseable, j6 {
         b bVar;
         long j;
         long j2;
-        AudioRelay o4Var = this.n.get(aVar);
+        AudioRelay audioRelay = this.n.get(aVar);
         try {
             try {
                 b bVar2 = new b(W(aVar));
-                if (o4Var != null) {
-                    o4Var.b();
+                if (audioRelay != null) {
+                    audioRelay.b();
                 }
                 boolean z = true;
                 boolean z2 = false;
                 boolean z3 = aVar == r6.a.MEDIA || aVar == r6.a.TTS || aVar == r6.a.VR;
-                AacAudioFormat dVar = this.d;
+                d dVar = this.d;
                 Exception exc = null;
-                a aVar2 = (dVar == null || !z3) ? null : new a(aVar, dVar, this.a, o4Var);
+                a aVar2 = (dVar == null || !z3) ? null : new a(aVar, dVar, this.a, audioRelay);
                 long j3 = 0;
                 while (!this.h.get() && (!this.e.h() || j3 < 200000)) {
                     long j4 = j3 + 1;
@@ -458,10 +458,10 @@ public final class t4 implements AutoCloseable, j6 {
                             this.a.a("NATIVE_REQUIRED_VIDEO_CHANNEL_ENDED source_retained=false");
                             close();
                         }
-                        if (o4Var == null) {
+                        if (audioRelay == null) {
                             return;
                         }
-                        o4Var.e();
+                        audioRelay.e();
                     }
                     byte[] bArrG = cVarI.g();
                     int iH = cVarI.i().h();
@@ -524,8 +524,8 @@ public final class t4 implements AutoCloseable, j6 {
                             }
                             if (aVar2 != null) {
                                 aVar2.a(cVarI, this.F, this.E, J());
-                            } else if (o4Var != null) {
-                                o4Var.i(bArrG.length);
+                            } else if (audioRelay != null) {
+                                audioRelay.i(bArrG.length);
                             }
                         } else if (j <= 3) {
                             this.a.a(String.format(Locale.ROOT, "RX %s id=0x%x bytes=%d", aVar, Integer.valueOf(iH), Integer.valueOf(bArrG.length)));
@@ -537,7 +537,7 @@ public final class t4 implements AutoCloseable, j6 {
                     z2 = false;
                     exc = null;
                 }
-                if (o4Var == null) {
+                if (audioRelay == null) {
                     return;
                 }
             } catch (Exception e2) {
@@ -552,14 +552,14 @@ public final class t4 implements AutoCloseable, j6 {
                     cVar2.a(sb2.toString());
                     close();
                 }
-                if (o4Var == null) {
+                if (audioRelay == null) {
                     return;
                 }
             }
-            o4Var.e();
+            audioRelay.e();
         } catch (Throwable th) {
-            if (o4Var != null) {
-                o4Var.e();
+            if (audioRelay != null) {
+                audioRelay.e();
             }
             throw th;
         }
@@ -606,7 +606,7 @@ public final class t4 implements AutoCloseable, j6 {
                 r6.c cVarB = c2Var.b(aVar, i, bArr);
                 r6.l(W(aVar).getOutputStream(), aVar, cVarB.i(), cVarB.g(), 32767);
                 W(aVar).getOutputStream().flush();
-                this.a.a(String.format(Locale.ROOT, "TX CMD 0x%x body=%AacAudioFormat encrypted=%s", Integer.valueOf(i), Integer.valueOf(cVarB.g().length), Boolean.valueOf(this.F)));
+                this.a.a(String.format(Locale.ROOT, "TX CMD 0x%x body=%d encrypted=%s", Integer.valueOf(i), Integer.valueOf(cVarB.g().length), Boolean.valueOf(this.F)));
             } catch (Throwable th) {
                 throw th;
             }
@@ -888,14 +888,14 @@ public final class t4 implements AutoCloseable, j6 {
     public e P() throws Throwable {
         o5 o5Var;
         o5 o5Var2;
-        ?? r9;
+        o5 r9;
         String str;
         f6 f6Var;
         Iterator<Thread> it;
         Iterator<AudioRelay> it2;
         c2 c2Var;
         ScheduledExecutorService scheduledExecutorService;
-        ?? r10;
+        o5 r10;
         f6 f6Var2;
         Iterator<Thread> it3;
         Iterator<AudioRelay> it4;
@@ -1538,7 +1538,7 @@ public final class t4 implements AutoCloseable, j6 {
                                                                     }
                                                                     this.b0 = new i6(i6, i2);
                                                                     this.R = true;
-                                                                    AacAudioFormat dVar = this.d;
+                                                                    d dVar = this.d;
                                                                     if (dVar != null) {
                                                                         dVar.e(this.V, this.W, this.X);
                                                                     }
@@ -2154,7 +2154,7 @@ public final class t4 implements AutoCloseable, j6 {
                     return eVar;
                 } catch (Exception e4) {
                     e = e4;
-                    r9 = timeUnit;
+                    r9 = o5Var2;
                     if (this.H != null) {
                         str = this.H;
                     } else {
@@ -2183,7 +2183,7 @@ public final class t4 implements AutoCloseable, j6 {
                 }
             } catch (Throwable th2) {
                 th = th2;
-                r10 = timeUnit;
+                r10 = o5Var;
                 this.a.a("NATIVE_SOURCE_FINAL first_channel_end=" + ((String) Objects.requireNonNullElse(this.p.get(), "NONE")) + " " + X());
                 close();
                 scheduledExecutorService5.shutdownNow();
@@ -2665,7 +2665,7 @@ public final class t4 implements AutoCloseable, j6 {
 
     public static final class a {
         private final r6.a a;
-        private final AacAudioFormat b;
+        private final d b;
         private final c c;
         private final AudioRelay d;
         private int e;
@@ -2677,7 +2677,7 @@ public final class t4 implements AutoCloseable, j6 {
         private boolean k;
         private boolean l;
 
-        public a(r6.a aVar, AacAudioFormat dVar, c cVar, AudioRelay o4Var) {
+        public a(r6.a aVar, d dVar, c cVar, AudioRelay audioRelay) {
             if (aVar != r6.a.MEDIA && aVar != r6.a.TTS && aVar != r6.a.VR) {
                 d0.b("native audio channel required");
                 throw null;
@@ -2687,8 +2687,8 @@ public final class t4 implements AutoCloseable, j6 {
             this.b = dVar;
             Objects.requireNonNull(cVar);
             this.c = cVar;
-            Objects.requireNonNull(o4Var);
-            this.d = o4Var;
+            Objects.requireNonNull(audioRelay);
+            this.d = audioRelay;
         }
 
         private void b() {
@@ -2770,7 +2770,7 @@ public final class t4 implements AutoCloseable, j6 {
                 this.i = true;
                 boolean z4 = i12 >= 4000 && i12 <= 192000 && (i4 == 1 || i4 == 2) && i11 == 16;
                 this.j = z4;
-                this.d.g(DerCodec);
+                this.d.g(z4);
                 this.l = z3 && this.j && (i5 = this.e) == i8 && (i6 = this.f) == i9 && (i7 = this.g) == i10 && this.b.i(this.a, i5, i6, i7);
                 this.c.a("Native " + String.valueOf(this.a) + " INIT rate=" + this.e + " channels=" + this.f + " bits=" + this.g + " forwarding=" + this.j);
                 if (this.l) {
@@ -2828,7 +2828,7 @@ public final class t4 implements AutoCloseable, j6 {
                 this.d.a(bArrC.length);
                 return;
             }
-            AudioRelay o4Var = this.d;
+            AudioRelay audioRelay = this.d;
             if (!z6) {
                 bVar = AudioRelay.b.NO_INIT;
             } else if (this.j) {
@@ -2836,7 +2836,7 @@ public final class t4 implements AutoCloseable, j6 {
             } else {
                 bVar = AudioRelay.b.UNSUPPORTED_FORMAT;
             }
-            o4Var.n(bVar);
+            audioRelay.n(bVar);
             int i13 = this.h;
             this.h = i13 + 1;
             if (i13 < 3) {
@@ -2844,7 +2844,7 @@ public final class t4 implements AutoCloseable, j6 {
             }
         }
 
-        public a(r6.a aVar, AacAudioFormat dVar, c cVar) {
+        public a(r6.a aVar, d dVar, c cVar) {
             Objects.requireNonNull(cVar);
             r4 r4Var = new r4(1);
             r4Var.b = cVar;
@@ -2992,7 +2992,7 @@ public final class t4 implements AutoCloseable, j6 {
     }
 
     /* JADX WARN: 'this' call moved to the top of the method (can break code semantics) */
-    public t4(c cVar, f fVar, AacAudioFormat dVar, g gVar) {
+    public t4(c cVar, f fVar, d dVar, g gVar) {
         this(cVar, fVar, dVar, dVar, gVar);
         Objects.requireNonNull(dVar);
     }

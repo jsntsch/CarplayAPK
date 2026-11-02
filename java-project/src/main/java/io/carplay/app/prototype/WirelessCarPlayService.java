@@ -27,29 +27,34 @@ import android.os.PowerManager;
 import android.os.SystemClock;
 import android.util.Base64;
 import android.util.Log;
+import io.carplay.app.secured.AirPlaySession;
+import io.carplay.app.secured.AudioRelay;
+import io.carplay.app.secured.DerCodec;
+import io.carplay.app.secured.EcdsaSignature;
+import io.carplay.app.secured.Iap2Csm;
 import io.carplay.app.secured.MfiCertificateVerifier;
+import io.carplay.app.secured.MfiSap;
+import io.carplay.app.secured.PairingTlv8;
+import io.carplay.app.secured.StagedPeer;
 import io.carplay.app.secured.a4;
 import io.carplay.app.secured.a7;
 import io.carplay.app.secured.b5;
 import io.carplay.app.secured.b7;
-import io.carplay.app.secured.AacAudioFormat7;
+import io.carplay.app.secured.c0;
+import io.carplay.app.secured.d0;
+import io.carplay.app.secured.d7;
 import io.carplay.app.secured.e7;
 import io.carplay.app.secured.f1;
 import io.carplay.app.secured.f7;
 import io.carplay.app.secured.g7;
 import io.carplay.app.secured.h5;
-import io.carplay.app.secured.EcdsaSignature;
 import io.carplay.app.secured.h7;
 import io.carplay.app.secured.i5;
 import io.carplay.app.secured.i6;
 import io.carplay.app.secured.i7;
-import io.carplay.app.secured.MfiSap;
 import io.carplay.app.secured.j6;
 import io.carplay.app.secured.k1;
-import io.carplay.app.secured.StagedPeer;
-import io.carplay.app.secured.PairingTlv8;
 import io.carplay.app.secured.m1;
-import io.carplay.app.secured.AudioRelay;
 import io.carplay.app.secured.p6;
 import io.carplay.app.secured.q6;
 import io.carplay.app.secured.r6;
@@ -59,8 +64,7 @@ import io.carplay.app.secured.u4;
 import io.carplay.app.secured.u5;
 import io.carplay.app.secured.w1;
 import io.carplay.app.secured.w4;
-import io.carplay.app.secured.Iap2Csm;
-import io.carplay.app.secured.DerCodec;
+import io.carplay.app.secured.z;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -112,18 +116,18 @@ public final class WirelessCarPlayService extends Service {
     private k B0;
     private Network C;
     private k C0;
-    private volatile io.carplay.app.secured.AirPlaySession D;
+    private volatile AirPlaySession D;
     private Iap2Csm.a E;
     private volatile boolean E0;
     private String F;
     private q6 F0;
     private t4 G;
     private int G0;
-    private io.carplay.app.secured.AirPlaySession H;
+    private AirPlaySession H;
     private int H0;
     private boolean I;
     private volatile long J0;
-    private volatile io.carplay.app.secured.AirPlaySession.g K;
+    private volatile AirPlaySession.g K;
     private long L;
     private boolean L0;
     private long M;
@@ -163,11 +167,11 @@ public final class WirelessCarPlayService extends Service {
     private boolean r;
     private i s0;
     private PowerManager.WakeLock v;
-    private io.carplay.app.secured.AirPlaySession w0;
+    private AirPlaySession w0;
     private volatile boolean x0;
-    private volatile io.carplay.app.prototype.AvcEncoder z0;
+    private volatile AvcEncoder z0;
     static final Object U0 = new Object();
-    private static final i5.c i1 = new i5.c(new io.carplay.app.secured.c0(1));
+    private static final i5.c i1 = new i5.c(new c0(1));
     private static final Object j1 = new Object();
     private long b = -1;
     private long c = -1;
@@ -412,8 +416,8 @@ public final class WirelessCarPlayService extends Service {
                 try {
                     if (d() && network.equals(this.d.C)) {
                         long jE = this.d.J.e();
-                        io.carplay.app.secured.AirPlaySession i0Var = this.d.H;
-                        if (i0Var == null) {
+                        AirPlaySession airPlaySession = this.d.H;
+                        if (airPlaySession == null) {
                             this.d.E = aVar;
                             this.d.F = str;
                             this.d.i1("CARPLAY_ENDPOINT_UPDATE_PENDING before_protocol=true");
@@ -421,10 +425,10 @@ public final class WirelessCarPlayService extends Service {
                         }
                         try {
                             InetSocketAddress inetSocketAddressX1 = PairingSession.x1(this.d, network, aVar, str);
-                            if (i0Var.t2(inetSocketAddressX1.getAddress().getHostAddress(), inetSocketAddressX1.getPort())) {
+                            if (airPlaySession.t2(inetSocketAddressX1.getAddress().getHostAddress(), inetSocketAddressX1.getPort())) {
                                 synchronized (this.d.s) {
                                     try {
-                                        if (this.d.g1(jE) && this.d.h1(this.a) && this.d.H == i0Var) {
+                                        if (this.d.g1(jE) && this.d.h1(this.a) && this.d.H == airPlaySession) {
                                             this.d.E = aVar;
                                             this.d.F = str;
                                         }
@@ -530,7 +534,7 @@ public final class WirelessCarPlayService extends Service {
                             this.d.a3("TRUST_REQUIRED", "Open this app to inspect selected receiver certificate fingerprint. Explicit approval and a new start are required.");
                             if (this.d.J.i(this.a, this.d.J.e())) {
                                 this.d.e3("Certificate confirmation required; no trust saved and no automatic reconnect");
-                                ((NotificationManager) this.d.getSystemService(NotificationManager.class)).notify(76, new Notification.Builder(this.d, WirelessCarPlayService.d1).setSmallIcon(R.drawable.stat_notify_sync).setContentTitle("核对接收端证书后手动重试").setContentText("打开应用查看所选设备指纹；尚未保存信任").setContentIntent(PendingIntent.getActivity(this.d, 76, new Intent(this.d, (Class<?>) MainActivity.class).addFlags(536870912), 201326592)).setAutoCancel(true).build());
+                                ((NotificationManager) this.d.getSystemService(NotificationManager.class)).notify(76, new Notification.Builder(this.d, WirelessCarPlayService.d1).setSmallIcon(android.R.drawable.stat_notify_sync).setContentTitle("核对接收端证书后手动重试").setContentText("打开应用查看所选设备指纹；尚未保存信任").setContentIntent(PendingIntent.getActivity(this.d, 76, new Intent(this.d, (Class<?>) MainActivity.class).addFlags(536870912), 201326592)).setAutoCancel(true).build());
                             }
                         }
                     }
@@ -636,7 +640,7 @@ public final class WirelessCarPlayService extends Service {
         }
     }
 
-    public class c implements io.carplay.app.secured.AirPlaySession.n {
+    public class c implements AirPlaySession.n {
         final /* synthetic */ long a;
         final /* synthetic */ WirelessCarPlayService b;
 
@@ -746,13 +750,13 @@ public final class WirelessCarPlayService extends Service {
         }
 
         @Override // io.carplay.app.secured.AirPlaySession.n
-        public io.carplay.app.secured.z.a g(io.carplay.app.secured.x xVar) {
+        public z.a g(io.carplay.app.secured.x xVar) {
             return this.b.D2(xVar);
         }
 
         @Override // io.carplay.app.secured.AirPlaySession.n
         public boolean h(boolean z) {
-            return this.b.k1(this.a, new m1.c(UpdateChecker));
+            return this.b.k1(this.a, new m1.c(z));
         }
 
         @Override // io.carplay.app.secured.AirPlaySession.n
@@ -762,9 +766,9 @@ public final class WirelessCarPlayService extends Service {
             if (!this.b.g1(this.a)) {
                 return false;
             }
-            io.carplay.app.prototype.AvcEncoder fVar = this.b.z0;
-            if (fVar != null) {
-                return fVar.F();
+            AvcEncoder avcEncoder = this.b.z0;
+            if (avcEncoder != null) {
+                return avcEncoder.F();
             }
             synchronized (this.b.s) {
                 t4Var = this.b.G;
@@ -783,7 +787,7 @@ public final class WirelessCarPlayService extends Service {
             Log.d("CarPlusMetrics", str);
             WirelessCarPlayService wirelessCarPlayService = this.b;
             long j = this.a;
-            if (UpdateChecker) {
+            if (z) {
                 wirelessCarPlayService.x2(str, j);
                 return;
             }
@@ -850,7 +854,7 @@ public final class WirelessCarPlayService extends Service {
                 t4Var = this.b.G;
             }
             if (!this.b.g1(this.a) || t4Var == null) {
-                io.carplay.app.secured.AacAudioFormat0.c("native source not ready; touch rejected");
+                d0.c("native source not ready; touch rejected");
                 return;
             }
             synchronized (this.b.O0) {
@@ -861,7 +865,7 @@ public final class WirelessCarPlayService extends Service {
                     if (!z && !this.b.P0) {
                         throw new IOException("touch UP without active native gesture");
                     }
-                    if (UpdateChecker) {
+                    if (z) {
                         aVar = this.b.P0 ? i6.a.MOVE : i6.a.DOWN;
                     } else {
                         aVar = i6.a.UP;
@@ -877,7 +881,7 @@ public final class WirelessCarPlayService extends Service {
         }
     }
 
-    public class d implements io.carplay.app.prototype.AvcEncoder.InterfaceC0000f {
+    public class d implements AvcEncoder.f {
         final /* synthetic */ long a;
         final /* synthetic */ q6 b;
         final /* synthetic */ AtomicBoolean c;
@@ -890,7 +894,7 @@ public final class WirelessCarPlayService extends Service {
             this.d = wirelessCarPlayService;
         }
 
-        @Override // io.carplay.app.prototype.AvcEncoder.InterfaceC0000f
+        @Override // io.carplay.app.prototype.AvcEncoder.f
         public void a(String str) {
             if (this.a != this.d.J0 || this.d.t.get()) {
                 return;
@@ -898,14 +902,14 @@ public final class WirelessCarPlayService extends Service {
             this.d.i1(str);
         }
 
-        @Override // io.carplay.app.prototype.AvcEncoder.InterfaceC0000f
+        @Override // io.carplay.app.prototype.AvcEncoder.f
         public void b(io.carplay.app.secured.h hVar) {
             synchronized (this.d.I0) {
                 try {
                     if (this.a == this.d.J0 && !this.d.t.get()) {
-                        io.carplay.app.secured.AirPlaySession i0VarF1 = this.d.F1();
-                        if (i0VarF1 != null) {
-                            i0VarF1.s2(this.b);
+                        AirPlaySession airPlaySessionF1 = this.d.F1();
+                        if (airPlaySessionF1 != null) {
+                            airPlaySessionF1.s2(this.b);
                         }
                         boolean z = true;
                         if (this.c.compareAndSet(false, true)) {
@@ -924,7 +928,7 @@ public final class WirelessCarPlayService extends Service {
             }
         }
 
-        @Override // io.carplay.app.prototype.AvcEncoder.InterfaceC0000f
+        @Override // io.carplay.app.prototype.AvcEncoder.f
         public void c(int i) {
             if (this.a != this.d.J0 || this.d.t.get()) {
                 return;
@@ -932,22 +936,22 @@ public final class WirelessCarPlayService extends Service {
             this.d.getSharedPreferences(WirelessCarPlayService.b1, 0).edit().putInt("output_fps", i).apply();
         }
 
-        @Override // io.carplay.app.prototype.AvcEncoder.InterfaceC0000f
+        @Override // io.carplay.app.prototype.AvcEncoder.f
         public void d(byte[] bArr, long j) throws IOException {
             throw new IOException("ADAPTER_COMPLETE_AU_REQUIRED");
         }
 
-        @Override // io.carplay.app.prototype.AvcEncoder.InterfaceC0000f
+        @Override // io.carplay.app.prototype.AvcEncoder.f
         public void e(String str) {
             synchronized (this.d.I0) {
                 try {
                     if (this.a == this.d.J0 && !this.d.t.get()) {
-                        io.carplay.app.prototype.AvcEncoder fVar = this.d.z0;
+                        AvcEncoder avcEncoder = this.d.z0;
                         this.d.z0 = null;
                         this.d.A0 = null;
                         this.d.J0++;
-                        if (fVar != null) {
-                            fVar.close();
+                        if (avcEncoder != null) {
+                            avcEncoder.close();
                         }
                         this.d.i1("AUTO_FIT_FAILED_FALLBACK_NATIVE type=" + str);
                         int i = this.d.y0;
@@ -959,18 +963,18 @@ public final class WirelessCarPlayService extends Service {
                             this.d.getSharedPreferences(WirelessCarPlayService.b1, 0).edit().putString("fit_mode", "rate_unavailable").apply();
                             return;
                         }
-                        io.carplay.app.secured.AirPlaySession i0VarF1 = wirelessCarPlayService.F1();
-                        io.carplay.app.secured.AirPlaySession.g gVarI = this.d.N0.i();
+                        AirPlaySession airPlaySessionF1 = wirelessCarPlayService.F1();
+                        AirPlaySession.g gVarI = this.d.N0.i();
                         this.d.K = gVarI;
-                        if (i0VarF1 != null) {
+                        if (airPlaySessionF1 != null) {
                             try {
-                                i0VarF1.s2(null);
-                                i0VarF1.W1(gVarI, this.d.d0, this.d.e0);
+                                airPlaySessionF1.s2(null);
+                                airPlaySessionF1.W1(gVarI, this.d.d0, this.d.e0);
                             } catch (IOException e) {
                                 this.d.i1("VIDEO_FALLBACK_RESET_FAILED ".concat(e.getClass().getSimpleName()));
                             }
                         }
-                        if (i0VarF1 != null) {
+                        if (airPlaySessionF1 != null) {
                             this.d.a3("RESUMING_NATIVE", "Automatic fit unavailable; waiting for actual native IDR on passthrough route");
                         }
                         this.d.getSharedPreferences(WirelessCarPlayService.b1, 0).edit().putString("fit_mode", "fallback").putInt("output_width", this.d.d0).putInt("output_height", this.d.e0).apply();
@@ -1014,12 +1018,12 @@ public final class WirelessCarPlayService extends Service {
                         return;
                     }
                     WirelessCarPlayService.this.X.remove(aVar);
-                    io.carplay.app.secured.AirPlaySession i0VarF1 = WirelessCarPlayService.this.F1();
-                    if (i0VarF1 != null) {
+                    AirPlaySession airPlaySessionF1 = WirelessCarPlayService.this.F1();
+                    if (airPlaySessionF1 != null) {
                         try {
-                            i0VarF1.q1(aVar);
+                            airPlaySessionF1.q1(aVar);
                         } catch (IOException e) {
-                            if (WirelessCarPlayService.this.F1() == i0VarF1 && i0VarF1.G0()) {
+                            if (WirelessCarPlayService.this.F1() == airPlaySessionF1 && airPlaySessionF1.G0()) {
                                 throw e;
                             }
                         }
@@ -1036,7 +1040,7 @@ public final class WirelessCarPlayService extends Service {
         @Override // io.carplay.app.secured.t4.d
         public void g(r6.a aVar, int i, int i2, int i3) throws IOException {
             if (WirelessCarPlayService.this.t.get()) {
-                io.carplay.app.secured.AacAudioFormat0.c("wireless session cancelled");
+                d0.c("wireless session cancelled");
                 return;
             }
             WirelessCarPlayService.this.I2(aVar, i, i2, i3);
@@ -1046,7 +1050,7 @@ public final class WirelessCarPlayService extends Service {
         @Override // io.carplay.app.secured.t4.h
         public void h(byte[] bArr, long j) throws IOException {
             if (WirelessCarPlayService.this.t.get()) {
-                io.carplay.app.secured.AacAudioFormat0.c("wireless session cancelled");
+                d0.c("wireless session cancelled");
             } else {
                 WirelessCarPlayService.this.K2(bArr, j);
             }
@@ -1054,8 +1058,8 @@ public final class WirelessCarPlayService extends Service {
 
         @Override // io.carplay.app.secured.t4.d
         public boolean i(r6.a aVar, int i, int i2, int i3) {
-            io.carplay.app.secured.AirPlaySession i0VarF1 = WirelessCarPlayService.this.F1();
-            return i0VarF1 == null || i0VarF1.E0(aVar, i, i2, i3);
+            AirPlaySession airPlaySessionF1 = WirelessCarPlayService.this.F1();
+            return airPlaySessionF1 == null || airPlaySessionF1.E0(aVar, i, i2, i3);
         }
 
         @Override // io.carplay.app.secured.t4.d
@@ -1066,7 +1070,7 @@ public final class WirelessCarPlayService extends Service {
         @Override // io.carplay.app.secured.t4.d
         public void k(r6.a aVar, byte[] bArr, long j) throws IOException {
             if (WirelessCarPlayService.this.t.get()) {
-                io.carplay.app.secured.AacAudioFormat0.c("wireless session cancelled");
+                d0.c("wireless session cancelled");
             } else {
                 WirelessCarPlayService.this.J2(aVar, bArr, j);
             }
@@ -1126,12 +1130,12 @@ public final class WirelessCarPlayService extends Service {
         public void c(PairingTlv8.b bVar) throws IOException {
             PairingTlv8.b bVarB = b(bVar.c());
             if (bVarB != null && !MessageDigest.isEqual(bVarB.e(), bVar.e())) {
-                io.carplay.app.secured.AacAudioFormat0.c("stored peer key changed; explicit unpair required");
+                d0.c("stored peer key changed; explicit unpair required");
             } else {
                 if (this.a.edit().putString(a(bVar.c()), Base64.encodeToString(bVar.e(), 2)).commit()) {
                     return;
                 }
-                io.carplay.app.secured.AacAudioFormat0.c("authenticated peer persistence failed");
+                d0.c("authenticated peer persistence failed");
             }
         }
     }
@@ -1157,13 +1161,13 @@ public final class WirelessCarPlayService extends Service {
     public void A2(long j2, io.carplay.app.secured.x xVar) {
         synchronized (this.s) {
             try {
-                io.carplay.app.secured.AirPlaySession i0Var = this.H;
-                if (g1(j2) && this.I && i0Var != null && this.D == i0Var && i0Var.G0() && i0Var.e0() == xVar) {
-                    io.carplay.app.secured.AirPlaySession.k kVarF2 = i0Var.f2();
+                AirPlaySession airPlaySession = this.H;
+                if (g1(j2) && this.I && airPlaySession != null && this.D == airPlaySession && airPlaySession.G0() && airPlaySession.e0() == xVar) {
+                    AirPlaySession.k kVarF2 = airPlaySession.f2();
                     if (kVarF2 == null) {
                         return;
                     }
-                    k kVar = new k(j2, i0Var, kVarF2, 0);
+                    k kVar = new k(j2, airPlaySession, kVarF2, 0);
                     if (!kVar.equals(this.C0) && !kVar.equals(this.B0)) {
                         this.B0 = kVar;
                         T2();
@@ -1278,7 +1282,7 @@ public final class WirelessCarPlayService extends Service {
     }
 
     /* JADX INFO: Access modifiers changed from: private */
-    public io.carplay.app.secured.z.a D2(io.carplay.app.secured.x xVar) {
+    public z.a D2(io.carplay.app.secured.x xVar) {
         String string = getSharedPreferences("carplay-capability-hints", 0).getString(xVar.o(), null);
         if (string == null) {
             return null;
@@ -1288,7 +1292,7 @@ public final class WirelessCarPlayService extends Service {
             if (strArrSplit.length != 5) {
                 return null;
             }
-            return new io.carplay.app.secured.z.a(xVar.o(), Integer.parseInt(strArrSplit[0]), Integer.parseInt(strArrSplit[1]), Integer.parseInt(strArrSplit[2]), Integer.parseInt(strArrSplit[3]));
+            return new z.a(xVar.o(), Integer.parseInt(strArrSplit[0]), Integer.parseInt(strArrSplit[1]), Integer.parseInt(strArrSplit[2]), Integer.parseInt(strArrSplit[3]));
         } catch (RuntimeException unused) {
             i1("CAPABILITY_HINT_IGNORED invalid=true");
             return null;
@@ -1328,12 +1332,12 @@ public final class WirelessCarPlayService extends Service {
     }
 
     /* JADX INFO: Access modifiers changed from: private */
-    public io.carplay.app.secured.AirPlaySession F1() {
-        io.carplay.app.secured.AirPlaySession i0Var = this.D;
-        if (this.t.get() || i0Var == null || !i0Var.G0()) {
+    public AirPlaySession F1() {
+        AirPlaySession airPlaySession = this.D;
+        if (this.t.get() || airPlaySession == null || !airPlaySession.G0()) {
             return null;
         }
-        return i0Var;
+        return airPlaySession;
     }
 
     private t4.f F2() throws PackageManager.NameNotFoundException, IOException {
@@ -1353,7 +1357,7 @@ public final class WirelessCarPlayService extends Service {
                 editorEdit.putString(entry.getKey(), entry.getValue());
             }
             if (!editorEdit.commit()) {
-                io.carplay.app.secured.AacAudioFormat0.c("receiver identity persistence failed");
+                d0.c("receiver identity persistence failed");
                 return null;
             }
             i1("NATIVE_PROFILE_SAVED legacy_migrated=" + aVarA.h());
@@ -1403,7 +1407,7 @@ public final class WirelessCarPlayService extends Service {
             try {
                 if (g1(aVar.h())) {
                     boolean z = aVar.i() == 0;
-                    if (UpdateChecker) {
+                    if (z) {
                         e3("CarPlay connection ended: " + str + "; automatic recovery unavailable/exhausted");
                         return;
                     }
@@ -1414,14 +1418,14 @@ public final class WirelessCarPlayService extends Service {
                                 this.D = null;
                                 this.I = false;
                                 g1 = false;
-                                io.carplay.app.secured.AirPlaySession i0Var = this.H;
+                                AirPlaySession airPlaySession = this.H;
                                 this.H = null;
                                 t4 t4Var = this.G;
                                 boolean z2 = (i2 != 1 || this.C == null || this.E == null || str.startsWith("BOOTSTRAP_") || !g3(this.C)) ? false : true;
                                 Network network = z2 ? this.C : null;
                                 Iap2Csm.a aVar2 = z2 ? this.E : null;
                                 String str2 = z2 ? this.F : null;
-                                PairingSession r0Var = z2 ? null : this.B;
+                                PairingSession pairingSession = z2 ? null : this.B;
                                 if (!z2) {
                                     this.B = null;
                                     this.C = null;
@@ -1429,13 +1433,13 @@ public final class WirelessCarPlayService extends Service {
                                     this.F = null;
                                     this.J.c();
                                 }
-                                if (i0Var != null && i0Var.V() != null) {
-                                    this.K = i0Var.V();
+                                if (airPlaySession != null && airPlaySession.V() != null) {
+                                    this.K = airPlaySession.V();
                                 }
-                                if (i0Var != null) {
-                                    this.L += i0Var.k2();
-                                    this.M += i0Var.j2();
-                                    this.N += i0Var.i2();
+                                if (airPlaySession != null) {
+                                    this.L += airPlaySession.k2();
+                                    this.M += airPlaySession.j2();
+                                    this.N += airPlaySession.i2();
                                 }
                                 synchronized (this.O0) {
                                     if (!this.P0 || t4Var == null) {
@@ -1450,11 +1454,11 @@ public final class WirelessCarPlayService extends Service {
                                     }
                                     throw th;
                                 }
-                                if (r0Var != null) {
-                                    r0Var.close();
+                                if (pairingSession != null) {
+                                    pairingSession.close();
                                 }
-                                if (i0Var != null) {
-                                    i0Var.close();
+                                if (airPlaySession != null) {
+                                    airPlaySession.close();
                                 }
                                 long jH = aVar.h();
                                 String str3 = this.c0 ? "RECONNECTING" : "RETRYING_CONNECTION";
@@ -1504,7 +1508,7 @@ public final class WirelessCarPlayService extends Service {
         CarLifeBridge.d dVarF = CarLifeBridge.f(this);
         i1(dVarF.h());
         if (!dVarF.g()) {
-            io.carplay.app.secured.AacAudioFormat0.c(w1.e("NATIVE_COMPONENT_", dVarF.m()));
+            d0.c(w1.e("NATIVE_COMPONENT_", dVarF.m()));
             return;
         }
         try {
@@ -1526,14 +1530,14 @@ public final class WirelessCarPlayService extends Service {
             synchronized (this.V) {
                 if (!this.t.get()) {
                     this.X.put(aVar, new g(i2, i3, i4, 0));
-                    io.carplay.app.secured.AirPlaySession i0VarF1 = F1();
-                    if (i0VarF1 != null) {
+                    AirPlaySession airPlaySessionF1 = F1();
+                    if (airPlaySessionF1 != null) {
                         try {
-                            i0VarF1.p1(aVar, i2, i3, i4);
-                        } catch (io.carplay.app.secured.AirPlaySession.e unused) {
+                            airPlaySessionF1.p1(aVar, i2, i3, i4);
+                        } catch (AirPlaySession.e unused) {
                             i1("AUDIO_OUTPUT_UNAVAILABLE channel=" + String.valueOf(aVar) + " native_session_retained=true");
                         } catch (IOException e2) {
-                            if (F1() == i0VarF1 && i0VarF1.G0()) {
+                            if (F1() == airPlaySessionF1 && airPlaySessionF1.G0()) {
                                 throw e2;
                             }
                             return;
@@ -1541,11 +1545,11 @@ public final class WirelessCarPlayService extends Service {
                         return;
                     }
                     AudioRelay.a aVar2 = this.Y;
-                    AudioRelay.a.EnumC0004a enumC0004a = AudioRelay.a.EnumC0004a.NO_TRANSPORT;
+                    AudioRelay.a.EnumC0000a enumC0000a = AudioRelay.a.EnumC0000a.NO_TRANSPORT;
                     b5 b5Var = new b5(1);
                     b5Var.b = this;
                     VarHandle.storeStoreFence();
-                    aVar2.a(aVar, enumC0004a, b5Var);
+                    aVar2.a(aVar, enumC0000a, b5Var);
                 }
             }
         }
@@ -1562,12 +1566,12 @@ public final class WirelessCarPlayService extends Service {
 
     /* JADX INFO: Access modifiers changed from: private */
     public void J2(r6.a aVar, byte[] bArr, long j2) throws IOException {
-        io.carplay.app.secured.AirPlaySession i0VarF1;
+        AirPlaySession airPlaySessionF1;
         g gVar;
         r6.a aVar2;
         byte[] bArr2;
         if (this.t.get()) {
-            io.carplay.app.secured.AacAudioFormat0.c("wireless session cancelled");
+            d0.c("wireless session cancelled");
             return;
         }
         synchronized (this.W.get(aVar)) {
@@ -1576,58 +1580,58 @@ public final class WirelessCarPlayService extends Service {
                     if (this.t.get()) {
                         throw new IOException("wireless session cancelled");
                     }
-                    i0VarF1 = F1();
+                    airPlaySessionF1 = F1();
                     gVar = this.X.get(aVar);
                 }
                 int i2 = 1;
-                if (i0VarF1 == null) {
+                if (airPlaySessionF1 == null) {
                     AudioRelay.a aVar3 = this.Y;
-                    AudioRelay.a.EnumC0004a enumC0004a = AudioRelay.a.EnumC0004a.NO_TRANSPORT;
+                    AudioRelay.a.EnumC0000a enumC0000a = AudioRelay.a.EnumC0000a.NO_TRANSPORT;
                     b5 b5Var = new b5(i2);
                     b5Var.b = this;
                     VarHandle.storeStoreFence();
-                    aVar3.a(aVar, enumC0004a, b5Var);
+                    aVar3.a(aVar, enumC0000a, b5Var);
                     return;
                 }
                 if (gVar == null) {
                     AudioRelay.a aVar4 = this.Y;
-                    AudioRelay.a.EnumC0004a enumC0004a2 = AudioRelay.a.EnumC0004a.NO_FORMAT;
+                    AudioRelay.a.EnumC0000a enumC0000a2 = AudioRelay.a.EnumC0000a.NO_FORMAT;
                     b5 b5Var2 = new b5(i2);
                     b5Var2.b = this;
                     VarHandle.storeStoreFence();
-                    aVar4.a(aVar, enumC0004a2, b5Var2);
+                    aVar4.a(aVar, enumC0000a2, b5Var2);
                 }
                 if (gVar != null) {
                     aVar2 = aVar;
                     bArr2 = bArr;
-                    i0VarF1.n1(aVar2, gVar.i(), gVar.h(), gVar.g(), bArr2);
+                    airPlaySessionF1.n1(aVar2, gVar.i(), gVar.h(), gVar.g(), bArr2);
                 } else {
                     aVar2 = aVar;
                     bArr2 = bArr;
                 }
-                if (!i0VarF1.F0(aVar2)) {
+                if (!airPlaySessionF1.F0(aVar2)) {
                     AudioRelay.a aVar5 = this.Y;
-                    AudioRelay.a.EnumC0004a enumC0004a3 = AudioRelay.a.EnumC0004a.OUTPUT_NOT_READY;
+                    AudioRelay.a.EnumC0000a enumC0000a3 = AudioRelay.a.EnumC0000a.OUTPUT_NOT_READY;
                     b5 b5Var3 = new b5(i2);
                     b5Var3.b = this;
                     VarHandle.storeStoreFence();
-                    aVar5.a(aVar2, enumC0004a3, b5Var3);
+                    aVar5.a(aVar2, enumC0000a3, b5Var3);
                     return;
                 }
                 try {
-                    i0VarF1.t1(aVar2, bArr2, j2);
+                    airPlaySessionF1.t1(aVar2, bArr2, j2);
                     AudioRelay.a aVar6 = this.Y;
-                    AudioRelay.a.EnumC0004a enumC0004a4 = AudioRelay.a.EnumC0004a.CALLBACK_RETURNED;
+                    AudioRelay.a.EnumC0000a enumC0000a4 = AudioRelay.a.EnumC0000a.CALLBACK_RETURNED;
                     b5 b5Var4 = new b5(i2);
                     b5Var4.b = this;
                     VarHandle.storeStoreFence();
-                    aVar6.a(aVar2, enumC0004a4, b5Var4);
+                    aVar6.a(aVar2, enumC0000a4, b5Var4);
                     if (this.T0.compareAndSet(false, true)) {
                         i1("Actual native PCM entered wireless sender; no local audio playback");
                     }
-                } catch (io.carplay.app.secured.AirPlaySession.e unused) {
+                } catch (AirPlaySession.e unused) {
                 } catch (IOException e2) {
-                    if (F1() == i0VarF1 && i0VarF1.G0()) {
+                    if (F1() == airPlaySessionF1 && airPlaySessionF1.G0()) {
                         throw e2;
                     }
                 }
@@ -1718,10 +1722,10 @@ public final class WirelessCarPlayService extends Service {
         }
     }
 
-    private void M2(long j2, io.carplay.app.secured.AirPlaySession i0Var, Network network, String str) {
+    private void M2(long j2, AirPlaySession airPlaySession, Network network, String str) {
         synchronized (this.s) {
             synchronized (U0) {
-                if (g1(j2) && this.H == i0Var && i0Var.G0() && str != null) {
+                if (g1(j2) && this.H == airPlaySession && airPlaySession.G0() && str != null) {
                     int i2 = 0;
                     if (str.equalsIgnoreCase(getSharedPreferences(c1, 0).getString(r2(this.A), ""))) {
                         WifiNetworkMonitor.e eVarR = WifiNetworkMonitor.r(this, network);
@@ -1792,11 +1796,11 @@ public final class WirelessCarPlayService extends Service {
     }
 
     /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void P1(long j2, io.carplay.app.secured.AirPlaySession i0Var, t4 t4Var) {
+    public /* synthetic */ void P1(long j2, AirPlaySession airPlaySession, t4 t4Var) {
         synchronized (this.s) {
             try {
-                if (g1(j2) && this.I && this.H == i0Var && this.G == t4Var) {
-                    i1("AUDIO_USER_INTENT accepted=" + i0Var.X1() + " current_transport=true playback_confirmed=false");
+                if (g1(j2) && this.I && this.H == airPlaySession && this.G == t4Var) {
+                    i1("AUDIO_USER_INTENT accepted=" + airPlaySession.X1() + " current_transport=true playback_confirmed=false");
                 }
             } catch (Throwable th) {
                 throw th;
@@ -1804,12 +1808,12 @@ public final class WirelessCarPlayService extends Service {
         }
     }
 
-    private void P2(io.carplay.app.secured.AirPlaySession i0Var) {
+    private void P2(AirPlaySession airPlaySession) {
         g gVar;
         for (r6.a aVar : r6.a.values()) {
             synchronized (this.W.get(aVar)) {
                 synchronized (this.V) {
-                    if (this.t.get() || F1() != i0Var) {
+                    if (this.t.get() || F1() != airPlaySession) {
                         return;
                     } else {
                         gVar = this.X.get(aVar);
@@ -1819,15 +1823,15 @@ public final class WirelessCarPlayService extends Service {
                 if (gVar != null) {
                     try {
                         try {
-                            i0Var.p1(aVar, gVar.i(), gVar.h(), gVar.g());
-                        } catch (IOException e2) {
-                            if (F1() == i0Var && i0Var.G0()) {
-                                throw e2;
-                            }
-                            return;
+                            airPlaySession.p1(aVar, gVar.i(), gVar.h(), gVar.g());
+                        } catch (AirPlaySession.e unused) {
+                            i1("AUDIO_RESTORE_UNAVAILABLE channel=" + String.valueOf(aVar) + " video_retained=" + airPlaySession.G0());
                         }
-                    } catch (io.carplay.app.secured.AirPlaySession.e unused) {
-                        i1("AUDIO_RESTORE_UNAVAILABLE channel=" + String.valueOf(aVar) + " video_retained=" + i0Var.G0());
+                    } catch (IOException e2) {
+                        if (F1() == airPlaySession && airPlaySession.G0()) {
+                            throw e2;
+                        }
+                        return;
                     }
                 }
             }
@@ -1856,9 +1860,9 @@ public final class WirelessCarPlayService extends Service {
     }
 
     /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void R1(long j2, io.carplay.app.secured.AirPlaySession i0Var) {
+    public /* synthetic */ void R1(long j2, AirPlaySession airPlaySession) {
         synchronized (this.s) {
-            if (g1(j2) && this.I && this.H == i0Var && this.i0 && i0Var.e2()) {
+            if (g1(j2) && this.I && this.H == airPlaySession && this.i0 && airPlaySession.e2()) {
                 t4 t4Var = this.G;
                 if (t4Var == null) {
                     return;
@@ -1902,9 +1906,9 @@ public final class WirelessCarPlayService extends Service {
                         this.S = jNanoTime;
                         this.R = this.Q;
                     }
-                    io.carplay.app.prototype.AvcEncoder fVar = this.z0;
-                    if (fVar != null) {
-                        fVar.m(hVar);
+                    AvcEncoder avcEncoder = this.z0;
+                    if (avcEncoder != null) {
+                        avcEncoder.m(hVar);
                     } else {
                         if (this.E0) {
                             return;
@@ -1940,7 +1944,7 @@ public final class WirelessCarPlayService extends Service {
                 return;
             }
             int i2 = 1;
-            io.carplay.app.secured.z.a aVarG = new io.carplay.app.secured.z(32).g(xVar, 1, cVar, Math.min(60, cVar.n()));
+            z.a aVarG = new z(32).g(xVar, 1, cVar, Math.min(60, cVar.n()));
             SharedPreferences sharedPreferences = getSharedPreferences("carplay-capability-hints", 0);
             synchronized (sharedPreferences) {
                 try {
@@ -2006,16 +2010,16 @@ public final class WirelessCarPlayService extends Service {
     /* JADX INFO: Access modifiers changed from: private */
     public void U2(io.carplay.app.secured.h hVar, boolean z) throws IOException {
         if (this.t.get()) {
-            io.carplay.app.secured.AacAudioFormat0.c("wireless session cancelled");
+            d0.c("wireless session cancelled");
             return;
         }
-        io.carplay.app.secured.AirPlaySession i0VarF1 = F1();
-        if (i0VarF1 == null) {
+        AirPlaySession airPlaySessionF1 = F1();
+        if (airPlaySessionF1 == null) {
             return;
         }
         try {
-            if (i0VarF1.v1(hVar)) {
-                if (UpdateChecker) {
+            if (airPlaySessionF1.v1(hVar)) {
+                if (z) {
                     this.U++;
                 } else {
                     this.T++;
@@ -2025,7 +2029,7 @@ public final class WirelessCarPlayService extends Service {
                 i1("Actual native video entered current wireless sender; waiting for first IDR send confirmation");
             }
         } catch (IOException e2) {
-            if (F1() == i0VarF1 && i0VarF1.G0()) {
+            if (F1() == airPlaySessionF1 && airPlaySessionF1.G0()) {
                 throw e2;
             }
         }
@@ -2149,25 +2153,25 @@ public final class WirelessCarPlayService extends Service {
             synchronized (this.s) {
                 try {
                     if (g1(j2)) {
-                        io.carplay.app.secured.AirPlaySession i0Var = this.I ? this.H : null;
+                        AirPlaySession airPlaySession = this.I ? this.H : null;
                         long j3 = this.j0;
                         long j4 = this.n0;
                         boolean z = this.i0;
                         boolean z2 = this.k0;
-                        boolean z3 = this.w0 == i0Var && this.l0 == j3;
-                        if (i0Var == null) {
+                        boolean z3 = this.w0 == airPlaySession && this.l0 == j3;
+                        if (airPlaySession == null) {
                             return;
                         }
                         synchronized (this.s) {
-                            if (g1(j2) && j3 == this.j0 && this.H == i0Var && this.I) {
-                                boolean zD2 = !z ? i0Var.d2() : i0Var.Y1();
+                            if (g1(j2) && j3 == this.j0 && this.H == airPlaySession && this.I) {
+                                boolean zD2 = !z ? airPlaySession.d2() : airPlaySession.Y1();
                                 if (!z3) {
                                     i1("UI_SESSION_INTENT kind=" + (!z ? "CAR" : "CARPLUS") + " accepted=" + zD2 + " session_retained=true");
                                     if (zD2) {
                                         synchronized (this.s) {
                                             try {
-                                                if (g1(j2) && j3 == this.j0 && this.H == i0Var) {
-                                                    this.w0 = i0Var;
+                                                if (g1(j2) && j3 == this.j0 && this.H == airPlaySession) {
+                                                    this.w0 = airPlaySession;
                                                     this.l0 = j3;
                                                 }
                                             } catch (Throwable th) {
@@ -2179,7 +2183,7 @@ public final class WirelessCarPlayService extends Service {
                                 if (zD2 && z2) {
                                     synchronized (this.s) {
                                         try {
-                                            if (g1(j2) && j3 == this.j0 && j4 == this.n0 && this.H == i0Var && this.I && this.i0 && this.k0) {
+                                            if (g1(j2) && j3 == this.j0 && j4 == this.n0 && this.H == airPlaySession && this.I && this.i0 && this.k0) {
                                                 t4 t4Var = this.G;
                                                 if (t4Var != null) {
                                                     this.q0 = t4Var;
@@ -2192,7 +2196,7 @@ public final class WirelessCarPlayService extends Service {
                                                         if (zG) {
                                                             synchronized (this.s) {
                                                                 try {
-                                                                    if (g1(j2) && j3 == this.j0 && j4 == this.n0 && this.H == i0Var && this.G == t4Var) {
+                                                                    if (g1(j2) && j3 == this.j0 && j4 == this.n0 && this.H == airPlaySession && this.G == t4Var) {
                                                                         this.k0 = false;
                                                                         this.o0 = j4;
                                                                         this.p0 = j4;
@@ -2276,14 +2280,14 @@ public final class WirelessCarPlayService extends Service {
                     long jB = this.J.b();
                     this.c = jB;
                     long jC = this.J.c();
-                    WifiNetworkMonitor mVar = this.l;
+                    WifiNetworkMonitor wifiNetworkMonitor = this.l;
                     this.l = null;
                     this.C = null;
                     this.E = null;
                     this.F = null;
                     this.i = null;
-                    if (mVar != null) {
-                        mVar.close();
+                    if (wifiNetworkMonitor != null) {
+                        wifiNetworkMonitor.close();
                     }
                     try {
                         ExecutorService executorService = this.x;
@@ -2303,7 +2307,7 @@ public final class WirelessCarPlayService extends Service {
     }
 
     /* JADX INFO: Access modifiers changed from: private */
-    public static /* synthetic */ boolean Z1(io.carplay.app.secured.z.a aVar, Map.Entry entry) {
+    public static /* synthetic */ boolean Z1(z.a aVar, Map.Entry entry) {
         return ((String) entry.getKey()).equals(aVar.g());
     }
 
@@ -2311,8 +2315,8 @@ public final class WirelessCarPlayService extends Service {
         synchronized (this.s) {
             try {
                 if (!this.c0 && !this.t.get()) {
-                    io.carplay.app.secured.AirPlaySession i0Var = this.H;
-                    if (i0Var == null) {
+                    AirPlaySession airPlaySession = this.H;
+                    if (airPlaySession == null) {
                         i1("Native source not started: no authenticated transport");
                         return;
                     }
@@ -2327,7 +2331,7 @@ public final class WirelessCarPlayService extends Service {
                     io.carplay.app.secured.q0 q0Var = new io.carplay.app.secured.q0(i2);
                     q0Var.c = this;
                     q0Var.d = gVarJ2;
-                    q0Var.b = i0Var;
+                    q0Var.b = airPlaySession;
                     VarHandle.storeStoreFence();
                     executorService.execute(q0Var);
                 }
@@ -2480,7 +2484,7 @@ public final class WirelessCarPlayService extends Service {
                         throw th2;
                     }
                 }
-                if (UpdateChecker) {
+                if (z) {
                     T2();
                     return;
                 }
@@ -2525,7 +2529,7 @@ public final class WirelessCarPlayService extends Service {
                                                     throw th4;
                                                 }
                                             }
-                                            if (UpdateChecker) {
+                                            if (z) {
                                                 T2();
                                             }
                                         } else {
@@ -2548,7 +2552,7 @@ public final class WirelessCarPlayService extends Service {
                                                     throw th6;
                                                 }
                                             }
-                                            if (UpdateChecker) {
+                                            if (z) {
                                                 T2();
                                             }
                                         }
@@ -2580,7 +2584,7 @@ public final class WirelessCarPlayService extends Service {
                                 throw th10;
                             }
                         }
-                        if (UpdateChecker) {
+                        if (z) {
                             T2();
                         }
                     }
@@ -2600,7 +2604,7 @@ public final class WirelessCarPlayService extends Service {
                                 if (this.B0 == null || this.t.get()) {
                                     z = false;
                                 }
-                                if (UpdateChecker) {
+                                if (z) {
                                     T2();
                                 }
                             } catch (Throwable th11) {
@@ -2624,7 +2628,7 @@ public final class WirelessCarPlayService extends Service {
                             if (this.B0 == null || this.t.get()) {
                                 z = false;
                             }
-                            if (UpdateChecker) {
+                            if (z) {
                                 T2();
                             }
                             throw th13;
@@ -2666,19 +2670,19 @@ public final class WirelessCarPlayService extends Service {
                     boolean zA1 = wirelessCarPlayService.A1(wirelessCarPlayService.A);
                     a aVar = new a(wirelessCarPlayService, j3, wirelessCarPlayService.C1(wirelessCarPlayService.A, j4), zB1);
                     wirelessCarPlayService = this;
-                    PairingSession r0Var = new PairingSession(wirelessCarPlayService, aVar, string, zD1, zD1, zA1);
+                    PairingSession pairingSession = new PairingSession(wirelessCarPlayService, aVar, string, zD1, zD1, zA1);
                     synchronized (wirelessCarPlayService.s) {
                         try {
                             zG1 = g1(j2);
                             if (zG1) {
-                                wirelessCarPlayService.B = r0Var;
+                                wirelessCarPlayService.B = pairingSession;
                             }
                         } catch (Throwable th) {
                             throw th;
                         }
                     }
                     if (!zG1) {
-                        r0Var.close();
+                        pairingSession.close();
                         return;
                     }
                     if (wirelessCarPlayService.c0) {
@@ -2711,7 +2715,7 @@ public final class WirelessCarPlayService extends Service {
                         h5VarI.close();
                         wirelessCarPlayService.i1("PHONE_DISCOVERY_RETIRED_BEFORE_HANDOFF normal_secure_bootstrap_retained=true");
                     }
-                    r0Var.P1(wirelessCarPlayService.A, true, h5Var);
+                    pairingSession.P1(wirelessCarPlayService.A, true, h5Var);
                 }
             }
         } catch (Exception e2) {
@@ -2768,23 +2772,23 @@ public final class WirelessCarPlayService extends Service {
                         wirelessCarPlayService = this;
                         j4 = j2;
                         j5 = j3;
-                        WifiNetworkMonitor mVar = new WifiNetworkMonitor(wirelessCarPlayService, this.j, strG, new b(wirelessCarPlayService, j4, j5));
+                        WifiNetworkMonitor wifiNetworkMonitor = new WifiNetworkMonitor(wirelessCarPlayService, this.j, strG, new b(wirelessCarPlayService, j4, j5));
                         synchronized (wirelessCarPlayService.s) {
                             try {
-                                z = wirelessCarPlayService.g1(j5) && wirelessCarPlayService.h1(MfiSap);
-                                if (UpdateChecker) {
-                                    wirelessCarPlayService.l = mVar;
+                                z = wirelessCarPlayService.g1(j5) && wirelessCarPlayService.h1(j4);
+                                if (z) {
+                                    wirelessCarPlayService.l = wifiNetworkMonitor;
                                 }
                             } catch (Throwable th) {
                                 throw th;
                             }
                         }
                         if (!z) {
-                            mVar.close();
+                            wifiNetworkMonitor.close();
                             return;
                         } else {
                             wirelessCarPlayService.b3(j5, "WIFI", wirelessCarPlayService.k ? "Rediscovering the previously authenticated receiver on its retained WLAN; full fresh authentication required" : "Discovering services on the manually selected receiver WLAN");
-                            mVar.y();
+                            wifiNetworkMonitor.y();
                             return;
                         }
                     }
@@ -2804,9 +2808,9 @@ public final class WirelessCarPlayService extends Service {
 
     /* JADX INFO: Access modifiers changed from: private */
     public void e3(String str) {
-        PairingSession r0Var;
+        PairingSession pairingSession;
         t4 t4Var;
-        io.carplay.app.secured.AirPlaySession i0Var;
+        AirPlaySession airPlaySession;
         i5.a aVar;
         if (this.t.compareAndSet(false, true)) {
             L2();
@@ -2833,24 +2837,24 @@ public final class WirelessCarPlayService extends Service {
                 this.c = -1L;
                 this.D = null;
                 this.I = false;
-                r0Var = this.B;
+                pairingSession = this.B;
                 this.B = null;
                 t4Var = this.G;
                 this.G = null;
-                i0Var = this.H;
+                airPlaySession = this.H;
                 this.H = null;
                 aVar = this.a;
                 this.a = null;
             }
             i1(str);
             getSharedPreferences(b1, 0).edit().putString("state", "STOPPED").putBoolean("running", false).putBoolean("ready_for_source", false).putString("reason", str).apply();
-            WifiNetworkMonitor mVar = this.l;
+            WifiNetworkMonitor wifiNetworkMonitor = this.l;
             this.l = null;
-            if (mVar != null) {
-                mVar.close();
+            if (wifiNetworkMonitor != null) {
+                wifiNetworkMonitor.close();
             }
-            if (r0Var != null) {
-                r0Var.close();
+            if (pairingSession != null) {
+                pairingSession.close();
             }
             if (t4Var != null) {
                 t4Var.close();
@@ -2858,22 +2862,22 @@ public final class WirelessCarPlayService extends Service {
             synchronized (this.I0) {
                 try {
                     this.J0++;
-                    io.carplay.app.prototype.AvcEncoder fVar = this.z0;
+                    AvcEncoder avcEncoder = this.z0;
                     this.z0 = null;
                     this.A0 = null;
                     this.F0 = null;
                     this.G0 = 0;
                     this.H0 = 0;
-                    if (fVar != null) {
-                        fVar.close();
+                    if (avcEncoder != null) {
+                        avcEncoder.close();
                     }
                 } catch (Throwable th) {
                     throw th;
                 }
             }
-            if (i0Var != null) {
-                i1("Final sender counters across transports: videoUnits=" + (i0Var.k2() + this.L) + ", videoBytes=" + (i0Var.j2() + this.M) + ", pcmBytes=" + (i0Var.i2() + this.N));
-                i0Var.close();
+            if (airPlaySession != null) {
+                i1("Final sender counters across transports: videoUnits=" + (airPlaySession.k2() + this.L) + ", videoBytes=" + (airPlaySession.j2() + this.M) + ", pcmBytes=" + (airPlaySession.i2() + this.N));
+                airPlaySession.close();
             }
             this.N0.j();
             synchronized (this.O0) {
@@ -2910,7 +2914,7 @@ public final class WirelessCarPlayService extends Service {
     }
 
     /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void g2(t4.g gVar, io.carplay.app.secured.AirPlaySession i0Var) {
+    public /* synthetic */ void g2(t4.g gVar, AirPlaySession airPlaySession) {
         try {
             I1();
             i7 i7Var = new i7();
@@ -2944,7 +2948,7 @@ public final class WirelessCarPlayService extends Service {
                         }
                         i1("Native source outcome: ".concat(String.valueOf(eVarP)));
                         j1("SOURCE_ENDED");
-                        i1("Initial transport counters: videoUnits=" + i0Var.k2() + ", videoBytes=" + i0Var.j2() + ", pcmBytes=" + i0Var.i2());
+                        i1("Initial transport counters: videoUnits=" + airPlaySession.k2() + ", videoBytes=" + airPlaySession.j2() + ", pcmBytes=" + airPlaySession.i2());
                         e3("Native source ended; receiver connection closed without automatic reconnect");
                     } catch (Throwable th2) {
                         t4Var.close();
@@ -3032,16 +3036,16 @@ public final class WirelessCarPlayService extends Service {
     }
 
     /* JADX WARN: Multi-variable type inference failed */
-    private h i2(io.carplay.app.secured.AirPlaySession.k kVar) {
+    private h i2(AirPlaySession.k kVar) {
         boolean z = false;
         Object[] objArr = 0;
         Object[] objArr2 = 0;
         if (!this.K0) {
-            return new h(io.carplay.app.secured.AirPlaySession.j1(kVar), z, objArr2 == true ? 1 : 0);
+            return new h(AirPlaySession.j1(kVar), z, objArr2 == true ? 1 : 0);
         }
         u4.a aVarB = u4.b(kVar.j(), kVar.h(), kVar.g());
-        boolean zS = io.carplay.app.prototype.AvcEncoder.S(aVarB.i(), aVarB.h(), aVarB.g());
-        return new h(zS ? new io.carplay.app.secured.AirPlaySession.k(aVarB.i(), aVarB.h(), aVarB.g(), kVar.i()) : io.carplay.app.secured.AirPlaySession.j1(kVar), zS, objArr == true ? 1 : 0);
+        boolean zS = AvcEncoder.S(aVarB.i(), aVarB.h(), aVarB.g());
+        return new h(zS ? new AirPlaySession.k(aVarB.i(), aVarB.h(), aVarB.g(), kVar.i()) : AirPlaySession.j1(kVar), zS, objArr == true ? 1 : 0);
     }
 
     private void j1(String str) {
@@ -3064,7 +3068,7 @@ public final class WirelessCarPlayService extends Service {
         synchronized (this.s) {
             boolean z = false;
             if (g1(j2) && this.I && (t4Var = this.G) != null) {
-                io.carplay.app.secured.AirPlaySession i0Var = this.H;
+                AirPlaySession airPlaySession = this.H;
                 j6.a aVarK = t4Var.k();
                 if (aVar instanceof m1.c) {
                     m1.c cVar = (m1.c) aVar;
@@ -3081,7 +3085,7 @@ public final class WirelessCarPlayService extends Service {
                 synchronized (this.s) {
                     if (zC) {
                         try {
-                            if (g1(j2) && this.I && this.H == i0Var && this.G == t4Var) {
+                            if (g1(j2) && this.I && this.H == airPlaySession && this.G == t4Var) {
                                 z = true;
                             }
                         } catch (Throwable th) {
@@ -3149,7 +3153,7 @@ public final class WirelessCarPlayService extends Service {
 
     private Notification n2(String str) {
         PendingIntent activity = PendingIntent.getActivity(this, e1, new Intent(this, (Class<?>) MainActivity.class).addFlags(872415232), 201326592);
-        return new Notification.Builder(this, d1).setSmallIcon(R.drawable.stat_notify_sync).setContentTitle("OcarPlay").setContentText(str).setContentIntent(activity).setOngoing(true).addAction(new Notification.Action.Builder((Icon) null, "连接首页", activity).build()).addAction(new Notification.Action.Builder((Icon) null, "停止", PendingIntent.getService(this, 75, new Intent(this, (Class<?>) WirelessCarPlayService.class).setAction(W0), 201326592)).build()).build();
+        return new Notification.Builder(this, d1).setSmallIcon(android.R.drawable.stat_notify_sync).setContentTitle("OcarPlay").setContentText(str).setContentIntent(activity).setOngoing(true).addAction(new Notification.Action.Builder((Icon) null, "连接首页", activity).build()).addAction(new Notification.Action.Builder((Icon) null, "停止", PendingIntent.getService(this, 75, new Intent(this, (Class<?>) WirelessCarPlayService.class).setAction(W0), 201326592)).build()).build();
     }
 
     /* JADX INFO: Access modifiers changed from: private */
@@ -3193,7 +3197,7 @@ public final class WirelessCarPlayService extends Service {
             }
         }
         if (string == null || string2 == null || string3 == null) {
-            io.carplay.app.secured.AacAudioFormat0.c("incomplete own pairing identity; explicit reset required");
+            d0.c("incomplete own pairing identity; explicit reset required");
             return null;
         }
         byte[] bArrDecode = Base64.decode(string2, 2);
@@ -3326,14 +3330,14 @@ public final class WirelessCarPlayService extends Service {
         synchronized (this.s) {
             if (!this.t.get() && this.b0 && this.I && this.H != null && this.G != null) {
                 long jE = this.J.e();
-                io.carplay.app.secured.AirPlaySession i0Var = this.H;
+                AirPlaySession airPlaySession = this.H;
                 t4 t4Var = this.G;
                 try {
                     ExecutorService executorService = this.y;
                     io.carplay.app.secured.h0 h0Var = new io.carplay.app.secured.h0(1);
                     h0Var.d = this;
                     h0Var.b = jE;
-                    h0Var.c = i0Var;
+                    h0Var.c = airPlaySession;
                     h0Var.e = t4Var;
                     VarHandle.storeStoreFence();
                     executorService.execute(h0Var);
@@ -3343,16 +3347,16 @@ public final class WirelessCarPlayService extends Service {
         }
     }
 
-    private void u1(StagedPeer k6Var, io.carplay.app.secured.AirPlaySession i0Var) throws IOException {
-        if (!i0Var.G0()) {
-            io.carplay.app.secured.AacAudioFormat0.c("PAIRING_COMMIT_BEFORE_READY");
+    private void u1(StagedPeer stagedPeer, AirPlaySession airPlaySession) throws IOException {
+        if (!airPlaySession.G0()) {
+            d0.c("PAIRING_COMMIT_BEFORE_READY");
             return;
         }
-        PairingTlv8.b bVarB2 = i0Var.b2();
+        PairingTlv8.b bVarB2 = airPlaySession.b2();
         if (bVarB2 == null) {
-            k6Var.e();
+            stagedPeer.e();
         } else {
-            k6Var.f(bVarB2);
+            stagedPeer.f(bVarB2);
         }
     }
 
@@ -3373,16 +3377,16 @@ public final class WirelessCarPlayService extends Service {
         }
     }
 
-    private void v1(Network network, Iap2Csm.a aVar, String str, long j2, io.carplay.app.secured.AirPlaySession i0Var, PairingSession.i iVar, StagedPeer k6Var) throws SocketException {
-        if (!g1(j2) || !i0Var.G0() || !iVar.b()) {
+    private void v1(Network network, Iap2Csm.a aVar, String str, long j2, AirPlaySession airPlaySession, PairingSession.i iVar, StagedPeer stagedPeer) throws SocketException {
+        if (!g1(j2) || !airPlaySession.G0() || !iVar.b()) {
             throw new SocketException("EXISTING_WIFI_CANDIDATE_RETIRED_AFTER_AUTHENTICATION");
         }
         synchronized (this.s) {
             try {
-                if (!g1(j2) || this.H != i0Var || !i0Var.G0() || !g3(network)) {
+                if (!g1(j2) || this.H != airPlaySession || !airPlaySession.G0() || !g3(network)) {
                     throw new SocketException("EXISTING_WIFI_CANDIDATE_RETIRED_BEFORE_COMMIT");
                 }
-                u1(k6Var, i0Var);
+                u1(stagedPeer, airPlaySession);
                 this.C = network;
                 this.E = aVar;
                 this.F = str;
@@ -3396,10 +3400,10 @@ public final class WirelessCarPlayService extends Service {
 
     /* JADX INFO: Access modifiers changed from: private */
     public void v2(boolean z, long j2) {
-        io.carplay.app.secured.AirPlaySession i0Var;
+        AirPlaySession airPlaySession;
         synchronized (this.t0) {
             synchronized (this.s) {
-                if (g1(j2) && (i0Var = this.H) != null && i0Var.e2() == z) {
+                if (g1(j2) && (airPlaySession = this.H) != null && airPlaySession.e2() == z) {
                     this.s0 = new i(j2, this.H, this.G, z, this.j0, 0);
                     N2(null);
                 }
@@ -3416,7 +3420,7 @@ public final class WirelessCarPlayService extends Service {
         u2(j2, "PEER");
     }
 
-    private void x1(io.carplay.app.secured.AirPlaySession i0Var) {
+    private void x1(AirPlaySession airPlaySession) {
         String str;
         synchronized (this.I0) {
             try {
@@ -3424,16 +3428,16 @@ public final class WirelessCarPlayService extends Service {
                     return;
                 }
                 synchronized (this.s) {
-                    io.carplay.app.secured.AirPlaySession i0Var2 = this.H;
-                    if (i0Var == null || i0Var2 == i0Var) {
-                        boolean z = i0Var2 != null && i0Var2.i1(this.d0, this.e0);
+                    AirPlaySession airPlaySession2 = this.H;
+                    if (airPlaySession == null || airPlaySession2 == airPlaySession) {
+                        boolean z = airPlaySession2 != null && airPlaySession2.i1(this.d0, this.e0);
                         int iJ = (z || !this.K0) ? this.d0 : this.f0;
                         int iH = (z || !this.K0) ? this.e0 : this.g0;
                         int iMax = Math.max(1, Math.min(60, Math.min(this.y0, this.h0)));
                         boolean z2 = (this.K0 && q6.i(this.d0, this.e0, iJ, iH).o()) || this.y0 > iMax;
-                        io.carplay.app.secured.AirPlaySession.k kVarF2 = i0Var2 == null ? null : i0Var2.f2();
+                        AirPlaySession.k kVarF2 = airPlaySession2 == null ? null : airPlaySession2.f2();
                         boolean z3 = this.K0 && kVarF2 != null && u4.a(this.d0, this.e0, kVarF2.j(), kVarF2.h());
-                        boolean z4 = z3 && io.carplay.app.prototype.AvcEncoder.R(kVarF2.j(), kVarF2.h(), iMax);
+                        boolean z4 = z3 && AvcEncoder.R(kVarF2.j(), kVarF2.h(), iMax);
                         String str2 = z ? "NATIVE_DISPLAY_MATCH" : "ESTABLISHED_SOURCE_POLICY";
                         if (z3 && !z4) {
                             str2 = "ALIGNMENT_CANVAS_ENCODER_UNCONFIRMED";
@@ -3441,7 +3445,7 @@ public final class WirelessCarPlayService extends Service {
                         if (this.K0 && ((z2 || z4) && kVarF2 != null)) {
                             if (kVarF2.j() == iJ && kVarF2.h() == iH) {
                                 str2 = "AUTHENTICATED_RECEIVER";
-                            } else if (z4 || io.carplay.app.prototype.AvcEncoder.R(kVarF2.j(), kVarF2.h(), iMax)) {
+                            } else if (z4 || AvcEncoder.R(kVarF2.j(), kVarF2.h(), iMax)) {
                                 iJ = kVarF2.j();
                                 iH = kVarF2.h();
                                 str2 = "AUTHENTICATED_RECEIVER";
@@ -3456,28 +3460,28 @@ public final class WirelessCarPlayService extends Service {
                         this.F0 = null;
                         this.G0 = 0;
                         this.H0 = 0;
-                        io.carplay.app.prototype.AvcEncoder fVar = this.z0;
+                        AvcEncoder avcEncoder = this.z0;
                         this.z0 = null;
                         this.A0 = null;
                         long j2 = this.J0 + 1;
                         this.J0 = j2;
                         this.E0 = false;
-                        io.carplay.app.secured.AirPlaySession.g gVarI = this.N0.i();
+                        AirPlaySession.g gVarI = this.N0.i();
                         byte[] bArrH = gVarI == null ? null : gVarI.h();
                         byte[] bArrG = gVarI == null ? null : gVarI.g();
-                        if (fVar != null) {
-                            fVar.close();
+                        if (avcEncoder != null) {
+                            avcEncoder.close();
                         }
                         boolean z5 = (this.K0 && (q6VarR.o() || z4)) || this.y0 > iMax;
-                        if (i0Var2 == null) {
+                        if (airPlaySession2 == null) {
                             return;
                         }
                         boolean z6 = z5;
                         try {
-                            i0Var2.s2(null);
-                            i0Var2.W1(null, z6 ? q6VarR.h() : this.d0, z6 ? q6VarR.g() : this.e0);
+                            airPlaySession2.s2(null);
+                            airPlaySession2.W1(null, z6 ? q6VarR.h() : this.d0, z6 ? q6VarR.g() : this.e0);
                             synchronized (this.s) {
-                                if (!this.t.get() && this.H == i0Var2) {
+                                if (!this.t.get() && this.H == airPlaySession2) {
                                     this.F0 = q6VarR;
                                     this.G0 = iMax;
                                     this.H0 = this.y0;
@@ -3505,16 +3509,16 @@ public final class WirelessCarPlayService extends Service {
                                     getSharedPreferences(b1, 0).edit().putString("fit_mode", "starting").putInt("output_width", q6Var.h()).putInt("output_height", q6Var.g()).apply();
                                     i1("AUTO_FIT_START source=" + this.d0 + "x" + this.e0 + " canvas=" + q6Var.h() + "x" + q6Var.g() + " viewport=" + q6Var.k() + "," + q6Var.s() + "," + q6Var.t() + "," + q6Var.j() + " target_fps=" + iMax + " reason=" + (this.y0 > iMax ? "FRAME_RATE_LIMIT" : "GEOMETRY") + " display_mode=" + ((this.K0 && this.M0) ? "STRETCH" : "FIT"));
                                     byte[] bArr2 = bArrH;
-                                    io.carplay.app.prototype.AvcEncoder fVar2 = new io.carplay.app.prototype.AvcEncoder(q6Var, this.y0, iMax, new d(this, j2, q6Var, new AtomicBoolean()), fVar);
+                                    AvcEncoder avcEncoder2 = new AvcEncoder(q6Var, this.y0, iMax, new d(this, j2, q6Var, new AtomicBoolean()), avcEncoder);
                                     if (bArr2 != null && bArr != null) {
-                                        fVar2.J(bArr2, bArr);
+                                        avcEncoder2.J(bArr2, bArr);
                                     }
-                                    this.z0 = fVar2;
+                                    this.z0 = avcEncoder2;
                                 }
                             }
                         } catch (IOException e2) {
                             synchronized (this.s) {
-                                if (!this.t.get() && this.H == i0Var2 && i0Var2.G0()) {
+                                if (!this.t.get() && this.H == airPlaySession2 && airPlaySession2.G0()) {
                                     throw e2;
                                 }
                                 i1("VIDEO_ROUTE_RETIRED native_session_retained=true");
@@ -3654,13 +3658,13 @@ public final class WirelessCarPlayService extends Service {
         throw new UnsupportedOperationException("Method not decompiled: io.carplay.app.prototype.WirelessCarPlayService.z1(android.net.Network, io.carplay.app.secured.Iap2Csm$a, java.lang.String, long, io.carplay.app.prototype.PairingSession$i):void");
     }
 
-    private void z2(io.carplay.app.secured.AirPlaySession i0Var, long j2) {
+    private void z2(AirPlaySession airPlaySession, long j2) {
         try {
             ExecutorService executorService = this.y;
             d7 d7Var = new d7();
             d7Var.a = this;
             d7Var.b = j2;
-            d7Var.c = i0Var;
+            d7Var.c = airPlaySession;
             VarHandle.storeStoreFence();
             executorService.execute(d7Var);
         } catch (RejectedExecutionException unused) {
@@ -3682,7 +3686,7 @@ public final class WirelessCarPlayService extends Service {
         return new t4.g(0, this.f0, this.g0, false, this.h0, this.K0 && this.L0);
     }
 
-    public io.carplay.app.secured.AirPlaySession.k k2(io.carplay.app.secured.AirPlaySession.k kVar) {
+    public AirPlaySession.k k2(AirPlaySession.k kVar) {
         h hVarI2 = i2(kVar);
         this.L0 = hVarI2.g();
         i1("NATIVE_GEOMETRY_PREFLIGHT supported_candidate=" + hVarI2.g() + " native_encoder_acceptance_confirmed=false fps=" + hVarI2.h().g());
@@ -3704,9 +3708,9 @@ public final class WirelessCarPlayService extends Service {
                 if (!z) {
                     j1("FIRST_NATIVE_FORMAT");
                 }
-                io.carplay.app.secured.AirPlaySession i0VarF1 = F1();
-                if (i0VarF1 != null) {
-                    i0VarF1.k1(i2, i3);
+                AirPlaySession airPlaySessionF1 = F1();
+                if (airPlaySessionF1 != null) {
+                    airPlaySessionF1.k1(i2, i3);
                 }
                 getSharedPreferences(b1, 0).edit().putInt("native_width", i2).putInt("native_height", i3).putInt("native_fps", i4).apply();
                 i1("Actual native video format=" + i2 + "x" + i3 + " fps=" + i4);
@@ -3808,7 +3812,7 @@ public final class WirelessCarPlayService extends Service {
             this.j = networkQ2;
             boolean z = networkQ2 != null;
             this.k = z;
-            if (UpdateChecker) {
+            if (z) {
                 i1("CURRENT_WIFI_REUSE verified_previous_transport=true fresh_authentication_required=true network_switch=false");
             }
         } else {
@@ -3841,10 +3845,10 @@ public final class WirelessCarPlayService extends Service {
     }
 
     public static final class h extends w1 {
-        private final io.carplay.app.secured.AirPlaySession.k a;
+        private final AirPlaySession.k a;
         private final boolean b;
 
-        private h(io.carplay.app.secured.AirPlaySession.k kVar, boolean z) {
+        private h(AirPlaySession.k kVar, boolean z) {
             this.a = kVar;
             this.b = z;
         }
@@ -3861,14 +3865,14 @@ public final class WirelessCarPlayService extends Service {
             return this.b;
         }
 
-        public io.carplay.app.secured.AirPlaySession.k h() {
+        public AirPlaySession.k h() {
             return this.a;
         }
 
         public final int hashCode() {
             boolean z = this.b;
-            io.carplay.app.secured.AirPlaySession.k kVar = this.a;
-            return Objects.hashCode(kVar) + (Boolean.hashCode(UpdateChecker) * 31);
+            AirPlaySession.k kVar = this.a;
+            return Objects.hashCode(kVar) + (Boolean.hashCode(z) * 31);
         }
 
         public final String toString() {
@@ -3888,7 +3892,7 @@ public final class WirelessCarPlayService extends Service {
             return sb.toString();
         }
 
-        public /* synthetic */ h(io.carplay.app.secured.AirPlaySession.k kVar, boolean z, int i) {
+        public /* synthetic */ h(AirPlaySession.k kVar, boolean z, int i) {
             this(kVar, z);
         }
     }
@@ -3953,12 +3957,12 @@ public final class WirelessCarPlayService extends Service {
 
     public static final class k extends w1 {
         private final long a;
-        private final io.carplay.app.secured.AirPlaySession b;
-        private final io.carplay.app.secured.AirPlaySession.k c;
+        private final AirPlaySession b;
+        private final AirPlaySession.k c;
 
-        private k(long j, io.carplay.app.secured.AirPlaySession i0Var, io.carplay.app.secured.AirPlaySession.k kVar) {
+        private k(long j, AirPlaySession airPlaySession, AirPlaySession.k kVar) {
             this.a = j;
-            this.b = i0Var;
+            this.b = airPlaySession;
             this.c = kVar;
         }
 
@@ -3970,19 +3974,19 @@ public final class WirelessCarPlayService extends Service {
             return this.a == kVar.a && Objects.equals(this.b, kVar.b) && Objects.equals(this.c, kVar.c);
         }
 
-        public io.carplay.app.secured.AirPlaySession.k g() {
+        public AirPlaySession.k g() {
             return this.c;
         }
 
-        public io.carplay.app.secured.AirPlaySession h() {
+        public AirPlaySession h() {
             return this.b;
         }
 
         public final int hashCode() {
             long j = this.a;
-            io.carplay.app.secured.AirPlaySession i0Var = this.b;
-            io.carplay.app.secured.AirPlaySession.k kVar = this.c;
-            return Objects.hashCode(kVar) + ((Objects.hashCode(i0Var) + (Long.hashCode(j) * 31)) * 31);
+            AirPlaySession airPlaySession = this.b;
+            AirPlaySession.k kVar = this.c;
+            return Objects.hashCode(kVar) + ((Objects.hashCode(airPlaySession) + (Long.hashCode(j) * 31)) * 31);
         }
 
         public long i() {
@@ -4006,8 +4010,8 @@ public final class WirelessCarPlayService extends Service {
             return sb.toString();
         }
 
-        public /* synthetic */ k(long j, io.carplay.app.secured.AirPlaySession i0Var, io.carplay.app.secured.AirPlaySession.k kVar, int i) {
-            this(j, i0Var, kVar);
+        public /* synthetic */ k(long j, AirPlaySession airPlaySession, AirPlaySession.k kVar, int i) {
+            this(j, airPlaySession, kVar);
         }
     }
 
@@ -4140,14 +4144,14 @@ public final class WirelessCarPlayService extends Service {
 
     public static final class i extends w1 {
         private final long a;
-        private final io.carplay.app.secured.AirPlaySession b;
+        private final AirPlaySession b;
         private final t4 c;
         private final boolean d;
         private final long e;
 
-        private i(long j, io.carplay.app.secured.AirPlaySession i0Var, t4 t4Var, boolean z, long j2) {
+        private i(long j, AirPlaySession airPlaySession, t4 t4Var, boolean z, long j2) {
             this.a = j;
-            this.b = i0Var;
+            this.b = airPlaySession;
             this.c = t4Var;
             this.d = z;
             this.e = j2;
@@ -4173,12 +4177,12 @@ public final class WirelessCarPlayService extends Service {
             boolean z = this.d;
             long j = this.a;
             long j2 = this.e;
-            io.carplay.app.secured.AirPlaySession i0Var = this.b;
+            AirPlaySession airPlaySession = this.b;
             t4 t4Var = this.c;
-            return Objects.hashCode(t4Var) + ((Objects.hashCode(i0Var) + w1.a(j2, w1.a(j, Boolean.hashCode(UpdateChecker) * 31, 31), 31)) * 31);
+            return Objects.hashCode(t4Var) + ((Objects.hashCode(airPlaySession) + w1.a(j2, w1.a(j, Boolean.hashCode(z) * 31, 31), 31)) * 31);
         }
 
-        public io.carplay.app.secured.AirPlaySession i() {
+        public AirPlaySession i() {
             return this.b;
         }
 
@@ -4207,8 +4211,8 @@ public final class WirelessCarPlayService extends Service {
             return sb.toString();
         }
 
-        public /* synthetic */ i(long j, io.carplay.app.secured.AirPlaySession i0Var, t4 t4Var, boolean z, long j2, int i) {
-            this(j, i0Var, t4Var, z, j2);
+        public /* synthetic */ i(long j, AirPlaySession airPlaySession, t4 t4Var, boolean z, long j2, int i) {
+            this(j, airPlaySession, t4Var, z, j2);
         }
     }
 }

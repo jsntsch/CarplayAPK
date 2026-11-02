@@ -8,7 +8,7 @@ final class k0 {
     }
 
     public static String a(String str, boolean z) {
-        if (UpdateChecker) {
+        if (z) {
             return "连接进行中，请等待当前流程；需要换一种方式时，先断开连接。";
         }
         String upperCase = str == null ? "" : str.toUpperCase(Locale.ROOT);

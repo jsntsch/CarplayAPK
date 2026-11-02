@@ -1,6 +1,7 @@
 package io.carplay.app.secured;
 
 import io.carplay.app.prototype.MainActivity;
+import io.carplay.app.prototype.PairingSession;
 import java.util.function.Predicate;
 
 /* JADX INFO: compiled from: CarPlus */
@@ -17,7 +18,7 @@ public final /* synthetic */ class m3 implements Predicate {
     public final boolean test(Object obj) {
         int i = this.a;
         String str = this.b;
-        io.carplay.app.prototype.PairingSession.l lVar = (io.carplay.app.prototype.PairingSession.l) obj;
+        PairingSession.l lVar = (PairingSession.l) obj;
         switch (i) {
             case 0:
                 return MainActivity.R1(str, lVar);

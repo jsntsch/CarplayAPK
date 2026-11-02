@@ -1,13 +1,14 @@
 package io.carplay.app.secured;
 
 import android.net.Network;
+import io.carplay.app.prototype.PairingSession;
 import java.net.InetAddress;
 import java.util.function.Predicate;
 
 /* JADX INFO: compiled from: CarPlus */
 /* JADX INFO: loaded from: classes.dex */
 public final /* synthetic */ class x6 implements Predicate {
-    public /* synthetic */ io.carplay.app.prototype.PairingSession a;
+    public /* synthetic */ PairingSession a;
     public /* synthetic */ Network b;
     public /* synthetic */ String c;
 

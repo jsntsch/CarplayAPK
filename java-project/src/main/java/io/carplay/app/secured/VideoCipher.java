@@ -134,11 +134,11 @@ public final class VideoCipher {
         private boolean c;
         private byte[] d;
         private byte[] e;
-        private C0003b f;
-        private C0003b g;
+        private C0002b f;
+        private C0002b g;
         private byte[] a = new byte[0];
         private final List<byte[]> b = new ArrayList();
-        private C0003b[] h = new C0003b[0];
+        private C0002b[] h = new C0002b[0];
 
         @FunctionalInterface
         public interface a {
@@ -161,8 +161,8 @@ public final class VideoCipher {
 
         private void e(c cVar) {
             if (this.c) {
-                C0003b c0003b = this.g;
-                cVar.c(List.copyOf(this.b), c0003b.a, c0003b.b, c0003b.c);
+                C0002b c0002b = this.g;
+                cVar.c(List.copyOf(this.b), c0002b.a, c0002b.b, c0002b.c);
             }
             this.b.clear();
             this.c = false;
@@ -224,7 +224,7 @@ public final class VideoCipher {
             aVar.d(d(list));
         }
 
-        private void h(byte[] bArr, C0003b c0003b, c cVar) throws IOException {
+        private void h(byte[] bArr, C0002b c0002b, c cVar) throws IOException {
             int length = 0;
             int i = bArr[0] & 31;
             boolean z = i == 1 || i == 5;
@@ -240,7 +240,7 @@ public final class VideoCipher {
             }
             if (i == 1 || i == 5 || i == 6 || i == 7 || i == 8 || i == 9) {
                 if (this.b.isEmpty()) {
-                    this.g = c0003b;
+                    this.g = c0002b;
                 }
                 this.b.add(bArr);
                 this.c |= z;
@@ -259,16 +259,16 @@ public final class VideoCipher {
             return bArr[i + 2] == 1 ? 3 : 4;
         }
 
-        private static C0003b n(int i, int i2, C0003b c0003b, C0003b[] c0003bArr, C0003b c0003b2) {
+        private static C0002b n(int i, int i2, C0002b c0002b, C0002b[] c0002bArr, C0002b c0002b2) {
             if (i < i2) {
-                if (i >= i2 - c0003bArr.length) {
-                    return c0003bArr[i - (i2 - c0003bArr.length)];
+                if (i >= i2 - c0002bArr.length) {
+                    return c0002bArr[i - (i2 - c0002bArr.length)];
                 }
-                if (c0003b != null) {
-                    return c0003b;
+                if (c0002b != null) {
+                    return c0002b;
                 }
             }
-            return c0003b2;
+            return c0002b2;
         }
 
         private static int o(byte[] bArr, int i) {
@@ -286,13 +286,13 @@ public final class VideoCipher {
             }
         }
 
-        private static C0003b[] p(int i, int i2, C0003b c0003b, C0003b[] c0003bArr, C0003b c0003b2) {
+        private static C0002b[] p(int i, int i2, C0002b c0002b, C0002b[] c0002bArr, C0002b c0002b2) {
             int iMin = Math.min(3, i);
-            C0003b[] c0003bArr2 = new C0003b[iMin];
+            C0002b[] c0002bArr2 = new C0002b[iMin];
             for (int i3 = 0; i3 < iMin; i3++) {
-                c0003bArr2[i3] = n((i - iMin) + i3, i2, c0003b, c0003bArr, c0003b2);
+                c0002bArr2[i3] = n((i - iMin) + i3, i2, c0002b, c0002bArr, c0002b2);
             }
-            return c0003bArr2;
+            return c0002bArr2;
         }
 
         public void b(byte[] bArr, a aVar) throws IOException {
@@ -315,11 +315,11 @@ public final class VideoCipher {
                 d0.c("AnnexB pending limit");
                 return;
             }
-            C0003b c0003b = new C0003b(j, j2, j3, 0);
+            C0002b c0002b = new C0002b(j, j2, j3, 0);
             byte[] bArr2 = this.a;
             int length = bArr2.length;
-            C0003b c0003b2 = this.f;
-            C0003b[] c0003bArr = this.h;
+            C0002b c0002b2 = this.f;
+            C0002b[] c0002bArr = this.h;
             byte[] bArrD = DerCodec.d(bArr2, bArr);
             this.a = bArrD;
             int iO = o(bArrD, 0);
@@ -329,10 +329,10 @@ public final class VideoCipher {
                     d0.c("AVC start code missing");
                     return;
                 }
-                if (c0003b2 == null) {
-                    this.f = c0003b;
+                if (c0002b2 == null) {
+                    this.f = c0002b;
                 }
-                this.h = p(bArr3.length, length, c0003b2, c0003bArr, c0003b);
+                this.h = p(bArr3.length, length, c0002b2, c0002bArr, c0002b);
                 return;
             }
             if (iO > 0) {
@@ -346,12 +346,12 @@ public final class VideoCipher {
                     break;
                 }
                 if (iO2 > iJ) {
-                    h(Arrays.copyOfRange(this.a, iJ, iO2), n(iO, length, c0003b2, c0003bArr, c0003b), cVar);
+                    h(Arrays.copyOfRange(this.a, iJ, iO2), n(iO, length, c0002b2, c0002bArr, c0002b), cVar);
                 }
                 iO = iO2;
             }
-            this.f = n(iO, length, c0003b2, c0003bArr, c0003b);
-            this.h = p(this.a.length, length, c0003b2, c0003bArr, c0003b);
+            this.f = n(iO, length, c0002b2, c0002bArr, c0002b);
+            this.h = p(this.a.length, length, c0002b2, c0002bArr, c0002b);
             byte[] bArr4 = this.a;
             byte[] bArrCopyOfRange = Arrays.copyOfRange(bArr4, iO, bArr4.length);
             this.a = bArrCopyOfRange;
@@ -384,7 +384,7 @@ public final class VideoCipher {
             this.e = null;
             this.f = null;
             this.g = null;
-            this.h = new C0003b[0];
+            this.h = new C0002b[0];
         }
 
         public void l(byte[] bArr, byte[] bArr2) throws IOException {
@@ -406,23 +406,23 @@ public final class VideoCipher {
         }
 
         /* JADX INFO: renamed from: io.carplay.app.secured.VideoCipher$b$b, reason: collision with other inner class name */
-        public static final class C0003b extends w1 {
+        public static final class C0002b extends w1 {
             private final long a;
             private final long b;
             private final long c;
 
-            private C0003b(long j, long j2, long j3) {
+            private C0002b(long j, long j2, long j3) {
                 this.a = j;
                 this.b = j2;
                 this.c = j3;
             }
 
             public final boolean equals(Object obj) {
-                if (!(obj instanceof C0003b)) {
+                if (!(obj instanceof C0002b)) {
                     return false;
                 }
-                C0003b c0003b = (C0003b) obj;
-                return this.a == c0003b.a && this.b == c0003b.b && this.c == c0003b.c;
+                C0002b c0002b = (C0002b) obj;
+                return this.a == c0002b.a && this.b == c0002b.b && this.c == c0002b.c;
             }
 
             public final int hashCode() {
@@ -448,7 +448,7 @@ public final class VideoCipher {
                 Object[] objArr = {Long.valueOf(this.a), Long.valueOf(this.b), Long.valueOf(this.c)};
                 String[] strArrSplit = "a;b;c".length() == 0 ? new String[0] : "a;b;c".split(";");
                 StringBuilder sb = new StringBuilder();
-                w1.f(C0003b.class, sb, "[");
+                w1.f(C0002b.class, sb, "[");
                 for (int i = 0; i < strArrSplit.length; i++) {
                     sb.append(strArrSplit[i]);
                     sb.append("=");
@@ -461,7 +461,7 @@ public final class VideoCipher {
                 return sb.toString();
             }
 
-            public /* synthetic */ C0003b(long j, long j2, long j3, int i) {
+            public /* synthetic */ C0002b(long j, long j2, long j3, int i) {
                 this(j, j2, j3);
             }
         }

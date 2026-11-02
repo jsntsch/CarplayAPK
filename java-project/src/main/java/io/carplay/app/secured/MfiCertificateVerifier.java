@@ -371,9 +371,9 @@ public final class MfiCertificateVerifier {
             d0.b("pinned network identity required");
             return null;
         }
-        MfiCertificateVerifier a3Var = new MfiCertificateVerifier(str, str2, false, cVar);
-        a3Var.b = true;
-        return a3Var;
+        MfiCertificateVerifier mfiCertificateVerifier = new MfiCertificateVerifier(str, str2, false, cVar);
+        mfiCertificateVerifier.b = true;
+        return mfiCertificateVerifier;
     }
 
     private int T() {
@@ -750,7 +750,7 @@ public final class MfiCertificateVerifier {
                     return;
                 }
                 this.J0.e();
-                this.j.removeIf(new w0(PcmEndpoint));
+                this.j.removeIf(new w0(i4));
                 V("IAP2_POWER_SUBSCRIPTION active=false in_flight_reliability_retained=true");
                 return;
             }
@@ -926,15 +926,15 @@ public final class MfiCertificateVerifier {
             d0.b("pinned identity required for startup order fallback");
             return null;
         }
-        MfiCertificateVerifier a3Var = new MfiCertificateVerifier(str, str2, false, cVar);
-        a3Var.C0 = true;
-        return a3Var;
+        MfiCertificateVerifier mfiCertificateVerifier = new MfiCertificateVerifier(str, str2, false, cVar);
+        mfiCertificateVerifier.C0 = true;
+        return mfiCertificateVerifier;
     }
 
     public static MfiCertificateVerifier j(String str, String str2, c cVar) {
-        MfiCertificateVerifier a3VarI = i(str, str2, cVar);
-        a3VarI.G0 = true;
-        return a3VarI;
+        MfiCertificateVerifier mfiCertificateVerifierI = i(str, str2, cVar);
+        mfiCertificateVerifierI.G0 = true;
+        return mfiCertificateVerifierI;
     }
 
     private static String j0(int i) {
@@ -1058,9 +1058,9 @@ public final class MfiCertificateVerifier {
     }
 
     public static MfiCertificateVerifier u(String str, String str2, c cVar) {
-        MfiCertificateVerifier a3VarS = S(str, str2, cVar);
-        a3VarS.c = true;
-        return a3VarS;
+        MfiCertificateVerifier mfiCertificateVerifierS = S(str, str2, cVar);
+        mfiCertificateVerifierS.c = true;
+        return mfiCertificateVerifierS;
     }
 
     private void x(int i, byte[] bArr) throws IOException {
@@ -1309,7 +1309,7 @@ public final class MfiCertificateVerifier {
                             this.x0 = false;
                             int i11 = bVar.b;
                             this.o = i11;
-                            if (DerCodec) {
+                            if (z4) {
                                 byte[] bArrJ = Iap2Csm.j(new Iap2Csm.b(64, (this.n - 1) & 255, i11, 0, null));
                                 m0((byte[]) bArrJ.clone());
                                 this.k.add(new f(bVar.a, bVar.b, bVar.c, bVar.d, (byte[]) bArrB.clone(), bArrJ, 0));

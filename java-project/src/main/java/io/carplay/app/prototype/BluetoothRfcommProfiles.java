@@ -226,7 +226,7 @@ final class BluetoothRfcommProfiles implements AutoCloseable {
             try {
                 if (aVar.f != bluetoothProfile && aVar.g != bluetoothProfile) {
                     boolean z = (this.j || aVar.d || aVar.e || i != aVar.a) ? false : true;
-                    if (UpdateChecker) {
+                    if (z) {
                         aVar.e = true;
                         aVar.f = bluetoothProfile;
                     }
@@ -306,14 +306,14 @@ final class BluetoothRfcommProfiles implements AutoCloseable {
         synchronized (this.a) {
             try {
                 z = aVar.f == bluetoothProfile;
-                if (UpdateChecker) {
+                if (z) {
                     aVar.f = null;
                 }
             } catch (Throwable th) {
                 throw th;
             }
         }
-        if (UpdateChecker) {
+        if (z) {
             n(aVar, bluetoothProfile);
         }
     }

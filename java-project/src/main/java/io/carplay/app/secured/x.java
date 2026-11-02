@@ -383,7 +383,7 @@ public final class x {
             int i2 = this.b;
             int i3 = this.h;
             String str = this.i;
-            return Objects.hashCode(str) + ((((((((Boolean.hashCode(z5) + ((Boolean.hashCode(DerCodec) + ((Boolean.hashCode(z3) + ((Boolean.hashCode(z2) + (Boolean.hashCode(z) * 31)) * 31)) * 31)) * 31)) * 31) + i) * 31) + i2) * 31) + i3) * 31);
+            return Objects.hashCode(str) + ((((((((Boolean.hashCode(z5) + ((Boolean.hashCode(z4) + ((Boolean.hashCode(z3) + ((Boolean.hashCode(z2) + (Boolean.hashCode(z) * 31)) * 31)) * 31)) * 31)) * 31) + i) * 31) + i2) * 31) + i3) * 31);
         }
 
         public boolean i() {
@@ -758,7 +758,7 @@ public final class x {
                 arrayList5.add("VALID:" + z + ":" + zQ + ":" + z4 + ":" + sVarU.l() + ":" + zContainsKey + ":" + zX + ":" + i5);
                 return new x(arrayList7, arrayList6, arrayList10, sVarU, z, zQ, z4, zContainsKey, zX, map.containsKey("features"), bigIntegerC2, setN3, setN4, i5, arrayList5);
             }
-            Object obj10 = listB.get(PcmEndpoint);
+            Object obj10 = listB.get(i4);
             int i9 = i4;
             if (obj10 instanceof Map) {
                 Map map13 = (Map) obj10;

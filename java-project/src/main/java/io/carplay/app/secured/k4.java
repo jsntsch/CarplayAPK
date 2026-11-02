@@ -238,7 +238,7 @@ public abstract class k4 {
         int[] iArr7 = new int[i];
         int[] iArr8 = new int[i];
         int[] iArr9 = new int[i];
-        ?? r12 = 0;
+        int r12 = 0;
         iArr6[0] = 1;
         f(iD, iArr2, iArr8);
         f(iD, iArr, iArr9);
@@ -249,17 +249,17 @@ public abstract class k4 {
         int iP = i;
         while (!h(iP, iArr8, r12)) {
             if (iC >= i2) {
-                return r12;
+                return r12 != 0;
             }
             iC += 30;
-            ?? r16 = r12;
-            iE = e(iE, iArr7[r12], iArr8[r16 == true ? 1 : 0], iArr4);
+            int r16 = r12;
+            iE = e(iE, iArr7[r12], iArr8[r16 != 0 ? 1 : 0], iArr4);
             q(i, iArr5, iArr6, iArr4, iL, iArr9);
             r(iP, iArr7, iArr8, iArr4);
             iP = p(iP, iArr7, iArr8);
-            r12 = r16 == true ? 1 : 0;
+            r12 = r16 != 0 ? 1 : 0;
         }
-        ?? r17 = r12;
+        int r17 = r12;
         int i3 = iArr7[iP - 1] >> 31;
         int iO = iArr5[i - 1] >> 31;
         if (iO < 0) {
@@ -270,7 +270,7 @@ public abstract class k4 {
             o(iP, iArr7);
         }
         if (!h(iP, iArr7, 1)) {
-            return r17;
+            return r17 != 0;
         }
         if (iO < 0) {
             a(i, iArr5, iArr9);

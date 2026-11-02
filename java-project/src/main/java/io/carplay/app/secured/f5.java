@@ -6,7 +6,7 @@ import java.util.Objects;
 /* JADX INFO: loaded from: classes.dex */
 public final class f5 {
     private final r6.a a;
-    private final AacAudioFormat b;
+    private final d b;
     private final boolean c;
     private final o d;
     private final int e;
@@ -164,7 +164,7 @@ public final class f5 {
         SEEK
     }
 
-    public enum AacAudioFormat {
+    public enum d {
         UNKNOWN,
         NATIVE_MIXED_MUSIC,
         PCM_MEDIA,
@@ -173,7 +173,7 @@ public final class f5 {
         VR_PROMPT
     }
 
-    public f5(r6.a aVar, AacAudioFormat dVar, boolean z, o oVar, int i) {
+    public f5(r6.a aVar, d dVar, boolean z, o oVar, int i) {
         Objects.requireNonNull(aVar);
         this.a = aVar;
         Objects.requireNonNull(dVar);
@@ -212,7 +212,7 @@ public final class f5 {
         int i3;
         c cVar2;
         Objects.requireNonNull(cVar);
-        if (this.b == AacAudioFormat.UNKNOWN) {
+        if (this.b == d.UNKNOWN) {
             d0.f("unconfirmed audio producer; output refused");
             return null;
         }
@@ -268,7 +268,7 @@ public final class f5 {
                 d0.f("audio data while paused/stopped");
                 return null;
             }
-            byte[] bArrC = c(bArrG, this.b != AacAudioFormat.NATIVE_MIXED_MUSIC);
+            byte[] bArrC = c(bArrG, this.b != d.NATIVE_MIXED_MUSIC);
             if (bArrC.length == 0 || bArrC.length % this.f.i() != 0) {
                 d0.f("partial/empty PCM frame");
                 return null;

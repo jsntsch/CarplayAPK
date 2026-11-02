@@ -1,5 +1,6 @@
 package io.carplay.app.secured;
 
+import io.carplay.app.prototype.PairingSession;
 import java.util.function.Function;
 
 /* JADX INFO: compiled from: CarPlus */
@@ -24,13 +25,13 @@ public final /* synthetic */ class r implements Function {
             case p1.d /* 3 */:
                 return PairingTlv8.f((Integer) obj);
             case 4:
-                return ((io.carplay.app.prototype.PairingSession.l) obj).a;
+                return ((PairingSession.l) obj).a;
             case 5:
                 return p6.b((p6.b) obj);
             case 6:
-                return ((io.carplay.app.prototype.PairingSession.l) obj).a;
+                return ((PairingSession.l) obj).a;
             default:
-                return ((io.carplay.app.prototype.PairingSession.l) obj).b;
+                return ((PairingSession.l) obj).b;
         }
     }
 }

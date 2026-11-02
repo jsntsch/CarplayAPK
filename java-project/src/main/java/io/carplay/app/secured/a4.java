@@ -3,6 +3,7 @@ package io.carplay.app.secured;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import io.carplay.app.prototype.MainActivity;
+import io.carplay.app.prototype.PairingSession;
 import io.carplay.app.prototype.WirelessCarPlayService;
 import java.util.function.Predicate;
 
@@ -22,7 +23,7 @@ public final /* synthetic */ class a4 implements Predicate {
         Object obj2 = this.b;
         switch (i) {
             case 0:
-                return MainActivity.r1((io.carplay.app.prototype.PairingSession.l) obj2, (io.carplay.app.prototype.PairingSession.l) obj);
+                return MainActivity.r1((PairingSession.l) obj2, (PairingSession.l) obj);
             case p1.c /* 1 */:
                 return h5.n((BluetoothSocket) obj2, (BluetoothSocket) obj);
             case 2:

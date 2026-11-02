@@ -26,7 +26,7 @@ public final class b {
     }
 
     /* JADX INFO: renamed from: io.carplay.app.secured.b$b, reason: collision with other inner class name */
-    public static final class C0001b extends w1 {
+    public static final class C0003b extends w1 {
         private final long a;
         private final boolean b;
         private final a c;
@@ -41,7 +41,7 @@ public final class b {
         private final String l;
         private final boolean m;
 
-        public C0001b(long j, boolean z, a aVar, a aVar2, a aVar3, a aVar4, boolean z2, long j2, long j3, long j4, boolean z3, String str, boolean z4) {
+        public C0003b(long j, boolean z, a aVar, a aVar2, a aVar3, a aVar4, boolean z2, long j2, long j3, long j4, boolean z3, String str, boolean z4) {
             this.a = j;
             this.b = z;
             this.c = aVar;
@@ -62,11 +62,11 @@ public final class b {
         }
 
         public final boolean equals(Object obj) {
-            if (!(obj instanceof C0001b)) {
+            if (!(obj instanceof C0003b)) {
                 return false;
             }
-            C0001b c0001b = (C0001b) obj;
-            return this.b == c0001b.b && this.g == c0001b.g && this.k == c0001b.k && this.m == c0001b.m && this.a == c0001b.a && this.h == c0001b.h && this.i == c0001b.i && this.j == c0001b.j && Objects.equals(this.c, c0001b.c) && Objects.equals(this.d, c0001b.d) && Objects.equals(this.e, c0001b.e) && Objects.equals(this.f, c0001b.f) && Objects.equals(this.l, c0001b.l);
+            C0003b c0003b = (C0003b) obj;
+            return this.b == c0003b.b && this.g == c0003b.g && this.k == c0003b.k && this.m == c0003b.m && this.a == c0003b.a && this.h == c0003b.h && this.i == c0003b.i && this.j == c0003b.j && Objects.equals(this.c, c0003b.c) && Objects.equals(this.d, c0003b.d) && Objects.equals(this.e, c0003b.e) && Objects.equals(this.f, c0003b.f) && Objects.equals(this.l, c0003b.l);
         }
 
         public a h() {
@@ -87,7 +87,7 @@ public final class b {
             a aVar3 = this.e;
             a aVar4 = this.f;
             String str = this.l;
-            return Objects.hashCode(str) + ((Objects.hashCode(aVar4) + ((Objects.hashCode(aVar3) + ((Objects.hashCode(aVar2) + ((Objects.hashCode(aVar) + w1.a(j4, w1.a(j3, w1.a(j2, w1.a(j, (Boolean.hashCode(DerCodec) + ((Boolean.hashCode(z3) + ((Boolean.hashCode(z2) + (Boolean.hashCode(z) * 31)) * 31)) * 31)) * 31, 31), 31), 31), 31)) * 31)) * 31)) * 31)) * 31);
+            return Objects.hashCode(str) + ((Objects.hashCode(aVar4) + ((Objects.hashCode(aVar3) + ((Objects.hashCode(aVar2) + ((Objects.hashCode(aVar) + w1.a(j4, w1.a(j3, w1.a(j2, w1.a(j, (Boolean.hashCode(z4) + ((Boolean.hashCode(z3) + ((Boolean.hashCode(z2) + (Boolean.hashCode(z) * 31)) * 31)) * 31)) * 31, 31), 31), 31), 31)) * 31)) * 31)) * 31)) * 31);
         }
 
         public boolean i() {
@@ -147,7 +147,7 @@ public final class b {
             Object[] objArr = {Long.valueOf(this.a), Boolean.valueOf(this.b), this.c, this.d, this.e, this.f, Boolean.valueOf(this.g), Long.valueOf(this.h), Long.valueOf(this.i), Long.valueOf(this.j), Boolean.valueOf(this.k), this.l, Boolean.valueOf(this.m)};
             String[] strArrSplit = "a;b;c;d;e;f;g;h;i;j;k;l;m".length() == 0 ? new String[0] : "a;b;c;d;e;f;g;h;i;j;k;l;m".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(C0001b.class, sb, "[");
+            w1.f(C0003b.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");
@@ -297,8 +297,8 @@ public final class b {
         this.j = Math.incrementExact(this.j);
     }
 
-    public synchronized C0001b m() {
-        return new C0001b(this.a, this.b, this.f, this.g, this.h, this.i, this.c, this.j, this.k, this.l, this.d, this.m, this.e);
+    public synchronized C0003b m() {
+        return new C0003b(this.a, this.b, this.f, this.g, this.h, this.i, this.c, this.j, this.k, this.l, this.d, this.m, this.e);
     }
 
     public synchronized void n(long j) {

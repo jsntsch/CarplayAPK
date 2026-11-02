@@ -4,8 +4,9 @@ import android.net.Network;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
-import io.carplay.app.secured.PcmConverter;
 import io.carplay.app.secured.EcdsaSignature;
+import io.carplay.app.secured.PcmConverter;
+import io.carplay.app.secured.d0;
 import io.carplay.app.secured.w5;
 import io.carplay.app.secured.x5;
 import java.io.ByteArrayOutputStream;
@@ -17,7 +18,6 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -45,7 +45,7 @@ final class UpdateChecker {
     private UpdateChecker() {
     }
 
-    public static String a(String str) throws NoSuchAlgorithmException, IOException {
+    public static String a(String str) {
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
         FileInputStream fileInputStream = new FileInputStream(str);
         try {
@@ -96,7 +96,7 @@ final class UpdateChecker {
         URI uriCreate = URI.create("https://gitee.com/eyessx/carplus-carplay-updates/raw/master/version.json");
         for (int i = 0; i < 3; i++) {
             if (SystemClock.elapsedRealtime() > jElapsedRealtime) {
-                io.carplay.app.secured.AacAudioFormat0.c("catalog redirect deadline");
+                d0.c("catalog redirect deadline");
                 return null;
             }
             URL url = uriCreate.toURL();
@@ -149,7 +149,7 @@ final class UpdateChecker {
                 throw th3;
             }
         }
-        io.carplay.app.secured.AacAudioFormat0.c("too many catalog redirects");
+        d0.c("too many catalog redirects");
         return null;
     }
 }

@@ -1,5 +1,7 @@
 package io.carplay.app.secured;
 
+import io.carplay.app.prototype.AirplayServiceProbe;
+import io.carplay.app.prototype.PairingSession;
 import io.carplay.app.prototype.WirelessCarPlayService;
 import java.util.concurrent.ThreadFactory;
 
@@ -20,13 +22,13 @@ public final /* synthetic */ class n0 implements ThreadFactory {
             case p1.c /* 1 */:
                 return AirPlaySession.V0(runnable);
             case 2:
-                return io.carplay.app.prototype.AirplayServiceProbe.u(runnable);
+                return AirplayServiceProbe.u(runnable);
             case p1.d /* 3 */:
                 return t4.C(runnable);
             case 4:
                 return h5.o(runnable);
             case 5:
-                return io.carplay.app.prototype.PairingSession.R0(runnable);
+                return PairingSession.R0(runnable);
             case 6:
                 return WirelessCarPlayService.N1(runnable);
             default:

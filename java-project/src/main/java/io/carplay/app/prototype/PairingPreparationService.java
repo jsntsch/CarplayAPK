@@ -158,7 +158,7 @@ public final class PairingPreparationService extends Service {
                 this.d = true;
                 h = this;
                 ((NotificationManager) getSystemService(NotificationManager.class)).createNotificationChannel(new NotificationChannel("carplus-pairing", "车机重新识别", 2));
-                startForeground(77, new Notification.Builder(this, "carplus-pairing").setSmallIcon(R.drawable.stat_notify_sync).setContentTitle("正在准备车机重新识别").setContentText("请回软件按提示操作，准备最多保留两分钟").setContentIntent(PendingIntent.getActivity(this, 77, new Intent(this, (Class<?>) MainActivity.class), 201326592)).setOngoing(true).addAction(new Notification.Action.Builder((Icon) null, "停止准备", PendingIntent.getService(this, 78, new Intent(this, (Class<?>) PairingPreparationService.class).setAction(AvcEncoder), 201326592)).build()).build(), 16);
+                startForeground(77, new Notification.Builder(this, "carplus-pairing").setSmallIcon(android.R.drawable.stat_notify_sync).setContentTitle("正在准备车机重新识别").setContentText("请回软件按提示操作，准备最多保留两分钟").setContentIntent(PendingIntent.getActivity(this, 77, new Intent(this, (Class<?>) MainActivity.class), 201326592)).setOngoing(true).addAction(new Notification.Action.Builder((Icon) null, "停止准备", PendingIntent.getService(this, 78, new Intent(this, (Class<?>) PairingPreparationService.class).setAction(f), 201326592)).build()).build(), 16);
                 int i3 = 0;
                 try {
                     PowerManager.WakeLock wakeLockNewWakeLock = ((PowerManager) getSystemService(PowerManager.class)).newWakeLock(1, "CarPlus:PairingPreparation");

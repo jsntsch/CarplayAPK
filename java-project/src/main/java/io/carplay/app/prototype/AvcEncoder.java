@@ -17,13 +17,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.view.Surface;
-import io.carplay.app.secured.AacAudioFormat1;
+import io.carplay.app.secured.EventChannel;
 import io.carplay.app.secured.PcmConverter;
 import io.carplay.app.secured.VideoCipher;
+import io.carplay.app.secured.d0;
+import io.carplay.app.secured.d1;
+import io.carplay.app.secured.j;
 import io.carplay.app.secured.p6;
 import io.carplay.app.secured.q6;
 import io.carplay.app.secured.w1;
-import io.carplay.app.secured.EventChannel;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.invoke.VarHandle;
@@ -79,7 +81,7 @@ final class AvcEncoder implements AutoCloseable {
     private final int c;
     private volatile int d;
     private a e;
-    private final InterfaceC0000f f;
+    private final f f;
     private final AvcEncoder g;
     private final CountDownLatch h;
     private final VideoCipher.b i;
@@ -108,7 +110,7 @@ final class AvcEncoder implements AutoCloseable {
 
         public a(int i, int i2) {
             if (i < 1 || i > 240 || i2 < 1 || i2 > 60) {
-                io.carplay.app.secured.AacAudioFormat0.b("AVC frame rate");
+                d0.b("AVC frame rate");
                 throw null;
             }
             this.a = i;
@@ -170,7 +172,7 @@ final class AvcEncoder implements AutoCloseable {
             }
             this.a.writeBytes(bArr);
             this.c |= i;
-            if (UpdateChecker) {
+            if (z) {
                 return null;
             }
             c cVar = new c(this.a.toByteArray(), this.b, this.c & (-9));
@@ -256,7 +258,7 @@ final class AvcEncoder implements AutoCloseable {
             if (this.b && !z) {
                 return false;
             }
-            if (UpdateChecker) {
+            if (z) {
                 this.b = false;
             }
             return true;
@@ -268,8 +270,7 @@ final class AvcEncoder implements AutoCloseable {
         }
     }
 
-    /* JADX INFO: renamed from: io.carplay.app.prototype.AvcEncoder$f, reason: collision with other inner class name */
-    public interface InterfaceC0000f {
+    public interface f {
         void a(String str);
 
         default void b(io.carplay.app.secured.h hVar) {
@@ -293,13 +294,13 @@ final class AvcEncoder implements AutoCloseable {
                 byte[] bArr2 = (byte[]) bArr.clone();
                 this.a = bArr2;
                 this.b++;
-                return io.carplay.app.secured.j.a(bArr2, i, i2);
+                return j.a(bArr2, i, i2);
             }
             return null;
         }
     }
 
-    public AvcEncoder(q6 q6Var, int i, int i2, InterfaceC0000f interfaceC0000f, AvcEncoder fVar) {
+    public AvcEncoder(q6 q6Var, int i, int i2, f fVar, AvcEncoder avcEncoder) {
         this.h = new CountDownLatch(1);
         this.i = new VideoCipher.b();
         this.j = new ArrayBlockingQueue<>(8);
@@ -328,8 +329,8 @@ final class AvcEncoder implements AutoCloseable {
         int iMax = Math.max(1, Math.min(60, i2));
         this.b = iMax;
         this.d = iMax;
-        this.f = interfaceC0000f;
-        this.g = fVar;
+        this.f = fVar;
+        this.g = avcEncoder;
         floatBufferAsFloatBuffer.put(new float[]{-1.0f, -1.0f, 0.0f, 0.0f, 1.0f, -1.0f, 1.0f, 0.0f, -1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f}).position(0);
         io.carplay.app.prototype.a aVar = new io.carplay.app.prototype.a(0);
         aVar.b = this;
@@ -471,8 +472,8 @@ final class AvcEncoder implements AutoCloseable {
         int iDequeueInputBuffer;
         try {
             try {
-                AvcEncoder fVar = this.g;
-                if (fVar != null && !fVar.h.await(2L, TimeUnit.SECONDS)) {
+                AvcEncoder avcEncoder = this.g;
+                if (avcEncoder != null && !avcEncoder.h.await(2L, TimeUnit.SECONDS)) {
                     throw new IOException("previous hardware codec still closing");
                 }
                 if (this.o.get()) {
@@ -545,7 +546,7 @@ final class AvcEncoder implements AutoCloseable {
                             this.t = false;
                         }
                         this.F.releaseOutputBuffer(iDequeueOutputBuffer, z);
-                        if (UpdateChecker) {
+                        if (z) {
                             n();
                             if (this.o.get()) {
                                 break;
@@ -697,7 +698,7 @@ final class AvcEncoder implements AutoCloseable {
         byte[] bArrQ = Q();
         byte[] bArrP = P();
         if (bArrQ == null || bArrP == null) {
-            io.carplay.app.secured.AacAudioFormat0.c("native AVC config missing");
+            d0.c("native AVC config missing");
             return;
         }
         mediaFormatCreateVideoFormat.setByteBuffer("csd-0", ByteBuffer.wrap(io.carplay.app.secured.i.c(List.of(bArrQ))));
@@ -717,7 +718,7 @@ final class AvcEncoder implements AutoCloseable {
         MediaFormat mediaFormatV = v(this.a.h(), this.a.g(), this.d);
         String strW = w(mediaFormatV, this.a.h(), this.a.g(), this.d);
         if (strW == null) {
-            io.carplay.app.secured.AacAudioFormat0.c("hardware AVC encoder unavailable for receiver size");
+            d0.c("hardware AVC encoder unavailable for receiver size");
             return;
         }
         MediaCodec mediaCodecCreateByCodecName = MediaCodec.createByCodecName(strW);
@@ -732,13 +733,13 @@ final class AvcEncoder implements AutoCloseable {
         this.L = eGLDisplayEglGetDisplay;
         int[] iArr = new int[2];
         if (eGLDisplayEglGetDisplay == EGL14.EGL_NO_DISPLAY || !EGL14.eglInitialize(eGLDisplayEglGetDisplay, iArr, 0, iArr, 1)) {
-            io.carplay.app.secured.AacAudioFormat0.c("fit EGL init failed");
+            d0.c("fit EGL init failed");
             return;
         }
         EGLConfig[] eGLConfigArr = new EGLConfig[1];
         int[] iArr2 = new int[1];
         if (!EGL14.eglChooseConfig(this.L, new int[]{12324, 8, 12323, 8, 12322, 8, 12352, 4, 12339, 4, 12610, 1, 12344}, 0, eGLConfigArr, 0, 1, iArr2, 0) || iArr2[0] < 1) {
-            io.carplay.app.secured.AacAudioFormat0.c("recordable EGL config unavailable");
+            d0.c("recordable EGL config unavailable");
             return;
         }
         this.M = EGL14.eglCreateContext(this.L, eGLConfigArr[0], EGL14.EGL_NO_CONTEXT, new int[]{12440, 2, 12344}, 0);
@@ -746,7 +747,7 @@ final class AvcEncoder implements AutoCloseable {
         this.N = eGLSurfaceEglCreateWindowSurface;
         EGLContext eGLContext = this.M;
         if (eGLContext == EGL14.EGL_NO_CONTEXT || eGLSurfaceEglCreateWindowSurface == EGL14.EGL_NO_SURFACE || !EGL14.eglMakeCurrent(this.L, eGLSurfaceEglCreateWindowSurface, eGLSurfaceEglCreateWindowSurface, eGLContext)) {
-            io.carplay.app.secured.AacAudioFormat0.c("fit EGL surface failed");
+            d0.c("fit EGL surface failed");
             return;
         }
         int[] iArr3 = new int[1];
@@ -790,7 +791,7 @@ final class AvcEncoder implements AutoCloseable {
             return iGlCreateShader;
         }
         GLES20.glDeleteShader(iGlCreateShader);
-        io.carplay.app.secured.AacAudioFormat0.c("fit shader compile failed");
+        d0.c("fit shader compile failed");
         return 0;
     }
 
@@ -898,7 +899,7 @@ final class AvcEncoder implements AutoCloseable {
         for (int i2 = 0; i2 < 16 && !this.o.get() && (iDequeueOutputBuffer = this.G.dequeueOutputBuffer(this.U, 0L)) != -1; i2++) {
             if (iDequeueOutputBuffer == -2) {
                 if (this.n.c()) {
-                    io.carplay.app.secured.AacAudioFormat0.c("AVC_ENCODER_FRAGMENT_FORMAT_CHANGED");
+                    d0.c("AVC_ENCODER_FRAGMENT_FORMAT_CHANGED");
                     return;
                 }
                 MediaFormat outputFormat = this.G.getOutputFormat();
@@ -954,7 +955,7 @@ final class AvcEncoder implements AutoCloseable {
                         }
                     }
                 } else if (bVar.c() && (cVarQ.h() & 4) != 0) {
-                    io.carplay.app.secured.AacAudioFormat0.c("AVC_ENCODER_FRAGMENT_TRUNCATED");
+                    d0.c("AVC_ENCODER_FRAGMENT_TRUNCATED");
                     return;
                 }
             }
@@ -981,12 +982,12 @@ final class AvcEncoder implements AutoCloseable {
         GLES20.glUniform1i(GLES20.glGetUniformLocation(this.P, "uTexture"), 0);
         GLES20.glDrawArrays(5, 0, 4);
         if (GLES20.glGetError() != 0) {
-            io.carplay.app.secured.AacAudioFormat0.c("fit GL draw failed");
+            d0.c("fit GL draw failed");
             return;
         }
         EGLExt.eglPresentationTimeANDROID(this.L, this.N, j * 1000);
         if (!EGL14.eglSwapBuffers(this.L, this.N)) {
-            io.carplay.app.secured.AacAudioFormat0.c("fit EGL swap failed");
+            d0.c("fit EGL swap failed");
         } else if (this.E < 0) {
             this.E = System.nanoTime();
         }
@@ -997,7 +998,7 @@ final class AvcEncoder implements AutoCloseable {
         if (hVarD.k() != null && hVarD.h() != null) {
             return hVarD;
         }
-        io.carplay.app.secured.AacAudioFormat0.c("AVC encoder output config missing");
+        d0.c("AVC encoder output config missing");
         return null;
     }
 
@@ -1009,7 +1010,7 @@ final class AvcEncoder implements AutoCloseable {
         if (!hVarD.e()) {
             return null;
         }
-        io.carplay.app.secured.AacAudioFormat0.c("AVC encoder IDR config missing");
+        d0.c("AVC encoder IDR config missing");
         return null;
     }
 
@@ -1211,7 +1212,7 @@ final class AvcEncoder implements AutoCloseable {
             long j = this.b;
             long j2 = this.c;
             h hVar = this.a;
-            return Objects.hashCode(hVar) + w1.a(j2, Long.hashCode(AirplayServiceProbe) * 31, 31);
+            return Objects.hashCode(hVar) + w1.a(j2, Long.hashCode(j) * 31, 31);
         }
 
         public long j() {
@@ -1274,7 +1275,7 @@ final class AvcEncoder implements AutoCloseable {
             long j2 = this.d;
             io.carplay.app.secured.h hVar = this.a;
             byte[] bArr = this.b;
-            return Objects.hashCode(bArr) + ((Objects.hashCode(hVar) + w1.a(j2, Long.hashCode(AirplayServiceProbe) * 31, 31)) * 31);
+            return Objects.hashCode(bArr) + ((Objects.hashCode(hVar) + w1.a(j2, Long.hashCode(j) * 31, 31)) * 31);
         }
 
         public byte[] i() {
@@ -1315,7 +1316,7 @@ final class AvcEncoder implements AutoCloseable {
         }
     }
 
-    public AvcEncoder(q6 q6Var, int i, InterfaceC0000f interfaceC0000f, AvcEncoder fVar) {
-        this(q6Var, i, i, interfaceC0000f, fVar);
+    public AvcEncoder(q6 q6Var, int i, f fVar, AvcEncoder avcEncoder) {
+        this(q6Var, i, i, fVar, avcEncoder);
     }
 }

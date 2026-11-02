@@ -197,8 +197,8 @@ public final class PcmQueue implements AutoCloseable {
         private final byte[] d;
         private final int e;
 
-        private a(PcmQueue e5Var, long j, byte[] bArr, int i, long j2) {
-            this.a = e5Var;
+        private a(PcmQueue pcmQueue, long j, byte[] bArr, int i, long j2) {
+            this.a = pcmQueue;
             this.b = j;
             this.d = bArr;
             this.e = i;
@@ -221,8 +221,8 @@ public final class PcmQueue implements AutoCloseable {
             return this.c;
         }
 
-        public /* synthetic */ a(PcmQueue e5Var, long j, byte[] bArr, int i, long j2, int i2) {
-            this(e5Var, j, bArr, i, j2);
+        public /* synthetic */ a(PcmQueue pcmQueue, long j, byte[] bArr, int i, long j2, int i2) {
+            this(pcmQueue, j, bArr, i, j2);
         }
     }
 

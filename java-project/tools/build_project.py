@@ -1,94 +1,117 @@
 # -*- coding: utf-8 -*-
-"""把 jadx 产物重命名成可读工程。
+"""从 APK 重建可读 Java 工程（一条命令跑完全链路）。
 
-三条铁律：
-1. 只替换「类型位置」，用白名单正则，绝不全局 replace。
-2. 简单名替换必须限定包，且前面不能是点 —— 否则 `io.carplay.app.secured.h`
-   里那个 `h` 会被当成 `prototype.h` 一起改掉（本项目踩过）。
-3. 构造函数只在「文件主类」上改：`y5.java` 里的 `public y5(` 才改成
-   `public EventChannel(`；嵌套类 `h(...)` 的构造名绝不能动。
+    python tools/build_project.py --apk <apk> --work <构建目录>
+
+链路
+----
+    APK
+     │ 1. apktool d -f -r         反编译成 smali（只取代码，不解资源）
+     ▼
+    smali
+     │ 2. dex_rename.py           按描述符改类型名（Lpkg/Cls; → Lpkg/New;）
+     ▼
+    smali（已改名）
+     │ 3. apktool b               重新打包成 apk
+     ▼
+    改名后的 apk
+     │ 4. jadx --no-res           反编译成 Java
+     ▼
+    src/main/java                 5. annotate.py 注入中文注释
+                                  6. fix_jadx_defects.py 修反编译缺陷
+
+为什么在 smali 层改名
+--------------------
+jadx 的 Java 里同名标识符有歧义：`secured/l.java`（顶层类）和
+`secured/i0.java` 里的 `public interface l`（嵌套接口）同名，同一个 `l`
+在三个地方分别表示「嵌套接口」「i0 的嵌套接口」「顶层类」，正则无法区分。
+字节码里的类型永远写成带分号的描述符，不存在遮蔽，改一处即全站一致。
+
+环境变量（均可省略，省略时用默认值）
+------------------------------------
+    APKTOOL_JAR   默认 apktool.jar
+    JADX_CP       默认 jadx-lib/*
+    JAVA          默认 java.exe
 """
-import os, re, sys
-import rename_map as RM
+import argparse
+import os
+import re
+import shutil
+import subprocess
+import sys
 
-SRC = r"C:\Users\SCH\WorkBuddy\2026-10-24-16-47-09\_jadx_v1729\sources"
-DST = r"C:\Users\SCH\WorkBuddy\2026-10-24-16-47-09\OcarPlay-Java-V1729\src\main\java"
-
-RE_PKG = re.compile(r'^package\s+([\w.]+);', re.M)
-RE_IMPORT = re.compile(r'^import\s+(?:static\s+)?([\w.]+);', re.M)
-NOT_QUALIFIED = r'(?<![\w.])'
-
-
-def type_patterns(old, is_self):
-    o = re.escape(old)
-    pre = NOT_QUALIFIED + o
-    pats = []
-    if is_self:
-        pats.append((re.compile(r'^(\s*(?:(?:public|private|protected)\s+)?)' + o + r'(\s*\()', re.M), r'\1{NEW}\2'))
-    pats += [
-        (re.compile(r'\b(class|interface|enum)\s+' + o + r'\b'), r'\1 {NEW}'),
-        (re.compile(r'\bnew\s+' + o + r'\b'), 'new {NEW}'),
-        (re.compile(r'\bextends\s+' + o + r'\b'), 'extends {NEW}'),
-        (re.compile(r'\bimplements\s+' + o + r'\b'), 'implements {NEW}'),
-        (re.compile(r'\binstanceof\s+' + o + r'\b'), 'instanceof {NEW}'),
-        (re.compile(r'\bthrows\s+' + o + r'\b'), 'throws {NEW}'),
-        (re.compile(r'(\bcatch\s*\(\s*)' + o + r'\b'), r'\1{NEW}'),
-        (re.compile(r'(\(\s*)' + o + r'(\s*\))'), r'\1{NEW}\2'),
-        (re.compile(r'(<\s*)' + o + r'(?=\s*[,>])'), r'\1{NEW}'),
-        (re.compile(pre + r'(\s*\[\s*\])'), '{NEW}' + r'\1'),
-        (re.compile(pre + r'(\s*\.)'), '{NEW}' + r'\1'),
-        (re.compile(pre + r'(\s+\w+\s*\()'), '{NEW}' + r'\1'),
-        (re.compile(pre + r'(\s+\w+\s*[;=,):])'), '{NEW}' + r'\1'),
-    ]
-    return pats
+HERE = os.path.dirname(os.path.abspath(__file__))
+PROJ = os.path.dirname(HERE)
+sys.path.insert(0, HERE)
 
 
-def local_class_names(text):
-    """文件里出现过的所有 class 声明名（含嵌套类）。"""
-    return set(re.findall(r'\bclass\s+(\w+)', text))
-
-
-def rewrite_file(text, pkg, imports, core, self_old):
-    locals_ = local_class_names(text)
-    for fqcn, new, _ in core:
-        old_pkg, old_simple = fqcn.rsplit('.', 1)
-        if fqcn in text:
-            text = text.replace(fqcn, old_pkg + '.' + new)
-        # 嵌套类同名屏蔽：`f.java` 里的 `class h` 是嵌套类，
-        # 不能把它当成同包的顶层 prototype.h 一起改名。
-        if old_simple != self_old and old_simple in locals_:
-            continue
-        if old_pkg == pkg or fqcn in imports:
-            for pat, rep in type_patterns(old_simple, old_simple == self_old):
-                text = pat.sub(rep.replace('{NEW}', new), text)
-    return text
+def run(cmd, **kw):
+    print("  $", " ".join(str(c) for c in cmd[:6]), "..." if len(cmd) > 6 else "")
+    r = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace")
+    if r.returncode != 0:
+        tail = "\n".join((r.stdout or "").splitlines()[-8:] + (r.stderr or "").splitlines()[-8:])
+        raise SystemExit(f"FAILED ({r.returncode})\n{tail}")
+    return r.stdout or ""
 
 
 def main():
-    core = sorted(RM.CORE, key=lambda x: -len(x[0].rsplit('.', 1)[1]))
-    rename_index = {fq: new for fq, new, _ in core}
-    files = renamed = changed = 0
-    for dirpath, _d, fns in os.walk(SRC):
-        for fn in fns:
-            if not fn.endswith('.java'):
-                continue
-            sp = os.path.join(dirpath, fn)
-            rel = os.path.relpath(sp, SRC)
-            text = open(sp, encoding='utf-8', errors='replace').read()
-            m = RE_PKG.search(text)
-            pkg = m.group(1) if m else ''
-            imports = set(RE_IMPORT.findall(text))
-            fqcn = pkg + '.' + fn[:-5]
-            new_text = rewrite_file(text, pkg, imports, core, fn[:-5])
-            new_base = rename_index.get(fqcn, fn[:-5])
-            files += 1
-            renamed += (new_base != fn[:-5])
-            changed += (new_text != text)
-            dp = os.path.join(DST, os.path.dirname(rel), new_base + '.java')
-            os.makedirs(os.path.dirname(dp), exist_ok=True)
-            open(dp, 'w', encoding='utf-8', newline='\n').write(new_text)
-    print('files=%d renamed=%d content_changed=%d' % (files, renamed, changed))
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--apk", required=True)
+    ap.add_argument("--work", required=True, help="构建目录（编译产物、中间文件都放这里）")
+    ap.add_argument("--apktool", default=os.environ.get("APKTOOL_JAR", "apktool.jar"))
+    ap.add_argument("--jadx-cp", default=os.environ.get("JADX_CP", ""))
+    ap.add_argument("--java", default=os.environ.get("JAVA", "java"))
+    ap.add_argument("--skip-jadx", action="store_true")
+    args = ap.parse_args()
+
+    ren = os.path.join(args.work, "ren")
+    dec = os.path.join(ren, "dec")
+    out_apk = os.path.join(ren, "renamed.apk")
+    jadx_out = os.path.join(ren, "jadx_out")
+    os.makedirs(ren, exist_ok=True)
+
+    print("[1/6] apktool d")
+    shutil.rmtree(dec, ignore_errors=True)
+    run([args.java, "-Xmx3g", "-jar", args.apktool, "d", "-f", "-r", "-o", dec, args.apk])
+
+    print("[2/6] dex_rename（描述符级改名）")
+    import dex_rename
+    pairs = dex_rename.build_pairs()
+    total, touched = dex_rename.rename_smali_text(dec, pairs)
+    moved = 0
+    for name in sorted(os.listdir(dec)):
+        if name == "smali" or name.startswith("smali_classes"):
+            sub = os.path.join(dec, name)
+            if os.path.isdir(sub):
+                moved += dex_rename.rename_files(sub, pairs)
+    print(f"      descriptor hits = {total} in {touched} files, renamed files = {moved}")
+    if total == 0:
+        raise SystemExit("改名 0 处 —— 多半是 apk 已经改过名，或映射表对不上")
+
+    print("[3/6] apktool b")
+    run([args.java, "-Xmx3g", "-jar", args.apktool, "b", dec, "-o", out_apk])
+
+    if args.skip_jadx:
+        print("skip jadx")
+        return 0
+
+    print("[4/6] jadx")
+    shutil.rmtree(jadx_out, ignore_errors=True)
+    run([args.java, "-Xmx3g", "-cp", args.jadx_cp, "jadx.cli.JadxCLI",
+         "-d", jadx_out, "--no-res", "-j", "8", out_apk])
+
+    print("[5/6] 导入源码树")
+    dst = os.path.join(PROJ, "src", "main", "java")
+    shutil.rmtree(dst, ignore_errors=True)
+    shutil.copytree(os.path.join(jadx_out, "sources"), dst)
+
+    print("[6/6] 注释与缺陷修复")
+    for mod in ("annotate", "fix_jadx_defects"):
+        m = __import__(mod)
+        m.main()
+    print("done")
+    return 0
 
 
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -7,7 +7,7 @@
 import os, re, sys
 import rename_map as RM
 
-DST = r"C:/Users/SCH/WorkBuddy/2026-10-24-16-47-09/OcarPlay-Java-V1729/src/main/java"
+DST = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src", "main", "java")
 
 # 核心类的补充说明（在自动依据之外）
 EXTRA = {

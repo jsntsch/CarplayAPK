@@ -106,7 +106,7 @@ public class Poly1305 implements l3 {
         this.n = y4.f(bArr, 16 + 12);
     }
 
-    @Override // io.carplay.app.secured.BinaryPlist3
+    @Override // io.carplay.app.secured.l3
     public int a(byte[] bArr, int i) {
         if (i + 16 > bArr.length) {
             throw new x4("Output buffer is too short.");
@@ -158,7 +158,7 @@ public class Poly1305 implements l3 {
         return 16;
     }
 
-    @Override // io.carplay.app.secured.BinaryPlist3
+    @Override // io.carplay.app.secured.l3
     public void b(byte[] bArr, int i, int i2) {
         int i3 = 0;
         while (i2 > i3) {
@@ -173,7 +173,7 @@ public class Poly1305 implements l3 {
         }
     }
 
-    @Override // io.carplay.app.secured.BinaryPlist3
+    @Override // io.carplay.app.secured.l3
     public void c(CipherParameters cipherParameters) {
         if (!(cipherParameters instanceof KeyParameter)) {
             d0.b("Poly1305 requires a key.");
@@ -183,14 +183,14 @@ public class Poly1305 implements l3 {
         }
     }
 
-    @Override // io.carplay.app.secured.BinaryPlist3
+    @Override // io.carplay.app.secured.l3
     public void d(byte b) {
         byte[] bArr = this.a;
         bArr[0] = b;
         b(bArr, 0, 1);
     }
 
-    @Override // io.carplay.app.secured.BinaryPlist3
+    @Override // io.carplay.app.secured.l3
     public int e() {
         return 16;
     }

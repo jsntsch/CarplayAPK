@@ -32,14 +32,15 @@ import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
-import io.carplay.app.secured.a4;
-import io.carplay.app.secured.b4;
 import io.carplay.app.secured.BluetoothDialogRunnable;
 import io.carplay.app.secured.BluetoothSaveListener;
+import io.carplay.app.secured.ControlChannel;
+import io.carplay.app.secured.EcdsaSignature;
+import io.carplay.app.secured.Iap2Csm;
+import io.carplay.app.secured.a4;
+import io.carplay.app.secured.b4;
 import io.carplay.app.secured.c4;
 import io.carplay.app.secured.h5;
-import io.carplay.app.secured.EcdsaSignature;
-import io.carplay.app.secured.ControlChannel;
 import io.carplay.app.secured.m3;
 import io.carplay.app.secured.n3;
 import io.carplay.app.secured.o3;
@@ -55,7 +56,6 @@ import io.carplay.app.secured.v3;
 import io.carplay.app.secured.w1;
 import io.carplay.app.secured.w3;
 import io.carplay.app.secured.x3;
-import io.carplay.app.secured.Iap2Csm;
 import io.carplay.app.secured.y3;
 import io.carplay.app.secured.z3;
 import java.lang.invoke.VarHandle;
@@ -580,7 +580,7 @@ public final class MainActivity extends Activity {
             return;
         }
         long j = this.p;
-        if (!M0(AirplayServiceProbe)) {
+        if (!M0(j)) {
             o2("当前 WLAN 已变化，请重新选择连接方式。");
             return;
         }
@@ -731,7 +731,7 @@ public final class MainActivity extends Activity {
             m3Var.b = str;
             VarHandle.storeStoreFence();
             if (!stream.noneMatch(m3Var) && h2() && this.e) {
-                if (this.p == j && M0(AirplayServiceProbe)) {
+                if (this.p == j && M0(j)) {
                     F0(str);
                     return;
                 } else {
@@ -917,10 +917,10 @@ public final class MainActivity extends Activity {
         this.D.setEnabled((!zS0 || z || UpdateChecker.c()) ? false : true);
         this.H.setEnabled(zS0 && !UpdateChecker.c());
         this.v.setText(getSharedPreferences("release-verification", 0).getString("message", "版本校验已跳过（本地补丁版），可直接连接。"));
-        this.N.setEnabled(UpdateChecker);
-        this.O.setEnabled(UpdateChecker);
+        this.N.setEnabled(z);
+        this.O.setEnabled(z);
         Button button2 = this.P;
-        if (UpdateChecker) {
+        if (z) {
             str = "audio_state";
             str2 = "";
             obj = "needs_user";
@@ -954,14 +954,14 @@ public final class MainActivity extends Activity {
             }
             button5.setVisibility(i2);
             Button button6 = this.N;
-            if (UpdateChecker) {
+            if (z) {
                 i3 = 0;
             } else {
                 i3 = 8;
             }
             button6.setVisibility(i3);
             Button button7 = this.O;
-            if (UpdateChecker) {
+            if (z) {
                 i4 = 0;
             } else {
                 i4 = 8;
@@ -1022,7 +1022,7 @@ public final class MainActivity extends Activity {
         }
         button10.setEnabled(z2);
         Button button11 = this.J;
-        if (UpdateChecker) {
+        if (z) {
             z3 = true;
         } else {
             z3 = true;
@@ -1033,21 +1033,21 @@ public final class MainActivity extends Activity {
         this.L.setEnabled(z5);
         this.M.setEnabled(z5);
         Button button12 = this.J;
-        if (UpdateChecker) {
+        if (z) {
             i2 = 0;
         } else {
             i2 = 0;
         }
         button12.setVisibility(i2);
         Button button13 = this.N;
-        if (UpdateChecker) {
+        if (z) {
             i3 = 0;
         } else {
             i3 = 8;
         }
         button13.setVisibility(i3);
         Button button14 = this.O;
-        if (UpdateChecker) {
+        if (z) {
             i4 = 0;
         } else {
             i4 = 8;
@@ -1172,8 +1172,8 @@ public final class MainActivity extends Activity {
                 arrayList.add(str);
             }
         }
-        if (Build.VERSION.SDK_INT >= 37 && checkSelfPermission(AppLogger) != 0) {
-            arrayList.add(AppLogger);
+        if (Build.VERSION.SDK_INT >= 37 && checkSelfPermission(d0) != 0) {
+            arrayList.add(d0);
         }
         SharedPreferences sharedPreferences = getSharedPreferences("wireless-ui", 0);
         if (checkSelfPermission(e0) != 0 && !sharedPreferences.getBoolean("notification_permission_requested", false)) {
@@ -1273,8 +1273,8 @@ public final class MainActivity extends Activity {
     }
 
     private boolean h2() {
-        if (checkSelfPermission(b0) == 0 && checkSelfPermission(BluetoothRfcommProfiles) == 0) {
-            return Build.VERSION.SDK_INT < 37 || checkSelfPermission(AppLogger) == 0;
+        if (checkSelfPermission(b0) == 0 && checkSelfPermission(c0) == 0) {
+            return Build.VERSION.SDK_INT < 37 || checkSelfPermission(d0) == 0;
         }
         return false;
     }
@@ -1352,7 +1352,7 @@ public final class MainActivity extends Activity {
             VarHandle.storeStoreFence();
             o3 o3Var = null;
             String str2 = z ? "不同意并退出" : null;
-            if (UpdateChecker) {
+            if (z) {
                 o3Var = new o3(23);
                 o3Var.b = this;
                 VarHandle.storeStoreFence();
@@ -1739,11 +1739,11 @@ public final class MainActivity extends Activity {
         layoutParams.bottomMargin = mainActivity.O0(12);
         linearLayout.addView(editText, layoutParams);
         AlertDialog.Builder view = new AlertDialog.Builder(mainActivity).setView(linearLayout);
-        BluetoothSaveListener btsaveVar = new BluetoothSaveListener();
-        btsaveVar.a = mainActivity;
-        btsaveVar.b = editText;
+        BluetoothSaveListener bluetoothSaveListener = new BluetoothSaveListener();
+        bluetoothSaveListener.a = mainActivity;
+        bluetoothSaveListener.b = editText;
         VarHandle.storeStoreFence();
-        view.setPositiveButton("保存", btsaveVar).setNegativeButton("取消", (DialogInterface.OnClickListener) null).create().show();
+        view.setPositiveButton("保存", bluetoothSaveListener).setNegativeButton("取消", (DialogInterface.OnClickListener) null).create().show();
     }
 
     public static void v170SaveName(MainActivity mainActivity, EditText editText) {
@@ -1778,7 +1778,7 @@ public final class MainActivity extends Activity {
 
     /* JADX INFO: Access modifiers changed from: private */
     public /* synthetic */ void w1(boolean z) {
-        if (UpdateChecker) {
+        if (z) {
             if (getSharedPreferences(m0, 0).edit().putString("accepted_revision", n0).commit()) {
                 AppLogger.g(this, "USER_DISCLAIMER_ACCEPTED revision=2026-10-20-v1");
                 E0();
@@ -2021,10 +2021,10 @@ public final class MainActivity extends Activity {
         G0(linearLayout2, "本机蓝牙标识", o3Var14);
         LinearLayout linearLayout3 = this.y;
         if (linearLayout3 != null) {
-            BluetoothDialogRunnable btdlgVar = new BluetoothDialogRunnable();
-            btdlgVar.a = this;
+            BluetoothDialogRunnable bluetoothDialogRunnable = new BluetoothDialogRunnable();
+            bluetoothDialogRunnable.a = this;
             VarHandle.storeStoreFence();
-            G0(linearLayout3, "蓝牙名称", btdlgVar);
+            G0(linearLayout3, "蓝牙名称", bluetoothDialogRunnable);
         }
         CompoundButton compoundButtonE = m0.E(this, "画面自动适配", getSharedPreferences("wireless-ui", 0).getBoolean("auto_fit", true));
         this.Q = compoundButtonE;

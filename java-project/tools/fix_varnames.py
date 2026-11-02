@@ -8,7 +8,7 @@
 """
 import os
 
-DST = r"C:/Users/SCH/WorkBuddy/2026-10-24-16-47-09/OcarPlay-Java-V1729/src/main/java"
+DST = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src", "main", "java")
 
 REPL = [
     ("{@code sendSetup} 附近 —— 构造 SETUP 的 9 个键 + V1.7.28 加的 features 数组",

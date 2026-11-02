@@ -1,13 +1,14 @@
 package io.carplay.app.secured;
 
 import android.bluetooth.BluetoothDevice;
+import io.carplay.app.prototype.PairingSession;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /* JADX INFO: compiled from: CarPlus */
 /* JADX INFO: loaded from: classes.dex */
 public final /* synthetic */ class v6 implements Runnable {
     public final /* synthetic */ int a;
-    public /* synthetic */ io.carplay.app.prototype.PairingSession b;
+    public /* synthetic */ PairingSession b;
     public /* synthetic */ BluetoothDevice c;
     public /* synthetic */ AtomicInteger d;
 

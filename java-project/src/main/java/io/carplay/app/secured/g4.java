@@ -97,7 +97,7 @@ public interface g4 {
         }
     }
 
-    public enum AacAudioFormat {
+    public enum d {
         ANNEX_B,
         AVCC
     }
@@ -118,10 +118,10 @@ public interface g4 {
         private final String a;
         private final int b;
         private final int c;
-        private final AacAudioFormat d;
+        private final d d;
         private final byte[][] e;
 
-        public h(String str, int i, int i2, AacAudioFormat dVar, byte[][] bArr) {
+        public h(String str, int i, int i2, d dVar, byte[][] bArr) {
             if (!"video/avc".equals(str) && !"video/hevc".equals(str)) {
                 d0.b("unsupported video MIME");
                 throw null;
@@ -165,7 +165,7 @@ public interface g4 {
             int i = this.b;
             int i2 = this.c;
             String str = this.a;
-            AacAudioFormat dVar = this.d;
+            d dVar = this.d;
             byte[][] bArr = this.e;
             return Objects.hashCode(bArr) + ((Objects.hashCode(dVar) + w1.b(str, ((i * 31) + i2) * 31, 31)) * 31);
         }
@@ -174,7 +174,7 @@ public interface g4 {
             return this.c;
         }
 
-        public AacAudioFormat j() {
+        public d j() {
             return this.d;
         }
 

@@ -60,7 +60,7 @@ public final class p6 {
             long j2 = this.c;
             long j3 = this.d;
             long j4 = this.e;
-            return Long.hashCode(MfiSap) + w1.a(j3, w1.a(j2, w1.a(j, i * 31, 31), 31), 31);
+            return Long.hashCode(j4) + w1.a(j3, w1.a(j2, w1.a(j, i * 31, 31), 31), 31);
         }
 
         public long i() {

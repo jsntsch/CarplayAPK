@@ -16,8 +16,8 @@ public final class IccoaBridge {
     private long c;
     private long d;
     private long e;
-    private AacAudioFormat f;
-    private AacAudioFormat g;
+    private d f;
+    private d g;
     private String h;
     private g4.g i;
     private String j;
@@ -37,7 +37,7 @@ public final class IccoaBridge {
         MICROSECONDS
     }
 
-    public enum AacAudioFormat {
+    public enum d {
         UNCONFIGURED,
         CONFIGURING,
         CONFIGURED,
@@ -51,7 +51,7 @@ public final class IccoaBridge {
     }
 
     public IccoaBridge(g4 g4Var) {
-        AacAudioFormat dVar = AacAudioFormat.UNCONFIGURED;
+        d dVar = d.UNCONFIGURED;
         this.f = dVar;
         this.g = dVar;
         this.s = -1L;
@@ -173,14 +173,14 @@ public final class IccoaBridge {
 
     public synchronized void g(b bVar, int i, g4.e eVar, c cVar, boolean z) {
         q(bVar);
-        if (this.g != AacAudioFormat.UNCONFIGURED) {
+        if (this.g != d.UNCONFIGURED) {
             throw new IllegalStateException("audio epoch configuring/configured/invalid; new initialization required");
         }
         if (!s(i) || !"audio/pcm".equals(this.k) || eVar == null || eVar.n() == g4.a.MICROPHONE || eVar.m() != this.n || eVar.i() != this.o || cVar != c.MICROSECONDS || !z) {
             throw new IllegalStateException("ICCOA PCM/type/clock unverified");
         }
         eVar.l();
-        AacAudioFormat dVar = AacAudioFormat.CONFIGURING;
+        d dVar = d.CONFIGURING;
         this.g = dVar;
         try {
             this.a.a(bVar.b, this.i, eVar);
@@ -190,17 +190,17 @@ public final class IccoaBridge {
             }
             this.r = i;
             this.q = eVar;
-            this.g = AacAudioFormat.CONFIGURED;
+            this.g = d.CONFIGURED;
             if (this.b == bVar.b && this.e == bVar.c && this.g == dVar) {
                 this.q = null;
                 this.r = 0;
-                this.g = AacAudioFormat.INVALID;
+                this.g = d.INVALID;
             }
         } catch (Throwable th) {
-            if (this.b == bVar.b && this.e == bVar.c && this.g == AacAudioFormat.CONFIGURING) {
+            if (this.b == bVar.b && this.e == bVar.c && this.g == d.CONFIGURING) {
                 this.q = null;
                 this.r = 0;
-                this.g = AacAudioFormat.INVALID;
+                this.g = d.INVALID;
             }
             throw th;
         }
@@ -209,7 +209,7 @@ public final class IccoaBridge {
     public synchronized void h(g gVar, g4.h hVar, c cVar, boolean z) {
         try {
             r(gVar);
-            if (this.f != AacAudioFormat.UNCONFIGURED) {
+            if (this.f != d.UNCONFIGURED) {
                 throw new IllegalStateException("video epoch configuring/configured/invalid; new initialization required");
             }
             if (hVar == null || !hVar.k().equals(this.j) || hVar.l() != this.l || hVar.i() != this.m || cVar != c.MICROSECONDS || !z) {
@@ -224,7 +224,7 @@ public final class IccoaBridge {
                     throw new IllegalStateException("empty codec configuration");
                 }
             }
-            AacAudioFormat dVar = AacAudioFormat.CONFIGURING;
+            d dVar = d.CONFIGURING;
             this.f = dVar;
             try {
                 this.a.b(gVar.b, this.i, hVar);
@@ -233,15 +233,15 @@ public final class IccoaBridge {
                     throw new IllegalStateException("video configuration changed during callback");
                 }
                 this.p = hVar;
-                this.f = AacAudioFormat.CONFIGURED;
+                this.f = d.CONFIGURED;
                 if (this.b == gVar.b && this.d == gVar.c && this.f == dVar) {
                     this.p = null;
-                    this.f = AacAudioFormat.INVALID;
+                    this.f = d.INVALID;
                 }
             } catch (Throwable th) {
-                if (this.b == gVar.b && this.d == gVar.c && this.f == AacAudioFormat.CONFIGURING) {
+                if (this.b == gVar.b && this.d == gVar.c && this.f == d.CONFIGURING) {
                     this.p = null;
-                    this.f = AacAudioFormat.INVALID;
+                    this.f = d.INVALID;
                 }
                 throw th;
             }
@@ -265,7 +265,7 @@ public final class IccoaBridge {
             if (this.b == aVar.a.b && this.e == aVar.a.c) {
                 this.q = null;
                 this.r = 0;
-                this.g = AacAudioFormat.INVALID;
+                this.g = d.INVALID;
             }
             throw e2;
         }
@@ -285,7 +285,7 @@ public final class IccoaBridge {
         } catch (Error | RuntimeException e2) {
             if (this.b == fVar.a.b && this.d == fVar.a.c) {
                 this.p = null;
-                this.f = AacAudioFormat.INVALID;
+                this.f = d.INVALID;
             }
             throw e2;
         }
@@ -302,7 +302,7 @@ public final class IccoaBridge {
             this.p = null;
             this.q = null;
             this.r = 0;
-            AacAudioFormat dVar = AacAudioFormat.UNCONFIGURED;
+            d dVar = d.UNCONFIGURED;
             this.g = dVar;
             this.f = dVar;
             this.o = 0;
@@ -326,7 +326,7 @@ public final class IccoaBridge {
         this.e = jIncrementExact;
         this.q = null;
         this.k = null;
-        this.g = AacAudioFormat.UNCONFIGURED;
+        this.g = d.UNCONFIGURED;
         if (str2 == null || i < 4000 || i > 192000 || i2 < 1 || i2 > 8) {
             this.k = null;
             throw new IllegalArgumentException("ICCOA audio initialization");
@@ -346,7 +346,7 @@ public final class IccoaBridge {
             p(j, str);
             this.d = Math.incrementExact(this.d);
             this.p = null;
-            this.f = AacAudioFormat.UNCONFIGURED;
+            this.f = d.UNCONFIGURED;
             this.j = null;
             if ("video/avc".equals(str2) || "video/hevc".equals(str2)) {
                 if (i >= 1 && i2 >= 1 && i <= 8192 && i2 <= 8192) {
@@ -365,14 +365,14 @@ public final class IccoaBridge {
 
     public synchronized void t(b bVar) {
         q(bVar);
-        if (this.g != AacAudioFormat.CONFIGURED || this.q == null) {
+        if (this.g != d.CONFIGURED || this.q == null) {
             throw new IllegalStateException("audio epoch not configured");
         }
     }
 
     public synchronized void u(g gVar) {
         r(gVar);
-        if (this.f != AacAudioFormat.CONFIGURED || this.p == null) {
+        if (this.f != d.CONFIGURED || this.p == null) {
             throw new IllegalStateException("video epoch not configured");
         }
     }
@@ -427,8 +427,8 @@ public final class IccoaBridge {
         private final long c;
         private final String d;
 
-        private b(IccoaBridge b3Var, long j, String str, long j2) {
-            this.a = b3Var;
+        private b(IccoaBridge iccoaBridge, long j, String str, long j2) {
+            this.a = iccoaBridge;
             this.b = j;
             this.d = str;
             this.c = j2;
@@ -442,8 +442,8 @@ public final class IccoaBridge {
             return this.b;
         }
 
-        public /* synthetic */ b(IccoaBridge b3Var, long j, String str, long j2, int i) {
-            this(b3Var, j, str, j2);
+        public /* synthetic */ b(IccoaBridge iccoaBridge, long j, String str, long j2, int i) {
+            this(iccoaBridge, j, str, j2);
         }
     }
 
@@ -453,8 +453,8 @@ public final class IccoaBridge {
         private final long c;
         private final String d;
 
-        private g(IccoaBridge b3Var, long j, String str, long j2) {
-            this.a = b3Var;
+        private g(IccoaBridge iccoaBridge, long j, String str, long j2) {
+            this.a = iccoaBridge;
             this.b = j;
             this.d = str;
             this.c = j2;
@@ -468,8 +468,8 @@ public final class IccoaBridge {
             return this.b;
         }
 
-        public /* synthetic */ g(IccoaBridge b3Var, long j, String str, long j2, int i) {
-            this(b3Var, j, str, j2);
+        public /* synthetic */ g(IccoaBridge iccoaBridge, long j, String str, long j2, int i) {
+            this(iccoaBridge, j, str, j2);
         }
     }
 }

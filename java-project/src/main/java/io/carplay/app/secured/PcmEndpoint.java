@@ -14,8 +14,8 @@ import java.util.function.Supplier;
  * <p>命名依据：PCM endpoint / stale PCM endpoint
  */
 public final class PcmEndpoint {
-    private final AacAudioFormat a;
-    private final Supplier<io.carplay.app.secured.b.C0001b> b;
+    private final d a;
+    private final Supplier<io.carplay.app.secured.b.C0003b> b;
     private final Map<c, a> c = new LinkedHashMap();
     private long d;
     private long e;
@@ -28,11 +28,11 @@ public final class PcmEndpoint {
         private boolean d = true;
 
         /* JADX INFO: renamed from: io.carplay.app.secured.PcmEndpoint$a$a, reason: collision with other inner class name */
-        public class C0002a implements g4 {
+        public class C0001a implements g4 {
             final /* synthetic */ c a;
             final /* synthetic */ a b;
 
-            public C0002a(a aVar, c cVar) {
+            public C0001a(a aVar, c cVar) {
                 this.a = cVar;
                 this.b = aVar;
             }
@@ -66,7 +66,7 @@ public final class PcmEndpoint {
         public a(c cVar, long j, g4.g gVar) {
             this.a = cVar;
             this.b = j;
-            e4 e4Var = new e4(new C0002a(this, cVar), PcmEndpoint.this.b);
+            e4 e4Var = new e4(new C0001a(this, cVar), PcmEndpoint.this.b);
             this.c = e4Var;
             e4Var.g(j, gVar);
         }
@@ -198,7 +198,7 @@ public final class PcmEndpoint {
         }
     }
 
-    public interface AacAudioFormat {
+    public interface d {
         void a(c cVar, g4.c cVar2);
 
         void b(c cVar, long j, g4.g gVar, g4.e eVar);
@@ -206,7 +206,7 @@ public final class PcmEndpoint {
         void c(c cVar, long j, String str);
     }
 
-    public PcmEndpoint(AacAudioFormat dVar, Supplier<io.carplay.app.secured.b.C0001b> supplier) {
+    public PcmEndpoint(d dVar, Supplier<io.carplay.app.secured.b.C0003b> supplier) {
         if (dVar == null || supplier == null) {
             d0.b("target/evidence");
             throw null;

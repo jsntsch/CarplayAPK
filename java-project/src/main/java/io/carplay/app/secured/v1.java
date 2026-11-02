@@ -724,7 +724,7 @@ public final class v1 implements AutoCloseable {
         }
     }
 
-    public synchronized io.carplay.app.secured.b.C0001b x() {
+    public synchronized io.carplay.app.secured.b.C0003b x() {
         return this.b.m();
     }
 }

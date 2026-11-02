@@ -19,10 +19,10 @@ public final /* synthetic */ class s implements UpdateChecker.a, VideoCipher.b.c
         MainActivity mainActivity = (MainActivity) this.b;
         switch (i) {
             case 0:
-                mainActivity.U0(UpdateChecker);
+                mainActivity.U0(z);
                 break;
             default:
-                mainActivity.h1(UpdateChecker);
+                mainActivity.h1(z);
                 break;
         }
     }

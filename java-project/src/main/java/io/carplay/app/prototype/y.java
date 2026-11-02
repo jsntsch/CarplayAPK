@@ -13,6 +13,6 @@ public final /* synthetic */ class y implements Runnable {
         UpdateChecker.a aVar = this.a;
         boolean z = this.b;
         ExecutorService executorService = UpdateChecker.a;
-        aVar.a(UpdateChecker);
+        aVar.a(z);
     }
 }

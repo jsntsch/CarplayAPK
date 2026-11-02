@@ -1,5 +1,6 @@
 package io.carplay.app.secured;
 
+import io.carplay.app.prototype.AirplayServiceProbe;
 import java.net.InetAddress;
 import java.util.function.Predicate;
 
@@ -44,7 +45,7 @@ public final /* synthetic */ class w0 implements Predicate {
             case 13:
                 return AirPlaySession.W0(obj);
             case 14:
-                return io.carplay.app.prototype.AirplayServiceProbe.w((InetAddress) obj);
+                return AirplayServiceProbe.w((InetAddress) obj);
             case 15:
                 return x0.e(((Integer) obj).intValue());
             case Iap2Csm.e /* 16 */:

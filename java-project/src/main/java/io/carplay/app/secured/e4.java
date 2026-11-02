@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 /* JADX INFO: loaded from: classes.dex */
 public final class e4 implements g4 {
     private final g4 a;
-    private final Supplier<b.C0001b> b;
+    private final Supplier<b.C0003b> b;
     private long c;
     private long d;
     private g4.g e;
@@ -14,7 +14,7 @@ public final class e4 implements g4 {
     private long h = -1;
     private long i = -1;
 
-    public e4(g4 g4Var, Supplier<b.C0001b> supplier) {
+    public e4(g4 g4Var, Supplier<b.C0003b> supplier) {
         if (g4Var == null || supplier == null) {
             d0.b("sink/evidence");
             throw null;
@@ -30,8 +30,8 @@ public final class e4 implements g4 {
             return;
         }
         if (gVar == g4.g.NATIVE_CARPLUS) {
-            b.C0001b c0001b = this.b.get();
-            if (c0001b == null || c0001b.k() != j || !c0001b.t() || (z && !c0001b.r())) {
+            b.C0003b c0003b = this.b.get();
+            if (c0003b == null || c0003b.k() != j || !c0003b.t() || (z && !c0003b.r())) {
                 d0.d("native source not established");
             }
         }

@@ -39,7 +39,7 @@ public final class AudioRelay {
         private final AtomicLongArray a = new AtomicLongArray(r6.a.values().length);
 
         /* JADX INFO: renamed from: io.carplay.app.secured.AudioRelay$a$a, reason: collision with other inner class name */
-        public enum EnumC0004a {
+        public enum EnumC0000a {
             NO_TRANSPORT,
             NO_FORMAT,
             OUTPUT_NOT_READY,
@@ -54,7 +54,7 @@ public final class AudioRelay {
             Code decompiled incorrectly, please refer to instructions dump.
             To view partially-correct add '--show-bad-code' argument
         */
-        public void a(io.carplay.app.secured.r6.a r11, io.carplay.app.secured.AudioRelay.a.EnumC0004a r12, java.util.function.Consumer<java.lang.String> r13) {
+        public void a(io.carplay.app.secured.r6.a r11, io.carplay.app.secured.AudioRelay.a.EnumC0000a r12, java.util.function.Consumer<java.lang.String> r13) {
             /*
                 r10 = this;
                 int r1 = r11.ordinal()

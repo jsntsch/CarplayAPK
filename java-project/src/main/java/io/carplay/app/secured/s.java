@@ -532,7 +532,7 @@ public final class s {
                 it = it2;
             }
         }
-        arrayList.sort(Comparator.comparingLong(new p(i5)).thenComparingInt(new q(i5)).thenComparing(new r(i5)).thenComparingLong(new p(PcmEndpoint)));
+        arrayList.sort(Comparator.comparingLong(new p(i5)).thenComparingInt(new q(i5)).thenComparing(new r(i5)).thenComparingLong(new p(i4)));
         ArrayList arrayList2 = new ArrayList();
         int size = arrayList.size();
         int i26 = 0;

@@ -127,7 +127,9 @@ public final class BinaryPlist {
         /* JADX WARN: Type inference failed for: r3v6, types: [java.lang.String] */
         public Object b(int i, int i2) throws IOException {
             int i3;
-            ?? CopyOfRange = 0;
+            // jadx 类型推断失败：此槽位先后存 Boolean/BigInteger/Long/Double/
+            // String/Map/List/byte[]，只能用 Object 承载，取用时窄化。
+            Object CopyOfRange = 0;
             if (i < 0 || i >= this.b || i2 > 64) {
                 d0.c("plist reference/depth limit");
                 return null;
@@ -167,8 +169,8 @@ public final class BinaryPlist {
                 int i7 = 1 << iA;
                 c(i5, i7);
                 CopyOfRange = new BigInteger(1, Arrays.copyOfRange(this.a, i5, i7 + i5));
-                if (CopyOfRange.bitLength() < 64) {
-                    CopyOfRange = Long.valueOf(CopyOfRange.longValue());
+                if (((BigInteger) CopyOfRange).bitLength() < 64) {
+                    CopyOfRange = Long.valueOf(((BigInteger) CopyOfRange).longValue());
                 }
             } else if (i6 == 2) {
                 if (iA == 2) {
@@ -233,9 +235,9 @@ public final class BinaryPlist {
                                 Object objB = b(a((i11 * i12) + i5, i12, this.b - 1), i13);
                                 if (objB instanceof String) {
                                     String str = (String) objB;
-                                    if (!CopyOfRange.containsKey(str)) {
+                                    if (!((Map) CopyOfRange).containsKey(str)) {
                                         int i14 = this.d;
-                                        CopyOfRange.put(str, b(a(((i11 + iA) * i14) + i5, i14, this.b - 1), i13));
+                                        ((Map) CopyOfRange).put(str, b(a(((i11 + iA) * i14) + i5, i14, this.b - 1), i13));
                                         i11++;
                                     }
                                 }
@@ -251,7 +253,7 @@ public final class BinaryPlist {
                         CopyOfRange = new ArrayList();
                         while (i11 < iA) {
                             int i15 = this.d;
-                            CopyOfRange.add(b(a((i11 * i15) + i5, i15, this.b - 1), i2 + 1));
+                            ((List) CopyOfRange).add(b(a((i11 * i15) + i5, i15, this.b - 1), i2 + 1));
                             i11++;
                         }
                     } else {
@@ -484,7 +486,7 @@ public final class BinaryPlist {
             j(byteArrayOutputStream, iArr[i5], i4);
         }
         byteArrayOutputStream.writeBytes(new byte[6]);
-        byteArrayOutputStream.write(PcmEndpoint);
+        byteArrayOutputStream.write(i4);
         byteArrayOutputStream.write(i);
         j(byteArrayOutputStream, arrayList.size(), 8);
         j(byteArrayOutputStream, iC, 8);

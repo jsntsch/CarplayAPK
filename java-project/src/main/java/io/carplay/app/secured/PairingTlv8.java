@@ -159,9 +159,9 @@ public final class PairingTlv8 {
         this.b = cVar;
     }
 
-    private b c(EventChannel y5Var, String str, Map<Integer, byte[]> map) throws GeneralSecurityException, IOException {
+    private b c(EventChannel eventChannel, String str, Map<Integer, byte[]> map) throws GeneralSecurityException, IOException {
         d dVar = new d(k(map, 2, 16, 64), k(map, 3, 384, 384), str);
-        if (!MessageDigest.isEqual(k(e(y5Var, "/pair-setup", m(6, new byte[]{3}, 3, dVar.d, 4, dVar.b), 4), 4, 64, 64), dVar.c)) {
+        if (!MessageDigest.isEqual(k(e(eventChannel, "/pair-setup", m(6, new byte[]{3}, 3, dVar.d, 4, dVar.b), 4), 4, 64, 64), dVar.c)) {
             throw new GeneralSecurityException("Accessory SRP proof does not match");
         }
         byte[] bArrK = DerCodec.k(dVar.a, "Pair-Setup-Encrypt-Salt", "Pair-Setup-Encrypt-Info");
@@ -169,7 +169,7 @@ public final class PairingTlv8 {
         byte[] bArrM = m(1, bytes, 3, this.a.c, 10, DerCodec.g(this.a.b, DerCodec.d(DerCodec.k(dVar.a, "Pair-Setup-Controller-Sign-Salt", "Pair-Setup-Controller-Sign-Info"), bytes, this.a.c)));
         byte[] bArrN = DerCodec.n("PS-Msg05");
         byte[] bArr = d;
-        Map<Integer, byte[]> mapD = d(DerCodec.o(bArrK, DerCodec.n("PS-Msg06"), k(e(y5Var, "/pair-setup", m(6, new byte[]{5}, 5, DerCodec.s(bArrK, bArrN, bArrM, bArr)), 6), 5, 16, ControlRequestParser.a), bArr));
+        Map<Integer, byte[]> mapD = d(DerCodec.o(bArrK, DerCodec.n("PS-Msg06"), k(e(eventChannel, "/pair-setup", m(6, new byte[]{5}, 5, DerCodec.s(bArrK, bArrN, bArrM, bArr)), 6), 5, 16, ControlRequestParser.a), bArr));
         byte[] bArrK2 = k(mapD, 1, 1, 512);
         byte[] bArrK3 = k(mapD, 3, 32, 32);
         if (!DerCodec.h(bArrK3, DerCodec.d(DerCodec.k(dVar.a, "Pair-Setup-Accessory-Sign-Salt", "Pair-Setup-Accessory-Sign-Info"), bArrK2, bArrK3), k(mapD, 10, 64, 64))) {
@@ -227,8 +227,8 @@ public final class PairingTlv8 {
         return linkedHashMap2;
     }
 
-    private static Map<Integer, byte[]> e(EventChannel y5Var, String str, byte[] bArr, int i) throws IOException {
-        EventChannel.b bVarW = y5Var.w("POST", str, c, bArr, str.equals("/pair-verify") ? Map.of("X-Apple-HKP", "2", "X-Apple-PD", "1") : Map.of("X-Apple-HKP", "2"));
+    private static Map<Integer, byte[]> e(EventChannel eventChannel, String str, byte[] bArr, int i) throws IOException {
+        EventChannel.b bVarW = eventChannel.w("POST", str, c, bArr, str.equals("/pair-verify") ? Map.of("X-Apple-HKP", "2", "X-Apple-PD", "1") : Map.of("X-Apple-HKP", "2"));
         bVarW.g();
         Map<Integer, byte[]> mapD = d(bVarW.c());
         if (mapD.containsKey(7)) {
@@ -247,11 +247,11 @@ public final class PairingTlv8 {
         return new ByteArrayOutputStream();
     }
 
-    private e j(EventChannel y5Var, b bVar, boolean z) throws GeneralSecurityException, IOException {
+    private e j(EventChannel eventChannel, b bVar, boolean z) throws GeneralSecurityException, IOException {
         b bVarB;
         DerCodec.b bVarW = DerCodec.w();
         byte[] bArrB = bVarW.b();
-        Map<Integer, byte[]> mapE = e(y5Var, "/pair-verify", m(6, new byte[]{1}, 3, bArrB), 2);
+        Map<Integer, byte[]> mapE = e(eventChannel, "/pair-verify", m(6, new byte[]{1}, 3, bArrB), 2);
         byte[] bArrK = k(mapE, 3, 32, 32);
         byte[] bArrX = DerCodec.x(bVarW.a(), bArrK);
         byte[] bArrK2 = DerCodec.k(bArrX, "Pair-Verify-Encrypt-Salt", "Pair-Verify-Encrypt-Info");
@@ -274,10 +274,10 @@ public final class PairingTlv8 {
             throw new GeneralSecurityException("Accessory pair-verify identity or signature invalid");
         }
         byte[] bytes = this.a.a.getBytes(StandardCharsets.UTF_8);
-        e(y5Var, "/pair-verify", m(6, new byte[]{3}, 5, DerCodec.s(bArrK2, DerCodec.n("PV-Msg03"), m(1, bytes, 10, DerCodec.g(this.a.b, DerCodec.d(bArrB, bytes, bArrK))), bArr)), 4);
+        e(eventChannel, "/pair-verify", m(6, new byte[]{3}, 5, DerCodec.s(bArrK2, DerCodec.n("PV-Msg03"), m(1, bytes, 10, DerCodec.g(this.a.b, DerCodec.d(bArrB, bytes, bArrK))), bArr)), 4);
         byte[] bArrK6 = DerCodec.k(bArrX, "Control-Salt", "Control-Read-Encryption-Key");
         byte[] bArrK7 = DerCodec.k(bArrX, "Control-Salt", "Control-Write-Encryption-Key");
-        y5Var.i(bArrK6, bArrK7);
+        eventChannel.i(bArrK6, bArrK7);
         Arrays.fill(bArrK2, (byte) 0);
         return new e(bVarB, bArrX, bArrK6, bArrK7, z, 0);
     }
@@ -334,30 +334,30 @@ public final class PairingTlv8 {
         }
     }
 
-    public MfiSap.a b(EventChannel y5Var, String str) {
-        return MfiSap.a(y5Var, str);
+    public MfiSap.a b(EventChannel eventChannel, String str) {
+        return MfiSap.a(eventChannel, str);
     }
 
-    public b g(EventChannel y5Var, String str) {
+    public b g(EventChannel eventChannel, String str) {
         n(str);
-        return c(y5Var, str, e(y5Var, "/pair-setup", m(0, new byte[]{0}, 6, new byte[]{1}), 2));
+        return c(eventChannel, str, e(eventChannel, "/pair-setup", m(0, new byte[]{0}, 6, new byte[]{1}), 2));
     }
 
-    public e h(EventChannel y5Var, String str, String str2) {
+    public e h(EventChannel eventChannel, String str, String str2) {
         n(str);
         try {
-            return i(y5Var, c(y5Var, str, e(y5Var, "/pair-setup", m(0, new byte[]{0}, 6, new byte[]{1}), 2)));
+            return i(eventChannel, c(eventChannel, str, e(eventChannel, "/pair-setup", m(0, new byte[]{0}, 6, new byte[]{1}), 2)));
         } catch (EventChannel.d e2) {
             if (e2.a == 455 && "PAIR_SETUP".equals(e2.b) && str2 != null && str2.matches("[0-9a-fA-F]{64}") && this.b != null) {
-                return j(y5Var, null, true);
+                return j(eventChannel, null, true);
             }
             throw e2;
         }
     }
 
-    public e i(EventChannel y5Var, b bVar) throws GeneralSecurityException {
+    public e i(EventChannel eventChannel, b bVar) throws GeneralSecurityException {
         if (bVar != null) {
-            return j(y5Var, bVar, false);
+            return j(eventChannel, bVar, false);
         }
         throw new GeneralSecurityException("Pair-verify requires a previously authenticated accessory key");
     }

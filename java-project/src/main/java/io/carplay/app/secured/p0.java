@@ -3,6 +3,7 @@ package io.carplay.app.secured;
 import android.bluetooth.BluetoothServerSocket;
 import android.net.Uri;
 import io.carplay.app.prototype.LogActivity;
+import io.carplay.app.prototype.PairingSession;
 import io.carplay.app.prototype.WirelessCarPlayService;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -38,7 +39,7 @@ public final /* synthetic */ class p0 implements Runnable {
                 ((h5) this.b).p((BluetoothServerSocket) this.c);
                 break;
             case 5:
-                ((io.carplay.app.prototype.PairingSession) this.b).l1((AtomicInteger) this.c);
+                ((PairingSession) this.b).l1((AtomicInteger) this.c);
                 break;
             default:
                 ((WirelessCarPlayService) this.b).V1((u5.a) this.c);

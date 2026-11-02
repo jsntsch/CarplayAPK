@@ -13,13 +13,13 @@ public final /* synthetic */ class a0 implements Runnable {
     @Override // java.lang.Runnable
     public final void run() {
         int i = this.a;
-        BluetoothRfcommProfiles c0Var = this.b;
+        BluetoothRfcommProfiles bluetoothRfcommProfiles = this.b;
         switch (i) {
             case 0:
-                c0Var.l();
+                bluetoothRfcommProfiles.l();
                 break;
             default:
-                c0Var.p();
+                bluetoothRfcommProfiles.p();
                 break;
         }
     }

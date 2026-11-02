@@ -16,13 +16,13 @@ public final class u1 implements AutoCloseable {
     private final g4.e b;
     private final boolean c;
     private final o d;
-    private final Supplier<io.carplay.app.secured.b.C0001b> e;
+    private final Supplier<io.carplay.app.secured.b.C0003b> e;
     private boolean f;
     private boolean g;
     private boolean h;
     private long i;
 
-    public u1(long j2, g4.e eVar, boolean z, boolean z2, o oVar, Supplier<io.carplay.app.secured.b.C0001b> supplier) {
+    public u1(long j2, g4.e eVar, boolean z, boolean z2, o oVar, Supplier<io.carplay.app.secured.b.C0003b> supplier) {
         if (j2 < 1) {
             d0.b("session generation must be positive");
             throw null;
@@ -54,9 +54,9 @@ public final class u1 implements AutoCloseable {
 
     private void i() throws r5 {
         try {
-            Supplier<io.carplay.app.secured.b.C0001b> supplier = this.e;
-            io.carplay.app.secured.b.C0001b c0001b = supplier == null ? null : supplier.get();
-            if (c0001b != null && c0001b.k() == this.a && c0001b.t()) {
+            Supplier<io.carplay.app.secured.b.C0003b> supplier = this.e;
+            io.carplay.app.secured.b.C0003b c0003b = supplier == null ? null : supplier.get();
+            if (c0003b != null && c0003b.k() == this.a && c0003b.t()) {
                 return;
             }
             m();

@@ -10,8 +10,9 @@ import android.net.NetworkRequest;
 import android.os.Handler;
 import android.os.Looper;
 import io.carplay.app.secured.ControlChannel;
-import io.carplay.app.secured.w1;
 import io.carplay.app.secured.Iap2Csm;
+import io.carplay.app.secured.d0;
+import io.carplay.app.secured.w1;
 import java.io.IOException;
 import java.lang.invoke.VarHandle;
 import java.net.Inet6Address;
@@ -237,7 +238,7 @@ final class WifiNetworkMonitor implements AutoCloseable {
         this.p = pVar;
         this.q = new a();
         if (j < 1 || j > 90000) {
-            io.carplay.app.secured.AacAudioFormat0.b("current WLAN budget out of bounds");
+            d0.b("current WLAN budget out of bounds");
             throw null;
         }
         this.a = context;
@@ -403,14 +404,14 @@ final class WifiNetworkMonitor implements AutoCloseable {
             return;
         }
         InetAddress inetAddressM = CarPlayCtrlAdvertiser.m(linkProperties);
-        AirplayServiceProbe jVar = this.n;
+        AirplayServiceProbe airplayServiceProbe = this.n;
         if (inetAddressM == null) {
-            if (jVar != null) {
+            if (airplayServiceProbe != null) {
                 s("CURRENT_WIFI_LOCAL_ADDRESS_LOST");
             }
             return;
         }
-        if (jVar != null) {
+        if (airplayServiceProbe != null) {
             if (!p(linkProperties)) {
                 s("CURRENT_WIFI_LINK_CHANGED_RESTART_REQUIRED");
             }
@@ -420,9 +421,9 @@ final class WifiNetworkMonitor implements AutoCloseable {
         this.m = List.copyOf(linkProperties.getLinkAddresses());
         this.d.a("CURRENT_WIFI_DISCOVERING selected_network_only=true bootstrap_parameters_required=false authentication_required=true");
         try {
-            CarPlayCtrlAdvertiser hVar = new CarPlayCtrlAdvertiser(this.a, this.b, linkProperties, this.c, new b());
-            this.o = hVar;
-            hVar.q();
+            CarPlayCtrlAdvertiser carPlayCtrlAdvertiser = new CarPlayCtrlAdvertiser(this.a, this.b, linkProperties, this.c, new b());
+            this.o = carPlayCtrlAdvertiser;
+            carPlayCtrlAdvertiser.q();
         } catch (Exception unused) {
             this.d.a("CURRENT_WIFI_CTRL_ADVERTISEMENT_UNAVAILABLE discovery_retained=true");
         }
@@ -432,9 +433,9 @@ final class WifiNetworkMonitor implements AutoCloseable {
         k kVar = new k(1);
         kVar.b = this;
         VarHandle.storeStoreFence();
-        AirplayServiceProbe jVar2 = new AirplayServiceProbe(context, network, cVar, kVar);
-        this.n = jVar2;
-        jVar2.A();
+        AirplayServiceProbe airplayServiceProbe2 = new AirplayServiceProbe(context, network, cVar, kVar);
+        this.n = airplayServiceProbe2;
+        airplayServiceProbe2.A();
     }
 
     /* JADX INFO: Access modifiers changed from: private */
@@ -452,13 +453,13 @@ final class WifiNetworkMonitor implements AutoCloseable {
             }
             this.h = true;
             this.f.removeCallbacks(this.p);
-            AirplayServiceProbe jVar = this.n;
-            if (jVar != null) {
-                jVar.close();
+            AirplayServiceProbe airplayServiceProbe = this.n;
+            if (airplayServiceProbe != null) {
+                airplayServiceProbe.close();
             }
-            CarPlayCtrlAdvertiser hVar = this.o;
-            if (hVar != null) {
-                hVar.close();
+            CarPlayCtrlAdvertiser carPlayCtrlAdvertiser = this.o;
+            if (carPlayCtrlAdvertiser != null) {
+                carPlayCtrlAdvertiser.close();
             }
             if (this.k) {
                 this.k = false;

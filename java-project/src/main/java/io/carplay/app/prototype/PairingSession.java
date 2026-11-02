@@ -21,9 +21,11 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.ParcelUuid;
 import android.os.SystemClock;
-import io.carplay.app.secured.MfiCertificateVerifier;
-import io.carplay.app.secured.h5;
 import io.carplay.app.secured.ControlChannel;
+import io.carplay.app.secured.Iap2Csm;
+import io.carplay.app.secured.MfiCertificateVerifier;
+import io.carplay.app.secured.d0;
+import io.carplay.app.secured.h5;
 import io.carplay.app.secured.i5;
 import io.carplay.app.secured.s6;
 import io.carplay.app.secured.t6;
@@ -32,7 +34,6 @@ import io.carplay.app.secured.v6;
 import io.carplay.app.secured.w1;
 import io.carplay.app.secured.w6;
 import io.carplay.app.secured.x6;
-import io.carplay.app.secured.Iap2Csm;
 import io.carplay.app.secured.y6;
 import io.carplay.app.secured.z6;
 import java.io.Closeable;
@@ -77,8 +78,8 @@ public final class PairingSession implements AutoCloseable {
     private static final long W = 3000;
     private static final int X = 3;
     private LinkProperties A;
-    private io.carplay.app.prototype.AirplayServiceProbe B;
-    private io.carplay.app.prototype.CarPlayCtrlAdvertiser C;
+    private AirplayServiceProbe B;
+    private CarPlayCtrlAdvertiser C;
     private r.a D;
     private boolean E;
     private int F;
@@ -127,10 +128,10 @@ public final class PairingSession implements AutoCloseable {
         final /* synthetic */ OutputStream b;
         final /* synthetic */ PairingSession c;
 
-        public a(PairingSession r0Var, BluetoothSocket bluetoothSocket, OutputStream outputStream) {
+        public a(PairingSession pairingSession, BluetoothSocket bluetoothSocket, OutputStream outputStream) {
             this.a = bluetoothSocket;
             this.b = outputStream;
-            this.c = r0Var;
+            this.c = pairingSession;
         }
 
         /* JADX INFO: Access modifiers changed from: private */
@@ -167,7 +168,7 @@ public final class PairingSession implements AutoCloseable {
             if (!this.c.isClosed()) {
                 return this.c.b.c();
             }
-            io.carplay.app.secured.AacAudioFormat0.c("Cancelled");
+            d0.c("Cancelled");
             return null;
         }
 
@@ -219,8 +220,8 @@ public final class PairingSession implements AutoCloseable {
             synchronized (this.c.i) {
                 try {
                     if (this.c.D == null) {
-                        PairingSession r0Var = this.c;
-                        r0Var.D = r.a(r0Var.a, this.a.getRemoteDevice().getAddress());
+                        PairingSession pairingSession = this.c;
+                        pairingSession.D = r.a(pairingSession.a, this.a.getRemoteDevice().getAddress());
                     }
                     aVar = this.c.D;
                 } catch (Throwable th) {
@@ -234,7 +235,7 @@ public final class PairingSession implements AutoCloseable {
         @Override // io.carplay.app.secured.MfiCertificateVerifier.c
         public void write(byte[] bArr) throws IOException {
             if (this.c.isClosed()) {
-                io.carplay.app.secured.AacAudioFormat0.c("Cancelled");
+                d0.c("Cancelled");
                 return;
             }
             try {
@@ -250,9 +251,9 @@ public final class PairingSession implements AutoCloseable {
         final /* synthetic */ Network a;
         final /* synthetic */ PairingSession b;
 
-        public b(PairingSession r0Var, Network network) {
+        public b(PairingSession pairingSession, Network network) {
             this.a = network;
-            this.b = r0Var;
+            this.b = pairingSession;
         }
 
         @Override // android.net.ConnectivityManager.NetworkCallback
@@ -274,9 +275,9 @@ public final class PairingSession implements AutoCloseable {
         final /* synthetic */ long a;
         final /* synthetic */ PairingSession b;
 
-        public c(PairingSession r0Var, long j) {
+        public c(PairingSession pairingSession, long j) {
             this.a = j;
-            this.b = r0Var;
+            this.b = pairingSession;
         }
 
         @Override // android.net.ConnectivityManager.NetworkCallback
@@ -314,10 +315,10 @@ public final class PairingSession implements AutoCloseable {
         final /* synthetic */ h b;
         final /* synthetic */ PairingSession c;
 
-        public d(PairingSession r0Var, Network network, h hVar) {
+        public d(PairingSession pairingSession, Network network, h hVar) {
             this.a = network;
             this.b = hVar;
-            this.c = r0Var;
+            this.c = pairingSession;
         }
 
         @Override // android.net.ConnectivityManager.NetworkCallback
@@ -328,16 +329,16 @@ public final class PairingSession implements AutoCloseable {
                         if (this.c.v1(this)) {
                             String strU1 = networkCapabilities == null ? null : PairingSession.U1(networkCapabilities);
                             boolean z = (PairingSession.V1(networkCapabilities) && (strU1 == null || this.c.x.a.equals(strU1))) ? false : true;
-                            PairingSession r0Var = this.c;
-                            if (UpdateChecker) {
-                                r0Var.T1("WIFI_SELECTED_NETWORK_LOST");
+                            PairingSession pairingSession = this.c;
+                            if (z) {
+                                pairingSession.T1("WIFI_SELECTED_NETWORK_LOST");
                                 return;
                             }
-                            Handler handler = r0Var.h;
-                            PairingSession r0Var2 = this.c;
-                            Objects.requireNonNull(r0Var2);
+                            Handler handler = pairingSession.h;
+                            PairingSession pairingSession2 = this.c;
+                            Objects.requireNonNull(pairingSession2);
                             p pVar = new p(3);
-                            pVar.b = r0Var2;
+                            pVar.b = pairingSession2;
                             VarHandle.storeStoreFence();
                             handler.post(pVar);
                         }
@@ -359,10 +360,10 @@ public final class PairingSession implements AutoCloseable {
                             this.c.A = linkProperties;
                         }
                         Handler handler = this.c.h;
-                        PairingSession r0Var = this.c;
-                        Objects.requireNonNull(r0Var);
+                        PairingSession pairingSession = this.c;
+                        Objects.requireNonNull(pairingSession);
                         p pVar = new p(3);
-                        pVar.b = r0Var;
+                        pVar.b = pairingSession;
                         VarHandle.storeStoreFence();
                         handler.post(pVar);
                     }
@@ -382,13 +383,13 @@ public final class PairingSession implements AutoCloseable {
         }
     }
 
-    public class e implements io.carplay.app.prototype.CarPlayCtrlAdvertiser.b {
+    public class e implements CarPlayCtrlAdvertiser.b {
         final /* synthetic */ int a;
         final /* synthetic */ PairingSession b;
 
-        public e(PairingSession r0Var, int i) {
+        public e(PairingSession pairingSession, int i) {
             this.a = i;
-            this.b = r0Var;
+            this.b = pairingSession;
         }
 
         /* JADX INFO: Access modifiers changed from: private */
@@ -419,15 +420,15 @@ public final class PairingSession implements AutoCloseable {
         }
     }
 
-    public class f implements io.carplay.app.prototype.AirplayServiceProbe.d {
+    public class f implements AirplayServiceProbe.d {
         final /* synthetic */ Network a;
         final /* synthetic */ String b;
         final /* synthetic */ PairingSession c;
 
-        public f(PairingSession r0Var, Network network, String str) {
+        public f(PairingSession pairingSession, Network network, String str) {
             this.a = network;
             this.b = str;
-            this.c = r0Var;
+            this.c = pairingSession;
         }
 
         /* JADX INFO: Access modifiers changed from: private */
@@ -435,8 +436,8 @@ public final class PairingSession implements AutoCloseable {
             synchronized (this.c.i) {
                 try {
                     if (this.c.o1(network, str, InetAddresses.parseNumericAddress(str2))) {
-                        PairingSession r0Var = this.c;
-                        r0Var.y = Iap2Csm.l(r0Var.y, this.c.x, str2, i, str3);
+                        PairingSession pairingSession = this.c;
+                        pairingSession.y = Iap2Csm.l(pairingSession.y, this.c.x, str2, i, str3);
                         this.c.S1("CARPLAY_DISCOVERY_CANDIDATE_REQUIRES_FULL_PINNED_AUTHENTICATION");
                         this.c.H0();
                     }
@@ -503,10 +504,10 @@ public final class PairingSession implements AutoCloseable {
                     } catch (RuntimeException unused) {
                     }
                     Handler handler = PairingSession.this.h;
-                    PairingSession r0Var = PairingSession.this;
-                    Objects.requireNonNull(r0Var);
+                    PairingSession pairingSession = PairingSession.this;
+                    Objects.requireNonNull(pairingSession);
                     u6 u6Var = new u6(11);
-                    u6Var.b = r0Var;
+                    u6Var.b = pairingSession;
                     VarHandle.storeStoreFence();
                     handler.post(u6Var);
                     return true;
@@ -530,10 +531,10 @@ public final class PairingSession implements AutoCloseable {
                         PairingSession.this.D0();
                         PairingSession.this.S1("WIFI_EXISTING_TRANSPORT_AUTHENTICATED selected_network_retained=true");
                         Handler handler = PairingSession.this.h;
-                        PairingSession r0Var = PairingSession.this;
-                        Objects.requireNonNull(r0Var);
+                        PairingSession pairingSession = PairingSession.this;
+                        Objects.requireNonNull(pairingSession);
                         u6 u6Var = new u6(12);
-                        u6Var.b = r0Var;
+                        u6Var.b = pairingSession;
                         VarHandle.storeStoreFence();
                         handler.post(u6Var);
                         return true;
@@ -659,15 +660,15 @@ public final class PairingSession implements AutoCloseable {
         VarHandle.storeStoreFence();
         this.S = u6Var;
         if (z && (str == null || !str.matches("[a-fA-F0-9]{64}"))) {
-            io.carplay.app.secured.AacAudioFormat0.b("pinned startup order fallback required");
+            d0.b("pinned startup order fallback required");
             throw null;
         }
         if (z2 && !z) {
-            io.carplay.app.secured.AacAudioFormat0.b("bounded pinned startup recovery required");
+            d0.b("bounded pinned startup recovery required");
             throw null;
         }
         if (z3 && z) {
-            io.carplay.app.secured.AacAudioFormat0.b("initial link and authenticated startup recovery are exclusive");
+            d0.b("initial link and authenticated startup recovery are exclusive");
             throw null;
         }
         this.a = context.getApplicationContext();
@@ -869,7 +870,7 @@ public final class PairingSession implements AutoCloseable {
                 }
                 this.s = networkCallback;
                 try {
-                    if (UpdateChecker) {
+                    if (z) {
                         connectivityManager.requestNetwork(networkRequest, networkCallback, 45000);
                     } else {
                         connectivityManager.registerNetworkCallback(networkRequest, networkCallback);
@@ -1059,7 +1060,7 @@ public final class PairingSession implements AutoCloseable {
                                             this.l = null;
                                         }
                                         if (!this.u && this.m == null) {
-                                            if (UpdateChecker) {
+                                            if (z) {
                                                 str = "CONNECT";
                                             } else {
                                                 str = "CREATE";
@@ -1093,7 +1094,7 @@ public final class PairingSession implements AutoCloseable {
                                         this.l = null;
                                     }
                                     if (!this.u) {
-                                        if (UpdateChecker) {
+                                        if (z) {
                                             str = "CONNECT";
                                         } else {
                                             str = "CREATE";
@@ -1137,7 +1138,7 @@ public final class PairingSession implements AutoCloseable {
                 if (this.w) {
                     if (!this.x.d(gVar)) {
                     }
-                    if (UpdateChecker) {
+                    if (z) {
                         T1("WIFI_CONFIGURATION_CHANGED_RESTART_REQUIRED");
                         return;
                     }
@@ -1151,7 +1152,7 @@ public final class PairingSession implements AutoCloseable {
                 this.x = gVar;
                 this.b.t(gVar);
                 z = false;
-                if (UpdateChecker) {
+                if (z) {
                     T1("WIFI_CONFIGURATION_CHANGED_RESTART_REQUIRED");
                     return;
                 }
@@ -1201,10 +1202,10 @@ public final class PairingSession implements AutoCloseable {
                     this.s = null;
                     boolean z = this.Q;
                     this.Q = true;
-                    io.carplay.app.prototype.CarPlayCtrlAdvertiser hVar = this.C;
-                    if (hVar != null) {
+                    CarPlayCtrlAdvertiser carPlayCtrlAdvertiser = this.C;
+                    if (carPlayCtrlAdvertiser != null) {
                         this.G++;
-                        hVar.close();
+                        carPlayCtrlAdvertiser.close();
                         this.C = null;
                     }
                     try {
@@ -1278,10 +1279,10 @@ public final class PairingSession implements AutoCloseable {
                     Network network2 = this.z;
                     r.a aVar2 = this.D;
                     kVar2.e(network2, aVarL1, interfaceName2, aVar2 == null ? null : aVar2.g());
-                    io.carplay.app.prototype.AirplayServiceProbe jVar = this.B;
+                    AirplayServiceProbe airplayServiceProbe = this.B;
                     this.B = null;
-                    if (jVar != null) {
-                        jVar.close();
+                    if (airplayServiceProbe != null) {
+                        airplayServiceProbe.close();
                     }
                 }
             } catch (Throwable th) {
@@ -1599,12 +1600,12 @@ public final class PairingSession implements AutoCloseable {
         synchronized (this.i) {
             try {
                 if (!this.u && this.v && s1(this.A, null)) {
-                    io.carplay.app.prototype.CarPlayCtrlAdvertiser hVar = this.C;
-                    if (hVar == null || !hVar.n(this.z, this.A)) {
-                        io.carplay.app.prototype.CarPlayCtrlAdvertiser hVar2 = this.C;
-                        if (hVar2 != null) {
+                    CarPlayCtrlAdvertiser carPlayCtrlAdvertiser = this.C;
+                    if (carPlayCtrlAdvertiser == null || !carPlayCtrlAdvertiser.n(this.z, this.A)) {
+                        CarPlayCtrlAdvertiser carPlayCtrlAdvertiser2 = this.C;
+                        if (carPlayCtrlAdvertiser2 != null) {
                             this.G++;
-                            hVar2.close();
+                            carPlayCtrlAdvertiser2.close();
                             this.C = null;
                         }
                         r.a aVar = this.D;
@@ -1617,9 +1618,9 @@ public final class PairingSession implements AutoCloseable {
                             int i3 = this.G + 1;
                             this.G = i3;
                             try {
-                                io.carplay.app.prototype.CarPlayCtrlAdvertiser hVar3 = new io.carplay.app.prototype.CarPlayCtrlAdvertiser(this.a, this.z, this.A, this.D.g(), new e(this, i3));
-                                this.C = hVar3;
-                                hVar3.q();
+                                CarPlayCtrlAdvertiser carPlayCtrlAdvertiser3 = new CarPlayCtrlAdvertiser(this.a, this.z, this.A, this.D.g(), new e(this, i3));
+                                this.C = carPlayCtrlAdvertiser3;
+                                carPlayCtrlAdvertiser3.q();
                             } catch (IOException | RuntimeException e2) {
                                 S1("CTRL_SERVICE_UNAVAILABLE type=" + e2.getClass().getSimpleName() + " original_path_retained=true");
                             }
@@ -1659,9 +1660,9 @@ public final class PairingSession implements AutoCloseable {
                     x6Var.b = network;
                     x6Var.c = interfaceName;
                     VarHandle.storeStoreFence();
-                    io.carplay.app.prototype.AirplayServiceProbe jVar = new io.carplay.app.prototype.AirplayServiceProbe(context, network, fVar, x6Var);
-                    this.B = jVar;
-                    jVar.A();
+                    AirplayServiceProbe airplayServiceProbe = new AirplayServiceProbe(context, network, fVar, x6Var);
+                    this.B = airplayServiceProbe;
+                    airplayServiceProbe.A();
                 } catch (RuntimeException e2) {
                     S1("CARPLAY_DISCOVERY_UNAVAILABLE type=".concat(e2.getClass().getSimpleName()));
                 }
@@ -1699,7 +1700,7 @@ public final class PairingSession implements AutoCloseable {
 
     /* JADX INFO: Access modifiers changed from: private */
     public void T1(String str) {
-        BluetoothRfcommProfiles c0Var;
+        BluetoothRfcommProfiles bluetoothRfcommProfiles;
         ConnectivityManager connectivityManager;
         synchronized (this.i) {
             try {
@@ -1708,9 +1709,9 @@ public final class PairingSession implements AutoCloseable {
                 }
                 this.u = true;
                 this.I = null;
-                io.carplay.app.prototype.CarPlayCtrlAdvertiser hVar = this.C;
-                if (hVar != null) {
-                    hVar.close();
+                CarPlayCtrlAdvertiser carPlayCtrlAdvertiser = this.C;
+                if (carPlayCtrlAdvertiser != null) {
+                    carPlayCtrlAdvertiser.close();
                     this.C = null;
                 }
                 D0();
@@ -1733,14 +1734,14 @@ public final class PairingSession implements AutoCloseable {
                 this.m = null;
                 ConnectivityManager.NetworkCallback networkCallback = this.s;
                 this.s = null;
-                io.carplay.app.prototype.AirplayServiceProbe jVar = this.B;
+                AirplayServiceProbe airplayServiceProbe = this.B;
                 this.B = null;
                 synchronized (this.i) {
-                    c0Var = this.p;
+                    bluetoothRfcommProfiles = this.p;
                     this.p = null;
                 }
-                if (c0Var != null) {
-                    c0Var.close();
+                if (bluetoothRfcommProfiles != null) {
+                    bluetoothRfcommProfiles.close();
                 }
                 this.h.removeCallbacks(this.S);
                 Runnable runnable = this.L;
@@ -1748,8 +1749,8 @@ public final class PairingSession implements AutoCloseable {
                     this.h.removeCallbacks(runnable);
                 }
                 this.j.shutdownNow();
-                if (jVar != null) {
-                    jVar.close();
+                if (airplayServiceProbe != null) {
+                    airplayServiceProbe.close();
                 }
                 if (networkCallback != null && (connectivityManager = (ConnectivityManager) this.a.getSystemService(ConnectivityManager.class)) != null) {
                     try {
@@ -2011,7 +2012,7 @@ public final class PairingSession implements AutoCloseable {
                             y1();
                         }
                     }
-                    if (UpdateChecker) {
+                    if (z) {
                         T1("WIFI_SELECTED_NETWORK_REPLACED");
                         return;
                     }
@@ -2089,7 +2090,7 @@ public final class PairingSession implements AutoCloseable {
                     }
                     NetworkInterface byName = str == null ? null : NetworkInterface.getByName(str);
                     if (byName == null) {
-                        io.carplay.app.secured.AacAudioFormat0.c("CARPLAY_WIFI_INTERFACE_SCOPE_UNAVAILABLE");
+                        d0.c("CARPLAY_WIFI_INTERFACE_SCOPE_UNAVAILABLE");
                         return null;
                     }
                     numericAddress = Inet6Address.getByAddress((String) null, inet6Address.getAddress(), byName.getIndex());
@@ -2098,7 +2099,7 @@ public final class PairingSession implements AutoCloseable {
             if (!numericAddress.isAnyLocalAddress() && !numericAddress.isLoopbackAddress() && !numericAddress.isMulticastAddress()) {
                 return new InetSocketAddress(numericAddress, aVar.h);
             }
-            io.carplay.app.secured.AacAudioFormat0.c("CARPLAY_INVALID_PEER_ADDRESS_SCOPE");
+            d0.c("CARPLAY_INVALID_PEER_ADDRESS_SCOPE");
             return null;
         } catch (IllegalArgumentException e2) {
             throw new IOException("CARPLAY_INVALID_NUMERIC_ADDRESS", e2);
@@ -2179,15 +2180,15 @@ public final class PairingSession implements AutoCloseable {
                     t6 t6Var = new t6(i2);
                     t6Var.b = this;
                     VarHandle.storeStoreFence();
-                    BluetoothRfcommProfiles c0Var = new BluetoothRfcommProfiles(context, adapter, bluetoothDevice, executorService, t6Var);
+                    BluetoothRfcommProfiles bluetoothRfcommProfiles = new BluetoothRfcommProfiles(context, adapter, bluetoothDevice, executorService, t6Var);
                     synchronized (this.i) {
                         try {
                             if (this.u) {
-                                c0Var.close();
+                                bluetoothRfcommProfiles.close();
                                 return;
                             }
-                            this.p = c0Var;
-                            c0Var.u();
+                            this.p = bluetoothRfcommProfiles;
+                            bluetoothRfcommProfiles.u();
                             this.D = r.a(this.a, bluetoothDevice.getAddress());
                             boolean z2 = false;
                             boolean z3 = this.b.p() && this.b.k();
@@ -2266,7 +2267,7 @@ public final class PairingSession implements AutoCloseable {
                                                         VarHandle.storeStoreFence();
                                                         h5Var.i(address2, t6Var4, p0Var);
                                                     }
-                                                    if (UpdateChecker) {
+                                                    if (z) {
                                                         v6 v6Var = new v6(i2);
                                                         v6Var.b = this;
                                                         v6Var.c = bluetoothDevice;
@@ -2300,7 +2301,7 @@ public final class PairingSession implements AutoCloseable {
                                                 VarHandle.storeStoreFence();
                                                 h5Var.i(address3, t6Var5, p0Var2);
                                             }
-                                            if (UpdateChecker) {
+                                            if (z) {
                                                 v6 v6Var2 = new v6(i2);
                                                 v6Var2.b = this;
                                                 v6Var2.c = bluetoothDevice;
@@ -2441,7 +2442,7 @@ public final class PairingSession implements AutoCloseable {
             boolean z2 = this.d;
             Network network = this.a;
             String str = this.b;
-            return Objects.hashCode(str) + ((Objects.hashCode(network) + ((Boolean.hashCode(z2) + (Boolean.hashCode(UpdateChecker) * 31)) * 31)) * 31);
+            return Objects.hashCode(str) + ((Objects.hashCode(network) + ((Boolean.hashCode(z2) + (Boolean.hashCode(z) * 31)) * 31)) * 31);
         }
 
         public boolean i() {

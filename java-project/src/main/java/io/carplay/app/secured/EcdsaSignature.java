@@ -30,22 +30,22 @@ public final class EcdsaSignature {
         private final Object b;
         private final AtomicBoolean c = new AtomicBoolean();
 
-        private a(EcdsaSignature h6Var, Object obj) {
-            this.a = h6Var;
+        private a(EcdsaSignature ecdsaSignature, Object obj) {
+            this.a = ecdsaSignature;
             this.b = obj;
         }
 
-        public static a b(EcdsaSignature h6Var, String str, long j, long j2, String str2, long j3, String str3, String str4, String str5, Object obj) throws GeneralSecurityException, IOException {
-            if (obj == null || h6Var == null) {
+        public static a b(EcdsaSignature ecdsaSignature, String str, long j, long j2, String str2, long j3, String str3, String str4, String str5, Object obj) throws GeneralSecurityException, IOException {
+            if (obj == null || ecdsaSignature == null) {
                 return null;
             }
-            byte[] bArr = h6Var.a;
+            byte[] bArr = ecdsaSignature.a;
             try {
                 byte[] bArrDecode = Base64.getDecoder().decode(str);
                 Signature signature = Signature.getInstance("SHA256withECDSA");
                 signature.initVerify(KeyFactory.getInstance("EC").generatePublic(new X509EncodedKeySpec(bArrDecode)));
                 signature.update(bArr);
-                if (!signature.verify(h6Var.b)) {
+                if (!signature.verify(ecdsaSignature.b)) {
                     throw new GeneralSecurityException("release receipt signature invalid");
                 }
                 int i = -1;
@@ -117,7 +117,7 @@ public final class EcdsaSignature {
                     b bVar2 = bVarArr3[i8];
                     if (bVar2.a == j3) {
                         if (bVar2.b.equals(str3) && bVar2.c.equals(str4) && bVar2.d.equals(str5)) {
-                            return new a(h6Var, obj);
+                            return new a(ecdsaSignature, obj);
                         }
                         return null;
                     }
@@ -128,8 +128,8 @@ public final class EcdsaSignature {
             }
         }
 
-        public static a c(EcdsaSignature h6Var, Object obj) {
-            return new a(h6Var, obj);
+        public static a c(EcdsaSignature ecdsaSignature, Object obj) {
+            return new a(ecdsaSignature, obj);
         }
 
         public boolean a(Object obj) {
@@ -212,11 +212,11 @@ public final class EcdsaSignature {
         try {
             byte[] bArrDecode = Base64.getDecoder().decode(str);
             byte[] bArrDecode2 = Base64.getDecoder().decode(str2);
-            EcdsaSignature h6Var = new EcdsaSignature();
-            h6Var.a = bArrDecode;
-            h6Var.b = bArrDecode2;
+            EcdsaSignature ecdsaSignature = new EcdsaSignature();
+            ecdsaSignature.a = bArrDecode;
+            ecdsaSignature.b = bArrDecode2;
             VarHandle.storeStoreFence();
-            return h6Var;
+            return ecdsaSignature;
         } catch (IllegalArgumentException e) {
             throw new IOException("release receipt encoding", e);
         }

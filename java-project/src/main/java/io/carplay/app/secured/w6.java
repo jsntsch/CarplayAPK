@@ -1,12 +1,13 @@
 package io.carplay.app.secured;
 
 import android.bluetooth.BluetoothSocket;
+import io.carplay.app.prototype.PairingSession;
 
 /* JADX INFO: compiled from: CarPlus */
 /* JADX INFO: loaded from: classes.dex */
 public final /* synthetic */ class w6 implements Runnable {
     public final /* synthetic */ int a;
-    public /* synthetic */ io.carplay.app.prototype.PairingSession b;
+    public /* synthetic */ PairingSession b;
     public /* synthetic */ BluetoothSocket c;
 
     public /* synthetic */ w6(int i) {

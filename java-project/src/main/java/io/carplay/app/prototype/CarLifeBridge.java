@@ -83,7 +83,7 @@ public final class CarLifeBridge {
             long j2 = this.d;
             c cVar = this.a;
             String str = this.b;
-            return Objects.hashCode(str) + ((Objects.hashCode(cVar) + w1.a(j2, w1.a(j, Boolean.hashCode(UpdateChecker) * 31, 31), 31)) * 31);
+            return Objects.hashCode(str) + ((Objects.hashCode(cVar) + w1.a(j2, w1.a(j, Boolean.hashCode(z) * 31, 31), 31)) * 31);
         }
 
         public long i() {
@@ -454,7 +454,7 @@ public final class CarLifeBridge {
             long j = this.b;
             long j2 = this.c;
             String str = this.a;
-            return Objects.hashCode(str) + w1.a(j2, Long.hashCode(AirplayServiceProbe) * 31, 31);
+            return Objects.hashCode(str) + w1.a(j2, Long.hashCode(j) * 31, 31);
         }
 
         public String i() {
@@ -526,7 +526,7 @@ public final class CarLifeBridge {
             String str = this.e;
             List<e> list = this.f;
             List<e> list2 = this.g;
-            return Objects.hashCode(list2) + ((Objects.hashCode(list) + w1.b(str, w1.a(j4, w1.a(j3, w1.a(j2, Long.hashCode(AirplayServiceProbe) * 31, 31), 31), 31), 31)) * 31);
+            return Objects.hashCode(list2) + ((Objects.hashCode(list) + w1.b(str, w1.a(j4, w1.a(j3, w1.a(j2, Long.hashCode(j) * 31, 31), 31), 31), 31)) * 31);
         }
 
         public List<e> i() {

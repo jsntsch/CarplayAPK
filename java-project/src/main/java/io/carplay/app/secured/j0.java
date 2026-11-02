@@ -10,35 +10,35 @@ public final /* synthetic */ class j0 implements Iap2WirelessSetup.c, AirPlaySes
     public final /* synthetic */ int a;
     public /* synthetic */ AirPlaySession b;
 
-    public /* synthetic */ j0(AirPlaySession i0Var) {
+    public /* synthetic */ j0(AirPlaySession airPlaySession) {
         this.a = 3;
-        this.b = i0Var;
+        this.b = airPlaySession;
     }
 
     @Override // io.carplay.app.secured.EventChannel.c
     public byte[] a(EventChannel.b bVar) {
         int i = this.a;
-        AirPlaySession i0Var = this.b;
+        AirPlaySession airPlaySession = this.b;
         switch (i) {
             case 4:
-                return i0Var.S0(bVar);
+                return airPlaySession.S0(bVar);
             default:
-                return i0Var.O0(bVar);
+                return airPlaySession.O0(bVar);
         }
     }
 
     @Override // io.carplay.app.secured.Iap2WirelessSetup.c
     public Iap2WirelessSetup.b b() {
         int i = this.a;
-        AirPlaySession i0Var = this.b;
+        AirPlaySession airPlaySession = this.b;
         switch (i) {
             case 0:
-                return i0Var.x1();
+                return airPlaySession.x1();
             case p1.c /* 1 */:
             default:
-                return i0Var.z1();
+                return airPlaySession.z1();
             case 2:
-                return i0Var.z1();
+                return airPlaySession.z1();
         }
     }
 

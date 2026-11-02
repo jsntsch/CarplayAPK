@@ -7,6 +7,8 @@ import android.net.Network;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
 import io.carplay.app.secured.ControlChannel;
+import io.carplay.app.secured.ControlRequestParser;
+import io.carplay.app.secured.d0;
 import java.io.Closeable;
 import java.io.IOException;
 import java.lang.invoke.VarHandle;
@@ -76,16 +78,16 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
 
         @Override // android.net.nsd.NsdManager.RegistrationListener
         public void onServiceRegistered(NsdServiceInfo nsdServiceInfo) {
-            CarPlayCtrlAdvertiser hVar = CarPlayCtrlAdvertiser.this;
-            hVar.r("CTRL_SERVICE_LIVE name=" + nsdServiceInfo.getServiceName() + " port=" + nsdServiceInfo.getPort());
-            CarPlayCtrlAdvertiser.u(hVar, nsdServiceInfo);
-            CarPlayCtrlAdvertiser.v(hVar, nsdServiceInfo);
-            boolean z = hVar.i.get();
-            CarPlayCtrlAdvertiser hVar2 = CarPlayCtrlAdvertiser.this;
+            CarPlayCtrlAdvertiser carPlayCtrlAdvertiser = CarPlayCtrlAdvertiser.this;
+            carPlayCtrlAdvertiser.r("CTRL_SERVICE_LIVE name=" + nsdServiceInfo.getServiceName() + " port=" + nsdServiceInfo.getPort());
+            CarPlayCtrlAdvertiser.u(carPlayCtrlAdvertiser, nsdServiceInfo);
+            CarPlayCtrlAdvertiser.v(carPlayCtrlAdvertiser, nsdServiceInfo);
+            boolean z = carPlayCtrlAdvertiser.i.get();
+            CarPlayCtrlAdvertiser carPlayCtrlAdvertiser2 = CarPlayCtrlAdvertiser.this;
             if (z) {
-                hVar2.s();
+                carPlayCtrlAdvertiser2.s();
             } else {
-                hVar2.r("CTRL_SERVICE_REGISTERED network_scoped=true real_identifier=true values_logged=false");
+                carPlayCtrlAdvertiser2.r("CTRL_SERVICE_REGISTERED network_scoped=true real_identifier=true values_logged=false");
             }
         }
 
@@ -165,7 +167,7 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
         Objects.requireNonNull(cVar);
         this.h = cVar;
         if (inetAddressM == null || strA == null) {
-            io.carplay.app.secured.AacAudioFormat0.c("CTRL_SERVICE_VALID_LOCAL_IDENTITY_REQUIRED");
+            d0.c("CTRL_SERVICE_VALID_LOCAL_IDENTITY_REQUIRED");
             throw null;
         }
     }
@@ -201,7 +203,7 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
                                 socketAccept.setSoTimeout(1500);
                                 if (o(socketAccept.getInetAddress())) {
                                     try {
-                                        io.carplay.app.secured.ControlRequestParser.a aVarD = io.carplay.app.secured.ControlRequestParser.d(socketAccept.getInputStream());
+                                        ControlRequestParser.a aVarD = ControlRequestParser.d(socketAccept.getInputStream());
                                         synchronized (this.j) {
                                             if (this.i.get()) {
                                                 synchronized (this.j) {
@@ -210,7 +212,7 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
                                                 p(socketAccept);
                                                 return;
                                             }
-                                            socketAccept.getOutputStream().write(io.carplay.app.secured.ControlRequestParser.e(aVarD.i()));
+                                            socketAccept.getOutputStream().write(ControlRequestParser.e(aVarD.i()));
                                             socketAccept.getOutputStream().flush();
                                             if (aVarD.g() && (i = this.p) < 8) {
                                                 int i3 = i + 1;
@@ -224,7 +226,7 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
                                         }
                                     } catch (IOException unused) {
                                         if (!this.i.get()) {
-                                            socketAccept.getOutputStream().write(io.carplay.app.secured.ControlRequestParser.e(400));
+                                            socketAccept.getOutputStream().write(ControlRequestParser.e(400));
                                             socketAccept.getOutputStream().flush();
                                         }
                                         synchronized (this.j) {
@@ -274,7 +276,7 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
             if (inetAddress.isLinkLocalAddress()) {
                 NetworkInterface byName = NetworkInterface.getByName(linkProperties.getInterfaceName());
                 if (byName == null) {
-                    io.carplay.app.secured.AacAudioFormat0.c("CTRL_INTERFACE_SCOPE_UNAVAILABLE");
+                    d0.c("CTRL_INTERFACE_SCOPE_UNAVAILABLE");
                     return null;
                 }
                 inetAddress = Inet6Address.getByAddress((String) null, inet6Address.getAddress(), byName.getIndex());
@@ -363,24 +365,24 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
         return (inetAddress == null || inetAddress.isAnyLocalAddress() || inetAddress.isLoopbackAddress() || inetAddress.isMulticastAddress()) ? false : true;
     }
 
-    public static void u(CarPlayCtrlAdvertiser hVar, NsdServiceInfo nsdServiceInfo) {
-        NsdManager nsdManager = hVar.a;
-        z zVar = hVar.new z();
+    public static void u(CarPlayCtrlAdvertiser carPlayCtrlAdvertiser, NsdServiceInfo nsdServiceInfo) {
+        NsdManager nsdManager = carPlayCtrlAdvertiser.a;
+        z zVar = carPlayCtrlAdvertiser.new z();
         try {
             NsdServiceInfo nsdServiceInfo2 = new NsdServiceInfo();
             nsdServiceInfo2.setServiceName(nsdServiceInfo.getServiceName());
             nsdServiceInfo2.setServiceType(r);
             nsdServiceInfo2.setPort(nsdServiceInfo.getPort());
             nsdManager.resolveService(nsdServiceInfo2, zVar);
-            hVar.r("CTRL_RESOLVE_SUBMIT type=" + r + " name=" + nsdServiceInfo.getServiceName() + " port=" + nsdServiceInfo.getPort());
+            carPlayCtrlAdvertiser.r("CTRL_RESOLVE_SUBMIT type=" + r + " name=" + nsdServiceInfo.getServiceName() + " port=" + nsdServiceInfo.getPort());
         } catch (Throwable th) {
-            hVar.r("CTRL_RESOLVE_THROW msg=" + th.getMessage());
+            carPlayCtrlAdvertiser.r("CTRL_RESOLVE_THROW msg=" + th.getMessage());
         }
     }
 
-    public static void v(CarPlayCtrlAdvertiser hVar, NsdServiceInfo nsdServiceInfo) {
+    public static void v(CarPlayCtrlAdvertiser carPlayCtrlAdvertiser, NsdServiceInfo nsdServiceInfo) {
         try {
-            new Thread(hVar.new y(nsdServiceInfo)).start();
+            new Thread(carPlayCtrlAdvertiser.new y(nsdServiceInfo)).start();
         } catch (Throwable th) {
         }
     }

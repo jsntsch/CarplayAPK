@@ -8,10 +8,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import io.carplay.app.secured.EcdsaSignature;
+import io.carplay.app.secured.Iap2Csm;
 import io.carplay.app.secured.p1;
 import io.carplay.app.secured.w5;
 import io.carplay.app.secured.x5;
-import io.carplay.app.secured.Iap2Csm;
 import java.io.IOException;
 import java.lang.invoke.VarHandle;
 import java.net.ServerSocket;
@@ -38,7 +38,7 @@ public final /* synthetic */ class g implements Runnable {
     /* JADX WARN: Code duplicated, block: B:94:0x027c  */
     @Override // java.lang.Runnable
     public final void run() {
-        EcdsaSignature h6VarA;
+        EcdsaSignature ecdsaSignatureA;
         q qVarA;
         String strA;
         boolean z;
@@ -107,7 +107,7 @@ public final /* synthetic */ class g implements Runnable {
                                             strConcat = "HASH_OR_RELEASE_MISMATCH";
                                         } else {
                                             if (j >= w5Var.e) {
-                                                h6VarA = EcdsaSignature.a(jSONObject.getString("payload"), jSONObject.getString("signature"));
+                                                ecdsaSignatureA = EcdsaSignature.a(jSONObject.getString("payload"), jSONObject.getString("signature"));
                                                 try {
                                                     str = w5Var.h().a > j ? "有新版本 " + w5Var.h().b + "，请获取安装包后覆盖安装。" : "已是最新版本 · " + qVarA.b;
                                                     strConcat = "VERIFIED";
@@ -128,9 +128,9 @@ public final /* synthetic */ class g implements Runnable {
                                                         }
                                                         UpdateChecker.c = qVarA;
                                                         if (z2) {
-                                                            h6VarA = null;
+                                                            ecdsaSignatureA = null;
                                                         }
-                                                        UpdateChecker.d = h6VarA;
+                                                        UpdateChecker.d = ecdsaSignatureA;
                                                         if (z2) {
                                                             str3 = str2;
                                                         } else {
@@ -160,9 +160,9 @@ public final /* synthetic */ class g implements Runnable {
                                                         }
                                                         UpdateChecker.c = qVarA;
                                                         if (z2) {
-                                                            h6VarA = null;
+                                                            ecdsaSignatureA = null;
                                                         }
-                                                        UpdateChecker.d = h6VarA;
+                                                        UpdateChecker.d = ecdsaSignatureA;
                                                         if (z2) {
                                                             str3 = str2;
                                                         } else {
@@ -192,9 +192,9 @@ public final /* synthetic */ class g implements Runnable {
                                                         }
                                                         UpdateChecker.c = qVarA;
                                                         if (z2) {
-                                                            h6VarA = null;
+                                                            ecdsaSignatureA = null;
                                                         }
-                                                        UpdateChecker.d = h6VarA;
+                                                        UpdateChecker.d = ecdsaSignatureA;
                                                         if (z2) {
                                                             str3 = str2;
                                                         } else {
@@ -225,9 +225,9 @@ public final /* synthetic */ class g implements Runnable {
                                                         }
                                                         UpdateChecker.c = qVarA;
                                                         if (z2) {
-                                                            h6VarA = null;
+                                                            ecdsaSignatureA = null;
                                                         }
-                                                        UpdateChecker.d = h6VarA;
+                                                        UpdateChecker.d = ecdsaSignatureA;
                                                         if (z2) {
                                                             str3 = str2;
                                                         } else {
@@ -254,9 +254,9 @@ public final /* synthetic */ class g implements Runnable {
                                                     }
                                                     UpdateChecker.c = qVarA;
                                                     if (z2) {
-                                                        h6VarA = null;
+                                                        ecdsaSignatureA = null;
                                                     }
-                                                    UpdateChecker.d = h6VarA;
+                                                    UpdateChecker.d = ecdsaSignatureA;
                                                     if (z2) {
                                                         str3 = str2;
                                                     } else {
@@ -311,9 +311,9 @@ public final /* synthetic */ class g implements Runnable {
                                     }
                                     UpdateChecker.c = qVarA;
                                     if (z2) {
-                                        h6VarA = null;
+                                        ecdsaSignatureA = null;
                                     }
-                                    UpdateChecker.d = h6VarA;
+                                    UpdateChecker.d = ecdsaSignatureA;
                                     if (z2) {
                                         str3 = str2;
                                     } else {
@@ -337,15 +337,15 @@ public final /* synthetic */ class g implements Runnable {
                                     }
                                     UpdateChecker.c = qVarA;
                                     if (!z2) {
-                                        h6VarA = null;
+                                        ecdsaSignatureA = null;
                                     }
-                                    UpdateChecker.d = h6VarA;
+                                    UpdateChecker.d = ecdsaSignatureA;
                                     UpdateChecker.e = z2 ? str2 : null;
                                     x5Var2.a(z2, SystemClock.elapsedRealtime());
                                     throw th;
                                 }
                             }
-                            h6VarA = null;
+                            ecdsaSignatureA = null;
                             str2 = null;
                             qVarA = null;
                             z = false;
@@ -361,23 +361,23 @@ public final /* synthetic */ class g implements Runnable {
                         throw new q.a("installed identity read failed", e6);
                     }
                 } catch (q.a unused7) {
-                    h6VarA = null;
+                    ecdsaSignatureA = null;
                     qVarA = null;
                     strA = null;
                     z = false;
                 } catch (SecurityException unused8) {
-                    h6VarA = null;
+                    ecdsaSignatureA = null;
                     qVarA = null;
                     strA = null;
                     z = false;
                 } catch (GeneralSecurityException unused9) {
-                    h6VarA = null;
+                    ecdsaSignatureA = null;
                     qVarA = null;
                     strA = null;
                     z = false;
                 } catch (Exception e7) {
                     e = e7;
-                    h6VarA = null;
+                    ecdsaSignatureA = null;
                     qVarA = null;
                     strA = null;
                     z = false;

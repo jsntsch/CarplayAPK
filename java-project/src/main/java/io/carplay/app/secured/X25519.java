@@ -235,7 +235,7 @@ public abstract class X25519 {
     }
 
     public static void J() {
-        synchronized (BinaryPlist) {
+        synchronized (l) {
             try {
                 if (o == null) {
                     d[] dVarArr = new d[96];

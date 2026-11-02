@@ -35,15 +35,15 @@ public final class MfiSap {
     private MfiSap() {
     }
 
-    public static a a(EventChannel y5Var, String str) throws GeneralSecurityException {
+    public static a a(EventChannel eventChannel, String str) throws GeneralSecurityException {
         if (str == null || !str.matches("(?i)[0-9a-f]{64}")) {
             throw new c("MFiSAP requires the explicit 64-hex leaf certificate fingerprint from this accessory's normal pairing");
         }
-        if (!y5Var.n()) {
+        if (!eventChannel.n()) {
             throw new GeneralSecurityException("MFiSAP requires pair-verified encrypted RTSP control");
         }
         DerCodec.b bVarW = DerCodec.w();
-        EventChannel.b bVarV = y5Var.v("POST", "/auth-setup", "application/octet-stream", DerCodec.d(new byte[]{1}, bVarW.b()));
+        EventChannel.b bVarV = eventChannel.v("POST", "/auth-setup", "application/octet-stream", DerCodec.d(new byte[]{1}, bVarW.b()));
         bVarV.g();
         return f(bVarW.a(), bVarW.b(), bVarV.c(), str);
     }
@@ -92,13 +92,13 @@ public final class MfiSap {
         return 0;
     }
 
-    public static void e(EventChannel y5Var) {
-        if (!y5Var.n()) {
+    public static void e(EventChannel eventChannel) {
+        if (!eventChannel.n()) {
             throw new GeneralSecurityException("Candidate proof requires pair-verified encrypted control");
         }
         DerCodec.b bVarW = DerCodec.w();
         int i = 0;
-        EventChannel.b bVarV = y5Var.v("POST", "/auth-setup", "application/octet-stream", DerCodec.d(new byte[]{1}, bVarW.b()));
+        EventChannel.b bVarV = eventChannel.v("POST", "/auth-setup", "application/octet-stream", DerCodec.d(new byte[]{1}, bVarW.b()));
         bVarV.g();
         byte[] bArrC = bVarV.c();
         if (bArrC.length < 40 || bArrC.length > 65000) {

@@ -12,7 +12,7 @@ public final class l4 implements AutoCloseable {
     private final long a;
     private final l5 b;
     private final SecureRandom c;
-    private AacAudioFormat d;
+    private d d;
     private c e;
     private String f;
 
@@ -157,7 +157,7 @@ public final class l4 implements AutoCloseable {
         }
     }
 
-    public enum AacAudioFormat {
+    public enum d {
         WAITING_FOR_MD_INFO,
         READY,
         CHALLENGE_ISSUED,
@@ -169,7 +169,7 @@ public final class l4 implements AutoCloseable {
     }
 
     public l4(long j, l5 l5Var, SecureRandom secureRandom) {
-        this.d = AacAudioFormat.WAITING_FOR_MD_INFO;
+        this.d = d.WAITING_FOR_MD_INFO;
         if (j < 1) {
             d0.b("positive session generation required");
             throw null;
@@ -196,8 +196,8 @@ public final class l4 implements AutoCloseable {
         d0.f("stale or foreign generation");
     }
 
-    private void l(AacAudioFormat dVar) throws r5 {
-        AacAudioFormat dVar2 = this.d;
+    private void l(d dVar) throws r5 {
+        d dVar2 = this.d;
         if (dVar2 == dVar) {
             return;
         }
@@ -206,21 +206,21 @@ public final class l4 implements AutoCloseable {
 
     public synchronized void b(long j, int i2, byte[] bArr) {
         k(j);
-        l(AacAudioFormat.WAITING_FOR_MD_INFO);
+        l(d.WAITING_FOR_MD_INFO);
         if (i2 != 65540) {
             throw new r5("expected MD_INFO");
         }
         ProtobufReader.e eVarI = i(bArr);
         this.e = new c(eVarI.f(4, ""), eVarI.f(14, ""), eVarI.f(20, ""));
-        this.d = AacAudioFormat.READY;
+        this.d = d.READY;
     }
 
     public synchronized l5.a c(long j, int i2, byte[] bArr) {
         l5.a aVarF;
-        AacAudioFormat dVar;
+        d dVar;
         k(j);
-        l(AacAudioFormat.CHALLENGE_ISSUED);
-        this.d = AacAudioFormat.VERIFYING;
+        l(d.CHALLENGE_ISSUED);
+        this.d = d.VERIFYING;
         try {
             if (i2 != 65609) {
                 throw new r5("expected MD_AUTHEN_RESPONSE");
@@ -238,24 +238,24 @@ public final class l4 implements AutoCloseable {
                 aVarF = l5.a.REJECTED;
             }
             this.f = null;
-            if (this.d != AacAudioFormat.VERIFYING) {
+            if (this.d != d.VERIFYING) {
                 return l5.a.REJECTED;
             }
             int i3 = a.a[aVarF.ordinal()];
             if (i3 == 1) {
-                dVar = AacAudioFormat.VERIFIED;
+                dVar = d.VERIFIED;
             } else if (i3 == 2) {
-                dVar = AacAudioFormat.REJECTED;
+                dVar = d.REJECTED;
             } else {
                 if (i3 != 3) {
                     throw new IncompatibleClassChangeError();
                 }
-                dVar = AacAudioFormat.CONTRACT_UNAVAILABLE;
+                dVar = d.CONTRACT_UNAVAILABLE;
             }
             this.d = dVar;
             return aVarF;
         } catch (r5 e) {
-            this.d = AacAudioFormat.REJECTED;
+            this.d = d.REJECTED;
             this.f = null;
             throw e;
         }
@@ -263,7 +263,7 @@ public final class l4 implements AutoCloseable {
 
     @Override // java.lang.AutoCloseable
     public synchronized void close() {
-        this.d = AacAudioFormat.CLOSED;
+        this.d = d.CLOSED;
         this.f = null;
         this.e = null;
     }
@@ -277,7 +277,7 @@ public final class l4 implements AutoCloseable {
         byte[] bArrG;
         try {
             k(j);
-            l(AacAudioFormat.READY);
+            l(d.READY);
             byte[] bArr = new byte[16];
             this.c.nextBytes(bArr);
             char[] cArr = new char[32];
@@ -292,7 +292,7 @@ public final class l4 implements AutoCloseable {
             this.f = str2;
             str = "2.0;" + str2;
             bArrG = new ProtobufReader.a().e(1, str).g();
-            this.d = AacAudioFormat.CHALLENGE_ISSUED;
+            this.d = d.CHALLENGE_ISSUED;
         } catch (Throwable th) {
             throw th;
         }
@@ -303,7 +303,7 @@ public final class l4 implements AutoCloseable {
         return this.e;
     }
 
-    public synchronized AacAudioFormat m() {
+    public synchronized d m() {
         return this.d;
     }
 

@@ -60,7 +60,7 @@ public abstract class i2 {
     }
 
     public static void a(e2 e2Var) {
-        BinaryPlist.get().a(e2Var);
+        l.get().a(e2Var);
     }
 
     private static int b(int i2) {

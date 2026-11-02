@@ -111,14 +111,14 @@ public final class ControlChannel {
         return str;
     }
 
-    public static void Boot(EventChannel y5Var, AirPlaySession.n nVar) {
+    public static void Boot(EventChannel eventChannel, AirPlaySession.n nVar) {
         if (BOOTED) {
             nVar.a("V150_BOOT=SKIP_ALREADY");
             return;
         }
         BOOTED = true;
         try {
-            EventChannel.b bVarV = y5Var.v("POST", "/command", "application/x-apple-binary-plist", new byte[0]);
+            EventChannel.b bVarV = eventChannel.v("POST", "/command", "application/x-apple-binary-plist", new byte[0]);
             int iH = bVarV.h();
             byte[] bArrC = bVarV.c();
             int length = bArrC.length;

@@ -41,11 +41,11 @@ final class Iap2WirelessSetup implements AutoCloseable {
         final /* synthetic */ Consumer c;
         final /* synthetic */ Iap2WirelessSetup d;
 
-        public a(Iap2WirelessSetup e1Var, i5 i5Var, Supplier supplier, Consumer consumer) {
+        public a(Iap2WirelessSetup iap2WirelessSetup, i5 i5Var, Supplier supplier, Consumer consumer) {
             this.a = i5Var;
             this.b = supplier;
             this.c = consumer;
-            this.d = e1Var;
+            this.d = iap2WirelessSetup;
         }
 
         @Override // io.carplay.app.secured.MfiCertificateVerifier.c

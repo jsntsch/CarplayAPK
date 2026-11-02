@@ -67,14 +67,15 @@ public final class o5 implements l5, AutoCloseable {
         this.b = true;
     }
 
-    @Override // io.carplay.app.secured.BinaryPlist5
+    @Override // io.carplay.app.secured.l5
     public synchronized l5.a f(String str, String str2, String str3, String str4, String str5) {
         int i;
         if (!this.b && str != null && str2 != null && str3 != null && str4 != null && str5 != null && str5.length() == 32) {
-            for (0; i < str5.length(); i + 1) {
+            for (i = 0; i < str5.length(); i++) {
                 char cCharAt = str5.charAt(i);
-                i = ((cCharAt >= '0' && cCharAt <= '9') || (cCharAt >= 'a' && cCharAt <= 'f')) ? i + 1 : 0;
-                return l5.a.REJECTED;
+                if (!((cCharAt >= '0' && cCharAt <= '9') || (cCharAt >= 'a' && cCharAt <= 'f'))) {
+                    return l5.a.REJECTED;
+                }
             }
             String[] strArr = {str2, str3, str4, str};
             long length = this.a.length;

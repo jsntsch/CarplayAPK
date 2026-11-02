@@ -272,7 +272,7 @@ final class m0 {
         textView.setTextColor(a);
         textView.setLineSpacing(l(context, 3), 1.0f);
         textView.setIncludeFontPadding(false);
-        if (UpdateChecker) {
+        if (z) {
             textView.setTypeface(Typeface.DEFAULT, 1);
         }
         linearLayout.addView(textView, new LinearLayout.LayoutParams(-1, -2));
@@ -298,7 +298,7 @@ final class m0 {
         aVar.setText(str);
         aVar.setTextSize(14.0f);
         aVar.setTextColor(a);
-        aVar.setChecked(UpdateChecker);
+        aVar.setChecked(z);
         aVar.setMinHeight(l(context, 60));
         aVar.setClickable(true);
         aVar.setFocusable(true);
@@ -390,7 +390,7 @@ final class m0 {
         button.setMinHeight(l(context, 52));
         button.setMinimumHeight(l(context, 52));
         button.setPadding(l(context, 4), l(context, 10), l(context, 4), l(context, 10));
-        button.setSelected(UpdateChecker);
+        button.setSelected(z);
         button.setContentDescription(String.valueOf(button.getText()).concat(z ? "，当前页面" : "，切换页面"));
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, -2, 1.0f);
         layoutParams.setMargins(l(context, 4), l(context, 6), l(context, 4), l(context, 6));

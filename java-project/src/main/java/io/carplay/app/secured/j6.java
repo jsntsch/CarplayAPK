@@ -46,7 +46,7 @@ public interface j6 {
             boolean z5 = this.e;
             boolean z6 = this.f;
             boolean z7 = this.g;
-            return Boolean.hashCode(z7) + ((Boolean.hashCode(z6) + ((Boolean.hashCode(z5) + ((Boolean.hashCode(DerCodec) + ((Boolean.hashCode(z3) + ((Boolean.hashCode(z2) + (Boolean.hashCode(z) * 31)) * 31)) * 31)) * 31)) * 31)) * 31);
+            return Boolean.hashCode(z7) + ((Boolean.hashCode(z6) + ((Boolean.hashCode(z5) + ((Boolean.hashCode(z4) + ((Boolean.hashCode(z3) + ((Boolean.hashCode(z2) + (Boolean.hashCode(z) * 31)) * 31)) * 31)) * 31)) * 31)) * 31);
         }
 
         public boolean i() {

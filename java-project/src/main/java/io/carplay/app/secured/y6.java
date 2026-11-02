@@ -1,10 +1,12 @@
 package io.carplay.app.secured;
 
+import io.carplay.app.prototype.PairingSession;
+
 /* JADX INFO: compiled from: CarPlus */
 /* JADX INFO: loaded from: classes.dex */
 public final /* synthetic */ class y6 implements Runnable {
     public final /* synthetic */ int a;
-    public /* synthetic */ io.carplay.app.prototype.PairingSession b;
+    public /* synthetic */ PairingSession b;
     public /* synthetic */ String c;
 
     public /* synthetic */ y6(int i) {

@@ -206,23 +206,23 @@ public final class AirPlaySession implements AutoCloseable {
         final /* synthetic */ Iap2WirelessSetup b;
         final /* synthetic */ AirPlaySession c;
 
-        public b(AirPlaySession i0Var, Iap2WirelessSetup e1Var) {
-            this.b = e1Var;
-            this.c = i0Var;
+        public b(AirPlaySession airPlaySession, Iap2WirelessSetup iap2WirelessSetup) {
+            this.b = iap2WirelessSetup;
+            this.c = airPlaySession;
         }
 
         @Override // io.carplay.app.secured.Iap2WirelessSetup.b
         public synchronized void a(byte[] bArr) {
             this.c.q0();
-            EventChannel y5Var = this.c.a0;
-            if (this.a || bArr == null || bArr.length < 1 || bArr.length > 4096 || !this.c.D || y5Var == null || !y5Var.n()) {
+            EventChannel eventChannel = this.c.a0;
+            if (this.a || bArr == null || bArr.length < 1 || bArr.length > 4096 || !this.c.D || eventChannel == null || !eventChannel.n()) {
                 throw new IOException("control POST iAP unavailable");
             }
             byte[] bArrA = c1.a(AirPlaySession.R(this.c, Map.of("type", "iAPSendMessage", "params", Map.of("data", (byte[]) bArr.clone()))));
             if (bArrA != null) {
                 try {
                     synchronized (this.c.q0) {
-                        if (this.a || this.c.o.get() || !this.c.G0() || this.c.a0 != y5Var || !y5Var.n() || this.b == null || this.c.j != this.b || this.c.r0 != null || !this.b.s(bArrA)) {
+                        if (this.a || this.c.o.get() || !this.c.G0() || this.c.a0 != eventChannel || !eventChannel.n() || this.b == null || this.c.j != this.b || this.c.r0 != null || !this.b.s(bArrA)) {
                             throw new IOException("IAP2_POST_RESPONSE_OWNER");
                         }
                     }
@@ -389,7 +389,7 @@ public final class AirPlaySession implements AutoCloseable {
     }
 
     @FunctionalInterface
-    public interface BinaryPlist {
+    public interface l {
         void e(Map<String, Object> map);
     }
 
@@ -629,10 +629,10 @@ public final class AirPlaySession implements AutoCloseable {
         }
     }
 
-    private EventChannel HidChannel(EventChannel y5Var) {
+    private EventChannel HidChannel(EventChannel eventChannel) {
         this.n.a("HID_CHAN=CONTROL_FACTORY");
         j("HID_CHAN=CONTROL_FACTORY");
-        return y5Var;
+        return eventChannel;
     }
 
     private void HidFail() {
@@ -826,9 +826,9 @@ public final class AirPlaySession implements AutoCloseable {
     }
 
     /* JADX INFO: Access modifiers changed from: private */
-    public /* synthetic */ void J0(long j2, EventChannel y5Var, int i2, EventChannel.b bVar, Throwable th) {
+    public /* synthetic */ void J0(long j2, EventChannel eventChannel, int i2, EventChannel.b bVar, Throwable th) {
         j("CarPlayHID HID_CB: ACCEPTED branch reached");
-        if (j2 == this.I && d0(y5Var)) {
+        if (j2 == this.I && d0(eventChannel)) {
             j("CarPlayHID HID_CB: UNCONFIRMED branch reached");
             if (th != null) {
                 HidFail();
@@ -841,7 +841,7 @@ public final class AirPlaySession implements AutoCloseable {
                 byte[] bArrC = bVar.c();
                 j("CarPlayHID HID_CMD_RESP len=" + bArrC.length + " body=" + new String(bArrC));
                 if (bArrC.length > 0) {
-                    Map<String, Object> mapG1 = g1(io.carplay.app.secured.BinaryPlist.e(bArrC));
+                    Map<String, Object> mapG1 = g1(BinaryPlist.e(bArrC));
                     if (mapG1.containsKey("status") && !w2(mapG1.get("status"))) {
                         throw new IOException("HID_INPUT_MODE_APPLICATION_REJECTED");
                     }
@@ -900,7 +900,7 @@ public final class AirPlaySession implements AutoCloseable {
 
     private byte[] K1(String str) {
         J1(str);
-        return io.carplay.app.secured.BinaryPlist.f(Map.of("status", 1));
+        return BinaryPlist.f(Map.of("status", 1));
     }
 
     private void L1() {
@@ -982,7 +982,7 @@ public final class AirPlaySession implements AutoCloseable {
     /* JADX INFO: Access modifiers changed from: private */
     public /* synthetic */ void N0() {
         try {
-            EventChannel y5Var = this.b0;
+            EventChannel eventChannel = this.b0;
             n nVar = this.n;
             ControlChannel.BOOTED = false;
             ControlChannel.EVENT_READY = true;
@@ -992,11 +992,11 @@ public final class AirPlaySession implements AutoCloseable {
             } catch (Throwable th) {
                 this.n.a("V151_HID_CALL_FAILED type=" + th.getClass().getSimpleName());
             }
-            EventChannel y5Var2 = this.b0;
+            EventChannel eventChannel2 = this.b0;
             j0 j0Var = new j0(6);
             j0Var.b = this;
             VarHandle.storeStoreFence();
-            y5Var2.z(j0Var);
+            eventChannel2.z(j0Var);
         } catch (Exception e2) {
             v0("EVENT_CHANNEL_".concat(e2.getClass().getSimpleName()), e2);
         }
@@ -1030,13 +1030,13 @@ public final class AirPlaySession implements AutoCloseable {
         return s1(bVar, "EVENT");
     }
 
-    private void O1(EventChannel y5Var, String str) {
+    private void O1(EventChannel eventChannel, String str) {
         AtomicBoolean atomicBoolean = str.equals("HID_WAIT") ? this.O0 : this.P0;
-        if (y5Var == null || !atomicBoolean.compareAndSet(false, true)) {
+        if (eventChannel == null || !atomicBoolean.compareAndSet(false, true)) {
             return;
         }
         n nVar = this.n;
-        String str2 = "CARPLAY_EVENT_INPUT point=" + str + " " + y5Var.m();
+        String str2 = "CARPLAY_EVENT_INPUT point=" + str + " " + eventChannel.m();
         nVar.a(str2);
         j(str2);
     }
@@ -1115,8 +1115,8 @@ public final class AirPlaySession implements AutoCloseable {
         this.E0 = this.F0;
     }
 
-    public static /* bridge */ /* synthetic */ Object R(AirPlaySession i0Var, Map map) {
-        return i0Var.R1("POST", "/command", map);
+    public static /* bridge */ /* synthetic */ Object R(AirPlaySession airPlaySession, Map map) {
+        return airPlaySession.R1("POST", "/command", map);
     }
 
     /* JADX INFO: Access modifiers changed from: private */
@@ -1125,18 +1125,18 @@ public final class AirPlaySession implements AutoCloseable {
 
     private Object R1(String str, String str2, Map<String, Object> map) throws IOException {
         q0();
-        EventChannel y5Var = this.a0;
-        if (y5Var == null) {
+        EventChannel eventChannel = this.a0;
+        if (eventChannel == null) {
             d0.c("control not ready");
             return null;
         }
-        f4.a aVarD = (str.equals("POST") && str2.equals("/feedback") && y5Var.n()) ? this.C.d(System.nanoTime()) : null;
-        EventChannel.b bVarV = y5Var.v(str, str2, map != null ? l1 : null, map == null ? new byte[0] : io.carplay.app.secured.BinaryPlist.f(map));
+        f4.a aVarD = (str.equals("POST") && str2.equals("/feedback") && eventChannel.n()) ? this.C.d(System.nanoTime()) : null;
+        EventChannel.b bVarV = eventChannel.v(str, str2, map != null ? l1 : null, map == null ? new byte[0] : BinaryPlist.f(map));
         bVarV.g();
-        if (!this.o.get() && this.a0 == y5Var && y5Var.n() && this.C.c(aVarD)) {
+        if (!this.o.get() && this.a0 == eventChannel && eventChannel.n() && this.C.c(aVarD)) {
             this.n.a("RECOVERY_MEDIA_AUDIO_RELEASED fresh_idr=true later_peer_feedback=true");
         }
-        return bVarV.c().length == 0 ? Collections.EMPTY_MAP : io.carplay.app.secured.BinaryPlist.e(bVarV.c());
+        return bVarV.c().length == 0 ? Collections.EMPTY_MAP : BinaryPlist.e(bVarV.c());
     }
 
     /* JADX INFO: Access modifiers changed from: private */
@@ -1147,8 +1147,8 @@ public final class AirPlaySession implements AutoCloseable {
 
     private byte[] T(Map<String, Object> map) {
         String str;
-        EventChannel y5Var = this.a0;
-        if (!this.D || this.o.get() || y5Var == null || !y5Var.n() || (str = this.m) == null || !str.matches("[a-fA-F0-9]{64}")) {
+        EventChannel eventChannel = this.a0;
+        if (!this.D || this.o.get() || eventChannel == null || !eventChannel.n() || (str = this.m) == null || !str.matches("[a-fA-F0-9]{64}")) {
             return J1("REMOTE_TYPE_UNSUPPORTED");
         }
         try {
@@ -1180,7 +1180,7 @@ public final class AirPlaySession implements AutoCloseable {
                                         VarHandle.storeStoreFence();
                                         m0 m0Var = new m0();
                                         m0Var.a = this;
-                                        m0Var.b = y5Var;
+                                        m0Var.b = eventChannel;
                                         VarHandle.storeStoreFence();
                                         this.j = Iap2WirelessSetup.n(str2, j0Var, k0Var, i5Var, l0Var, m0Var);
                                         this.n.a("NETWORK_IAP_ROUTE_SELECTED transport=CONTROL_POST trigger=AUTHENTICATED_PEER fresh_link_proof_required=true");
@@ -1236,9 +1236,9 @@ public final class AirPlaySession implements AutoCloseable {
     }
 
     private static void U1(d dVar) throws IOException {
-        PcmQueue e5Var = dVar.m;
+        PcmQueue pcmQueue = dVar.m;
         try {
-            dVar.s = Math.addExact(dVar.s, Math.addExact(e5Var.o(e5Var.e() + 1), dVar.q));
+            dVar.s = Math.addExact(dVar.s, Math.addExact(pcmQueue.o(pcmQueue.e() + 1), dVar.q));
             if (dVar.o != null) {
                 T1(dVar);
             }
@@ -1305,7 +1305,7 @@ public final class AirPlaySession implements AutoCloseable {
             ControlChannel.PENDING = true;
             ControlChannel.LASTAT = SystemClock.uptimeMillis();
             q();
-            EventChannel y5Var = this.a0;
+            EventChannel eventChannel = this.a0;
             k("W: d0 gatePassed=", true);
             if (1 == 0) {
                 this.n.a("HID_INPUT_MODE_UNAVAILABLE reason=CONTROL_SESSION");
@@ -1324,7 +1324,7 @@ public final class AirPlaySession implements AutoCloseable {
                         h0 h0Var = new h0(i3);
                         h0Var.c = this;
                         h0Var.d = listZ0;
-                        h0Var.e = y5Var;
+                        h0Var.e = eventChannel;
                         h0Var.b = j2;
                         VarHandle.storeStoreFence();
                         j("CarPlayHID W: >>> EXECUTE send hidSetInputMode");
@@ -1789,8 +1789,8 @@ public final class AirPlaySession implements AutoCloseable {
         }
     }
 
-    private boolean d0(EventChannel y5Var) {
-        return y5Var != null && this.a0 == y5Var && y5Var.n();
+    private boolean d0(EventChannel eventChannel) {
+        return eventChannel != null && this.a0 == eventChannel && eventChannel.n();
     }
 
     /* JADX INFO: Access modifiers changed from: private */
@@ -1877,9 +1877,9 @@ public final class AirPlaySession implements AutoCloseable {
 
     /* JADX INFO: Access modifiers changed from: private */
     /* JADX INFO: renamed from: h1, reason: merged with bridge method [inline-methods] */
-    public boolean H0(EventChannel y5Var) {
+    public boolean H0(EventChannel eventChannel) {
         Socket socket = this.c0;
-        return !this.o.get() && this.a0 == y5Var && y5Var.n() && G0() && this.X && this.E && socket != null && !socket.isClosed() && this.c0 == socket && this.r0 == null;
+        return !this.o.get() && this.a0 == eventChannel && eventChannel.n() && G0() && this.X && this.E && socket != null && !socket.isClosed() && this.c0 == socket && this.r0 == null;
     }
 
     private void h2() {
@@ -3168,8 +3168,8 @@ public final class AirPlaySession implements AutoCloseable {
     }
 
     public synchronized boolean X1() {
-        EventChannel y5Var = this.a0;
-        if (G0() && this.D && y5Var != null) {
+        EventChannel eventChannel = this.a0;
+        if (G0() && this.D && eventChannel != null) {
             for (d dVar : this.O.values()) {
                 synchronized (dVar) {
                     if (!dVar.p || dVar.i.isClosed() || !dVar.x) {
@@ -3180,7 +3180,7 @@ public final class AirPlaySession implements AutoCloseable {
                         this.n.a("AUDIO_USER_REQUEST_PENDING coalesced=true playback_confirmed=false");
                         return true;
                     }
-                    if (!y5Var.n()) {
+                    if (!eventChannel.n()) {
                         return I1("SESSION_NOT_READY");
                     }
                     synchronized (this.t) {
@@ -3249,13 +3249,13 @@ public final class AirPlaySession implements AutoCloseable {
             this.l0 = false;
             O1(this.b0, "TRANSPORT_END");
             g0(this.s0);
-            Iap2WirelessSetup e1Var = this.r0;
-            if (e1Var != null) {
-                e1Var.close();
+            Iap2WirelessSetup iap2WirelessSetup = this.r0;
+            if (iap2WirelessSetup != null) {
+                iap2WirelessSetup.close();
             }
-            Iap2WirelessSetup e1Var2 = this.j;
-            if (e1Var2 != null) {
-                e1Var2.close();
+            Iap2WirelessSetup iap2WirelessSetup2 = this.j;
+            if (iap2WirelessSetup2 != null) {
+                iap2WirelessSetup2.close();
             }
             g0(this.d0);
             g0(this.c0);
@@ -3353,8 +3353,8 @@ public final class AirPlaySession implements AutoCloseable {
         c cVar;
         boolean zCompareAndSet;
         q0();
-        EventChannel y5Var = this.a0;
-        if (!this.D || y5Var == null || !y5Var.n()) {
+        EventChannel eventChannel = this.a0;
+        if (!this.D || eventChannel == null || !eventChannel.n()) {
             d0.c("SCREEN_MODES_BEFORE_AUTHENTICATED_SESSION");
             return;
         }
@@ -3397,7 +3397,7 @@ public final class AirPlaySession implements AutoCloseable {
     /* JADX WARN: Unreachable blocks removed: 1, instructions: 32 */
     public k i0() throws Throwable {
         int i2;
-        EventChannel y5Var;
+        EventChannel eventChannel;
         String str;
         String str2;
         synchronized (this) {
@@ -3413,9 +3413,9 @@ public final class AirPlaySession implements AutoCloseable {
         this.d0 = socketJ0;
         try {
             q0();
-            y5Var = new EventChannel(socketJ0, 15000);
+            eventChannel = new EventChannel(socketJ0, 15000);
             try {
-                this.a0 = y5Var;
+                this.a0 = eventChannel;
                 if (this.d0 == socketJ0) {
                     this.d0 = null;
                 }
@@ -3424,17 +3424,17 @@ public final class AirPlaySession implements AutoCloseable {
                 this.e0.bind(new InetSocketAddress(0));
                 this.b.a(this.e0);
                 this.e0.setSoTimeout(1000);
-                EventChannel y5Var2 = this.a0;
+                EventChannel eventChannel2 = this.a0;
                 int localPort = this.e0.getLocalPort();
                 j0 j0Var = new j0(i2);
                 j0Var.b = this;
                 VarHandle.storeStoreFence();
-                t0(y5Var2, localPort, j0Var);
+                t0(eventChannel2, localPort, j0Var);
                 boolean z = this.F;
-                SessionStateMachine b1Var = this.t;
+                SessionStateMachine sessionStateMachine = this.t;
                 if (!z) {
-                    b1Var.T();
-                } else if (!b1Var.M()) {
+                    sessionStateMachine.T();
+                } else if (!sessionStateMachine.M()) {
                     this.n.a("CARPLAY_INITIAL_SCREEN_CONSTRAINED");
                 }
                 P1("LOCAL_CLAIM");
@@ -3495,7 +3495,7 @@ public final class AirPlaySession implements AutoCloseable {
                 return this.o0;
             } catch (Throwable th2) {
                 th = th2;
-                if (y5Var == null) {
+                if (eventChannel == null) {
                     g0(socketJ0);
                 }
                 if (this.d0 == socketJ0) {
@@ -3505,7 +3505,7 @@ public final class AirPlaySession implements AutoCloseable {
             }
         } catch (Throwable th3) {
             th = th3;
-            y5Var = null;
+            eventChannel = null;
         }
     }
 
@@ -3576,8 +3576,8 @@ public final class AirPlaySession implements AutoCloseable {
 
     public void p1(r6.a aVar, int i2, int i3, int i4) throws Throwable {
         Throwable th;
-        AirPlaySession i0Var;
-        AirPlaySession i0Var2;
+        AirPlaySession airPlaySession;
+        AirPlaySession airPlaySession2;
         r6.a aVar2;
         Exception exc;
         synchronized (this.P.get(aVar)) {
@@ -3596,7 +3596,7 @@ public final class AirPlaySession implements AutoCloseable {
                                 }
                             } catch (Throwable th2) {
                                 th = th2;
-                                i0Var = this;
+                                airPlaySession = this;
                                 throw th;
                             }
                         }
@@ -3624,7 +3624,7 @@ public final class AirPlaySession implements AutoCloseable {
                                     hashSet.add(Integer.valueOf(it.next().g));
                                 } catch (Exception e3) {
                                     exc = e3;
-                                    i0Var2 = this;
+                                    airPlaySession2 = this;
                                     aVar2 = aVar;
                                 }
                             }
@@ -3647,50 +3647,50 @@ public final class AirPlaySession implements AutoCloseable {
                                             }
                                         } catch (Exception e4) {
                                             exc = e4;
-                                            i0Var2 = this;
+                                            airPlaySession2 = this;
                                         }
                                     }
                                     int i6 = i5 + 1;
-                                    i0Var2 = this;
+                                    airPlaySession2 = this;
                                     try {
-                                        i0Var2.w1(aVar2, i2, i3, i4, next);
-                                        if (aVar2 != r6.a.TTS) {
-                                            break;
-                                        }
-                                        i0Var2.F1(i0Var2.O.get(aVar2), true);
-                                        break;
-                                    } catch (EventChannel.d e5) {
                                         try {
-                                            if (!p1.k(PcmQueue.a)) {
+                                            airPlaySession2.w1(aVar2, i2, i3, i4, next);
+                                            if (aVar2 != r6.a.TTS) {
+                                                break;
+                                            }
+                                            airPlaySession2.F1(airPlaySession2.O.get(aVar2), true);
+                                            break;
+                                        } catch (EventChannel.d e5) {
+                                            if (!p1.k(e5.a)) {
                                                 throw e5;
                                             }
-                                            i0Var2.n.a("AUDIO_PLAN_REJECTED channel=" + String.valueOf(aVar2) + " attempt=" + i6 + " status=" + PcmQueue.a);
+                                            airPlaySession2.n.a("AUDIO_PLAN_REJECTED channel=" + String.valueOf(aVar2) + " attempt=" + i6 + " status=" + e5.a);
                                             i5 = i6;
                                             eVar = e5;
-                                            this = i0Var2;
-                                        } catch (Exception e6) {
-                                            e = e6;
+                                            this = airPlaySession2;
                                         }
+                                    } catch (Exception e6) {
+                                        e = e6;
                                     }
                                     exc = e;
                                     if (u5.l(exc)) {
-                                        i0Var2.v0("AUDIO_SETUP_" + exc.getClass().getSimpleName(), exc);
+                                        airPlaySession2.v0("AUDIO_SETUP_" + exc.getClass().getSimpleName(), exc);
                                     }
-                                    i0Var2.n.a("AUDIO_ROUTE_UNAVAILABLE channel=" + String.valueOf(aVar2) + " session_retained=" + i0Var2.G0());
+                                    airPlaySession2.n.a("AUDIO_ROUTE_UNAVAILABLE channel=" + String.valueOf(aVar2) + " session_retained=" + airPlaySession2.G0());
                                     throw new e("CarPlay audio route unavailable", exc);
                                 }
                             } catch (Exception e7) {
                                 e = e7;
-                                i0Var2 = this;
+                                airPlaySession2 = this;
                             }
                         } catch (Exception e8) {
                             e = e8;
-                            i0Var2 = this;
+                            airPlaySession2 = this;
                             aVar2 = aVar;
                         }
                     } catch (Throwable th3) {
                         th = th3;
-                        i0Var = this;
+                        airPlaySession = this;
                         th = th;
                         throw th;
                     }
@@ -3733,8 +3733,8 @@ public final class AirPlaySession implements AutoCloseable {
         return s1(bVar, "UNSPECIFIED");
     }
 
-    public Map<String, Object> s0(EventChannel y5Var, int i2) {
-        return t0(y5Var, i2, new d0());
+    public Map<String, Object> s0(EventChannel eventChannel, int i2) {
+        return t0(eventChannel, i2, new d0());
     }
 
     public void s2(q6 q6Var) {
@@ -3764,24 +3764,24 @@ public final class AirPlaySession implements AutoCloseable {
         }
     }
 
-    public Map<String, Object> t0(EventChannel y5Var, int i2, BinaryPlist lVar) throws IOException {
+    public Map<String, Object> t0(EventChannel eventChannel, int i2, l lVar) throws IOException {
         q0();
         synchronized (this.f) {
             this.g = true;
-            this.a0 = y5Var;
+            this.a0 = eventChannel;
         }
         j0 j0Var = new j0(4);
         j0Var.b = this;
         VarHandle.storeStoreFence();
-        y5Var.x(j0Var);
+        eventChannel.x(j0Var);
         j0 j0Var2 = new j0(5);
         j0Var2.b = this;
         VarHandle.storeStoreFence();
-        y5Var.y(j0Var2);
+        eventChannel.y(j0Var2);
         this.n.a("CARPLAY_PAIRING_PROFILE hkp=2 verify_pd=1");
         this.n.a("CARPLAY_PAIR_SETUP");
-        PairingTlv8 l1Var = new PairingTlv8(this.k, this.l);
-        PairingTlv8.e eVarH = l1Var.h(this.a0, "3939", this.m);
+        PairingTlv8 pairingTlv8 = new PairingTlv8(this.k, this.l);
+        PairingTlv8.e eVarH = pairingTlv8.h(this.a0, "3939", this.m);
         this.m0 = eVarH.e();
         this.n.a("CARPLAY_PAIR_VERIFIED");
         if (eVarH.d()) {
@@ -3790,7 +3790,7 @@ public final class AirPlaySession implements AutoCloseable {
         if (this.h1 && this.m == null) {
             MfiSap.e(this.a0);
         }
-        MfiSap.a aVarB = l1Var.b(this.a0, this.m);
+        MfiSap.a aVarB = pairingTlv8.b(this.a0, this.m);
         if (eVarH.d()) {
             this.p0 = eVarH.c();
         }

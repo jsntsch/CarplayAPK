@@ -74,7 +74,7 @@ public final class PcmConverter implements AutoCloseable {
                 double d3 = ((double) ((i8 - i9) + 1)) - d;
                 double d4 = 2.0d * dMin;
                 double d5 = d4 * d3;
-                if (Math.abs(PcmConverter) < 1.0E-12d) {
+                if (Math.abs(d5) < 1.0E-12d) {
                     dSin = 1.0d;
                 } else {
                     double d6 = d5 * 3.141592653589793d;

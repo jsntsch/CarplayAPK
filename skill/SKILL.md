@@ -497,3 +497,32 @@ aapt2 dump badging "$APK" | grep -i versionName          # 版本号是新值
 unzip -p "$APK" classes.dex | grep -c "<你的插桩字符串>"    # 改动真的进去了
 adb shell dumpsys package <pkg> | grep versionCode       # 手机上装的是新包
 ```
+
+## 反编译工程的构建与验收（铁律 63~65）
+
+读 Java 源码工程（`D:/VSCode/CarplayAPK/java-project`）或用它对照 APK 时，
+这三条决定结论可不可信。
+
+**铁律 63：类名要改在 dex 层，不要在 Java 文本层做正则。**
+jadx 的 Java 里同一个简单名有多种含义：`secured/l.java` 是顶层类，
+`secured/i0.java` 里还有一个 `public interface l`。同一个 `l` 在 i0 内部指嵌套
+接口、在 d0 里写作 `i0.l`、在别的类里写作 `l.foo()` 指顶层类。正则分不清，
+改错一处就是编译错误。正确做法：`apktool d` 出 smali，把
+`Lio/carplay/app/secured/i0;` 换成 `L.../AirPlaySession;`（边界用 `(?=[;$])`），
+`apktool b` 重打包后再 jadx。描述符带分号，不存在遮蔽，也不存在泛型位置遗漏。
+
+**铁律 64：javac 有语法错误时不进语义分析，「错误数对齐」是假验收。**
+曾经用「原始 jadx 20 处语法错误 = 生成工程 20 处」当验收，看着完美。实际是：
+只要有语法错误，javac 就停止，语义错误一条都不报。把 20 处修完才露出 426 条。
+验收必须分开看：语法错误数、语义错误数，且以「原始产物修掉同类缺陷后」为基线。
+
+**铁律 65：证明改名没改变行为，靠 smali 逐字节比对，不靠编译通过。**
+编译通过只说明类型能对上，说明不了「还是原来那个 APK」。做法：
+把原始 smali 树按同一映射正向改名（内容+路径），与改名后的树逐字节比。
+V1.7.29 的结果：565 个文件、4 285 方法、2 525 字段、4 881 字符串常量，
+14 584 处描述符替换，181 个文件改名，**565/565 完全一致**。
+
+**顺带一条判读**：`long/boolean/int cannot be dereferenced` + `cannot find symbol`
+成片出现时，多半不是代码逻辑问题，而是 R8 混淆后字段名与类名撞成同一个字母
+（JLS 6.5.2 遮蔽规则：`c.BLOCKED` 里的 `c` 先当变量解释）。这类错误在原始
+jadx 产物里同样存在，别记到改名头上。

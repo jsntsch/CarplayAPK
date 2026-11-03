@@ -12,7 +12,7 @@ public final class z {
     private final int a;
     private final LinkedHashMap<String, a> b = new LinkedHashMap<>(16, 0.75f, true);
 
-    public static final class a extends w1 {
+    public static final class a extends ProtoMessageBase {
         private final String a;
         private final int b;
         private final int c;
@@ -71,7 +71,7 @@ public final class z {
             Object[] objArr = {this.a, Integer.valueOf(this.b), Integer.valueOf(this.c), Integer.valueOf(this.d), Integer.valueOf(this.e)};
             String[] strArrSplit = "a;b;c;d;e".length() == 0 ? new String[0] : "a;b;c;d;e".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(a.class, sb, "[");
+            ProtoMessageBase.f(a.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");
@@ -93,10 +93,10 @@ public final class z {
         this.a = i;
     }
 
-    private static boolean c(x xVar, a aVar) {
+    private static boolean c(HidCapabilities xVar, a aVar) {
         int i = 0;
         if (xVar.o().equals(aVar.g()) && xVar.E()) {
-            Stream<x.c> stream = xVar.i().stream();
+            Stream<HidCapabilities.c> stream = xVar.i().stream();
             y yVar = new y(i);
             yVar.b = aVar;
             VarHandle.storeStoreFence();
@@ -112,14 +112,14 @@ public final class z {
     }
 
     /* JADX INFO: Access modifiers changed from: private */
-    public static /* synthetic */ boolean f(a aVar, x.c cVar) {
+    public static /* synthetic */ boolean f(a aVar, HidCapabilities.c cVar) {
         return cVar.q() == 110 && cVar.k() && cVar.v() == aVar.k() && cVar.j() == aVar.i() && cVar.n() >= aVar.h();
     }
 
-    public synchronized x.c b(x xVar, int i) throws IOException {
+    public synchronized HidCapabilities.c b(HidCapabilities xVar, int i) throws IOException {
         Optional<a> optionalD = d(xVar, i);
         if (optionalD.isPresent()) {
-            for (x.c cVar : xVar.i()) {
+            for (HidCapabilities.c cVar : xVar.i()) {
                 if (cVar.q() == 110 && cVar.k() && cVar.v() == optionalD.get().k() && cVar.j() == optionalD.get().i() && cVar.n() >= optionalD.get().h()) {
                     return cVar;
                 }
@@ -128,7 +128,7 @@ public final class z {
         return xVar.L();
     }
 
-    public synchronized Optional<a> d(x xVar, int i) {
+    public synchronized Optional<a> d(HidCapabilities xVar, int i) {
         a aVar;
         try {
             aVar = this.b.get(e(xVar.o(), i));
@@ -138,7 +138,7 @@ public final class z {
         return (aVar == null || !c(xVar, aVar)) ? Optional.empty() : Optional.of(aVar);
     }
 
-    public synchronized a g(x xVar, int i, x.c cVar, int i2) throws IOException {
+    public synchronized a g(HidCapabilities xVar, int i, HidCapabilities.c cVar, int i2) throws IOException {
         a aVar;
         aVar = new a(xVar.o(), i, cVar.v(), cVar.j(), i2);
         if (!c(xVar, aVar) || !xVar.i().contains(cVar)) {

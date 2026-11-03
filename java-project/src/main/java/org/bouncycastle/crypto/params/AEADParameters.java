@@ -1,6 +1,6 @@
 package org.bouncycastle.crypto.params;
 
-import io.carplay.app.secured.e;
+import io.carplay.app.secured.ByteArrays;
 import org.bouncycastle.crypto.CipherParameters;
 
 /* JADX INFO: loaded from: classes.dex */
@@ -12,13 +12,13 @@ public class AEADParameters implements CipherParameters {
 
     public AEADParameters(KeyParameter keyParameter, int i, byte[] bArr, byte[] bArr2) {
         this.key = keyParameter;
-        this.nonce = e.d(bArr);
+        this.nonce = ByteArrays.d(bArr);
         this.macSize = i;
-        this.associatedText = e.d(bArr2);
+        this.associatedText = ByteArrays.d(bArr2);
     }
 
     public byte[] getAssociatedText() {
-        return e.d(this.associatedText);
+        return ByteArrays.d(this.associatedText);
     }
 
     public KeyParameter getKey() {
@@ -30,7 +30,7 @@ public class AEADParameters implements CipherParameters {
     }
 
     public byte[] getNonce() {
-        return e.d(this.nonce);
+        return ByteArrays.d(this.nonce);
     }
 
     public AEADParameters(KeyParameter keyParameter, int i, byte[] bArr) {

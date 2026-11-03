@@ -14,7 +14,7 @@ public final /* synthetic */ class p0 implements Runnable {
     public /* synthetic */ Object b;
     public /* synthetic */ Object c;
 
-    public /* synthetic */ p0(t4 t4Var, r6.a aVar) {
+    public /* synthetic */ p0(DisplaySession t4Var, CarLifeFrame.a aVar) {
         this.a = 3;
         this.b = t4Var;
         this.c = aVar;
@@ -24,25 +24,25 @@ public final /* synthetic */ class p0 implements Runnable {
     public final void run() {
         switch (this.a) {
             case 0:
-                ((AirPlaySession) this.b).e1((i1) this.c);
+                ((AirPlaySession) this.b).e1((KeepAliveServer) this.c);
                 break;
-            case p1.c /* 1 */:
+            case AudioSourceCapability.c /* 1 */:
                 ((AirPlaySession) this.b).Z0((AirPlaySession.d) this.c);
                 break;
             case 2:
                 ((LogActivity) this.b).j((Uri) this.c);
                 break;
-            case p1.d /* 3 */:
-                ((t4) this.b).E((r6.a) this.c);
+            case AudioSourceCapability.d /* 3 */:
+                ((DisplaySession) this.b).E((CarLifeFrame.a) this.c);
                 break;
             case 4:
-                ((h5) this.b).p((BluetoothServerSocket) this.c);
+                ((BtDiscovery) this.b).p((BluetoothServerSocket) this.c);
                 break;
             case 5:
                 ((PairingSession) this.b).l1((AtomicInteger) this.c);
                 break;
             default:
-                ((WirelessCarPlayService) this.b).V1((u5.a) this.c);
+                ((WirelessCarPlayService) this.b).V1((Iap2Bootstrap.a) this.c);
                 break;
         }
     }

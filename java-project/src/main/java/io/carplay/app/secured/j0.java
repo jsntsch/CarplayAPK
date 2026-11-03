@@ -6,7 +6,7 @@ import java.util.Map;
 
 /* JADX INFO: compiled from: CarPlus */
 /* JADX INFO: loaded from: classes.dex */
-public final /* synthetic */ class j0 implements Iap2WirelessSetup.c, AirPlaySession.l, EventChannel.c, EventChannel.e, VideoCipher.b.a {
+public final /* synthetic */ class j0 implements Iap2WirelessSetup.c, AirPlaySession.l, EventChannel.c, EventChannel.e, VideoCipher.AvcVideoInput.a {
     public final /* synthetic */ int a;
     public /* synthetic */ AirPlaySession b;
 
@@ -34,7 +34,7 @@ public final /* synthetic */ class j0 implements Iap2WirelessSetup.c, AirPlaySes
         switch (i) {
             case 0:
                 return airPlaySession.x1();
-            case p1.c /* 1 */:
+            case AudioSourceCapability.c /* 1 */:
             default:
                 return airPlaySession.z1();
             case 2:
@@ -47,7 +47,7 @@ public final /* synthetic */ class j0 implements Iap2WirelessSetup.c, AirPlaySes
         this.b.T0(str, i, i2, z);
     }
 
-    @Override // io.carplay.app.secured.VideoCipher.b.a
+    @Override // io.carplay.app.secured.VideoCipher.AvcVideoInput.a
     public void d(List list) throws IOException {
         this.b.Y0(list);
     }

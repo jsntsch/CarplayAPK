@@ -1,7 +1,7 @@
 package org.bouncycastle.crypto.params;
 
 import io.carplay.app.secured.SyntheticRefs;
-import io.carplay.app.secured.e;
+import io.carplay.app.secured.ByteArrays;
 import org.bouncycastle.crypto.CipherParameters;
 
 /* JADX INFO: loaded from: classes.dex */
@@ -32,7 +32,7 @@ public class KeyParameter implements CipherParameters {
 
     public KeyParameter reverse() {
         KeyParameter keyParameter = new KeyParameter(this.key.length);
-        e.h(this.key, keyParameter.key);
+        ByteArrays.h(this.key, keyParameter.key);
         return keyParameter;
     }
 

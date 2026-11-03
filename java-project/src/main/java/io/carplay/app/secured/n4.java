@@ -21,7 +21,7 @@ public abstract class n4 {
         for (int i2 = i - 1; i2 >= 0; i2--) {
             int i3 = iArr[i2];
             if (i3 != 0) {
-                return d3.a(i3) + (i2 * 32);
+                return IntegerMath.a(i3) + (i2 * 32);
             }
         }
         return 0;

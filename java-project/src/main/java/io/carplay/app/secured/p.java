@@ -17,13 +17,13 @@ public final /* synthetic */ class p implements ToLongFunction {
     public final long applyAsLong(Object obj) {
         switch (this.a) {
             case 0:
-                return ((s.a) obj).i();
-            case p1.c /* 1 */:
-                return s.o((s.a) obj);
+                return ((AudioCapabilities.a) obj).i();
+            case AudioSourceCapability.c /* 1 */:
+                return AudioCapabilities.o((AudioCapabilities.a) obj);
             case 2:
-                return x.y((x.c) obj);
-            case p1.d /* 3 */:
-                return p1.i((x.c) obj);
+                return HidCapabilities.y((HidCapabilities.c) obj);
+            case AudioSourceCapability.d /* 3 */:
+                return AudioSourceCapability.i((HidCapabilities.c) obj);
             default:
                 return WirelessCarPlayService.a2((Map.Entry) obj);
         }

@@ -1,7 +1,7 @@
 package io.carplay.app.prototype;
 
 import android.app.Activity;
-import io.carplay.app.secured.p1;
+import io.carplay.app.secured.AudioSourceCapability;
 import java.util.concurrent.ExecutorService;
 
 /* JADX INFO: compiled from: CarPlus */
@@ -22,7 +22,7 @@ public final /* synthetic */ class p implements Runnable {
             case 0:
                 ((WifiNetworkMonitor) obj).u();
                 break;
-            case p1.c /* 1 */:
+            case AudioSourceCapability.c /* 1 */:
                 ExecutorService executorService = UpdateChecker.a;
                 ((UpdateChecker.a) obj).a(false);
                 break;

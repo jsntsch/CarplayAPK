@@ -79,14 +79,14 @@ public final class EcdsaSignature {
                         int i4 = length;
                         if (strArrSplit2[1].matches("[0-9]+(\\.[0-9]+){1,3}") && strArrSplit2[2].matches("[a-f0-9]{64}") && strArrSplit2[3].matches("[a-f0-9]{64}")) {
                             int i5 = i3 - 6;
-                            String str6 = strArrSplit2[1];
+                            String stCarLifeFrame = strArrSplit2[1];
                             b[] bVarArr2 = bVarArr;
                             String str7 = strArrSplit2[2];
                             int i6 = i3;
                             String str8 = strArrSplit2[3];
                             b bVar = new b();
                             bVar.a = jB5;
-                            bVar.b = str6;
+                            bVar.b = stCarLifeFrame;
                             bVar.c = str7;
                             bVar.d = str8;
                             VarHandle.storeStoreFence();
@@ -137,7 +137,7 @@ public final class EcdsaSignature {
         }
     }
 
-    public static final class b extends w1 {
+    public static final class b extends ProtoMessageBase {
         public long a;
         public String b;
         public String c;
@@ -156,14 +156,14 @@ public final class EcdsaSignature {
             String str = this.b;
             String str2 = this.c;
             String str3 = this.d;
-            return Objects.hashCode(str3) + w1.b(str2, w1.b(str, Long.hashCode(j) * 31, 31), 31);
+            return Objects.hashCode(str3) + ProtoMessageBase.b(str2, ProtoMessageBase.b(str, Long.hashCode(j) * 31, 31), 31);
         }
 
         public final String toString() {
             Object[] objArr = {Long.valueOf(this.a), this.b, this.c, this.d};
             String[] strArrSplit = "a;b;c;d".length() == 0 ? new String[0] : "a;b;c;d".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(b.class, sb, "[");
+            ProtoMessageBase.f(b.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");
@@ -177,20 +177,20 @@ public final class EcdsaSignature {
         }
     }
 
-    public static final class c extends w1 {
+    public static final class c extends ProtoMessageBase {
         public final boolean equals(Object obj) {
             return obj instanceof c;
         }
 
         public final int hashCode() {
-            return w1.a(0L, w1.a(0L, w1.a(0L, Long.hashCode(0L) * 31, 31), 31), 961);
+            return ProtoMessageBase.a(0L, ProtoMessageBase.a(0L, ProtoMessageBase.a(0L, Long.hashCode(0L) * 31, 31), 31), 961);
         }
 
         public final String toString() {
             Object[] objArr = new Object[0];
             String[] strArrSplit = "".length() == 0 ? new String[0] : "".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(c.class, sb, "[");
+            ProtoMessageBase.f(c.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");

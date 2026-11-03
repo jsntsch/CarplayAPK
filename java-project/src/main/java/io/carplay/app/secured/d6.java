@@ -151,14 +151,14 @@ abstract class d6 {
         while (i > 0 && iArr[i] == i2) {
             i--;
         }
-        return d3.a(iArr[i] ^ i2) + (i * 32);
+        return IntegerMath.a(iArr[i] ^ i2) + (i * 32);
     }
 
     public static int d(int i, int[] iArr) {
         while (i > 0 && iArr[i] == 0) {
             i--;
         }
-        return d3.a(iArr[i]) + (i * 32);
+        return IntegerMath.a(iArr[i]) + (i * 32);
     }
 
     public static boolean e(int i, int[] iArr, int[] iArr2) {

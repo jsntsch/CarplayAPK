@@ -31,7 +31,7 @@ public final class ControlChannel {
     public static volatile boolean EVENT_READY;
     public static volatile boolean GATECLOSED;
     public static volatile boolean INVITED;
-    public static volatile long LASTFB;
+    public static volatile long LAST_FEEDBACK_AT;
     public static volatile long LASTLOG;
     public static volatile int LASTMODE;
     public static volatile AirPlaySession LASTOBJ;
@@ -41,7 +41,7 @@ public final class ControlChannel {
     public static volatile int P0CNT;
     public static volatile long P0SEC;
     public static volatile ArrayList PEND;
-    public static volatile boolean REPORTED;
+    public static volatile boolean HID_MODE_REPORTED;
     public static volatile int RESPCNT;
     public static volatile int SENTCNT;
     public static volatile int TMCNT;
@@ -155,7 +155,7 @@ public final class ControlChannel {
     public static String DeviceMac() {
         String strB;
         Context context = APP_CTX;
-        if (context != null && (strB = io.carplay.app.prototype.r.b(context)) != null && strB.length() != 0) {
+        if (context != null && (strB = io.carplay.app.prototype.BluetoothAdapterResolver.b(context)) != null && strB.length() != 0) {
             return strB;
         }
         BluetoothAdapter defaultAdapter = BluetoothAdapter.getDefaultAdapter();

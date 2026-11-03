@@ -3,7 +3,7 @@ package io.carplay.app.prototype;
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
-import io.carplay.app.secured.w1;
+import io.carplay.app.secured.ProtoMessageBase;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -185,7 +185,7 @@ final class AppLogger {
         }
     }
 
-    public static final class a extends w1 {
+    public static final class a extends ProtoMessageBase {
         private final FileInputStream a;
         private final int b;
         private final int c;
@@ -226,7 +226,7 @@ final class AppLogger {
             Object[] objArr = {this.a, Integer.valueOf(this.b), Integer.valueOf(this.c)};
             String[] strArrSplit = "a;b;c".length() == 0 ? new String[0] : "a;b;c".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(a.class, sb, "[");
+            ProtoMessageBase.f(a.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");

@@ -23,20 +23,20 @@ public final /* synthetic */ class d1 implements Runnable {
             case 0:
                 ((Iap2WirelessSetup) obj).t();
                 break;
-            case p1.c /* 1 */:
+            case AudioSourceCapability.c /* 1 */:
                 ((Surface) obj).release();
                 break;
             case 2:
                 ((SurfaceTexture) obj).release();
                 break;
-            case p1.d /* 3 */:
+            case AudioSourceCapability.d /* 3 */:
                 AirPlaySession.b1((Socket) obj);
                 break;
             case 4:
                 ((LogActivity) obj).h();
                 break;
             default:
-                ((h5) obj).l();
+                ((BtDiscovery) obj).l();
                 break;
         }
     }

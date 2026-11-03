@@ -24,10 +24,10 @@ public final /* synthetic */ class a4 implements Predicate {
         switch (i) {
             case 0:
                 return MainActivity.r1((PairingSession.l) obj2, (PairingSession.l) obj);
-            case p1.c /* 1 */:
-                return h5.n((BluetoothSocket) obj2, (BluetoothSocket) obj);
+            case AudioSourceCapability.c /* 1 */:
+                return BtDiscovery.n((BluetoothSocket) obj2, (BluetoothSocket) obj);
             case 2:
-                return WirelessCarPlayService.Y1((x.c) obj2, (x.c) obj);
+                return WirelessCarPlayService.Y1((HidCapabilities.c) obj2, (HidCapabilities.c) obj);
             default:
                 return ((WirelessCarPlayService) obj2).f2((BluetoothDevice) obj);
         }

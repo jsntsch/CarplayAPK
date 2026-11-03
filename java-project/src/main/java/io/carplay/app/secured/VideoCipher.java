@@ -22,12 +22,12 @@ import java.util.List;
 public final class VideoCipher {
     static final String a = "21A329";
 
-    public static final class c implements AutoCloseable {
+    public static final class AvcNalCipher implements AutoCloseable {
         private final byte[] a;
         private long b;
         private boolean c;
 
-        public c(byte[] bArr, long j) {
+        public AvcNalCipher(byte[] bArr, long j) {
             this.a = VideoCipher.b(bArr, j);
         }
 
@@ -139,7 +139,7 @@ public final class VideoCipher {
         return DerCodec.d(bArr3, byteArray);
     }
 
-    public static final class b {
+    public static final class AvcVideoInput {
         private boolean c;
         private byte[] d;
         private byte[] e;
@@ -415,7 +415,7 @@ public final class VideoCipher {
         }
 
         /* JADX INFO: renamed from: io.carplay.app.secured.VideoCipher$b$b, reason: collision with other inner class name */
-        public static final class C0002b extends w1 {
+        public static final class C0002b extends ProtoMessageBase {
             private final long a;
             private final long b;
             private final long c;
@@ -438,7 +438,7 @@ public final class VideoCipher {
                 long j = this.a;
                 long j2 = this.b;
                 long j3 = this.c;
-                return Long.hashCode(j3) + w1.a(j2, Long.hashCode(j) * 31, 31);
+                return Long.hashCode(j3) + ProtoMessageBase.a(j2, Long.hashCode(j) * 31, 31);
             }
 
             public long j() {
@@ -457,7 +457,7 @@ public final class VideoCipher {
                 Object[] objArr = {Long.valueOf(this.a), Long.valueOf(this.b), Long.valueOf(this.c)};
                 String[] strArrSplit = "a;b;c".length() == 0 ? new String[0] : "a;b;c".split(";");
                 StringBuilder sb = new StringBuilder();
-                w1.f(C0002b.class, sb, "[");
+                ProtoMessageBase.f(C0002b.class, sb, "[");
                 for (int i = 0; i < strArrSplit.length; i++) {
                     sb.append(strArrSplit[i]);
                     sb.append("=");
@@ -476,7 +476,7 @@ public final class VideoCipher {
         }
     }
 
-    public static final class a implements AutoCloseable {
+    public static final class AacPacket implements AutoCloseable {
         private final byte[] a;
         private final int b;
         private final int c;
@@ -485,7 +485,7 @@ public final class VideoCipher {
         private long f;
         private boolean g;
 
-        public a(byte[] bArr, long j, int i, int i2) {
+        public AacPacket(byte[] bArr, long j, int i, int i2) {
             if (i2 != 100 && i2 != 101 && i2 != 102) {
                 SyntheticRefs.b("unsupported modern audio stream type");
                 throw null;
@@ -575,7 +575,7 @@ public final class VideoCipher {
             this.e = 4294967295L & (this.e + j);
         }
 
-        public a(byte[] bArr, long j, int i) {
+        public AacPacket(byte[] bArr, long j, int i) {
             this(bArr, j, i, 100);
         }
     }

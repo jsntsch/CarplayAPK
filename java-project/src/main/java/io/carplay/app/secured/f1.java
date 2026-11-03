@@ -17,14 +17,14 @@ public final /* synthetic */ class f1 implements Supplier {
         switch (this.a) {
             case 0:
                 return Iap2WirelessSetup.o();
-            case p1.c /* 1 */:
+            case AudioSourceCapability.c /* 1 */:
                 return Iap2WirelessSetup.q();
             case 2:
-                return x.z();
-            case p1.d /* 3 */:
+                return HidCapabilities.z();
+            case AudioSourceCapability.d /* 3 */:
                 return AirPlaySession.X0();
             case 4:
-                return i5.c.d();
+                return DeviceMetadataStore.c.d();
             default:
                 return WirelessCarPlayService.S1();
         }

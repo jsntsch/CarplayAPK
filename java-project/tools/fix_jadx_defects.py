@@ -27,6 +27,7 @@ jadx 对「一个寄存器被复用成多种类型」的处理会产生三种不
 所有替换都是**精确字符串匹配 + 出现次数校验**，重复执行安全（已修过的会跳过）。
 """
 import os
+import re
 import sys
 
 ROOT = sys.argv[1] if len(sys.argv) > 1 else os.path.join(
@@ -81,14 +82,15 @@ RULES = [
      "                }\n"
      "            }", 1),
 
-    # ---------- t4：try-with-resources 重复块资源丢失 ----------
-    ("io/carplay/app/secured/t4.java", "r9 声明",
+    # ---------- DisplaySession(原 t4)：try-with-resources 重复块资源丢失 ----------
+    # 注意：t4 已在 rename_map.CORE 中改名为 DisplaySession，文件名随之变更。
+    ("io/carplay/app/secured/DisplaySession.java", "r9 声明",
      "        ?? r9;", "        o5 r9;", 1),
-    ("io/carplay/app/secured/t4.java", "r10 声明",
+    ("io/carplay/app/secured/DisplaySession.java", "r10 声明",
      "        ?? r10;", "        o5 r10;", 1),
-    ("io/carplay/app/secured/t4.java", "r9 资源赋值",
+    ("io/carplay/app/secured/DisplaySession.java", "r9 资源赋值",
      "r9 = timeUnit;", "r9 = o5Var2;", 1),
-    ("io/carplay/app/secured/t4.java", "r10 资源赋值",
+    ("io/carplay/app/secured/DisplaySession.java", "r10 资源赋值",
      "r10 = timeUnit;", "r10 = o5Var;", 1),
 ]
 
@@ -133,7 +135,10 @@ def main():
             text = open(p, encoding="utf-8", errors="replace").read()
             new_text = text
             for a, b in R_RULES:
-                new_text = new_text.replace(a, b)
+                # 负向后行断言：a 前面不能再是 `.`/标识符字符，否则会把已经是
+                # `android.R.drawable...` 又套一层变成 `android.android.R...`
+                # （非幂等，重复执行会持续叠加前缀）。
+                new_text = re.sub(r"(?<![\w.])" + re.escape(a), b, new_text)
             if new_text != text:
                 open(p, "w", encoding="utf-8", newline="\n").write(new_text)
                 print("  fix            %-46s R.drawable -> android.R.drawable" % fn)

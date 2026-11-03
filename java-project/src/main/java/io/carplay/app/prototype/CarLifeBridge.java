@@ -1,10 +1,13 @@
 package io.carplay.app.prototype;
 
 import android.content.ComponentName;
+import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import io.carplay.app.secured.w1;
+import android.content.pm.ServiceInfo;
+import io.carplay.app.secured.ProtoMessageBase;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -46,7 +49,7 @@ public final class CarLifeBridge {
         BLOCKED
     }
 
-    public static final class d extends w1 {
+    public static final class d extends ProtoMessageBase {
         private final ReviewState a;
         private final String b;
         private final long c;
@@ -83,7 +86,7 @@ public final class CarLifeBridge {
             long j2 = this.d;
             ReviewState cVar = this.a;
             String str = this.b;
-            return Objects.hashCode(str) + ((Objects.hashCode(cVar) + w1.a(j2, w1.a(j, Boolean.hashCode(z) * 31, 31), 31)) * 31);
+            return Objects.hashCode(str) + ((Objects.hashCode(cVar) + ProtoMessageBase.a(j2, ProtoMessageBase.a(j, Boolean.hashCode(z) * 31, 31), 31)) * 31);
         }
 
         public long i() {
@@ -121,7 +124,7 @@ public final class CarLifeBridge {
             Object[] objArr = {this.a, this.b, Long.valueOf(this.c), Long.valueOf(this.d), Boolean.valueOf(this.e)};
             String[] strArrSplit = "a;b;c;d;e".length() == 0 ? new String[0] : "a;b;c;d;e".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(d.class, sb, "[");
+            ProtoMessageBase.f(d.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");
@@ -187,10 +190,13 @@ public final class CarLifeBridge {
             }
             File file = new File(str);
             long length = file.length();
+            // 字节码顺序：isFile → canRead → length>=1 → length<=512MB → 累计<=1GB，
+            // 全部通过才登记；任一不通过直接抛 APK_FILE_BOUNDS（:cond_2）。
             if (file.isFile() && file.canRead() && length >= 1 && length <= i) {
                 j2 += length;
                 if (j2 <= 1073741824) {
                     arrayList2.add(new e(str, length, file.lastModified(), 0));
+                    continue;
                 }
             }
             throw new f("APK_FILE_BOUNDS");
@@ -261,16 +267,129 @@ public final class CarLifeBridge {
     /* JADX WARN: Type inference failed for: r6v8 */
     /* JADX WARN: Unreachable blocks removed: 1, instructions: 2 */
     /* JADX WARN: Unreachable blocks removed: 2, instructions: 3 */
-    /*
-        Code decompiled incorrectly, please refer to instructions dump.
-        To view partially-correct add '--show-bad-code' argument
-    */
-    public static io.carplay.app.prototype.CarLifeBridge.d f(android.content.Context r23) {
-        /*
-            Method dump skipped, instruction units count: 544
-            To view this dump add '--comments-level debug' option
-        */
-        throw new UnsupportedOperationException("Method not decompiled: io.carplay.app.prototype.CarLifeBridge.f(android.content.Context):io.carplay.app.prototype.CarLifeBridge$d");
+    /**
+     * 校验车机宿主（{@code com.oplus.ocar}）与 CarLife 插件（{@code com.baidu.carlife.oppo}）
+     * 的安装完整性，返回校验结论。
+     *
+     * <p>该方法原本是 jadx 的 {@code Method not decompiled} 桩（544 条指令）。
+     * 这里依据 apktool 反编译的真实字节码逐段还原：
+     * {@code CarplayAPKBuild/work/smali_rename/smali/io/carplay/app/prototype/CarLifeBridge.smali}
+     * 中的 {@code f(Landroid/content/Context;)Lu$d;}。
+     *
+     * <p>校验顺序：宿主签名 → 插件签名 → 包身份 → 应用启用状态 → 宿主 Activity 入口
+     * → 插件 Service 入口 → 安装指纹一致性 → 签名复核 → 启用状态复核。
+     * 任一环节失败即返回 {@link ReviewState#BLOCKED} 的 {@link d}，并在 {@code b} 字段
+     * 给出原因码；全部通过则缓存到 {@link #j} 并返回 {@code REVIEWED}/{@code CANDIDATE}。
+     */
+    public static d f(Context context) {
+        long hostVersion = -1L;
+        long pluginVersion = -1L;
+        boolean serviceReady = false;
+        try {
+            PackageManager pm = context.getPackageManager();
+
+            // 宿主签名：先比对主签名，再比对备用签名
+            if (!j(pm, a, e) && !j(pm, a, f)) {
+                return a("HOST_SIGNER", -1L, -1L);
+            }
+            // 插件签名
+            if (!j(pm, b, g)) {
+                return a("PLUGIN_SIGNER", -1L, -1L);
+            }
+
+            PackageInfo hostInfo = pm.getPackageInfo(a, PackageManager.PackageInfoFlags.of(0L));
+            hostVersion = hostInfo.getLongVersionCode();
+            PackageInfo pluginInfo = pm.getPackageInfo(b, PackageManager.PackageInfoFlags.of(0L));
+            pluginVersion = pluginInfo.getLongVersionCode();
+
+            // 包身份：包名必须与查询名一致
+            if (!a.equals(hostInfo.packageName) || !b.equals(pluginInfo.packageName)) {
+                return a("PACKAGE_IDENTITY", hostVersion, pluginVersion);
+            }
+            // 应用级启用状态
+            if (!c(pm, a, hostInfo.applicationInfo) || !c(pm, b, pluginInfo.applicationInfo)) {
+                return a("APPLICATION_DISABLED", hostVersion, pluginVersion);
+            }
+
+            // 宿主 Activity 入口：enabled / exported / 所属应用 enabled / 包名 / 类名 / 组件启用
+            ComponentName hostComponent = new ComponentName(a, c);
+            ComponentName pluginComponent = new ComponentName(b, d);
+            ActivityInfo activityInfo =
+                    pm.getActivityInfo(hostComponent, PackageManager.ComponentInfoFlags.of(0L));
+            if (!activityInfo.enabled
+                    || !activityInfo.exported
+                    || activityInfo.applicationInfo == null
+                    || !activityInfo.applicationInfo.enabled
+                    || !a.equals(activityInfo.packageName)
+                    || !c.equals(activityInfo.name)
+                    || !b(pm, hostComponent)) {
+                return a("HOST_ENTRY_UNAVAILABLE", hostVersion, pluginVersion);
+            }
+            // Activity 声明了权限时，调用方必须已获得该权限
+            if (activityInfo.permission != null
+                    && context.checkSelfPermission(activityInfo.permission) != 0) {
+                return a("HOST_ENTRY_UNAVAILABLE", hostVersion, pluginVersion);
+            }
+
+            // 插件 Service 入口不可查询时降级为 false，不中断整体校验
+            try {
+                ServiceInfo serviceInfo =
+                        pm.getServiceInfo(pluginComponent, PackageManager.ComponentInfoFlags.of(0L));
+                serviceReady = serviceInfo.enabled
+                        && serviceInfo.exported
+                        && serviceInfo.applicationInfo != null
+                        && serviceInfo.applicationInfo.enabled
+                        && b.equals(serviceInfo.packageName)
+                        && d.equals(serviceInfo.name)
+                        && b(pm, pluginComponent);
+            } catch (Exception unused) {
+                serviceReady = false;
+            }
+
+            // 安装指纹：命中缓存则复用结论，否则重新计算审查状态
+            b identity = g(hostInfo, pluginInfo);
+            ReviewState state;
+            a cached = CarLifeBridge.j;
+            if (cached != null && cached.i().equals(identity)) {
+                state = cached.j();
+            } else {
+                k(identity.i());
+                if ("8.6.8".equals(pluginInfo.versionName)
+                        && pluginVersion == 260L
+                        && identity.i().size() == 1
+                        && h.equals(i(identity.i().get(0)))) {
+                    state = ReviewState.REVIEWED;
+                } else {
+                    state = ReviewState.CANDIDATE;
+                }
+            }
+
+            // 复核：安装指纹是否在校验期间发生变化
+            PackageInfo hostAgain = pm.getPackageInfo(a, PackageManager.PackageInfoFlags.of(0L));
+            PackageInfo pluginAgain = pm.getPackageInfo(b, PackageManager.PackageInfoFlags.of(0L));
+            if (!identity.equals(g(hostAgain, pluginAgain))) {
+                return a("INSTALLATION_CHANGED", hostVersion, pluginVersion);
+            }
+            // 复核：签名是否在校验期间被替换
+            if ((!j(pm, a, e) && !j(pm, a, f)) || !j(pm, b, g)) {
+                return a("SIGNER_CHANGED", hostVersion, pluginVersion);
+            }
+            // 复核：启用状态是否在校验期间变化
+            if (!c(pm, a, hostAgain.applicationInfo)
+                    || !c(pm, b, pluginAgain.applicationInfo)) {
+                return a("APPLICATION_DISABLED", hostVersion, pluginVersion);
+            }
+
+            CarLifeBridge.j = new a(identity, state);
+            return new d(state,
+                    state == ReviewState.REVIEWED
+                            ? "REVIEWED_ARTIFACT" : "OEM_STRUCTURE_RUNTIME_PENDING",
+                    hostVersion, pluginVersion, serviceReady);
+        } catch (CarLifeBridge.f e2) {
+            return a(e2.a, hostVersion, pluginVersion);
+        } catch (Exception unused) {
+            return a("COMPONENT_INSPECTION_UNAVAILABLE", hostVersion, pluginVersion);
+        }
     }
 
     private static b g(PackageInfo packageInfo, PackageInfo packageInfo2) throws f {
@@ -372,7 +491,7 @@ public final class CarLifeBridge {
         }
     }
 
-    public static final class a extends w1 {
+    public static final class a extends ProtoMessageBase {
         private final b a;
         private final ReviewState b;
 
@@ -407,7 +526,7 @@ public final class CarLifeBridge {
             Object[] objArr = {this.a, this.b};
             String[] strArrSplit = "a;b".length() == 0 ? new String[0] : "a;b".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(a.class, sb, "[");
+            ProtoMessageBase.f(a.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");
@@ -425,7 +544,7 @@ public final class CarLifeBridge {
         }
     }
 
-    public static final class e extends w1 {
+    public static final class e extends ProtoMessageBase {
         private final String a;
         private final long b;
         private final long c;
@@ -452,7 +571,7 @@ public final class CarLifeBridge {
             long j = this.b;
             long j2 = this.c;
             String str = this.a;
-            return Objects.hashCode(str) + w1.a(j2, Long.hashCode(j) * 31, 31);
+            return Objects.hashCode(str) + ProtoMessageBase.a(j2, Long.hashCode(j) * 31, 31);
         }
 
         public String i() {
@@ -467,7 +586,7 @@ public final class CarLifeBridge {
             Object[] objArr = {this.a, Long.valueOf(this.b), Long.valueOf(this.c)};
             String[] strArrSplit = "a;b;c".length() == 0 ? new String[0] : "a;b;c".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(e.class, sb, "[");
+            ProtoMessageBase.f(e.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");
@@ -485,7 +604,7 @@ public final class CarLifeBridge {
         }
     }
 
-    public static final class b extends w1 {
+    public static final class b extends ProtoMessageBase {
         private final long a;
         private final long b;
         private final long c;
@@ -524,7 +643,7 @@ public final class CarLifeBridge {
             String str = this.e;
             List<e> list = this.f;
             List<e> list2 = this.g;
-            return Objects.hashCode(list2) + ((Objects.hashCode(list) + w1.b(str, w1.a(j4, w1.a(j3, w1.a(j2, Long.hashCode(j) * 31, 31), 31), 31), 31)) * 31);
+            return Objects.hashCode(list2) + ((Objects.hashCode(list) + ProtoMessageBase.b(str, ProtoMessageBase.a(j4, ProtoMessageBase.a(j3, ProtoMessageBase.a(j2, Long.hashCode(j) * 31, 31), 31), 31), 31)) * 31);
         }
 
         public List<e> i() {
@@ -555,7 +674,7 @@ public final class CarLifeBridge {
             Object[] objArr = {Long.valueOf(this.a), Long.valueOf(this.b), Long.valueOf(this.c), Long.valueOf(this.d), this.e, this.f, this.g};
             String[] strArrSplit = "a;b;c;d;e;f;g".length() == 0 ? new String[0] : "a;b;c;d;e;f;g".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(b.class, sb, "[");
+            ProtoMessageBase.f(b.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");

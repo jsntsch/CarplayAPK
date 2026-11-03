@@ -74,7 +74,7 @@ public abstract class k4 {
         int i8 = 0;
         int i9 = 0;
         while (true) {
-            int iE = d3.e(((-1) << i5) | i3);
+            int iE = IntegerMath.e(((-1) << i5) | i3);
             int i10 = i3 >> iE;
             i6 <<= iE;
             i8 <<= iE;
@@ -192,15 +192,15 @@ public abstract class k4 {
 
     public static int m(int[] iArr, int[] iArr2, int[] iArr3) {
         int length = iArr.length;
-        int iD = (length * 32) - d3.d(iArr[length - 1]);
+        int iD = (length * 32) - IntegerMath.d(iArr[length - 1]);
         int i = (iD + 29) / 30;
         int[] iArr4 = new int[4];
         int[] iArr5 = new int[i];
-        int[] iArr6 = new int[i];
+        int[] iArCarLifeFrame = new int[i];
         int[] iArr7 = new int[i];
         int[] iArr8 = new int[i];
         int[] iArr9 = new int[i];
-        iArr6[0] = 1;
+        iArCarLifeFrame[0] = 1;
         f(iD, iArr2, iArr8);
         f(iD, iArr, iArr9);
         System.arraycopy(iArr9, 0, iArr7, 0, i);
@@ -209,7 +209,7 @@ public abstract class k4 {
         int iK = 0;
         for (int i2 = 0; i2 < iJ; i2 += 30) {
             iK = k(iK, iArr7[0], iArr8[0], iArr4);
-            q(i, iArr5, iArr6, iArr4, iL, iArr9);
+            q(i, iArr5, iArCarLifeFrame, iArr4, iL, iArr9);
             r(i, iArr7, iArr8, iArr4);
         }
         int i3 = iArr7[i - 1] >> 31;
@@ -221,25 +221,25 @@ public abstract class k4 {
 
     /* JADX WARN: Multi-variable type inference failed */
     /* JADX WARN: Type inference failed for: r12v0 */
-    /* JADX WARN: Type inference failed for: r12v1, types: [boolean, int] */
+    /* JADX WARN: Type inference failed for: r12EncryptProofNeg, types: [boolean, int] */
     /* JADX WARN: Type inference failed for: r12v3 */
     /* JADX WARN: Type inference failed for: r16v0, types: [boolean] */
-    /* JADX WARN: Type inference failed for: r16v1 */
+    /* JADX WARN: Type inference failed for: r16EncryptProofNeg */
     /* JADX WARN: Type inference failed for: r16v2 */
     /* JADX WARN: Type inference failed for: r16v3 */
     public static boolean n(int[] iArr, int[] iArr2, int[] iArr3) {
         int length = iArr.length;
-        int iD = (length * 32) - d3.d(iArr[length - 1]);
+        int iD = (length * 32) - IntegerMath.d(iArr[length - 1]);
         int i = (iD + 29) / 30;
         int iC = iD - n4.c(length, iArr2);
         int[] iArr4 = new int[4];
         int[] iArr5 = new int[i];
-        int[] iArr6 = new int[i];
+        int[] iArCarLifeFrame = new int[i];
         int[] iArr7 = new int[i];
         int[] iArr8 = new int[i];
         int[] iArr9 = new int[i];
         int r12 = 0;
-        iArr6[0] = 1;
+        iArCarLifeFrame[0] = 1;
         f(iD, iArr2, iArr8);
         f(iD, iArr, iArr9);
         System.arraycopy(iArr9, 0, iArr7, 0, i);
@@ -254,7 +254,7 @@ public abstract class k4 {
             iC += 30;
             int r16 = r12;
             iE = e(iE, iArr7[r12], iArr8[r16 != 0 ? 1 : 0], iArr4);
-            q(i, iArr5, iArr6, iArr4, iL, iArr9);
+            q(i, iArr5, iArCarLifeFrame, iArr4, iL, iArr9);
             r(iP, iArr7, iArr8, iArr4);
             iP = p(iP, iArr7, iArr8);
             r12 = r16 != 0 ? 1 : 0;
@@ -343,8 +343,8 @@ public abstract class k4 {
             long j18 = iArr2[i15];
             long j19 = i16;
             long j20 = j10;
-            long jC = w1.c(j19, j20, (j3 * j18) + j17, j13);
-            long jC2 = w1.c(j19, j15, (j18 * j7) + (j6 * j16), j14);
+            long jC = ProtoMessageBase.c(j19, j20, (j3 * j18) + j17, j13);
+            long jC2 = ProtoMessageBase.c(j19, j15, (j18 * j7) + (j6 * j16), j14);
             int i17 = i15 - 1;
             iArr[i17] = ((int) jC) & 1073741823;
             j13 = jC >> c2;
@@ -381,9 +381,9 @@ public abstract class k4 {
             int i8 = i3;
             long j11 = j6;
             long j12 = iArr2[i7];
-            long jC = w1.c(j3, j12, j * j10, j9);
+            long jC = ProtoMessageBase.c(j3, j12, j * j10, j9);
             long j13 = j7;
-            long jC2 = w1.c(j13, j12, j11 * j10, j8);
+            long jC2 = ProtoMessageBase.c(j13, j12, j11 * j10, j8);
             int i9 = i7 - 1;
             iArr[i9] = ((int) jC) & 1073741823;
             j9 = jC >> 30;

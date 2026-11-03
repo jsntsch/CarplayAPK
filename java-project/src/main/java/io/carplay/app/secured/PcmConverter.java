@@ -39,7 +39,7 @@ public final class PcmConverter implements AutoCloseable {
 
     public PcmConverter(int i, int i2, int i3, int i4) throws IOException {
         double dSin;
-        if (io.carplay.app.secured.s.v(i, i2, 16) == 0 || io.carplay.app.secured.s.v(i3, i4, 16) == 0) {
+        if (io.carplay.app.secured.AudioCapabilities.v(i, i2, 16) == 0 || io.carplay.app.secured.AudioCapabilities.v(i3, i4, 16) == 0) {
             throw i("PCM_CONVERTER_FORMAT_UNSUPPORTED");
         }
         this.a = i;

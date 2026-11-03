@@ -2,7 +2,8 @@
 
 生成自 `tools/rename_map.py`（唯一事实来源，改名字请改那里再重跑脚本）。
 
-- **共 39 个类重命名**，其余 248 个保持原名（多数是无特征的工具/日志类）。
+- **已应用 107 个顶层类 + 11 个嵌套类重命名**；另有 **0 个**已分析待改（见末节）；
+  其余 169 个保持原名（多数是无特征的工具/日志类）。
 - 「行数」是该类在 jadx 产物里的规模，用来判断值不值得先读。
 
 ## secured 包（协议栈本体）
@@ -39,6 +40,77 @@
 | `secured.v4` | **TouchFlow** | 127 | NATIVE_TOUCH_FLOW down= / failed= |
 | `secured.btdlg` | **BluetoothDialogRunnable** | 14 | 14 行，implements Runnable；蓝牙对话框延迟任务 |
 | `secured.btsave` | **BluetoothSaveListener** | 17 | 17 行，implements DialogInterface.OnClickListener；保存蓝牙名 |
+| `secured.d0` | **SyntheticRefs** | 0 | R8 合成的方法引用宿主：静态 b/c/d/f 分别是 IllegalArgumentException::new / IOException::new / IllegalStateException::new / r5::new；实例 a(long)=Thread::sleep、e(Map)=AirPlaySession.R0 委托 |
+| `secured.a0` | **HidCommandSender** | 108 | iAPSendMessage / hidSendReport / setInputMode / changeVideoPlaybackToAudioOnly（同 Car+ a0） |
+| `secured.p1` | **AudioSourceCapability** | 180 | audio_source_channel_unsupported / display_candidates / cap_main_display_unavailable |
+| `secured.y0` | **HidConsumerParser** | 895 | hid_consumer_stack / hid_consumer_id / hid_consumer_report_length / hid_consumer_unknown_report |
+| `secured.t4` | **DisplaySession** | 3003 | NATIVE_FOREGROUND_STATUS_OBSERVED / NATIVE_FIRST_VIDEO_CALLBACK_UNAVAILABLE / media_reta（3003 行主链路） |
+| `secured.z0` | **HidDescriptorParser** | 712 | hid_long_item_unsupported / hid_logical_range / hid_report_id_limit / hid_unbalanced_stack |
+| `secured.u5` | **Iap2Bootstrap** | 202 | iap2_ack_timeout / rfcomm_sele / wifi_selected_network_lost / wifi_selected_network_replaced |
+| `secured.h5` | **BtDiscovery** | 392 | 00000000-deca-fade-deca-deafdecacafe / discovery_bluetooth_unavailable / eir_requested=true |
+| `secured.x` | **HidCapabilities** | 1428 | cap_hid_incomplete / touch= / iapchannel / videoplayback（1428 行 HID 能力协商） |
+| `secured.i0$b` | **Iap2PostResponseOwner** | 0 | iap2_post_response_owner / network_iap_post_response_queued / control post iap unavailable |
+| `secured.x0` | **HidBackParser** | 859 | hid_back_layout / hid_back_not_declared / hid_back_report_length / hid_back_unknown_report |
+| `secured.s` | **AudioCapabilities** | 780 | audioformats / audiolatencies / audio_native_format_unsupported / audio_type_unsupported |
+| `secured.v1` | **EncryptProofNeg** | 730 | encrypt_ready before actual key/ack / proof before actual challenge / duplicate |
+| `secured.z0$e` | **HidTouchParser** | 0 | hid_unsupported_touch_usage / hid_ambiguous_in_range / hid_ambiguous_confidence |
+| `secured.l1$d` | **Srp3072** | 0 | pair-setup / SRP 大素数 ffffffff...c90fdaa22168c234c4c6628b80dc1cd129 |
+| `secured.c1` | **Iap2PostResponseBuilder** | 76 | iap2_post_response_status / iap2_post_response_fields / iapsendmessage |
+| `secured.j` | **AvcSpsParser** | 367 | not_sps / sps_metadata / unsupported_profile / unsupported_bit_depth |
+| `secured.u1` | **MicCapture** | 256 | caller must confirm microphone format / microphone byte order/encoding unverified / 16000/mono/sig |
+| `secured.t4$a` | **NativeAudioChannel** | 0 | native audio channel required / channels= / native audio aes negotiated without cipher |
+| `secured.y2$f` | **Iap2FrameValidator** | 0 | invalid iap2 magic / invalid iap2 detect / truncated iap2 frame / iap2 header checksum |
+| `secured.q1` | **Iap2Ncm** | 0 | bluetooth/iap2 bootstrap / host iap2/ncm / vehicle wi-fi/rtsp/media/input |
+| `secured.j1$b` | **AvcVideoInput** | 0 | avc resume parameters must precede incoming video / avc slice header invalid / avc input invalid |
+| `secured.r6` | **CarLifeFrame** | 309 | carlife / 8-byte header has no timestamp / truncated carlife frame / wrong header size |
+| `secured.j1$a` | **AacPacket** | 0 | bounded raw aac-lc packet required / aligned bounded pcm16 packet required |
+| `secured.n1` | **VideoEncoderStats** | 34 | queuedframesavg / sentframesavg / txusageavg |
+| `secured.f6` | **RsaAesCrypto** | 105 | invalid negotiated aes key length / verified target aes configuration required |
+| `secured.x0$a` | **HidKeyboardParser** | 0 | hid_back_value_range / hid_back_array_index |
+| `secured.x1` | **VideoStreamNeg** | 127 | video payload decode failed / not a normal phone video payload / bounded video contract |
+| `secured.f5` | **PcmAudioOutput** | 363 | audio stream is failed / partial/empty pcm frame / create a fresh session |
+| `secured.g4$e` | **PcmFormat** | 0 | pcm sample encoding unsupported/unverified / pcm byte order unverified |
+| `secured.j1$c` | **AvcNalCipher** | 0 | video access unit limit / avc nal limit / closed/exhausted video cipher |
+| `secured.g4$h` | **VideoMime** | 0 | video dimensions/layout / video/hevc / unsupported video mime |
+| `secured.b` | **SessionVerificationTracker** | 320 | VerifyResult 枚举 + 「session already failed / missing encryption verdict / awaiting observations」 |
+| `secured.c` | **AesEcbCipher** | 121 | Cipher.getInstance("AES/ECB/PKCS5Padding") + SecretKeySpec |
+| `secured.e` | **ByteArrays** | 85 | 全静态字节数组工具：全零判定 / Arrays.equals / 清零 / clone |
+| `secured.f` | **AsymmetricKeyParameter** | 16 | implements CipherParameters + privateKey/isPrivate，对应 BC AsymmetricKeyParameter |
+| `secured.g` | **AudioPacer** | 66 | AUDIO_PACER_RATE / AUDIO_PACER_PACKET 节拍器 |
+| `secured.h` | **AvcAccessUnit** | 174 | AVC unit bounds/limit/picture mismatch，List<byte[]> NAL 组装 |
+| `secured.i` | **AvcLengthParser** | 60 | truncated/invalid AVC length，ByteArrayOutputStream 解析 |
+| `secured.i1` | **KeepAliveServer** | 66 | keepAlivePort / KEEPALIVE_PORT_INVALID + AutoCloseable |
+| `secured.i2` | **CryptoServicesRegistrar** | 117 | globalConfig/threadLocalConfig/defaultRandomConfig/ecImplicitlyCA/dhDefaultParams，即 BC CryptoServicesRegistrar |
+| `secured.i5` | **DeviceMetadataStore** | 159 | device UUID / display name / device metadata owners |
+| `secured.i6` | **TouchGestureEncoder** | 111 | TouchAction 枚举 + duplicate down / no active gesture，产出 protobuf 触摸消息 |
+| `secured.l4` | **MfiAuthSession** | 317 | MD_INFO / MD_AUTHEN_RESPONSE / CHALLENGE_ISSUED / empty mobile proof |
+| `secured.m1` | **RemoteCommandHandler** | 219 | setNightMode / updateViewArea / REMOTE_VIEW_AREA_* 系列校验 |
+| `secured.b2` | **RfcommSessionLog** | 287 | RFCOMM_SELECTED_PEER_* 事件记录 + SESSION START 分隔 |
+| `secured.c2` | **CarLifeFrameCipher** | 53 | CarLifeFrame 明文/密文长度契约 + negotiated cipher required |
+| `secured.c3` | **ResourceFingerprintBuilder** | 134 | NON_STRING/OVERSIZE/HASH_UNAVAILABLE/INITIAL_RESOURCE + key_fingerprints= |
+| `secured.e4` | **MediaSourceTracker** | 116 | implements MediaFormat；sink/evidence、stale/wrong media source、source generation |
+| `secured.g4` | **MediaFormat** | 0 | 被 PcmFormat / VideoMime 实现的媒体格式接口（video/avc、PCM sample encoding） |
+| `secured.j2` | **DhParameters** | 70 | org.bouncycastle.dh.allow_unsafe_p_value + CipherParameters |
+| `secured.m5` | **RsaPkcs1Cipher** | 245 | Cipher.getInstance("RSA/ECB/PKCS1Padding") |
+| `secured.w1` | **ProtoMessageBase** | 0 | 所有 protobuf 消息类的共同父类：索引越界检查 + toString 字段拼接 |
+| `secured.x2` | **HexCodec** | 71 | invalid characters encountered in Hex string / 十六进制编解码 |
+| `secured.d3` | **IntegerMath** | 31 | a/b/c/d/e/f(int,int) 用 -Integer.MIN_VALUE 做无符号偏移的整数运算 |
+| `secured.h1` | **ProtoFieldAccessor** | 83 | a(Map)→String / b(Object)→String / c(Object,Object)→boolean 的 protobuf 字段读取 |
+| `secured.a2` | **LittleEndianShortCodec** | 46 | a(byte[],int)= bArr[i]|bArr[i+1]<<8，16 位小端读写 |
+| `secured.y4` | **LittleEndianIntCodec** | 68 | a(byte[],int)= bArr[i]|bArr[i+1]<<8|bArr[i+2]<<16|bArr[i+3]<<24，32 位小端读写 |
+| `secured.w5` | **ReleaseCatalog** | 241 | extends ProtoMessageBase；release integer / catalog redirect 校验 + carplus-carplay-updates/version.json |
+| `secured.o5` | **CarLifeChannel** | 108 | implements l5 + AutoCloseable；静态工厂写入 "CARLIFE" 魔数，按串读写长度前缀帧 |
+| `secured.g5` | **DeviceTimeRange** | 75 | DEVICE_TIME_RANGE / DEVICE_TIME_MINUTE_PRECISION + g(Instant, ZoneId) |
+| `secured.g3` | **AesCipher** | 63 | 实现 o 接口；AES encrypt/decrypt + "AES encryption failed" + Provider/SecretKey/AlgorithmParameters |
+| `secured.p6` | **IoStatsSnapshot** | 167 | EnumMap<ENCODE/DECODE/ADAPTER_QUEUE> 统计 + 五元 long 快照消息 |
+| `secured.z5` | **RuntimeCryptoException** | 8 | 抽象基类；子类抛 Input/Output buffer too short、2^70 byte limit —— 对应 BC RuntimeCryptoException |
+| `secured.n2` | **DataLengthException** | 8 | throw 站点全是 "Input buffer too short" —— BC DataLengthException |
+| `secured.x4` | **OutputLengthException** | 8 | extends DataLengthException；throw 站点 "Output buffer too short" —— BC OutputLengthException |
+| `secured.d4` | **MaxBytesExceededException** | 8 | throw 站点 "2^70 byte limit per IV would be exceeded" —— BC MaxBytesExceededException |
+| `secured.f3` | **InvalidCipherTextException** | 8 | throw 站点 "mac check in ChaCha20Poly1305 failed" / "data too short" —— BC InvalidCipherTextException |
+| `secured.d2` | **CryptoException** | 15 | 抽象 Exception + getCause；f3 的父类 —— BC CryptoException |
+| `secured.o2` | **DecoderException** | 16 | throw 站点 "exception decoding Hex string: " —— BC DecoderException |
+| `secured.r5` | **ProtocolIOException** | 16 | IOException 子类，携带协议层错误：ENCRYPT_READY before actual key/ack、body length exceeds channel limit |
 
 ## prototype 包（业务层）
 
@@ -53,59 +125,41 @@
 | `prototype.d0` | **AppLogger** | 239 | CarPlusWireless / Log history rotation；注意 d0.c 会抛异常（铁律 30） |
 | `prototype.z` | **UpdateChecker** | 148 | APK integrity + gitee 更新地址；对应 hypercar update/UpdateChecker.kt |
 | `prototype.u` | **CarLifeBridge** | 570 | com.oplus.ocar / com.baidu.carlife.oppo —— CarLife/Car+ 虚拟屏桥 |
+| `prototype.m0` | **UiFactory** | 652 | 653 行、26 个静态方法，全部在拼 LinearLayout / TextView / GradientDrawable / CompoundButton；内嵌 a extends CompoundButton、b extends Drawable |
+| `prototype.k0` | **StatusText** | 143 | 把上游 reason 字符串翻成中文提示语（AUTH/CERT/MFI/TIMEOUT/EOF 分类）；a(reason,connected) / b(state,connected,reason) / c(native_foreground) / d |
+| `prototype.j0` | **DonationDialog** | 93 | 「自愿赞助 / 不影响功能」文案 + AlertDialog 构建；内嵌 Runnable 群 |
+| `prototype.g` | **ReleaseCheckTask** | 0 | run() 执行发布校验：RELEASE_CHECK / APK_SIGNER_MISMATCH / UPDATE_REQUIRED / catalog 持久化 |
+| `prototype.q` | **InstalledPackageIdentity** | 80 | a(Context) 取已安装包身份并比对；异常 installed package identity unavailable / unlisted APK splits |
+| `prototype.r` | **BluetoothAdapterResolver** | 98 | a(Context,String) 返回 (address, PUBLIC_ADAPTER)；ocarplay-local-transport |
+| `prototype.v` | **NetworkTransportDescriber** | 94 | b/c/d 生成 UNKNOWN/CELLULAR/WIFI/BLUETOOTH/ETHERNET 传输描述串 |
+| `prototype.w` | **NetworkSelector** | 38 | a(Context)→Network、b(NetworkCapabilities)→boolean 的网卡挑选 |
 
 ## 为什么有些类没改名
 
 | 情况 | 例子 | 原因 |
 |---|---|---|
 | 本来就是语义名 | `WirelessCarPlayService`、`MainActivity`、`LogActivity` | 原厂没混淆这些入口类 |
-| 无特征字符串 | `t4`(3003 行)、`x`(1428)、`y0`(895) | 类里只有 `StringBuilder` 拼接的日志，判不出职责 |
-| 疑似日志辅助 | `b`、`r6`、`l4`、`f5`、`u5` | 同上，且被几十个类调用 |
+| 无特征字符串 | 多个 `b`/`l4`/`g5` 之类 | 类里只有 `StringBuilder` 拼接的日志，判不出职责 |
 | 单字母 + 多义 | `secured.d` vs `prototype.d` | 同名不同类，强行改名会串味 |
 
 想继续推进命名，做法是：从 `tools/features.json` 里挑 `loc` 大、`strings` 有
 业务关键字的类，先确认它被谁调用（`grep`），再补进 `rename_map.CORE`，重跑脚本。
 
+## 已分析、暂缓改名的嵌套类
+
+当前**没有**暂缓项：11 个嵌套类（`Outer$Inner`）已于 2026-11-03 全部落地。
+
+它们此前无法用文本正则改名，因为类名与同名字段/方法/局部变量大量共存
+（`VideoCipher` 里既有嵌套类 `b`，又有方法 `VideoCipher.b(...)`；`g4` 里既有枚举
+`e`/`h`，又有 `instanceof h` 与 `(e) obj` 强转），文本替换实测产生 300+ 处
+`cannot find symbol`。最终改用 `tools/rename_engine/RenameTool.java`：
+`javac` 语义分析后按 `Trees.getElement()` 得到的真实符号定位，安全落地。
+
+| 原混淆名 | 拟用名 | 暂缓原因 |
+|---|---|---|
+
 ## 与 APK 里 smali 的对应
 
 | 可读名 | smali 路径 |
 |---|---|
-| `AirPlaySession` | `smali/io/carplay/app/secured/i0.smali` |
-| `EventChannel` | `smali/io/carplay/app/secured/y5.smali` |
-| `ControlChannel` | `smali/io/carplay/app/secured/hx.smali` |
-| `EventChannelConnector` | `smali/io/carplay/app/secured/s2.smali` |
-| `ControlRequestParser` | `smali/io/carplay/app/secured/s0.smali` |
-| `AppleHttpHeaders` | `smali/io/carplay/app/secured/xah.smali` |
-| `Iap2WirelessSetup` | `smali/io/carplay/app/secured/e1.smali` |
-| `Iap2Csm` | `smali/io/carplay/app/secured/y2.smali` |
-| `SessionStateMachine` | `smali/io/carplay/app/secured/b1.smali` |
-| `StagedPeer` | `smali/io/carplay/app/secured/k6.smali` |
-| `CarPlayCtrlAdvertiser` | `smali/io/carplay/app/prototype/h.smali` |
-| `AirplayServiceProbe` | `smali/io/carplay/app/prototype/j.smali` |
-| `WifiNetworkMonitor` | `smali/io/carplay/app/prototype/m.smali` |
-| `BluetoothRfcommProfiles` | `smali/io/carplay/app/prototype/c0.smali` |
-| `PairingSession` | `smali/io/carplay/app/prototype/r0.smali` |
-| `MfiCertificateVerifier` | `smali/io/carplay/app/secured/a3.smali` |
-| `MfiSap` | `smali/io/carplay/app/secured/j4.smali` |
-| `PairingTlv8` | `smali/io/carplay/app/secured/l1.smali` |
-| `X25519` | `smali/io/carplay/app/secured/r2.smali` |
-| `ChaCha20` | `smali/io/carplay/app/secured/b6.smali` |
-| `Poly1305` | `smali/io/carplay/app/secured/n5.smali` |
-| `EcdsaSignature` | `smali/io/carplay/app/secured/h6.smali` |
-| `DerCodec` | `smali/io/carplay/app/secured/z4.smali` |
-| `AvcEncoder` | `smali/io/carplay/app/prototype/f.smali` |
-| `VideoCipher` | `smali/io/carplay/app/secured/j1.smali` |
-| `AacAudioFormat` | `smali/io/carplay/app/secured/d.smali` |
-| `PcmConverter` | `smali/io/carplay/app/secured/d5.smali` |
-| `PcmQueue` | `smali/io/carplay/app/secured/e5.smali` |
-| `PcmEndpoint` | `smali/io/carplay/app/secured/i4.smali` |
-| `AudioRelay` | `smali/io/carplay/app/secured/o4.smali` |
-| `BinaryPlist` | `smali/io/carplay/app/secured/l.smali` |
-| `ProtobufReader` | `smali/io/carplay/app/secured/q5.smali` |
-| `AppLogger` | `smali/io/carplay/app/prototype/d0.smali` |
-| `UpdateChecker` | `smali/io/carplay/app/prototype/z.smali` |
-| `CarLifeBridge` | `smali/io/carplay/app/prototype/u.smali` |
-| `IccoaBridge` | `smali/io/carplay/app/secured/b3.smali` |
-| `TouchFlow` | `smali/io/carplay/app/secured/v4.smali` |
-| `BluetoothDialogRunnable` | `smali/io/carplay/app/secured/btdlg.smali` |
-| `BluetoothSaveListener` | `smali/io/carplay/app/secured/btsave.smali` |
+（当前没有对应 smali 文件）

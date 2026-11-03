@@ -22,7 +22,7 @@ public final /* synthetic */ class s1 implements BiConsumer {
                 t1.f((ProtobufReader.a) obj3, (String) obj, (Integer) obj2);
                 break;
             default:
-                v1.g.i((LinkedHashMap) obj3, (String) obj, (Integer) obj2);
+                EncryptProofNeg.g.i((LinkedHashMap) obj3, (String) obj, (Integer) obj2);
                 break;
         }
     }

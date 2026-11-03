@@ -42,7 +42,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PROJ = os.path.dirname(HERE)
-SRC = os.path.join(PROJ, "src", "main", "java")
+SRC = os.environ.get("CARPLAY_SRC", os.path.join(PROJ, "src", "main", "java"))
 
 ERR_RE = re.compile(r"^(.+?):(\d+): error: (.*)$")
 DECL_RE = re.compile(r"\b(?:class|interface|enum)\s+(\w+)")
@@ -99,6 +99,22 @@ def resolve(name, path, decls):
     return None
 
 
+# 已知会导致「non-static variable ... cannot be referenced from a static context」的
+# 误绑定：这些名字在该文件里既是字段又是嵌套类型，resolve() 优先选了嵌套类型，
+# 但引用点实际是字段访问。盲目加 `Outer.X` 限定反而把字段当类型用，引入新错误。
+# 跳过它们（与 74 名映射无关——x/g/e/f/a/d 等混淆名在 39 名时代也一样误绑）。
+EXCLUDE = {
+    ("io/carplay/app/secured/AudioRelay.java", "b"),
+    ("io/carplay/app/secured/DisplaySession.java", "g"),
+    ("io/carplay/app/secured/EncryptProofNeg.java", "e"),
+    ("io/carplay/app/secured/EncryptProofNeg.java", "f"),
+    ("io/carplay/app/secured/EventChannel.java", "e"),
+    ("io/carplay/app/secured/MfiCertificateVerifier.java", "a"),
+    ("io/carplay/app/secured/PcmAudioOutput.java", "d"),
+    ("io/carplay/app/secured/TouchFlow.java", "a"),
+}
+
+
 def apply_fixes(errors, dry=False):
     by_file = collections.defaultdict(set)
     for f, l, c, msg in errors:
@@ -137,6 +153,8 @@ def apply_fixes(errors, dry=False):
                 # 已经被限定过（前面就是点）就不要再加一层，
                 # 否则多轮迭代会产出 `X.X.d` 这种加倍前缀。
                 if pos > 0 and line[pos - 1] == ".":
+                    continue
+                if (rel, name) in EXCLUDE:
                     continue
                 q = resolve(name, path, decls)
                 if q:

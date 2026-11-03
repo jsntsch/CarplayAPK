@@ -16,7 +16,7 @@ public class y1 extends ChaCha20 {
     @Override // io.carplay.app.secured.ChaCha20
     public void b(byte[] bArr) {
         z1.m(this.a, this.c, this.d);
-        y4.e(this.d, bArr, 0);
+        LittleEndianIntCodec.e(this.d, bArr, 0);
     }
 
     @Override // io.carplay.app.secured.ChaCha20
@@ -41,8 +41,8 @@ public class y1 extends ChaCha20 {
                 throw new IllegalArgumentException(c() + " requires 256 bit key");
             }
             g(bArr.length, this.c, 0);
-            y4.h(bArr, 0, this.c, 4, 8);
+            LittleEndianIntCodec.h(bArr, 0, this.c, 4, 8);
         }
-        y4.h(bArr2, 0, this.c, 13, 3);
+        LittleEndianIntCodec.h(bArr2, 0, this.c, 13, 3);
     }
 }

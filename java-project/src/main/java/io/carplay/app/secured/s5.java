@@ -3,7 +3,7 @@ package io.carplay.app.secured;
 import java.util.Objects;
 
 /* JADX INFO: loaded from: classes.dex */
-public final class s5 extends w1 {
+public final class s5 extends ProtoMessageBase {
     private final String a;
     private final String b;
     private final int c;
@@ -16,13 +16,13 @@ public final class s5 extends w1 {
     private final String j;
     private final String k;
 
-    public s5(String str, String str2, int i, String str3, int i2, int i3, int i4, String str4, String str5, String str6, String str7) {
+    public s5(String str, String str2, int i, String str3, int i2, int i3, int i4, String str4, String str5, String stCarLifeFrame, String str7) {
         m(str);
         m(str2);
         m(str3);
         m(str4);
         m(str5);
-        m(str6);
+        m(stCarLifeFrame);
         m(str7);
         if (i < 0 || i2 < 0 || i3 < 0 || i4 < 0) {
             SyntheticRefs.b("invalid real receiver statistics");
@@ -37,7 +37,7 @@ public final class s5 extends w1 {
         this.g = i4;
         this.h = str4;
         this.i = str5;
-        this.j = str6;
+        this.j = stCarLifeFrame;
         this.k = str7;
     }
 
@@ -73,9 +73,9 @@ public final class s5 extends w1 {
         String str3 = this.d;
         String str4 = this.h;
         String str5 = this.i;
-        String str6 = this.j;
+        String stCarLifeFrame = this.j;
         String str7 = this.k;
-        return Objects.hashCode(str7) + w1.b(str6, w1.b(str5, w1.b(str4, w1.b(str3, w1.b(str2, w1.b(str, ((((((i * 31) + i2) * 31) + i3) * 31) + i4) * 31, 31), 31), 31), 31), 31), 31);
+        return Objects.hashCode(str7) + ProtoMessageBase.b(stCarLifeFrame, ProtoMessageBase.b(str5, ProtoMessageBase.b(str4, ProtoMessageBase.b(str3, ProtoMessageBase.b(str2, ProtoMessageBase.b(str, ((((((i * 31) + i2) * 31) + i3) * 31) + i4) * 31, 31), 31), 31), 31), 31), 31);
     }
 
     public int i() {
@@ -126,7 +126,7 @@ public final class s5 extends w1 {
         Object[] objArr = {this.a, this.b, Integer.valueOf(this.c), this.d, Integer.valueOf(this.e), Integer.valueOf(this.f), Integer.valueOf(this.g), this.h, this.i, this.j, this.k};
         String[] strArrSplit = "a;b;c;d;e;f;g;h;i;j;k".length() == 0 ? new String[0] : "a;b;c;d;e;f;g;h;i;j;k".split(";");
         StringBuilder sb = new StringBuilder();
-        w1.f(s5.class, sb, "[");
+        ProtoMessageBase.f(s5.class, sb, "[");
         for (int i = 0; i < strArrSplit.length; i++) {
             sb.append(strArrSplit[i]);
             sb.append("=");

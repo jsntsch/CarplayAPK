@@ -37,12 +37,12 @@ final class Iap2WirelessSetup implements AutoCloseable {
     private int k;
 
     public class a implements MfiCertificateVerifier.c {
-        final /* synthetic */ i5 a;
+        final /* synthetic */ DeviceMetadataStore a;
         final /* synthetic */ Supplier b;
         final /* synthetic */ Consumer c;
         final /* synthetic */ Iap2WirelessSetup d;
 
-        public a(Iap2WirelessSetup iap2WirelessSetup, i5 i5Var, Supplier supplier, Consumer consumer) {
+        public a(Iap2WirelessSetup iap2WirelessSetup, DeviceMetadataStore i5Var, Supplier supplier, Consumer consumer) {
             this.a = i5Var;
             this.b = supplier;
             this.c = consumer;
@@ -55,7 +55,7 @@ final class Iap2WirelessSetup implements AutoCloseable {
         }
 
         @Override // io.carplay.app.secured.MfiCertificateVerifier.c
-        public i5 c() {
+        public DeviceMetadataStore c() {
             return this.a;
         }
 
@@ -159,7 +159,7 @@ final class Iap2WirelessSetup implements AutoCloseable {
         }
     }
 
-    private Iap2WirelessSetup(String str, c cVar, Consumer<String> consumer, i5 i5Var, boolean z, Supplier<Boolean> supplier, BooleanSupplier booleanSupplier) {
+    private Iap2WirelessSetup(String str, c cVar, Consumer<String> consumer, DeviceMetadataStore i5Var, boolean z, Supplier<Boolean> supplier, BooleanSupplier booleanSupplier) {
         this.a = new ArrayBlockingQueue<>(32);
         this.b = new Object();
         this.c = new AtomicBoolean();
@@ -171,15 +171,15 @@ final class Iap2WirelessSetup implements AutoCloseable {
         this.f = z ? MfiCertificateVerifier.u(str, "CarPlus", aVar) : MfiCertificateVerifier.S(str, "CarPlus", aVar);
     }
 
-    public static Iap2WirelessSetup l(String str, c cVar, Consumer<String> consumer, i5 i5Var) {
+    public static Iap2WirelessSetup l(String str, c cVar, Consumer<String> consumer, DeviceMetadataStore i5Var) {
         return m(str, cVar, consumer, i5Var, new f1(0));
     }
 
-    public static Iap2WirelessSetup m(String str, c cVar, Consumer<String> consumer, i5 i5Var, Supplier<Boolean> supplier) {
+    public static Iap2WirelessSetup m(String str, c cVar, Consumer<String> consumer, DeviceMetadataStore i5Var, Supplier<Boolean> supplier) {
         return n(str, cVar, consumer, i5Var, supplier, new g1(0));
     }
 
-    public static Iap2WirelessSetup n(String str, c cVar, Consumer<String> consumer, i5 i5Var, Supplier<Boolean> supplier, BooleanSupplier booleanSupplier) {
+    public static Iap2WirelessSetup n(String str, c cVar, Consumer<String> consumer, DeviceMetadataStore i5Var, Supplier<Boolean> supplier, BooleanSupplier booleanSupplier) {
         return new Iap2WirelessSetup(str, cVar, consumer, i5Var, true, supplier, booleanSupplier);
     }
 
@@ -364,11 +364,11 @@ final class Iap2WirelessSetup implements AutoCloseable {
         }
     }
 
-    public Iap2WirelessSetup(String str, c cVar, Consumer<String> consumer, i5 i5Var) {
+    public Iap2WirelessSetup(String str, c cVar, Consumer<String> consumer, DeviceMetadataStore i5Var) {
         this(str, cVar, consumer, i5Var, new f1(1));
     }
 
-    public Iap2WirelessSetup(String str, c cVar, Consumer<String> consumer, i5 i5Var, Supplier<Boolean> supplier) {
+    public Iap2WirelessSetup(String str, c cVar, Consumer<String> consumer, DeviceMetadataStore i5Var, Supplier<Boolean> supplier) {
         this(str, cVar, consumer, i5Var, false, supplier, new g1(1));
     }
 

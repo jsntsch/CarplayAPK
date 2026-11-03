@@ -1,7 +1,7 @@
 package io.carplay.app.secured;
 
 /* JADX INFO: loaded from: classes.dex */
-public final class q6 extends w1 {
+public final class q6 extends ProtoMessageBase {
     private final int a;
     private final int b;
     private final int c;
@@ -11,7 +11,7 @@ public final class q6 extends w1 {
     private final int g;
     private final int h;
 
-    public static final class a extends w1 {
+    public static final class a extends ProtoMessageBase {
         private final int a;
         private final int b;
 
@@ -44,7 +44,7 @@ public final class q6 extends w1 {
             Object[] objArr = {Integer.valueOf(this.a), Integer.valueOf(this.b)};
             String[] strArrSplit = "a;b".length() == 0 ? new String[0] : "a;b".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(a.class, sb, "[");
+            ProtoMessageBase.f(a.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");
@@ -202,7 +202,7 @@ public final class q6 extends w1 {
         Object[] objArr = {Integer.valueOf(this.a), Integer.valueOf(this.b), Integer.valueOf(this.c), Integer.valueOf(this.d), Integer.valueOf(this.e), Integer.valueOf(this.f), Integer.valueOf(this.g), Integer.valueOf(this.h)};
         String[] strArrSplit = "a;b;c;d;e;f;g;h".length() == 0 ? new String[0] : "a;b;c;d;e;f;g;h".split(";");
         StringBuilder sb = new StringBuilder();
-        w1.f(q6.class, sb, "[");
+        ProtoMessageBase.f(q6.class, sb, "[");
         for (int i = 0; i < strArrSplit.length; i++) {
             sb.append(strArrSplit[i]);
             sb.append("=");

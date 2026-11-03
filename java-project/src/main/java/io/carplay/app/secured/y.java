@@ -20,7 +20,7 @@ public final /* synthetic */ class y implements Predicate {
         z.a aVar = this.b;
         switch (i) {
             case 0:
-                return z.f(aVar, (x.c) obj);
+                return z.f(aVar, (HidCapabilities.c) obj);
             default:
                 return WirelessCarPlayService.Z1(aVar, (Map.Entry) obj);
         }

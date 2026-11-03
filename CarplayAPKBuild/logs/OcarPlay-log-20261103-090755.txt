@@ -1,0 +1,1311 @@
+Car+ → CarPlay 连接历史
+本机保留最近 5 个日志文件，每个约 1 MiB；不自动上传。时间戳使用 UTC（北京时间加 8 小时）。
+
+===== 当前 / 最近一次 =====
+2026-11-03T01:07:32.634392Z SESSION START | Car+ → CarPlay | PKJ110 | PKJ110_16.0.10.501(CN01)
+2026-11-03T01:07:32.637097Z SESSION_CPU_LEASE held=true screen_forced_on=false interactive=true power_save=false device_idle=false
+2026-11-03T01:07:32.637305Z Wireless session started; continuous until user stop/source exit/unrecoverable error; phone USB firmware interface unimplemented and unverified
+2026-11-03T01:07:32.639299Z APP_BUILD fix2 version=1.7.29 code=298
+2026-11-03T01:07:32.640242Z CURRENT_WIFI_REUSE verified_previous_transport=true fresh_authentication_required=true network_switch=false
+2026-11-03T01:07:32.641803Z NATIVE_COMPONENT_SUPPORT status=REVIEWED reason=REVIEWED_ARTIFACT host_code=17031002 plugin_code=260 producer_entry_observed=true runtime_handshake_required=true compatibility_confirmed=false
+2026-11-03T01:07:32.642022Z NATIVE_HOST_BUILD code=17031002 version=UNAVAILABLE
+2026-11-03T01:07:32.643033Z Rediscovering the previously authenticated receiver on its retained WLAN; full fresh authentication required
+2026-11-03T01:07:32.645416Z CURRENT_WIFI_DISCOVERING selected_network_only=true bootstrap_parameters_required=false authentication_required=true
+2026-11-03T01:07:32.646949Z CTRL_ANNOUNCE name=OPPO_X8U port=33409 svc=OPPO_X8U manual=OPPO_X8U
+2026-11-03T01:07:32.648632Z ENDPOINT_DISCOVERY_STARTED_UNTRUSTED
+2026-11-03T01:07:33.690004Z CTRL_SERVICE_LIVE name=OPPO_X8U port=0
+2026-11-03T01:07:33.690490Z CTRL_RESOLVE_SUBMIT type=_carplay-ctrl._tcp name=OPPO_X8U port=0
+2026-11-03T01:07:33.690732Z CTRL_SERVICE_REGISTERED network_scoped=true real_identifier=true values_logged=false
+2026-11-03T01:07:33.694973Z CTRL_RESOLVE_OK name=OPPO_X8U port=33409 type=._carplay-ctrl._tcp host=/192.168.5.100
+2026-11-03T01:07:34.652364Z Selected current WLAN candidate found; full pairing and certificate authentication required
+2026-11-03T01:07:34.659545Z CONNECT_STAGE ENDPOINT_READY
+2026-11-03T01:07:34.660045Z CONNECT_STAGE SOCKET_FACTORY_READY
+2026-11-03T01:07:34.672092Z CONNECT_STAGE OWN_IDENTITY_VERIFIED
+2026-11-03T01:07:34.672472Z CONNECT_STAGE PEER_STORE_READY
+2026-11-03T01:07:34.674078Z CONNECT_STAGE CONNECTION_CREATED
+2026-11-03T01:07:34.674708Z CARPLAY_CONTROL_CONNECTING
+2026-11-03T01:07:34.692148Z CARPLAY_PAIRING_PROFILE hkp=2 verify_pd=1
+2026-11-03T01:07:34.692312Z CARPLAY_PAIR_SETUP
+2026-11-03T01:07:34.721491Z CARPLAY_RESP op=PAIR_SETUP lastCseq=1
+2026-11-03T01:07:34.796953Z CARPLAY_RESP op=PAIR_SETUP lastCseq=3
+2026-11-03T01:07:34.843846Z CARPLAY_RESP op=PAIR_VERIFY lastCseq=5
+2026-11-03T01:07:34.844374Z CARPLAY_PAIR_VERIFIED
+2026-11-03T01:07:35.180134Z MFI_SAP_CERTIFICATE_EXPIRY_COMPATIBLE fresh_proof_verified=true pinned=true encrypted_control=true
+2026-11-03T01:07:35.181084Z MFI_FRESH_PROOF_VERIFIED_PINNED_APPLE_CA_UNVERIFIED=true
+2026-11-03T01:07:35.181568Z CARPLAY_INITIAL_SETUP
+2026-11-03T01:07:35.182407Z CARPLAY_SETUP_DEVICE_ID value=E0:42:6D:B6:D5:78 len=17
+2026-11-03T01:07:35.183182Z CARPLAY_SETUP_TRANSPORT_ID source=BLUETOOTH_SNAPSHOT values_logged=false
+2026-11-03T01:07:35.183787Z AUDIO_WIRE_PROFILE profile=MODERN_RTP aad_bytes=8 compatibility_build_declared=true actual_android_build=false
+2026-11-03T01:07:35.184407Z CARPLAY_SETUP_KEYS n=10 keys=[name, model, deviceID, sessionUUID, sourceVersion, osBuildVersion, timingPort, timingProtocol, keepAliveLowPower, features]
+2026-11-03T01:07:35.192563Z CTRL_RESOLVE_SUBMIT type=_carplay-ctrl._tcp name=OPPO_X8U port=0
+2026-11-03T01:07:35.194593Z CARPLAY_RESP op=STREAM_SETUP lastCseq=7
+2026-11-03T01:07:35.195449Z CARPLAY_SETUP_RESP_KEYS n=3 keys=[keepAlivePort, eventPort, timingPort]
+2026-11-03T01:07:35.197629Z CARPLAY_UDP_KEEPALIVE advertised=true interval_ms=10000 expects_reply=false
+2026-11-03T01:07:35.198173Z CARPLAY_EVENT_CONNECTING
+2026-11-03T01:07:35.198884Z EVTCP connect host=/192.168.5.1 port=5001 timeout_ms=10000
+2026-11-03T01:07:35.200668Z CTRL_RESOLVE_OK name=OPPO_X8U port=33409 type=._carplay-ctrl._tcp host=/192.168.5.100
+2026-11-03T01:07:35.204977Z CARPLAY_INFO_AFTER_AUTHENTICATED_SETUP
+2026-11-03T01:07:35.205328Z V153_EVENT_READY=true
+2026-11-03T01:07:35.205620Z HID_CHAIN_START obj=50470396
+2026-11-03T01:07:35.205957Z HID_GATE_CLOSED reason=REPORTED
+2026-11-03T01:07:35.212595Z CARPLAY_INFO_KEYS n=22 keys=[pi, OSInfo, modes, manufacturer, audioLatencies, keepAliveLowPower, model, keepAliveSendStatsAsBody, audioFormats, rightHandDrive, extendedFeatures, statusFlags, oemIconVisible, bluetoothIDs, deviceID, nightMode, displays, hidDevices, hidLanguages, sourceVersion, features, name]
+2026-11-03T01:07:35.212868Z CARPLAY_INFO_FEATURES value=416679199360
+2026-11-03T01:07:35.217528Z HID_TOUCH_DESCRIPTOR index=0 bytes=62 reports=1 display_bound=true uuid_kind=STRING
+2026-11-03T01:07:35.218318Z HID_TOUCH_UNSUPPORTED index=1 bytes=29[5, 11, 9, 1, -95, 1, 5, 11, 9, 32, 9, 38, 21, 0, 37, 1, 117, 1, -107, 2, -127, 2, 117, 6, -107, 1, -127, 1, -64] reason=DESCRIPTOR
+2026-11-03T01:07:35.218970Z HID_BACK_DESCRIPTOR index=2 bytes=72 reports=1
+2026-11-03T01:07:35.219292Z HID_CAPABILITIES devices=3 touch=1
+2026-11-03T01:07:35.219723Z CAPS schema=1 displays=1 rejected_displays=0 main=1280x768@30 input=TOUCH_SCREEN hid=3 hid_valid=true touch=1 knobs=1 keys=1 audio_rows=9 audio_valid=true audio_legacy=false modes_declared=true modes_valid=true feature_bits=6104040280 feature_lists_valid=true negotiated=0 iap_channel=false fingerprint=c30dd619b5aef1838410f5b41718adca251a1ac626859fbf29ca8beedf1dc76b
+2026-11-03T01:07:35.220036Z CAPABILITY_PLAN policy=1 fingerprint=c30dd619b5aef1838410f5b41718adca251a1ac626859fbf29ca8beedf1dc76b display_candidates=1 audio_table_valid=true max_route_attempts=3 physical_receipt_confirmed=false
+2026-11-03T01:07:35.220481Z AUDIO_CAPABILITIES legacy=false output_rows=9 pcm=true
+2026-11-03T01:07:35.220749Z AUDIO_OUTPUT_CAPABILITY stream=100 type=default formats=0xc000050
+2026-11-03T01:07:35.220944Z AUDIO_OUTPUT_CAPABILITY stream=100 type=media formats=0x8000
+2026-11-03T01:07:35.221143Z AUDIO_OUTPUT_CAPABILITY stream=100 type=telephony formats=0xc000054
+2026-11-03T01:07:35.221344Z AUDIO_OUTPUT_CAPABILITY stream=100 type=speechRecognition formats=0x8000040
+2026-11-03T01:07:35.221538Z AUDIO_OUTPUT_CAPABILITY stream=100 type=alert formats=0x2008000
+2026-11-03T01:07:35.221751Z AUDIO_OUTPUT_CAPABILITY stream=100 type=compatibility formats=0x8054
+2026-11-03T01:07:35.221971Z AUDIO_OUTPUT_CAPABILITY stream=101 type=default formats=0x2008000
+2026-11-03T01:07:35.222218Z AUDIO_OUTPUT_CAPABILITY stream=101 type=compatibility formats=0x2008000
+2026-11-03T01:07:35.222450Z AUDIO_OUTPUT_CAPABILITY stream=102 type=media formats=0x808000
+2026-11-03T01:07:35.222827Z CARPLAY_INITIAL_MODES_ACCEPTED code=MODE_INFO_ACCEPTED kind=NONE row=-1 authentication_already_verified=true
+2026-11-03T01:07:35.223085Z MODE_INFO_REPRESENTATION representation=CHANGE_MODES screen_constraints=DECLARATION_DEFAULT_OR_TRANSFER audio_constraints=DECLARATION_DEFAULT_OR_TRANSFER
+2026-11-03T01:07:35.223382Z CARPLAY_RESOURCE_STATE source=INITIAL_INFO revision=0 screen_entity=2 screen_permanent=2 screen_borrows=0 screen_take=100 screen_borrow=100 screen_unborrow=100 audio_declared=false audio_entity=2 audio_permanent=2 audio_borrows=0 audio_take=100 audio_borrow=100 audio_unborrow=100 display_confirmed=false
+2026-11-03T01:07:35.223643Z CARPLAY_SCREEN_OWNER_PHONE=false
+2026-11-03T01:07:35.223939Z CARPLAY_RESOURCE_STATE source=LOCAL_CLAIM revision=0 screen_entity=1 screen_permanent=1 screen_borrows=0 screen_take=100 screen_borrow=100 screen_unborrow=100 audio_declared=false audio_entity=2 audio_permanent=2 audio_borrows=0 audio_take=100 audio_borrow=100 audio_unborrow=100 display_confirmed=false
+2026-11-03T01:07:35.224177Z CARPLAY_SCREEN_OWNER_PHONE=true
+2026-11-03T01:07:35.229666Z CARPLAY_RESP op=COMMAND lastCseq=9
+2026-11-03T01:07:35.229926Z CARPLAY_SCREEN_MODES_SENT screen_phone=true display_confirmed=false
+2026-11-03T01:07:35.250304Z HID_TOUCH_DESCRIPTOR index=0 bytes=62 reports=1 display_bound=true uuid_kind=STRING
+2026-11-03T01:07:35.251754Z HID_TOUCH_UNSUPPORTED index=1 bytes=29[5, 11, 9, 1, -95, 1, 5, 11, 9, 32, 9, 38, 21, 0, 37, 1, 117, 1, -107, 2, -127, 2, 117, 6, -107, 1, -127, 1, -64] reason=DESCRIPTOR
+2026-11-03T01:07:35.252807Z HID_BACK_DESCRIPTOR index=2 bytes=72 reports=1
+2026-11-03T01:07:35.253225Z HID_CAPABILITIES devices=3 touch=1
+2026-11-03T01:07:35.253667Z EVTCP connect host=/192.168.5.1 port=6030 timeout_ms=10000
+2026-11-03T01:07:35.259061Z CARPLAY_SCREEN_ROUTE_OPENED epoch=1
+2026-11-03T01:07:35.260974Z CAPABILITY_HINT_SAVED route_accepted=true display_receipt_confirmed=false
+2026-11-03T01:07:35.268662Z CARPLAY_RESP op=STREAM_RECORD lastCseq=11
+2026-11-03T01:07:35.270709Z CARPLAY_MEDIA_READY 1280x768
+2026-11-03T01:07:35.271592Z CARPLAY_IAP_DIAG_U0=false
+2026-11-03T01:07:35.272251Z CARPLAY_IAP_DIAG_R0=null
+2026-11-03T01:07:35.272882Z CARPLAY_IAP_DIAG_J=null
+2026-11-03T01:07:35.273377Z CARPLAY_IAP_DIAG_A0=exists
+2026-11-03T01:07:35.274237Z CARPLAY_IAP_DIAG_M=64hex
+2026-11-03T01:07:35.274876Z V153_MEDIA_PATH_CONTINUE
+2026-11-03T01:07:35.280631Z CURRENT_WIFI_REUSE_ELIGIBLE authenticated=true process_local=true credentials_persisted=false
+2026-11-03T01:07:35.281723Z NATIVE_GEOMETRY_PREFLIGHT supported_candidate=true native_encoder_acceptance_confirmed=false fps=30
+2026-11-03T01:07:35.282554Z VIDEO_NEGOTIATED_REQUEST fps=30 receiver_max=30 actual_source_pending=true
+2026-11-03T01:07:35.283282Z Receiver authenticated; waiting for native Car+ source
+2026-11-03T01:07:35.290218Z VIDEO_SELECTED_GEOMETRY target=1280x768 target_fps=30 planned_source_request=1280x768 exact_candidate=true native_source_retained=false native_init_reissued=false actual_source_pending=true
+2026-11-03T01:07:35.411713Z USER_NOTICE 请按原生 Car+ 提示完成首次连接。
+2026-11-03T01:07:35.414830Z Normal Car+ entry requested; source requested=1280x768 follows actual receiver declaration; original Car+ settings may override it. Continuous session, no fixed time limit.
+2026-11-03T01:07:35.419728Z NATIVE_NETWORK_SNAPSHOT phone_net_setting=0 default=[transport=CELLULAR,internet=true,validated=true,restricted=false,vpn=false] process_bound=SYSTEM_DEFAULT selected=[transport=WIFI,internet=true,validated=false,restricted=false,vpn=false] default_is_selected=false bound_is_selected=false our_process_route_only=true projected_app_route_observed=false stage=SOURCE_ARMED
+2026-11-03T01:07:35.422610Z NATIVE_COMPONENT_SUPPORT status=REVIEWED reason=REVIEWED_ARTIFACT host_code=17031002 plugin_code=260 producer_entry_observed=true runtime_handshake_required=true compatibility_confirmed=false
+2026-11-03T01:07:35.423187Z NATIVE_HOST_BUILD code=17031002 version=UNAVAILABLE
+2026-11-03T01:07:35.423973Z SOURCE_BACKEND_CAPABILITIES foreground=true visibility=true hard_keys=true night_mode=false view_area=false vehicle_information=false limited_ui=false display_confirmed=false
+2026-11-03T01:07:35.426782Z Local AES provider=BC; explicit AES/ECB/PKCS5Padding; actual peer READY still required
+2026-11-03T01:07:35.833581Z All seven localhost channels connected; not media/auth acceptance
+2026-11-03T01:07:35.834618Z TX CMD 0x18001 body=4 encrypted=false
+2026-11-03T01:07:35.931942Z RX CMD 0x10002 body=2
+2026-11-03T01:07:35.932318Z RX CMD 0x1001b body=0
+2026-11-03T01:07:35.932542Z RX CMD 0x10004 body=327
+2026-11-03T01:07:35.933472Z TX CMD 0x18048 body=38 encrypted=false
+2026-11-03T01:07:35.933759Z RX CMD 0x10018 body=0
+2026-11-03T01:07:35.936303Z RX CMD 0x10049 body=34
+2026-11-03T01:07:35.936989Z TX CMD 0x1804a body=2 encrypted=false
+2026-11-03T01:07:35.937198Z Fresh phone proof VERIFIED; no claim about separate phone eligibility
+2026-11-03T01:07:35.937464Z TX CMD 0x18003 body=28 encrypted=false
+2026-11-03T01:07:35.937704Z TX CMD 0x18027 body=65 encrypted=false
+2026-11-03T01:07:35.937967Z Own local experimental receiver UUID/channel sent; not a borrowed vehicle or officially allocated manufacturer identity
+2026-11-03T01:07:35.938425Z TX CMD 0x18052 body=57 encrypted=false
+2026-11-03T01:07:35.938620Z Sent actual supported CONTENT_ENCRYPTION=1 subset; no borrowed car channel
+2026-11-03T01:07:35.938820Z NATIVE_GEOMETRY_REQUEST target=1280x768 exact_source_requested=true applied_confirmed=false; waiting for actual VIDEO_INIT_DONE
+2026-11-03T01:07:35.941152Z RX CMD 0x10051 body=0
+2026-11-03T01:07:35.941469Z RX CMD 0x10031 body=0
+2026-11-03T01:07:35.941697Z RX CMD 0x1006a body=0
+2026-11-03T01:07:36.183651Z TX CMD 0x1806b body=395 encrypted=false
+2026-11-03T01:07:36.184669Z RX CMD 0x1006c body=347
+2026-11-03T01:07:36.186097Z TX CMD 0x1806d body=0 encrypted=false
+2026-11-03T01:07:36.186480Z RX CMD 0x1006e body=0
+2026-11-03T01:07:36.186581Z Actual MD_ENCRYPT_READY observed; own experimental receiver metadata only
+2026-11-03T01:07:36.186773Z TX CMD 0x18007 body=16 encrypted=true
+2026-11-03T01:07:36.186934Z RX CMD 0x1004b body=2
+2026-11-03T01:07:36.398321Z RX CMD 0x10008 body=8
+2026-11-03T01:07:36.400131Z NATIVE_NETWORK_SNAPSHOT phone_net_setting=0 default=[transport=CELLULAR,internet=true,validated=true,restricted=false,vpn=false] process_bound=SYSTEM_DEFAULT selected=[transport=WIFI,internet=true,validated=false,restricted=false,vpn=false] default_is_selected=false bound_is_selected=false our_process_route_only=true projected_app_route_observed=false stage=FIRST_NATIVE_FORMAT
+2026-11-03T01:07:36.400355Z Actual native video format=1280x768 fps=30
+2026-11-03T01:07:36.400500Z VIDEO_SOURCE_RATE requested=30 init_declared=30 cadence_confirmed=false fallback=NONE
+2026-11-03T01:07:36.400700Z VIDEO_EPOCH_WAITING_IDR=2
+2026-11-03T01:07:36.400895Z VIDEO_CANVAS_PLAN policy=NATIVE_DISPLAY_MATCH native_request=1280x768 auto_fit=true fill_display=false receiver=1280x768 output=1280x768 source=1280x768 target_fps=30 display_confirmed=false
+2026-11-03T01:07:36.401068Z VIDEO_ROUTE_NATIVE source=1280x768 requested=1280x768 source_declared_fps=30 reason=COMPRESSED_PASSTHROUGH
+2026-11-03T01:07:36.401182Z Actual VIDEO_INIT_DONE 1280x768 @30; not decoded frames
+2026-11-03T01:07:36.401307Z NATIVE_GEOMETRY_RESULT requested=1280x768 actual=1280x768 dimensions_match=true source_format_observed=true display_confirmed=false
+2026-11-03T01:07:36.401646Z TX CMD 0x18009 body=0 encrypted=true
+2026-11-03T01:07:36.401950Z RX CMD 0x1001b body=0
+2026-11-03T01:07:36.402107Z NATIVE_UI_SIGNAL kind=FOREGROUND
+2026-11-03T01:07:36.402515Z UI_SESSION_INTENT kind=CARPLUS accepted=true session_retained=true
+2026-11-03T01:07:36.426963Z NATIVE_VIDEO_FIRST_BYTES bytes=9896 after_start_ms=25 encryption_ready=true init_done=true start_sent=true video_packets=1 video_bytes=9896 source_phase=VIDEO_BYTES_OBSERVED native_foreground_observed=true
+2026-11-03T01:07:36.427221Z Actual VIDEO chunk bytes=9896 encrypted=true signature=AnnexB_start_code_observed_codec_unconfirmed
+2026-11-03T01:07:36.431715Z RX CMD 0x10026 body=44
+2026-11-03T01:07:36.432015Z NATIVE_MODULE_STATUS rows=7 connect=UNDECLARED mic=VEHICLE vr=IDLE diagnostic_only=true
+2026-11-03T01:07:36.438778Z Actual VIDEO chunk bytes=518 encrypted=true signature=AnnexB_start_code_observed_codec_unconfirmed
+2026-11-03T01:07:36.439133Z Actual native video entered current wireless sender; waiting for first IDR send confirmation
+2026-11-03T01:07:36.439229Z VIDEO_EPOCH_WAITING_IDR=2
+2026-11-03T01:07:36.439675Z ACTUAL_NATIVE_IDR_ACCEPTED
+2026-11-03T01:07:36.440029Z ACTUAL_NATIVE_AVC_CONFIG_SENT
+2026-11-03T01:07:36.440214Z CARPLAY_VIDEO_CONFIG width=1280 height=768 encrypted=true
+2026-11-03T01:07:36.440510Z CARPLAY_AVC_DIAGNOSTIC profile_idc=66 constraints=128 level_idc=32 coded=1280x768 visible=1280x768 declared=1280x768 dimensions_match=true sps_metadata=PARSED
+2026-11-03T01:07:36.440993Z VIDEO_UNITS_SENT=1
+2026-11-03T01:07:36.441201Z VIDEO_PROGRESS units=1
+2026-11-03T01:07:36.441382Z VIDEO_EPOCH_FIRST_IDR_SENT=2
+2026-11-03T01:07:36.441603Z Actual source-derived IDR sent on authenticated transport; receiver display still requires confirmation
+2026-11-03T01:07:36.508902Z Actual VIDEO chunk bytes=597 encrypted=true signature=AnnexB_start_code_observed_codec_unconfirmed
+2026-11-03T01:07:36.530944Z RX CMD 0x10022 body=0
+2026-11-03T01:07:36.960999Z Actual VR packet id=0x50006 wireBytes=0; PCM producer/format not assumed
+2026-11-03T01:07:36.961330Z Actual VR packet id=0x50006 wireBytes=0; PCM producer/format not assumed
+2026-11-03T01:07:36.963908Z RX CMD 0x10022 body=0
+2026-11-03T01:07:37.458032Z VIDEO_PROGRESS units=17
+2026-11-03T01:07:38.495040Z VIDEO_PROGRESS units=37
+2026-11-03T01:07:39.497106Z VIDEO_PROGRESS units=57
+2026-11-03T01:07:40.502665Z VIDEO_PROGRESS units=77
+2026-11-03T01:07:41.457780Z VIDEO_NATIVE_FLOW received_fps_x100=1893 passthrough_enqueued=95 adapted_enqueued=0 assembly_p50_us=50810 assembly_p95_us=69314 actual_display_unconfirmed=true
+2026-11-03T01:07:41.458633Z VIDEO_FLOW window=256 transport_received_fps_x100=1893 sent_fps_x100=1893 queue_depth=0 oldest_us=0 SOCKET_WRITE_p50_us=152_p95_us=992 SENDER_QUEUE_p50_us=73_p95_us=975 SOURCE_TO_WRITE_p50_us=51591_p95_us=70889 receiver_render_confirmed=false
+2026-11-03T01:07:41.506806Z VIDEO_PROGRESS units=97
+2026-11-03T01:07:42.513692Z VIDEO_PROGRESS units=117
+2026-11-03T01:07:43.514718Z VIDEO_PROGRESS units=137
+2026-11-03T01:07:44.527019Z VIDEO_PROGRESS units=157
+2026-11-03T01:07:45.532155Z VIDEO_PROGRESS units=177
+2026-11-03T01:07:45.773995Z CARPLAY_EVENT_INPUT point=TRANSPORT_END RTSP_INPUT reader_started=true reader_ended=true closed=true stage=ENDED read_calls=2 raw_bytes=0 plain_bytes=0 messages=0 requests=0 responses=0 header_bytes=0 body_bytes=0 body_expected=-1 record_bytes=0 record_expected=-1 pending_plain_bytes=0
+2026-11-03T01:07:45.774989Z Recovering selected receiver 1/3; native_source_retained=true; reason=EVENT_CHANNEL_EOFException
+2026-11-03T01:07:45.777164Z RECOVERY_REUSE_SELECTED_WIFI generation=2
+2026-11-03T01:07:46.480553Z VIDEO_NATIVE_FLOW received_fps_x100=1991 passthrough_enqueued=182 adapted_enqueued=0 assembly_p50_us=50648 assembly_p95_us=65402 actual_display_unconfirmed=true
+2026-11-03T01:07:46.779207Z CONNECT_STAGE ENDPOINT_READY
+2026-11-03T01:07:46.779482Z CONNECT_STAGE SOCKET_FACTORY_READY
+2026-11-03T01:07:46.783410Z CONNECT_STAGE OWN_IDENTITY_VERIFIED
+2026-11-03T01:07:46.783654Z CONNECT_STAGE PEER_STORE_READY
+2026-11-03T01:07:46.784099Z CONNECT_STAGE CONNECTION_CREATED
+2026-11-03T01:07:46.784338Z CARPLAY_CONTROL_CONNECTING
+2026-11-03T01:07:46.799015Z CARPLAY_PAIRING_PROFILE hkp=2 verify_pd=1
+2026-11-03T01:07:46.799181Z CARPLAY_PAIR_SETUP
+2026-11-03T01:07:46.864176Z CARPLAY_RESP op=PAIR_SETUP lastCseq=2
+2026-11-03T01:07:46.881161Z CARPLAY_RESP op=PAIR_VERIFY lastCseq=4
+2026-11-03T01:07:46.892518Z CARPLAY_PAIR_VERIFIED
+2026-11-03T01:07:47.255385Z CARPLAY_RESP op=MFI_AUTH_SETUP lastCseq=6
+2026-11-03T01:07:47.257683Z MFI_SAP_CERTIFICATE_EXPIRY_COMPATIBLE fresh_proof_verified=true pinned=true encrypted_control=true
+2026-11-03T01:07:47.257995Z MFI_FRESH_PROOF_VERIFIED_PINNED_APPLE_CA_UNVERIFIED=true
+2026-11-03T01:07:47.258262Z CARPLAY_INITIAL_SETUP
+2026-11-03T01:07:47.258535Z CARPLAY_SETUP_DEVICE_ID value=E0:42:6D:B6:D5:78 len=17
+2026-11-03T01:07:47.258743Z CARPLAY_SETUP_TRANSPORT_ID source=BLUETOOTH_SNAPSHOT values_logged=false
+2026-11-03T01:07:47.259004Z AUDIO_WIRE_PROFILE profile=MODERN_RTP aad_bytes=8 compatibility_build_declared=true actual_android_build=false
+2026-11-03T01:07:47.259277Z CARPLAY_SETUP_KEYS n=10 keys=[name, model, deviceID, sessionUUID, sourceVersion, osBuildVersion, timingPort, timingProtocol, keepAliveLowPower, features]
+2026-11-03T01:07:47.269974Z CARPLAY_SETUP_RESP_KEYS n=3 keys=[keepAlivePort, eventPort, timingPort]
+2026-11-03T01:07:47.271116Z CARPLAY_UDP_KEEPALIVE advertised=true interval_ms=10000 expects_reply=false
+2026-11-03T01:07:47.271379Z CARPLAY_EVENT_CONNECTING
+2026-11-03T01:07:47.271660Z EVTCP connect host=/192.168.5.1 port=5001 timeout_ms=10000
+2026-11-03T01:07:47.276651Z CARPLAY_INFO_AFTER_AUTHENTICATED_SETUP
+2026-11-03T01:07:47.277042Z V153_EVENT_READY=true
+2026-11-03T01:07:47.277283Z HID_CHAIN_START obj=78523592
+2026-11-03T01:07:47.277552Z HID_GATE_CLOSED reason=REPORTED
+2026-11-03T01:07:47.286833Z CARPLAY_RESP op=INFO lastCseq=8
+2026-11-03T01:07:47.287976Z CARPLAY_INFO_KEYS n=22 keys=[pi, OSInfo, modes, manufacturer, audioLatencies, keepAliveLowPower, model, keepAliveSendStatsAsBody, audioFormats, rightHandDrive, extendedFeatures, statusFlags, oemIconVisible, bluetoothIDs, deviceID, nightMode, displays, hidDevices, hidLanguages, sourceVersion, features, name]
+2026-11-03T01:07:47.288210Z CARPLAY_INFO_FEATURES value=416679199360
+2026-11-03T01:07:47.290895Z HID_TOUCH_DESCRIPTOR index=0 bytes=62 reports=1 display_bound=true uuid_kind=STRING
+2026-11-03T01:07:47.291278Z HID_TOUCH_UNSUPPORTED index=1 bytes=29[5, 11, 9, 1, -95, 1, 5, 11, 9, 32, 9, 38, 21, 0, 37, 1, 117, 1, -107, 2, -127, 2, 117, 6, -107, 1, -127, 1, -64] reason=DESCRIPTOR
+2026-11-03T01:07:47.291607Z HID_BACK_DESCRIPTOR index=2 bytes=72 reports=1
+2026-11-03T01:07:47.291774Z HID_CAPABILITIES devices=3 touch=1
+2026-11-03T01:07:47.292014Z CAPS schema=1 displays=1 rejected_displays=0 main=1280x768@30 input=TOUCH_SCREEN hid=3 hid_valid=true touch=1 knobs=1 keys=1 audio_rows=9 audio_valid=true audio_legacy=false modes_declared=true modes_valid=true feature_bits=6104040280 feature_lists_valid=true negotiated=0 iap_channel=false fingerprint=c30dd619b5aef1838410f5b41718adca251a1ac626859fbf29ca8beedf1dc76b
+2026-11-03T01:07:47.292239Z CAPABILITY_PLAN policy=1 fingerprint=c30dd619b5aef1838410f5b41718adca251a1ac626859fbf29ca8beedf1dc76b display_candidates=1 audio_table_valid=true max_route_attempts=3 physical_receipt_confirmed=false
+2026-11-03T01:07:47.292554Z AUDIO_CAPABILITIES legacy=false output_rows=9 pcm=true
+2026-11-03T01:07:47.292781Z AUDIO_OUTPUT_CAPABILITY stream=100 type=default formats=0xc000050
+2026-11-03T01:07:47.292972Z AUDIO_OUTPUT_CAPABILITY stream=100 type=media formats=0x8000
+2026-11-03T01:07:47.293163Z AUDIO_OUTPUT_CAPABILITY stream=100 type=telephony formats=0xc000054
+2026-11-03T01:07:47.293355Z AUDIO_OUTPUT_CAPABILITY stream=100 type=speechRecognition formats=0x8000040
+2026-11-03T01:07:47.293544Z AUDIO_OUTPUT_CAPABILITY stream=100 type=alert formats=0x2008000
+2026-11-03T01:07:47.293746Z AUDIO_OUTPUT_CAPABILITY stream=100 type=compatibility formats=0x8054
+2026-11-03T01:07:47.293977Z AUDIO_OUTPUT_CAPABILITY stream=101 type=default formats=0x2008000
+2026-11-03T01:07:47.294191Z AUDIO_OUTPUT_CAPABILITY stream=101 type=compatibility formats=0x2008000
+2026-11-03T01:07:47.294408Z AUDIO_OUTPUT_CAPABILITY stream=102 type=media formats=0x808000
+2026-11-03T01:07:47.294719Z CARPLAY_INITIAL_MODES_ACCEPTED code=MODE_INFO_ACCEPTED kind=NONE row=-1 authentication_already_verified=true
+2026-11-03T01:07:47.294954Z MODE_INFO_REPRESENTATION representation=CHANGE_MODES screen_constraints=DECLARATION_DEFAULT_OR_TRANSFER audio_constraints=DECLARATION_DEFAULT_OR_TRANSFER
+2026-11-03T01:07:47.295210Z CARPLAY_RESOURCE_STATE source=INITIAL_INFO revision=0 screen_entity=2 screen_permanent=2 screen_borrows=0 screen_take=100 screen_borrow=100 screen_unborrow=100 audio_declared=false audio_entity=2 audio_permanent=2 audio_borrows=0 audio_take=100 audio_borrow=100 audio_unborrow=100 display_confirmed=false
+2026-11-03T01:07:47.295440Z CARPLAY_SCREEN_OWNER_PHONE=false
+2026-11-03T01:07:47.295672Z Accessory has the screen resource; native source retained
+2026-11-03T01:07:47.298883Z CARPLAY_RESOURCE_STATE source=LOCAL_CLAIM revision=0 screen_entity=1 screen_permanent=1 screen_borrows=0 screen_take=100 screen_borrow=100 screen_unborrow=100 audio_declared=false audio_entity=2 audio_permanent=2 audio_borrows=0 audio_take=100 audio_borrow=100 audio_unborrow=100 display_confirmed=false
+2026-11-03T01:07:47.299256Z CARPLAY_SCREEN_OWNER_PHONE=true
+2026-11-03T01:07:47.299545Z Screen resource returned; waiting for an actual IDR
+2026-11-03T01:07:47.307468Z CARPLAY_SCREEN_MODES_SENT screen_phone=true display_confirmed=false
+2026-11-03T01:07:47.327889Z CARPLAY_RESP op=STREAM_SETUP lastCseq=10
+2026-11-03T01:07:47.328887Z HID_TOUCH_DESCRIPTOR index=0 bytes=62 reports=1 display_bound=true uuid_kind=STRING
+2026-11-03T01:07:47.329918Z HID_TOUCH_UNSUPPORTED index=1 bytes=29[5, 11, 9, 1, -95, 1, 5, 11, 9, 32, 9, 38, 21, 0, 37, 1, 117, 1, -107, 2, -127, 2, 117, 6, -107, 1, -127, 1, -64] reason=DESCRIPTOR
+2026-11-03T01:07:47.330704Z HID_BACK_DESCRIPTOR index=2 bytes=72 reports=1
+2026-11-03T01:07:47.331106Z HID_CAPABILITIES devices=3 touch=1
+2026-11-03T01:07:47.331515Z EVTCP connect host=/192.168.5.1 port=6030 timeout_ms=10000
+2026-11-03T01:07:47.336546Z CARPLAY_SCREEN_ROUTE_OPENED epoch=1
+2026-11-03T01:07:47.337248Z CAPABILITY_HINT_SAVED route_accepted=true display_receipt_confirmed=false
+2026-11-03T01:07:47.343407Z CARPLAY_MEDIA_READY 1280x768
+2026-11-03T01:07:47.343566Z CARPLAY_IAP_DIAG_U0=false
+2026-11-03T01:07:47.343712Z CARPLAY_IAP_DIAG_R0=null
+2026-11-03T01:07:47.343853Z CARPLAY_IAP_DIAG_J=null
+2026-11-03T01:07:47.343996Z CARPLAY_IAP_DIAG_A0=exists
+2026-11-03T01:07:47.344153Z CARPLAY_IAP_DIAG_M=64hex
+2026-11-03T01:07:47.344471Z V153_MEDIA_PATH_CONTINUE
+2026-11-03T01:07:47.346780Z CURRENT_WIFI_REUSE_ELIGIBLE authenticated=true process_local=true credentials_persisted=false
+2026-11-03T01:07:47.347293Z NATIVE_GEOMETRY_PREFLIGHT supported_candidate=true native_encoder_acceptance_confirmed=false fps=30
+2026-11-03T01:07:47.347662Z VIDEO_NEGOTIATED_REQUEST fps=30 receiver_max=30 actual_source_pending=false
+2026-11-03T01:07:47.348104Z VIDEO_EPOCH_WAITING_IDR=2
+2026-11-03T01:07:47.348403Z Wireless reauthenticated; native source retained; waiting for an actual IDR before resuming video
+2026-11-03T01:07:47.352574Z VIDEO_SELECTED_GEOMETRY target=1280x768 target_fps=30 planned_source_request=1280x768 exact_candidate=true native_source_retained=true native_init_reissued=false actual_source_pending=false
+2026-11-03T01:07:47.353203Z TX CMD 0x1800a body=0 encrypted=true
+2026-11-03T01:07:47.353487Z TX CMD 0x18009 body=0 encrypted=true
+2026-11-03T01:07:47.353681Z NATIVE_RECOVERY_VIDEO_SYNC command_pair_written=true source_session_retained=true idr_confirmed=false
+2026-11-03T01:07:47.382586Z Actual native video entered current wireless sender; waiting for first IDR send confirmation
+2026-11-03T01:07:47.423841Z VIDEO_EPOCH_WAITING_IDR=2
+2026-11-03T01:07:47.424210Z ACTUAL_NATIVE_IDR_ACCEPTED
+2026-11-03T01:07:47.424452Z NATIVE_AUDIO_PROGRESS channel=MEDIA stage=WAIT_AFTER_VIDEO_10S reader_connected=true reader_ended=false packets=0 wire_body_bytes=0 init_packets=0 valid_inits=0 data_packets=0 valid_pcm_bytes=0 callback_returned_bytes=0 stop_packets=0 vr_interrupt_packets=0 withheld_no_init=0 withheld_unsupported=0 withheld_paused=0 withheld_session_gate=0 playback_expected=unknown sound_confirmed=false
+2026-11-03T01:07:47.424681Z ACTUAL_NATIVE_AVC_CONFIG_SENT
+2026-11-03T01:07:47.424773Z NATIVE_AUDIO_PROGRESS channel=TTS stage=WAIT_AFTER_VIDEO_10S reader_connected=true reader_ended=false packets=0 wire_body_bytes=0 init_packets=0 valid_inits=0 data_packets=0 valid_pcm_bytes=0 callback_returned_bytes=0 stop_packets=0 vr_interrupt_packets=0 withheld_no_init=0 withheld_unsupported=0 withheld_paused=0 withheld_session_gate=0 playback_expected=unknown sound_confirmed=false
+2026-11-03T01:07:47.425021Z CARPLAY_VIDEO_CONFIG width=1280 height=768 encrypted=true
+2026-11-03T01:07:47.425096Z NATIVE_AUDIO_PROGRESS channel=VR stage=WAIT_AFTER_VIDEO_10S reader_connected=true reader_ended=false packets=2 wire_body_bytes=0 init_packets=0 valid_inits=0 data_packets=0 valid_pcm_bytes=0 callback_returned_bytes=0 stop_packets=0 vr_interrupt_packets=2 withheld_no_init=0 withheld_unsupported=0 withheld_paused=0 withheld_session_gate=0 playback_expected=unknown sound_confirmed=false
+2026-11-03T01:07:47.425294Z CARPLAY_AVC_DIAGNOSTIC profile_idc=66 constraints=128 level_idc=32 coded=1280x768 visible=1280x768 declared=1280x768 dimensions_match=true sps_metadata=PARSED
+2026-11-03T01:07:47.426234Z VIDEO_UNITS_SENT=1
+2026-11-03T01:07:47.426444Z VIDEO_PROGRESS units=1
+2026-11-03T01:07:47.426603Z VIDEO_EPOCH_FIRST_IDR_SENT=2
+2026-11-03T01:07:47.426836Z RECOVERY_WAIT count=1 p50_ms=1652 p95_ms=1652 receiver_render_confirmed=false
+2026-11-03T01:07:47.427061Z Actual source-derived IDR sent on authenticated transport; receiver display still requires confirmation
+2026-11-03T01:07:48.433003Z VIDEO_PROGRESS units=21
+2026-11-03T01:07:49.434743Z VIDEO_PROGRESS units=41
+2026-11-03T01:07:50.447544Z VIDEO_PROGRESS units=61
+2026-11-03T01:07:51.488685Z VIDEO_NATIVE_FLOW received_fps_x100=1996 passthrough_enqueued=264 adapted_enqueued=0 assembly_p50_us=50379 assembly_p95_us=60067 actual_display_unconfirmed=true
+2026-11-03T01:07:51.489361Z VIDEO_PROGRESS units=82
+2026-11-03T01:07:52.444235Z VIDEO_FLOW window=256 transport_received_fps_x100=1993 sent_fps_x100=1993 queue_depth=0 oldest_us=0 SOCKET_WRITE_p50_us=219_p95_us=654 SENDER_QUEUE_p50_us=112_p95_us=406 SOURCE_TO_WRITE_p50_us=50846_p95_us=61427 receiver_render_confirmed=false
+2026-11-03T01:07:52.492158Z VIDEO_PROGRESS units=102
+2026-11-03T01:07:53.496215Z VIDEO_PROGRESS units=122
+2026-11-03T01:07:54.505760Z VIDEO_PROGRESS units=142
+2026-11-03T01:07:55.510652Z VIDEO_PROGRESS units=162
+2026-11-03T01:07:56.517337Z VIDEO_NATIVE_FLOW received_fps_x100=1988 passthrough_enqueued=364 adapted_enqueued=0 assembly_p50_us=50398 assembly_p95_us=60978 actual_display_unconfirmed=true
+2026-11-03T01:07:56.518435Z VIDEO_PROGRESS units=182
+2026-11-03T01:07:57.469696Z VIDEO_FLOW window=256 transport_received_fps_x100=1989 sent_fps_x100=1989 queue_depth=0 oldest_us=0 SOCKET_WRITE_p50_us=169_p95_us=462 SENDER_QUEUE_p50_us=73_p95_us=431 SOURCE_TO_WRITE_p50_us=50981_p95_us=61350 receiver_render_confirmed=false
+2026-11-03T01:07:57.566946Z VIDEO_PROGRESS units=203
+2026-11-03T01:07:57.600385Z CARPLAY_EVENT_INPUT point=TRANSPORT_END RTSP_INPUT reader_started=true reader_ended=true closed=true stage=ENDED read_calls=2 raw_bytes=0 plain_bytes=0 messages=0 requests=0 responses=0 header_bytes=0 body_bytes=0 body_expected=-1 record_bytes=0 record_expected=-1 pending_plain_bytes=0
+2026-11-03T01:07:57.603224Z Recovering selected receiver 2/3; native_source_retained=true; reason=EVENT_CHANNEL_EOFException
+
+===== 历史 HISTORY 1 =====
+2026-11-03T01:07:20.503679Z SESSION START | Car+ → CarPlay | PKJ110 | PKJ110_16.0.10.501(CN01)
+2026-11-03T01:07:20.506669Z SESSION_CPU_LEASE held=true screen_forced_on=false interactive=true power_save=false device_idle=false
+2026-11-03T01:07:20.506932Z Wireless session started; continuous until user stop/source exit/unrecoverable error; phone USB firmware interface unimplemented and unverified
+2026-11-03T01:07:20.509496Z APP_BUILD fix2 version=1.7.29 code=298
+2026-11-03T01:07:20.510320Z CURRENT_WIFI_REUSE verified_previous_transport=true fresh_authentication_required=true network_switch=false
+2026-11-03T01:07:20.511631Z NATIVE_COMPONENT_SUPPORT status=REVIEWED reason=REVIEWED_ARTIFACT host_code=17031002 plugin_code=260 producer_entry_observed=true runtime_handshake_required=true compatibility_confirmed=false
+2026-11-03T01:07:20.511765Z NATIVE_HOST_BUILD code=17031002 version=UNAVAILABLE
+2026-11-03T01:07:20.512840Z Rediscovering the previously authenticated receiver on its retained WLAN; full fresh authentication required
+2026-11-03T01:07:20.515352Z CURRENT_WIFI_DISCOVERING selected_network_only=true bootstrap_parameters_required=false authentication_required=true
+2026-11-03T01:07:20.516233Z CTRL_ANNOUNCE name=OPPO_X8U port=37827 svc=OPPO_X8U manual=OPPO_X8U
+2026-11-03T01:07:20.518581Z ENDPOINT_DISCOVERY_STARTED_UNTRUSTED
+2026-11-03T01:07:21.340779Z CTRL_SERVICE_LIVE name=OPPO_X8U port=0
+2026-11-03T01:07:21.341572Z CTRL_RESOLVE_SUBMIT type=_carplay-ctrl._tcp name=OPPO_X8U port=0
+2026-11-03T01:07:21.341804Z CTRL_SERVICE_REGISTERED network_scoped=true real_identifier=true values_logged=false
+2026-11-03T01:07:21.346071Z CTRL_RESOLVE_OK name=OPPO_X8U port=37827 type=._carplay-ctrl._tcp host=/192.168.5.100
+2026-11-03T01:07:22.711865Z Selected current WLAN candidate found; full pairing and certificate authentication required
+2026-11-03T01:07:22.717466Z CONNECT_STAGE ENDPOINT_READY
+2026-11-03T01:07:22.718050Z CONNECT_STAGE SOCKET_FACTORY_READY
+2026-11-03T01:07:22.726869Z CONNECT_STAGE OWN_IDENTITY_VERIFIED
+2026-11-03T01:07:22.727020Z CONNECT_STAGE PEER_STORE_READY
+2026-11-03T01:07:22.727871Z CONNECT_STAGE CONNECTION_CREATED
+2026-11-03T01:07:22.728126Z CARPLAY_CONTROL_CONNECTING
+2026-11-03T01:07:22.742544Z CARPLAY_PAIRING_PROFILE hkp=2 verify_pd=1
+2026-11-03T01:07:22.742984Z CARPLAY_PAIR_SETUP
+2026-11-03T01:07:22.813971Z CARPLAY_RESP op=PAIR_SETUP lastCseq=2
+2026-11-03T01:07:22.834871Z CARPLAY_RESP op=PAIR_VERIFY lastCseq=4
+2026-11-03T01:07:22.842966Z CTRL_RESOLVE_SUBMIT type=_carplay-ctrl._tcp name=OPPO_X8U port=0
+2026-11-03T01:07:22.846820Z CTRL_RESOLVE_OK name=OPPO_X8U port=37827 type=._carplay-ctrl._tcp host=/192.168.5.100
+2026-11-03T01:07:22.850816Z CARPLAY_PAIR_VERIFIED
+2026-11-03T01:07:23.192202Z CARPLAY_RESP op=MFI_AUTH_SETUP lastCseq=6
+2026-11-03T01:07:23.195502Z MFI_SAP_CERTIFICATE_EXPIRY_COMPATIBLE fresh_proof_verified=true pinned=true encrypted_control=true
+2026-11-03T01:07:23.195833Z MFI_FRESH_PROOF_VERIFIED_PINNED_APPLE_CA_UNVERIFIED=true
+2026-11-03T01:07:23.196116Z CARPLAY_INITIAL_SETUP
+2026-11-03T01:07:23.196428Z CARPLAY_SETUP_DEVICE_ID value=E0:42:6D:B6:D5:78 len=17
+2026-11-03T01:07:23.197031Z CARPLAY_SETUP_TRANSPORT_ID source=BLUETOOTH_SNAPSHOT values_logged=false
+2026-11-03T01:07:23.197280Z AUDIO_WIRE_PROFILE profile=MODERN_RTP aad_bytes=8 compatibility_build_declared=true actual_android_build=false
+2026-11-03T01:07:23.197452Z CARPLAY_SETUP_KEYS n=10 keys=[name, model, deviceID, sessionUUID, sourceVersion, osBuildVersion, timingPort, timingProtocol, keepAliveLowPower, features]
+2026-11-03T01:07:23.208598Z CARPLAY_SETUP_RESP_KEYS n=3 keys=[keepAlivePort, eventPort, timingPort]
+2026-11-03T01:07:23.210144Z CARPLAY_UDP_KEEPALIVE advertised=true interval_ms=10000 expects_reply=false
+2026-11-03T01:07:23.210370Z CARPLAY_EVENT_CONNECTING
+2026-11-03T01:07:23.210882Z EVTCP connect host=/192.168.5.1 port=5001 timeout_ms=10000
+2026-11-03T01:07:23.215290Z CARPLAY_INFO_AFTER_AUTHENTICATED_SETUP
+2026-11-03T01:07:23.215727Z V153_EVENT_READY=true
+2026-11-03T01:07:23.215977Z HID_CHAIN_START obj=165372100
+2026-11-03T01:07:23.216439Z HID_GATE_CLOSED reason=REPORTED
+2026-11-03T01:07:23.227402Z CARPLAY_RESP op=INFO lastCseq=8
+2026-11-03T01:07:23.229439Z CARPLAY_INFO_KEYS n=22 keys=[pi, OSInfo, modes, manufacturer, audioLatencies, keepAliveLowPower, model, keepAliveSendStatsAsBody, audioFormats, rightHandDrive, extendedFeatures, statusFlags, oemIconVisible, bluetoothIDs, deviceID, nightMode, displays, hidDevices, hidLanguages, sourceVersion, features, name]
+2026-11-03T01:07:23.229690Z CARPLAY_INFO_FEATURES value=416679199360
+2026-11-03T01:07:23.234567Z HID_TOUCH_DESCRIPTOR index=0 bytes=62 reports=1 display_bound=true uuid_kind=STRING
+2026-11-03T01:07:23.235235Z HID_TOUCH_UNSUPPORTED index=1 bytes=29[5, 11, 9, 1, -95, 1, 5, 11, 9, 32, 9, 38, 21, 0, 37, 1, 117, 1, -107, 2, -127, 2, 117, 6, -107, 1, -127, 1, -64] reason=DESCRIPTOR
+2026-11-03T01:07:23.235783Z HID_BACK_DESCRIPTOR index=2 bytes=72 reports=1
+2026-11-03T01:07:23.235962Z HID_CAPABILITIES devices=3 touch=1
+2026-11-03T01:07:23.236286Z CAPS schema=1 displays=1 rejected_displays=0 main=1280x768@30 input=TOUCH_SCREEN hid=3 hid_valid=true touch=1 knobs=1 keys=1 audio_rows=9 audio_valid=true audio_legacy=false modes_declared=true modes_valid=true feature_bits=6104040280 feature_lists_valid=true negotiated=0 iap_channel=false fingerprint=c30dd619b5aef1838410f5b41718adca251a1ac626859fbf29ca8beedf1dc76b
+2026-11-03T01:07:23.236566Z CAPABILITY_PLAN policy=1 fingerprint=c30dd619b5aef1838410f5b41718adca251a1ac626859fbf29ca8beedf1dc76b display_candidates=1 audio_table_valid=true max_route_attempts=3 physical_receipt_confirmed=false
+2026-11-03T01:07:23.237078Z AUDIO_CAPABILITIES legacy=false output_rows=9 pcm=true
+2026-11-03T01:07:23.237302Z AUDIO_OUTPUT_CAPABILITY stream=100 type=default formats=0xc000050
+2026-11-03T01:07:23.237460Z AUDIO_OUTPUT_CAPABILITY stream=100 type=media formats=0x8000
+2026-11-03T01:07:23.237620Z AUDIO_OUTPUT_CAPABILITY stream=100 type=telephony formats=0xc000054
+2026-11-03T01:07:23.237774Z AUDIO_OUTPUT_CAPABILITY stream=100 type=speechRecognition formats=0x8000040
+2026-11-03T01:07:23.237985Z AUDIO_OUTPUT_CAPABILITY stream=100 type=alert formats=0x2008000
+2026-11-03T01:07:23.238170Z AUDIO_OUTPUT_CAPABILITY stream=100 type=compatibility formats=0x8054
+2026-11-03T01:07:23.238341Z AUDIO_OUTPUT_CAPABILITY stream=101 type=default formats=0x2008000
+2026-11-03T01:07:23.238468Z AUDIO_OUTPUT_CAPABILITY stream=101 type=compatibility formats=0x2008000
+2026-11-03T01:07:23.238614Z AUDIO_OUTPUT_CAPABILITY stream=102 type=media formats=0x808000
+2026-11-03T01:07:23.238846Z CARPLAY_INITIAL_MODES_ACCEPTED code=MODE_INFO_ACCEPTED kind=NONE row=-1 authentication_already_verified=true
+2026-11-03T01:07:23.238991Z MODE_INFO_REPRESENTATION representation=CHANGE_MODES screen_constraints=DECLARATION_DEFAULT_OR_TRANSFER audio_constraints=DECLARATION_DEFAULT_OR_TRANSFER
+2026-11-03T01:07:23.239152Z CARPLAY_RESOURCE_STATE source=INITIAL_INFO revision=0 screen_entity=2 screen_permanent=2 screen_borrows=0 screen_take=100 screen_borrow=100 screen_unborrow=100 audio_declared=false audio_entity=2 audio_permanent=2 audio_borrows=0 audio_take=100 audio_borrow=100 audio_unborrow=100 display_confirmed=false
+2026-11-03T01:07:23.239297Z CARPLAY_SCREEN_OWNER_PHONE=false
+2026-11-03T01:07:23.239464Z CARPLAY_RESOURCE_STATE source=LOCAL_CLAIM revision=0 screen_entity=1 screen_permanent=1 screen_borrows=0 screen_take=100 screen_borrow=100 screen_unborrow=100 audio_declared=false audio_entity=2 audio_permanent=2 audio_borrows=0 audio_take=100 audio_borrow=100 audio_unborrow=100 display_confirmed=false
+2026-11-03T01:07:23.239595Z CARPLAY_SCREEN_OWNER_PHONE=true
+2026-11-03T01:07:23.243915Z CARPLAY_SCREEN_MODES_SENT screen_phone=true display_confirmed=false
+2026-11-03T01:07:23.264075Z CARPLAY_RESP op=STREAM_SETUP lastCseq=10
+2026-11-03T01:07:23.264647Z HID_TOUCH_DESCRIPTOR index=0 bytes=62 reports=1 display_bound=true uuid_kind=STRING
+2026-11-03T01:07:23.265171Z HID_TOUCH_UNSUPPORTED index=1 bytes=29[5, 11, 9, 1, -95, 1, 5, 11, 9, 32, 9, 38, 21, 0, 37, 1, 117, 1, -107, 2, -127, 2, 117, 6, -107, 1, -127, 1, -64] reason=DESCRIPTOR
+2026-11-03T01:07:23.265654Z HID_BACK_DESCRIPTOR index=2 bytes=72 reports=1
+2026-11-03T01:07:23.265914Z HID_CAPABILITIES devices=3 touch=1
+2026-11-03T01:07:23.266114Z EVTCP connect host=/192.168.5.1 port=6030 timeout_ms=10000
+2026-11-03T01:07:23.269628Z CARPLAY_SCREEN_ROUTE_OPENED epoch=1
+2026-11-03T01:07:23.270131Z CAPABILITY_HINT_SAVED route_accepted=true display_receipt_confirmed=false
+2026-11-03T01:07:23.274667Z CARPLAY_MEDIA_READY 1280x768
+2026-11-03T01:07:23.274854Z CARPLAY_IAP_DIAG_U0=false
+2026-11-03T01:07:23.274961Z CARPLAY_IAP_DIAG_R0=null
+2026-11-03T01:07:23.275059Z CARPLAY_IAP_DIAG_J=null
+2026-11-03T01:07:23.275151Z CARPLAY_IAP_DIAG_A0=exists
+2026-11-03T01:07:23.275349Z CARPLAY_IAP_DIAG_M=64hex
+2026-11-03T01:07:23.275524Z V153_MEDIA_PATH_CONTINUE
+2026-11-03T01:07:23.276795Z CURRENT_WIFI_REUSE_ELIGIBLE authenticated=true process_local=true credentials_persisted=false
+2026-11-03T01:07:23.277051Z NATIVE_GEOMETRY_PREFLIGHT supported_candidate=true native_encoder_acceptance_confirmed=false fps=30
+2026-11-03T01:07:23.277202Z VIDEO_NEGOTIATED_REQUEST fps=30 receiver_max=30 actual_source_pending=true
+2026-11-03T01:07:23.277325Z Receiver authenticated; waiting for native Car+ source
+2026-11-03T01:07:23.279176Z VIDEO_SELECTED_GEOMETRY target=1280x768 target_fps=30 planned_source_request=1280x768 exact_candidate=true native_source_retained=false native_init_reissued=false actual_source_pending=true
+2026-11-03T01:07:23.307279Z USER_NOTICE 请按原生 Car+ 提示完成首次连接。
+2026-11-03T01:07:23.311342Z Normal Car+ entry requested; source requested=1280x768 follows actual receiver declaration; original Car+ settings may override it. Continuous session, no fixed time limit.
+2026-11-03T01:07:23.315296Z NATIVE_NETWORK_SNAPSHOT phone_net_setting=0 default=[transport=CELLULAR,internet=true,validated=true,restricted=false,vpn=false] process_bound=SYSTEM_DEFAULT selected=[transport=WIFI,internet=true,validated=false,restricted=false,vpn=false] default_is_selected=false bound_is_selected=false our_process_route_only=true projected_app_route_observed=false stage=SOURCE_ARMED
+2026-11-03T01:07:23.317335Z NATIVE_COMPONENT_SUPPORT status=REVIEWED reason=REVIEWED_ARTIFACT host_code=17031002 plugin_code=260 producer_entry_observed=true runtime_handshake_required=true compatibility_confirmed=false
+2026-11-03T01:07:23.317574Z NATIVE_HOST_BUILD code=17031002 version=UNAVAILABLE
+2026-11-03T01:07:23.318141Z SOURCE_BACKEND_CAPABILITIES foreground=true visibility=true hard_keys=true night_mode=false view_area=false vehicle_information=false limited_ui=false display_confirmed=false
+2026-11-03T01:07:23.319253Z Local AES provider=BC; explicit AES/ECB/PKCS5Padding; actual peer READY still required
+2026-11-03T01:07:23.726544Z All seven localhost channels connected; not media/auth acceptance
+2026-11-03T01:07:23.727762Z TX CMD 0x18001 body=4 encrypted=false
+2026-11-03T01:07:23.839770Z RX CMD 0x10002 body=2
+2026-11-03T01:07:23.840131Z RX CMD 0x1001b body=0
+2026-11-03T01:07:23.840390Z RX CMD 0x10004 body=327
+2026-11-03T01:07:23.841588Z TX CMD 0x18048 body=38 encrypted=false
+2026-11-03T01:07:23.841887Z RX CMD 0x10018 body=0
+2026-11-03T01:07:23.842394Z RX CMD 0x10049 body=34
+2026-11-03T01:07:23.842908Z TX CMD 0x1804a body=2 encrypted=false
+2026-11-03T01:07:23.843090Z Fresh phone proof VERIFIED; no claim about separate phone eligibility
+2026-11-03T01:07:23.843338Z TX CMD 0x18003 body=28 encrypted=false
+2026-11-03T01:07:23.843574Z TX CMD 0x18027 body=65 encrypted=false
+2026-11-03T01:07:23.843780Z Own local experimental receiver UUID/channel sent; not a borrowed vehicle or officially allocated manufacturer identity
+2026-11-03T01:07:23.844161Z TX CMD 0x18052 body=57 encrypted=false
+2026-11-03T01:07:23.844356Z Sent actual supported CONTENT_ENCRYPTION=1 subset; no borrowed car channel
+2026-11-03T01:07:23.844585Z NATIVE_GEOMETRY_REQUEST target=1280x768 exact_source_requested=true applied_confirmed=false; waiting for actual VIDEO_INIT_DONE
+2026-11-03T01:07:23.845316Z RX CMD 0x10051 body=0
+2026-11-03T01:07:23.845510Z RX CMD 0x10031 body=0
+2026-11-03T01:07:23.845847Z RX CMD 0x1006a body=0
+2026-11-03T01:07:23.897954Z TX CMD 0x1806b body=395 encrypted=false
+2026-11-03T01:07:23.898343Z RX CMD 0x1006c body=347
+2026-11-03T01:07:23.899499Z TX CMD 0x1806d body=0 encrypted=false
+2026-11-03T01:07:23.899658Z RX CMD 0x1006e body=0
+2026-11-03T01:07:23.899753Z Actual MD_ENCRYPT_READY observed; own experimental receiver metadata only
+2026-11-03T01:07:23.899951Z TX CMD 0x18007 body=16 encrypted=true
+2026-11-03T01:07:23.900112Z RX CMD 0x1004b body=2
+2026-11-03T01:07:24.068876Z RX CMD 0x10008 body=8
+2026-11-03T01:07:24.071871Z NATIVE_NETWORK_SNAPSHOT phone_net_setting=0 default=[transport=CELLULAR,internet=true,validated=true,restricted=false,vpn=false] process_bound=SYSTEM_DEFAULT selected=[transport=WIFI,internet=true,validated=false,restricted=false,vpn=false] default_is_selected=false bound_is_selected=false our_process_route_only=true projected_app_route_observed=false stage=FIRST_NATIVE_FORMAT
+2026-11-03T01:07:24.072130Z Actual native video format=1280x768 fps=30
+2026-11-03T01:07:24.072248Z VIDEO_SOURCE_RATE requested=30 init_declared=30 cadence_confirmed=false fallback=NONE
+2026-11-03T01:07:24.072416Z VIDEO_EPOCH_WAITING_IDR=2
+2026-11-03T01:07:24.073556Z VIDEO_CANVAS_PLAN policy=NATIVE_DISPLAY_MATCH native_request=1280x768 auto_fit=true fill_display=false receiver=1280x768 output=1280x768 source=1280x768 target_fps=30 display_confirmed=false
+2026-11-03T01:07:24.073711Z VIDEO_ROUTE_NATIVE source=1280x768 requested=1280x768 source_declared_fps=30 reason=COMPRESSED_PASSTHROUGH
+2026-11-03T01:07:24.073868Z Actual VIDEO_INIT_DONE 1280x768 @30; not decoded frames
+2026-11-03T01:07:24.073975Z NATIVE_GEOMETRY_RESULT requested=1280x768 actual=1280x768 dimensions_match=true source_format_observed=true display_confirmed=false
+2026-11-03T01:07:24.074210Z TX CMD 0x18009 body=0 encrypted=true
+2026-11-03T01:07:24.074523Z RX CMD 0x1001b body=0
+2026-11-03T01:07:24.074670Z NATIVE_UI_SIGNAL kind=FOREGROUND
+2026-11-03T01:07:24.075034Z UI_SESSION_INTENT kind=CARPLUS accepted=true session_retained=true
+2026-11-03T01:07:24.092154Z NATIVE_VIDEO_FIRST_BYTES bytes=9896 after_start_ms=17 encryption_ready=true init_done=true start_sent=true video_packets=1 video_bytes=9896 source_phase=VIDEO_BYTES_OBSERVED native_foreground_observed=true
+2026-11-03T01:07:24.092382Z Actual VIDEO chunk bytes=9896 encrypted=true signature=AnnexB_start_code_observed_codec_unconfirmed
+2026-11-03T01:07:24.105365Z Actual VIDEO chunk bytes=518 encrypted=true signature=AnnexB_start_code_observed_codec_unconfirmed
+2026-11-03T01:07:24.105655Z Actual native video entered current wireless sender; waiting for first IDR send confirmation
+2026-11-03T01:07:24.105714Z VIDEO_EPOCH_WAITING_IDR=2
+2026-11-03T01:07:24.106006Z ACTUAL_NATIVE_IDR_ACCEPTED
+2026-11-03T01:07:24.106276Z ACTUAL_NATIVE_AVC_CONFIG_SENT
+2026-11-03T01:07:24.106514Z CARPLAY_VIDEO_CONFIG width=1280 height=768 encrypted=true
+2026-11-03T01:07:24.106719Z CARPLAY_AVC_DIAGNOSTIC profile_idc=66 constraints=128 level_idc=32 coded=1280x768 visible=1280x768 declared=1280x768 dimensions_match=true sps_metadata=PARSED
+2026-11-03T01:07:24.107084Z VIDEO_UNITS_SENT=1
+2026-11-03T01:07:24.107260Z VIDEO_PROGRESS units=1
+2026-11-03T01:07:24.107370Z VIDEO_EPOCH_FIRST_IDR_SENT=2
+2026-11-03T01:07:24.107534Z Actual source-derived IDR sent on authenticated transport; receiver display still requires confirmation
+2026-11-03T01:07:24.167302Z Actual VIDEO chunk bytes=597 encrypted=true signature=AnnexB_start_code_observed_codec_unconfirmed
+2026-11-03T01:07:24.177170Z RX CMD 0x10022 body=0
+2026-11-03T01:07:24.342495Z RX CMD 0x10026 body=44
+2026-11-03T01:07:24.345494Z NATIVE_MODULE_STATUS rows=7 connect=UNDECLARED mic=VEHICLE vr=IDLE diagnostic_only=true
+2026-11-03T01:07:24.856517Z Actual VR packet id=0x50006 wireBytes=0; PCM producer/format not assumed
+2026-11-03T01:07:24.860412Z Actual VR packet id=0x50006 wireBytes=0; PCM producer/format not assumed
+2026-11-03T01:07:24.865217Z RX CMD 0x10022 body=0
+2026-11-03T01:07:25.125002Z VIDEO_PROGRESS units=17
+2026-11-03T01:07:26.126905Z VIDEO_PROGRESS units=36
+2026-11-03T01:07:27.129460Z VIDEO_PROGRESS units=56
+2026-11-03T01:07:28.130247Z VIDEO_PROGRESS units=76
+2026-11-03T01:07:29.131346Z VIDEO_NATIVE_FLOW received_fps_x100=1890 passthrough_enqueued=95 adapted_enqueued=0 assembly_p50_us=50740 assembly_p95_us=67133 actual_display_unconfirmed=true
+2026-11-03T01:07:29.132208Z VIDEO_FLOW window=256 transport_received_fps_x100=1890 sent_fps_x100=1890 queue_depth=0 oldest_us=0 SOCKET_WRITE_p50_us=141_p95_us=678 SENDER_QUEUE_p50_us=72_p95_us=2781 SOURCE_TO_WRITE_p50_us=51252_p95_us=68449 receiver_render_confirmed=false
+2026-11-03T01:07:29.132676Z VIDEO_PROGRESS units=96
+2026-11-03T01:07:30.136255Z VIDEO_PROGRESS units=116
+2026-11-03T01:07:30.524670Z USER_NOTICE 已断开连接。下次使用时点击连接车机。
+2026-11-03T01:07:30.534444Z Stopped by user
+2026-11-03T01:07:30.536313Z Final sender counters across transports: videoUnits=123, videoBytes=1118813, pcmBytes=0
+2026-11-03T01:07:30.537397Z NATIVE_SOURCE_FINAL first_channel_end=NONE encryption_ready=true init_done=true start_sent=true video_packets=124 video_bytes=1107526 source_phase=VIDEO_BYTES_OBSERVED native_foreground_observed=true
+2026-11-03T01:07:30.539767Z NATIVE_AUDIO_PROGRESS channel=MEDIA stage=FINAL reader_connected=true reader_ended=true packets=0 wire_body_bytes=0 init_packets=0 valid_inits=0 data_packets=0 valid_pcm_bytes=0 callback_returned_bytes=0 stop_packets=0 vr_interrupt_packets=0 withheld_no_init=0 withheld_unsupported=0 withheld_paused=0 withheld_session_gate=0 playback_expected=unknown sound_confirmed=false
+2026-11-03T01:07:30.540035Z NATIVE_AUDIO_PROGRESS channel=TTS stage=FINAL reader_connected=true reader_ended=true packets=0 wire_body_bytes=0 init_packets=0 valid_inits=0 data_packets=0 valid_pcm_bytes=0 callback_returned_bytes=0 stop_packets=0 vr_interrupt_packets=0 withheld_no_init=0 withheld_unsupported=0 withheld_paused=0 withheld_session_gate=0 playback_expected=unknown sound_confirmed=false
+2026-11-03T01:07:30.540249Z NATIVE_AUDIO_PROGRESS channel=VR stage=FINAL reader_connected=true reader_ended=true packets=2 wire_body_bytes=0 init_packets=0 valid_inits=0 data_packets=0 valid_pcm_bytes=0 callback_returned_bytes=0 stop_packets=0 vr_interrupt_packets=2 withheld_no_init=0 withheld_unsupported=0 withheld_paused=0 withheld_session_gate=0 playback_expected=unknown sound_confirmed=false
+2026-11-03T01:07:30.540951Z G3 outcome=e[a=true, b=true, c=true, d=VERIFIED, e=PASSED, f=true, g=true, h=1280, i=768, j=30, k=1123856, l=1122738, m=0, n=125, o=2, p=SocketException: bounded session ended]
+2026-11-03T01:07:30.541568Z Byte/packet counts are not decoded frames, native producer attribution, or complete identity/media/CarPlay acceptance
+2026-11-03T01:07:30.542296Z Native source outcome: e[a=true, b=true, c=true, d=VERIFIED, e=PASSED, f=true, g=true, h=1280, i=768, j=30, k=1123856, l=1122738, m=0, n=125, o=2, p=SocketException: bounded session ended]
+2026-11-03T01:07:30.542531Z Initial transport counters: videoUnits=123, videoBytes=1118813, pcmBytes=0
+2026-11-03T01:07:32.613219Z USER_NOTICE 正在联网核对版本、发布签名和安装包完整性…
+2026-11-03T01:07:32.624722Z USER_NOTICE 正在自动连接所选车机。仅在系统提示时允许 WLAN 连接，无需手动查找热点。
+
+===== 历史 HISTORY 2 =====
+2026-11-03T01:04:04.159228Z SESSION START | Car+ → CarPlay | PKJ110 | PKJ110_16.0.10.501(CN01)
+2026-11-03T01:04:04.163265Z SESSION_CPU_LEASE held=true screen_forced_on=false interactive=true power_save=false device_idle=false
+2026-11-03T01:04:04.163514Z Wireless session started; continuous until user stop/source exit/unrecoverable error; phone USB firmware interface unimplemented and unverified
+2026-11-03T01:04:04.166542Z APP_BUILD fix2 version=1.7.29 code=298
+2026-11-03T01:04:04.168736Z NATIVE_COMPONENT_SUPPORT status=REVIEWED reason=REVIEWED_ARTIFACT host_code=17031002 plugin_code=260 producer_entry_observed=true runtime_handshake_required=true compatibility_confirmed=false
+2026-11-03T01:04:04.169117Z NATIVE_HOST_BUILD code=17031002 version=UNAVAILABLE
+2026-11-03T01:04:04.170417Z Discovering services on the manually selected receiver WLAN
+2026-11-03T01:04:04.175292Z CURRENT_WIFI_DISCOVERING selected_network_only=true bootstrap_parameters_required=false authentication_required=true
+2026-11-03T01:04:04.177019Z CTRL_ANNOUNCE name=OPPO_X8U port=41429 svc=OPPO_X8U manual=OPPO_X8U
+2026-11-03T01:04:04.180615Z ENDPOINT_DISCOVERY_STARTED_UNTRUSTED
+2026-11-03T01:04:04.984108Z CTRL_SERVICE_LIVE name=OPPO_X8U port=0
+2026-11-03T01:04:04.986453Z CTRL_RESOLVE_SUBMIT type=_carplay-ctrl._tcp name=OPPO_X8U port=0
+2026-11-03T01:04:04.987851Z CTRL_SERVICE_REGISTERED network_scoped=true real_identifier=true values_logged=false
+2026-11-03T01:04:05.004370Z CTRL_RESOLVE_OK name=OPPO_X8U port=41429 type=._carplay-ctrl._tcp host=/192.168.5.100
+2026-11-03T01:04:06.488085Z Selected current WLAN candidate found; full pairing and certificate authentication required
+2026-11-03T01:04:06.495368Z CTRL_RESOLVE_SUBMIT type=_carplay-ctrl._tcp name=OPPO_X8U port=0
+2026-11-03T01:04:06.496132Z CONNECT_STAGE ENDPOINT_READY
+2026-11-03T01:04:06.496865Z CONNECT_STAGE SOCKET_FACTORY_READY
+2026-11-03T01:04:06.497773Z CTRL_RESOLVE_OK name=OPPO_X8U port=41429 type=._carplay-ctrl._tcp host=/192.168.5.100
+2026-11-03T01:04:06.518999Z CONNECT_STAGE OWN_IDENTITY_VERIFIED
+2026-11-03T01:04:06.519449Z CONNECT_STAGE PEER_STORE_READY
+2026-11-03T01:04:06.521360Z CONNECT_STAGE CONNECTION_CREATED
+2026-11-03T01:04:06.522058Z CARPLAY_CONTROL_CONNECTING
+2026-11-03T01:04:06.530016Z CARPLAY_PAIRING_PROFILE hkp=2 verify_pd=1
+2026-11-03T01:04:06.530676Z CARPLAY_PAIR_SETUP
+2026-11-03T01:04:06.613706Z CARPLAY_RESP op=PAIR_SETUP lastCseq=2
+2026-11-03T01:04:06.634534Z CARPLAY_RESP op=PAIR_VERIFY lastCseq=4
+2026-11-03T01:04:06.646837Z CARPLAY_PAIR_VERIFIED
+2026-11-03T01:04:07.003013Z CARPLAY_RESP op=MFI_AUTH_SETUP lastCseq=6
+2026-11-03T01:04:07.009035Z MFI_SAP_CERTIFICATE_EXPIRY_COMPATIBLE fresh_proof_verified=true pinned=true encrypted_control=true
+2026-11-03T01:04:07.009928Z MFI_FRESH_PROOF_VERIFIED_PINNED_APPLE_CA_UNVERIFIED=true
+2026-11-03T01:04:07.010392Z CARPLAY_INITIAL_SETUP
+2026-11-03T01:04:07.010937Z CARPLAY_SETUP_DEVICE_ID value=E0:42:6D:B6:D5:78 len=17
+2026-11-03T01:04:07.011399Z CARPLAY_SETUP_TRANSPORT_ID source=BLUETOOTH_SNAPSHOT values_logged=false
+2026-11-03T01:04:07.011899Z AUDIO_WIRE_PROFILE profile=MODERN_RTP aad_bytes=8 compatibility_build_declared=true actual_android_build=false
+2026-11-03T01:04:07.012321Z CARPLAY_SETUP_KEYS n=10 keys=[name, model, deviceID, sessionUUID, sourceVersion, osBuildVersion, timingPort, timingProtocol, keepAliveLowPower, features]
+2026-11-03T01:04:07.024812Z CARPLAY_SETUP_RESP_KEYS n=3 keys=[keepAlivePort, eventPort, timingPort]
+2026-11-03T01:04:07.027212Z CARPLAY_UDP_KEEPALIVE advertised=true interval_ms=10000 expects_reply=false
+2026-11-03T01:04:07.027801Z CARPLAY_EVENT_CONNECTING
+2026-11-03T01:04:07.028480Z EVTCP connect host=/192.168.5.1 port=5001 timeout_ms=10000
+2026-11-03T01:04:07.035774Z CARPLAY_INFO_AFTER_AUTHENTICATED_SETUP
+2026-11-03T01:04:07.036505Z V153_EVENT_READY=true
+2026-11-03T01:04:07.037011Z HID_CHAIN_START obj=127351064
+2026-11-03T01:04:07.037795Z HID_GATE_CLOSED reason=REPORTED
+2026-11-03T01:04:07.049130Z CARPLAY_RESP op=INFO lastCseq=8
+2026-11-03T01:04:07.052487Z CARPLAY_INFO_KEYS n=22 keys=[pi, OSInfo, modes, manufacturer, audioLatencies, keepAliveLowPower, model, keepAliveSendStatsAsBody, audioFormats, rightHandDrive, extendedFeatures, statusFlags, oemIconVisible, bluetoothIDs, deviceID, nightMode, displays, hidDevices, hidLanguages, sourceVersion, features, name]
+2026-11-03T01:04:07.053041Z CARPLAY_INFO_FEATURES value=416679199360
+2026-11-03T01:04:07.060873Z HID_TOUCH_DESCRIPTOR index=0 bytes=62 reports=1 display_bound=true uuid_kind=STRING
+2026-11-03T01:04:07.062009Z HID_TOUCH_UNSUPPORTED index=1 bytes=29[5, 11, 9, 1, -95, 1, 5, 11, 9, 32, 9, 38, 21, 0, 37, 1, 117, 1, -107, 2, -127, 2, 117, 6, -107, 1, -127, 1, -64] reason=DESCRIPTOR
+2026-11-03T01:04:07.062886Z HID_BACK_DESCRIPTOR index=2 bytes=72 reports=1
+2026-11-03T01:04:07.063134Z HID_CAPABILITIES devices=3 touch=1
+2026-11-03T01:04:07.063543Z CAPS schema=1 displays=1 rejected_displays=0 main=1280x768@30 input=TOUCH_SCREEN hid=3 hid_valid=true touch=1 knobs=1 keys=1 audio_rows=9 audio_valid=true audio_legacy=false modes_declared=true modes_valid=true feature_bits=6104040280 feature_lists_valid=true negotiated=0 iap_channel=false fingerprint=c30dd619b5aef1838410f5b41718adca251a1ac626859fbf29ca8beedf1dc76b
+2026-11-03T01:04:07.063818Z CAPABILITY_PLAN policy=1 fingerprint=c30dd619b5aef1838410f5b41718adca251a1ac626859fbf29ca8beedf1dc76b display_candidates=1 audio_table_valid=true max_route_attempts=3 physical_receipt_confirmed=false
+2026-11-03T01:04:07.066612Z AUDIO_CAPABILITIES legacy=false output_rows=9 pcm=true
+2026-11-03T01:04:07.069122Z AUDIO_OUTPUT_CAPABILITY stream=100 type=default formats=0xc000050
+2026-11-03T01:04:07.069386Z AUDIO_OUTPUT_CAPABILITY stream=100 type=media formats=0x8000
+2026-11-03T01:04:07.069617Z AUDIO_OUTPUT_CAPABILITY stream=100 type=telephony formats=0xc000054
+2026-11-03T01:04:07.069850Z AUDIO_OUTPUT_CAPABILITY stream=100 type=speechRecognition formats=0x8000040
+2026-11-03T01:04:07.070125Z AUDIO_OUTPUT_CAPABILITY stream=100 type=alert formats=0x2008000
+2026-11-03T01:04:07.070349Z AUDIO_OUTPUT_CAPABILITY stream=100 type=compatibility formats=0x8054
+2026-11-03T01:04:07.070601Z AUDIO_OUTPUT_CAPABILITY stream=101 type=default formats=0x2008000
+2026-11-03T01:04:07.070885Z AUDIO_OUTPUT_CAPABILITY stream=101 type=compatibility formats=0x2008000
+2026-11-03T01:04:07.071107Z AUDIO_OUTPUT_CAPABILITY stream=102 type=media formats=0x808000
+2026-11-03T01:04:07.071694Z CARPLAY_INITIAL_MODES_ACCEPTED code=MODE_INFO_ACCEPTED kind=NONE row=-1 authentication_already_verified=true
+2026-11-03T01:04:07.071950Z MODE_INFO_REPRESENTATION representation=CHANGE_MODES screen_constraints=DECLARATION_DEFAULT_OR_TRANSFER audio_constraints=DECLARATION_DEFAULT_OR_TRANSFER
+2026-11-03T01:04:07.072244Z CARPLAY_RESOURCE_STATE source=INITIAL_INFO revision=0 screen_entity=2 screen_permanent=2 screen_borrows=0 screen_take=100 screen_borrow=100 screen_unborrow=100 audio_declared=false audio_entity=2 audio_permanent=2 audio_borrows=0 audio_take=100 audio_borrow=100 audio_unborrow=100 display_confirmed=false
+2026-11-03T01:04:07.072483Z CARPLAY_SCREEN_OWNER_PHONE=false
+2026-11-03T01:04:07.072902Z CARPLAY_RESOURCE_STATE source=LOCAL_CLAIM revision=0 screen_entity=1 screen_permanent=1 screen_borrows=0 screen_take=100 screen_borrow=100 screen_unborrow=100 audio_declared=false audio_entity=2 audio_permanent=2 audio_borrows=0 audio_take=100 audio_borrow=100 audio_unborrow=100 display_confirmed=false
+2026-11-03T01:04:07.073144Z CARPLAY_SCREEN_OWNER_PHONE=true
+2026-11-03T01:04:07.080354Z CARPLAY_SCREEN_MODES_SENT screen_phone=true display_confirmed=false
+2026-11-03T01:04:07.102810Z CARPLAY_RESP op=STREAM_SETUP lastCseq=10
+2026-11-03T01:04:07.103551Z HID_TOUCH_DESCRIPTOR index=0 bytes=62 reports=1 display_bound=true uuid_kind=STRING
+2026-11-03T01:04:07.104030Z HID_TOUCH_UNSUPPORTED index=1 bytes=29[5, 11, 9, 1, -95, 1, 5, 11, 9, 32, 9, 38, 21, 0, 37, 1, 117, 1, -107, 2, -127, 2, 117, 6, -107, 1, -127, 1, -64] reason=DESCRIPTOR
+2026-11-03T01:04:07.104417Z HID_BACK_DESCRIPTOR index=2 bytes=72 reports=1
+2026-11-03T01:04:07.104552Z HID_CAPABILITIES devices=3 touch=1
+2026-11-03T01:04:07.104692Z EVTCP connect host=/192.168.5.1 port=6030 timeout_ms=10000
+2026-11-03T01:04:07.108904Z CARPLAY_SCREEN_ROUTE_OPENED epoch=1
+2026-11-03T01:04:07.110114Z CAPABILITY_HINT_SAVED route_accepted=true display_receipt_confirmed=false
+2026-11-03T01:04:07.118050Z CARPLAY_MEDIA_READY 1280x768
+2026-11-03T01:04:07.118894Z CARPLAY_IAP_DIAG_U0=false
+2026-11-03T01:04:07.119398Z CARPLAY_IAP_DIAG_R0=null
+2026-11-03T01:04:07.119887Z CARPLAY_IAP_DIAG_J=null
+2026-11-03T01:04:07.120214Z CARPLAY_IAP_DIAG_A0=exists
+2026-11-03T01:04:07.120620Z CARPLAY_IAP_DIAG_M=64hex
+2026-11-03T01:04:07.121158Z V153_MEDIA_PATH_CONTINUE
+2026-11-03T01:04:07.124978Z CURRENT_WIFI_REUSE_ELIGIBLE authenticated=true process_local=true credentials_persisted=false
+2026-11-03T01:04:07.125460Z NATIVE_GEOMETRY_PREFLIGHT supported_candidate=true native_encoder_acceptance_confirmed=false fps=30
+2026-11-03T01:04:07.125813Z VIDEO_NEGOTIATED_REQUEST fps=30 receiver_max=30 actual_source_pending=true
+2026-11-03T01:04:07.126126Z Receiver authenticated; waiting for native Car+ source
+2026-11-03T01:04:07.130632Z VIDEO_SELECTED_GEOMETRY target=1280x768 target_fps=30 planned_source_request=1280x768 exact_candidate=true native_source_retained=false native_init_reissued=false actual_source_pending=true
+2026-11-03T01:04:07.413204Z USER_NOTICE 请按原生 Car+ 提示完成首次连接。
+2026-11-03T01:04:07.416086Z Normal Car+ entry requested; source requested=1280x768 follows actual receiver declaration; original Car+ settings may override it. Continuous session, no fixed time limit.
+2026-11-03T01:04:07.421261Z NATIVE_NETWORK_SNAPSHOT phone_net_setting=0 default=[transport=CELLULAR,internet=true,validated=true,restricted=false,vpn=false] process_bound=SYSTEM_DEFAULT selected=[transport=WIFI,internet=true,validated=false,restricted=false,vpn=false] default_is_selected=false bound_is_selected=false our_process_route_only=true projected_app_route_observed=false stage=SOURCE_ARMED
+2026-11-03T01:04:07.424062Z NATIVE_COMPONENT_SUPPORT status=REVIEWED reason=REVIEWED_ARTIFACT host_code=17031002 plugin_code=260 producer_entry_observed=true runtime_handshake_required=true compatibility_confirmed=false
+2026-11-03T01:04:07.424683Z NATIVE_HOST_BUILD code=17031002 version=UNAVAILABLE
+2026-11-03T01:04:07.425183Z SOURCE_BACKEND_CAPABILITIES foreground=true visibility=true hard_keys=true night_mode=false view_area=false vehicle_information=false limited_ui=false display_confirmed=false
+2026-11-03T01:04:07.426766Z Local AES provider=BC; explicit AES/ECB/PKCS5Padding; actual peer READY still required
+2026-11-03T01:04:07.833059Z All seven localhost channels connected; not media/auth acceptance
+2026-11-03T01:04:07.834557Z TX CMD 0x18001 body=4 encrypted=false
+2026-11-03T01:04:08.027437Z RX CMD 0x10002 body=2
+2026-11-03T01:04:08.027838Z RX CMD 0x1001b body=0
+2026-11-03T01:04:08.028127Z RX CMD 0x10004 body=327
+2026-11-03T01:04:08.029008Z TX CMD 0x18048 body=38 encrypted=false
+2026-11-03T01:04:08.029192Z RX CMD 0x10018 body=0
+2026-11-03T01:04:08.035408Z RX CMD 0x10049 body=34
+2026-11-03T01:04:08.036104Z TX CMD 0x1804a body=2 encrypted=false
+2026-11-03T01:04:08.036305Z Fresh phone proof VERIFIED; no claim about separate phone eligibility
+2026-11-03T01:04:08.036679Z TX CMD 0x18003 body=28 encrypted=false
+2026-11-03T01:04:08.037206Z TX CMD 0x18027 body=65 encrypted=false
+2026-11-03T01:04:08.037419Z Own local experimental receiver UUID/channel sent; not a borrowed vehicle or officially allocated manufacturer identity
+2026-11-03T01:04:08.037765Z TX CMD 0x18052 body=57 encrypted=false
+2026-11-03T01:04:08.037918Z Sent actual supported CONTENT_ENCRYPTION=1 subset; no borrowed car channel
+2026-11-03T01:04:08.038108Z NATIVE_GEOMETRY_REQUEST target=1280x768 exact_source_requested=true applied_confirmed=false; waiting for actual VIDEO_INIT_DONE
+2026-11-03T01:04:08.039359Z RX CMD 0x10051 body=0
+2026-11-03T01:04:08.039871Z RX CMD 0x10031 body=0
+2026-11-03T01:04:08.040176Z RX CMD 0x1006a body=0
+2026-11-03T01:04:08.100031Z TX CMD 0x1806b body=395 encrypted=false
+2026-11-03T01:04:08.100553Z RX CMD 0x1006c body=347
+2026-11-03T01:04:08.101778Z TX CMD 0x1806d body=0 encrypted=false
+2026-11-03T01:04:08.101916Z RX CMD 0x1006e body=0
+2026-11-03T01:04:08.101996Z Actual MD_ENCRYPT_READY observed; own experimental receiver metadata only
+2026-11-03T01:04:08.102271Z TX CMD 0x18007 body=16 encrypted=true
+2026-11-03T01:04:08.102407Z RX CMD 0x1004b body=2
+2026-11-03T01:04:08.287842Z RX CMD 0x10008 body=8
+2026-11-03T01:04:08.290617Z NATIVE_NETWORK_SNAPSHOT phone_net_setting=0 default=[transport=CELLULAR,internet=true,validated=true,restricted=false,vpn=false] process_bound=SYSTEM_DEFAULT selected=[transport=WIFI,internet=true,validated=false,restricted=false,vpn=false] default_is_selected=false bound_is_selected=false our_process_route_only=true projected_app_route_observed=false stage=FIRST_NATIVE_FORMAT
+2026-11-03T01:04:08.290915Z Actual native video format=1280x768 fps=30
+2026-11-03T01:04:08.291081Z VIDEO_SOURCE_RATE requested=30 init_declared=30 cadence_confirmed=false fallback=NONE
+2026-11-03T01:04:08.291307Z VIDEO_EPOCH_WAITING_IDR=2
+2026-11-03T01:04:08.291529Z VIDEO_CANVAS_PLAN policy=NATIVE_DISPLAY_MATCH native_request=1280x768 auto_fit=true fill_display=false receiver=1280x768 output=1280x768 source=1280x768 target_fps=30 display_confirmed=false
+2026-11-03T01:04:08.291707Z VIDEO_ROUTE_NATIVE source=1280x768 requested=1280x768 source_declared_fps=30 reason=COMPRESSED_PASSTHROUGH
+2026-11-03T01:04:08.291829Z Actual VIDEO_INIT_DONE 1280x768 @30; not decoded frames
+2026-11-03T01:04:08.291958Z NATIVE_GEOMETRY_RESULT requested=1280x768 actual=1280x768 dimensions_match=true source_format_observed=true display_confirmed=false
+2026-11-03T01:04:08.292306Z TX CMD 0x18009 body=0 encrypted=true
+2026-11-03T01:04:08.292550Z RX CMD 0x1001b body=0
+2026-11-03T01:04:08.292791Z NATIVE_UI_SIGNAL kind=FOREGROUND
+2026-11-03T01:04:08.293416Z UI_SESSION_INTENT kind=CARPLUS accepted=true session_retained=true
+2026-11-03T01:04:08.355713Z NATIVE_VIDEO_FIRST_BYTES bytes=9896 after_start_ms=63 encryption_ready=true init_done=true start_sent=true video_packets=1 video_bytes=9896 source_phase=VIDEO_BYTES_OBSERVED native_foreground_observed=true
+2026-11-03T01:04:08.355993Z Actual VIDEO chunk bytes=9896 encrypted=true signature=AnnexB_start_code_observed_codec_unconfirmed
+2026-11-03T01:04:08.356328Z Actual VIDEO chunk bytes=518 encrypted=true signature=AnnexB_start_code_observed_codec_unconfirmed
+2026-11-03T01:04:08.356640Z Actual native video entered current wireless sender; waiting for first IDR send confirmation
+2026-11-03T01:04:08.356729Z VIDEO_EPOCH_WAITING_IDR=2
+2026-11-03T01:04:08.357108Z ACTUAL_NATIVE_IDR_ACCEPTED
+2026-11-03T01:04:08.357371Z ACTUAL_NATIVE_AVC_CONFIG_SENT
+2026-11-03T01:04:08.357555Z CARPLAY_VIDEO_CONFIG width=1280 height=768 encrypted=true
+2026-11-03T01:04:08.357813Z CARPLAY_AVC_DIAGNOSTIC profile_idc=66 constraints=128 level_idc=32 coded=1280x768 visible=1280x768 declared=1280x768 dimensions_match=true sps_metadata=PARSED
+2026-11-03T01:04:08.358299Z VIDEO_UNITS_SENT=1
+2026-11-03T01:04:08.358446Z VIDEO_PROGRESS units=1
+2026-11-03T01:04:08.358607Z VIDEO_EPOCH_FIRST_IDR_SENT=2
+2026-11-03T01:04:08.358806Z Actual source-derived IDR sent on authenticated transport; receiver display still requires confirmation
+2026-11-03T01:04:08.387350Z RX CMD 0x10022 body=0
+2026-11-03T01:04:08.388383Z Actual VIDEO chunk bytes=597 encrypted=true signature=AnnexB_start_code_observed_codec_unconfirmed
+2026-11-03T01:04:08.529255Z RX CMD 0x10026 body=44
+2026-11-03T01:04:08.530342Z NATIVE_MODULE_STATUS rows=7 connect=UNDECLARED mic=VEHICLE vr=IDLE diagnostic_only=true
+2026-11-03T01:04:09.053739Z Actual VR packet id=0x50006 wireBytes=0; PCM producer/format not assumed
+2026-11-03T01:04:09.060661Z RX CMD 0x10022 body=0
+2026-11-03T01:04:09.090883Z Actual VR packet id=0x50006 wireBytes=0; PCM producer/format not assumed
+2026-11-03T01:04:09.372298Z VIDEO_PROGRESS units=17
+2026-11-03T01:04:10.389916Z VIDEO_PROGRESS units=36
+2026-11-03T01:04:11.395142Z VIDEO_PROGRESS units=56
+2026-11-03T01:04:12.396106Z VIDEO_PROGRESS units=76
+2026-11-03T01:04:13.357221Z VIDEO_NATIVE_FLOW received_fps_x100=1879 passthrough_enqueued=94 adapted_enqueued=0 assembly_p50_us=50860 assembly_p95_us=70469 actual_display_unconfirmed=true
+2026-11-03T01:04:13.406062Z VIDEO_FLOW window=256 transport_received_fps_x100=1882 sent_fps_x100=1882 queue_depth=0 oldest_us=0 SOCKET_WRITE_p50_us=151_p95_us=856 SENDER_QUEUE_p50_us=79_p95_us=2049 SOURCE_TO_WRITE_p50_us=51443_p95_us=73449 receiver_render_confirmed=false
+2026-11-03T01:04:13.406499Z VIDEO_PROGRESS units=96
+2026-11-03T01:04:14.411898Z VIDEO_PROGRESS units=116
+2026-11-03T01:04:15.413067Z VIDEO_PROGRESS units=136
+2026-11-03T01:04:16.424571Z VIDEO_PROGRESS units=156
+2026-11-03T01:04:17.471994Z VIDEO_PROGRESS units=177
+2026-11-03T01:04:17.620615Z CARPLAY_EVENT_INPUT point=TRANSPORT_END RTSP_INPUT reader_started=true reader_ended=true closed=true stage=ENDED read_calls=2 raw_bytes=0 plain_bytes=0 messages=0 requests=0 responses=0 header_bytes=0 body_bytes=0 body_expected=-1 record_bytes=0 record_expected=-1 pending_plain_bytes=0
+2026-11-03T01:04:17.783413Z Recovering selected receiver 1/3; native_source_retained=true; reason=EVENT_CHANNEL_EOFException
+2026-11-03T01:04:17.804290Z RECOVERY_REUSE_SELECTED_WIFI generation=2
+2026-11-03T01:04:18.378229Z VIDEO_NATIVE_FLOW received_fps_x100=1991 passthrough_enqueued=179 adapted_enqueued=0 assembly_p50_us=50583 assembly_p95_us=64466 actual_display_unconfirmed=true
+2026-11-03T01:04:18.425773Z NATIVE_AUDIO_PROGRESS channel=MEDIA stage=WAIT_AFTER_VIDEO_10S reader_connected=true reader_ended=false packets=0 wire_body_bytes=0 init_packets=0 valid_inits=0 data_packets=0 valid_pcm_bytes=0 callback_returned_bytes=0 stop_packets=0 vr_interrupt_packets=0 withheld_no_init=0 withheld_unsupported=0 withheld_paused=0 withheld_session_gate=0 playback_expected=unknown sound_confirmed=false
+2026-11-03T01:04:18.426133Z NATIVE_AUDIO_PROGRESS channel=TTS stage=WAIT_AFTER_VIDEO_10S reader_connected=true reader_ended=false packets=0 wire_body_bytes=0 init_packets=0 valid_inits=0 data_packets=0 valid_pcm_bytes=0 callback_returned_bytes=0 stop_packets=0 vr_interrupt_packets=0 withheld_no_init=0 withheld_unsupported=0 withheld_paused=0 withheld_session_gate=0 playback_expected=unknown sound_confirmed=false
+2026-11-03T01:04:18.426414Z NATIVE_AUDIO_PROGRESS channel=VR stage=WAIT_AFTER_VIDEO_10S reader_connected=true reader_ended=false packets=2 wire_body_bytes=0 init_packets=0 valid_inits=0 data_packets=0 valid_pcm_bytes=0 callback_returned_bytes=0 stop_packets=0 vr_interrupt_packets=2 withheld_no_init=0 withheld_unsupported=0 withheld_paused=0 withheld_session_gate=0 playback_expected=unknown sound_confirmed=false
+2026-11-03T01:04:18.806582Z CONNECT_STAGE ENDPOINT_READY
+2026-11-03T01:04:18.806885Z CONNECT_STAGE SOCKET_FACTORY_READY
+2026-11-03T01:04:18.811862Z CONNECT_STAGE OWN_IDENTITY_VERIFIED
+2026-11-03T01:04:18.812100Z CONNECT_STAGE PEER_STORE_READY
+2026-11-03T01:04:18.812628Z CONNECT_STAGE CONNECTION_CREATED
+2026-11-03T01:04:18.812946Z CARPLAY_CONTROL_CONNECTING
+2026-11-03T01:04:18.816895Z CARPLAY_PAIRING_PROFILE hkp=2 verify_pd=1
+2026-11-03T01:04:18.817169Z CARPLAY_PAIR_SETUP
+2026-11-03T01:04:18.842831Z CARPLAY_RESP op=PAIR_SETUP lastCseq=1
+2026-11-03T01:04:18.878282Z CARPLAY_RESP op=PAIR_SETUP lastCseq=3
+2026-11-03T01:04:18.894826Z CARPLAY_RESP op=PAIR_VERIFY lastCseq=5
+2026-11-03T01:04:18.895106Z CARPLAY_PAIR_VERIFIED
+2026-11-03T01:04:19.186687Z MFI_SAP_CERTIFICATE_EXPIRY_COMPATIBLE fresh_proof_verified=true pinned=true encrypted_control=true
+2026-11-03T01:04:19.187268Z MFI_FRESH_PROOF_VERIFIED_PINNED_APPLE_CA_UNVERIFIED=true
+2026-11-03T01:04:19.187669Z CARPLAY_INITIAL_SETUP
+2026-11-03T01:04:19.188256Z CARPLAY_SETUP_DEVICE_ID value=E0:42:6D:B6:D5:78 len=17
+2026-11-03T01:04:19.188817Z CARPLAY_SETUP_TRANSPORT_ID source=BLUETOOTH_SNAPSHOT values_logged=false
+2026-11-03T01:04:19.189325Z AUDIO_WIRE_PROFILE profile=MODERN_RTP aad_bytes=8 compatibility_build_declared=true actual_android_build=false
+2026-11-03T01:04:19.189997Z CARPLAY_SETUP_KEYS n=10 keys=[name, model, deviceID, sessionUUID, sourceVersion, osBuildVersion, timingPort, timingProtocol, keepAliveLowPower, features]
+2026-11-03T01:04:19.201076Z CARPLAY_RESP op=STREAM_SETUP lastCseq=7
+2026-11-03T01:04:19.201924Z CARPLAY_SETUP_RESP_KEYS n=3 keys=[keepAlivePort, eventPort, timingPort]
+2026-11-03T01:04:19.204187Z CARPLAY_UDP_KEEPALIVE advertised=true interval_ms=10000 expects_reply=false
+2026-11-03T01:04:19.204693Z CARPLAY_EVENT_CONNECTING
+2026-11-03T01:04:19.205438Z EVTCP connect host=/192.168.5.1 port=5001 timeout_ms=10000
+2026-11-03T01:04:19.210105Z CARPLAY_INFO_AFTER_AUTHENTICATED_SETUP
+2026-11-03T01:04:19.210753Z V153_EVENT_READY=true
+2026-11-03T01:04:19.211539Z HID_CHAIN_START obj=198895399
+2026-11-03T01:04:19.212425Z HID_GATE_CLOSED reason=REPORTED
+2026-11-03T01:04:19.220117Z CARPLAY_INFO_KEYS n=22 keys=[pi, OSInfo, modes, manufacturer, audioLatencies, keepAliveLowPower, model, keepAliveSendStatsAsBody, audioFormats, rightHandDrive, extendedFeatures, statusFlags, oemIconVisible, bluetoothIDs, deviceID, nightMode, displays, hidDevices, hidLanguages, sourceVersion, features, name]
+2026-11-03T01:04:19.220712Z CARPLAY_INFO_FEATURES value=416679199360
+2026-11-03T01:04:19.225523Z HID_TOUCH_DESCRIPTOR index=0 bytes=62 reports=1 display_bound=true uuid_kind=STRING
+2026-11-03T01:04:19.226074Z HID_TOUCH_UNSUPPORTED index=1 bytes=29[5, 11, 9, 1, -95, 1, 5, 11, 9, 32, 9, 38, 21, 0, 37, 1, 117, 1, -107, 2, -127, 2, 117, 6, -107, 1, -127, 1, -64] reason=DESCRIPTOR
+2026-11-03T01:04:19.226580Z HID_BACK_DESCRIPTOR index=2 bytes=72 reports=1
+2026-11-03T01:04:19.226842Z HID_CAPABILITIES devices=3 touch=1
+2026-11-03T01:04:19.227238Z CAPS schema=1 displays=1 rejected_displays=0 main=1280x768@30 input=TOUCH_SCREEN hid=3 hid_valid=true touch=1 knobs=1 keys=1 audio_rows=9 audio_valid=true audio_legacy=false modes_declared=true modes_valid=true feature_bits=6104040280 feature_lists_valid=true negotiated=0 iap_channel=false fingerprint=c30dd619b5aef1838410f5b41718adca251a1ac626859fbf29ca8beedf1dc76b
+2026-11-03T01:04:19.227544Z CAPABILITY_PLAN policy=1 fingerprint=c30dd619b5aef1838410f5b41718adca251a1ac626859fbf29ca8beedf1dc76b display_candidates=1 audio_table_valid=true max_route_attempts=3 physical_receipt_confirmed=false
+2026-11-03T01:04:19.227947Z AUDIO_CAPABILITIES legacy=false output_rows=9 pcm=true
+2026-11-03T01:04:19.228225Z AUDIO_OUTPUT_CAPABILITY stream=100 type=default formats=0xc000050
+2026-11-03T01:04:19.228462Z AUDIO_OUTPUT_CAPABILITY stream=100 type=media formats=0x8000
+2026-11-03T01:04:19.228686Z AUDIO_OUTPUT_CAPABILITY stream=100 type=telephony formats=0xc000054
+2026-11-03T01:04:19.229249Z AUDIO_OUTPUT_CAPABILITY stream=100 type=speechRecognition formats=0x8000040
+2026-11-03T01:04:19.229914Z AUDIO_OUTPUT_CAPABILITY stream=100 type=alert formats=0x2008000
+2026-11-03T01:04:19.230472Z AUDIO_OUTPUT_CAPABILITY stream=100 type=compatibility formats=0x8054
+2026-11-03T01:04:19.230903Z AUDIO_OUTPUT_CAPABILITY stream=101 type=default formats=0x2008000
+2026-11-03T01:04:19.231324Z AUDIO_OUTPUT_CAPABILITY stream=101 type=compatibility formats=0x2008000
+2026-11-03T01:04:19.231911Z AUDIO_OUTPUT_CAPABILITY stream=102 type=media formats=0x808000
+2026-11-03T01:04:19.232696Z CARPLAY_INITIAL_MODES_ACCEPTED code=MODE_INFO_ACCEPTED kind=NONE row=-1 authentication_already_verified=true
+2026-11-03T01:04:19.233066Z MODE_INFO_REPRESENTATION representation=CHANGE_MODES screen_constraints=DECLARATION_DEFAULT_OR_TRANSFER audio_constraints=DECLARATION_DEFAULT_OR_TRANSFER
+2026-11-03T01:04:19.233308Z CARPLAY_RESOURCE_STATE source=INITIAL_INFO revision=0 screen_entity=2 screen_permanent=2 screen_borrows=0 screen_take=100 screen_borrow=100 screen_unborrow=100 audio_declared=false audio_entity=2 audio_permanent=2 audio_borrows=0 audio_take=100 audio_borrow=100 audio_unborrow=100 display_confirmed=false
+2026-11-03T01:04:19.233523Z CARPLAY_SCREEN_OWNER_PHONE=false
+2026-11-03T01:04:19.233783Z Accessory has the screen resource; native source retained
+2026-11-03T01:04:19.237198Z CARPLAY_RESOURCE_STATE source=LOCAL_CLAIM revision=0 screen_entity=1 screen_permanent=1 screen_borrows=0 screen_take=100 screen_borrow=100 screen_unborrow=100 audio_declared=false audio_entity=2 audio_permanent=2 audio_borrows=0 audio_take=100 audio_borrow=100 audio_unborrow=100 display_confirmed=false
+2026-11-03T01:04:19.237539Z CARPLAY_SCREEN_OWNER_PHONE=true
+2026-11-03T01:04:19.237854Z Screen resource returned; waiting for an actual IDR
+2026-11-03T01:04:19.245067Z CARPLAY_RESP op=COMMAND lastCseq=9
+2026-11-03T01:04:19.245578Z CARPLAY_SCREEN_MODES_SENT screen_phone=true display_confirmed=false
+2026-11-03T01:04:19.263898Z HID_TOUCH_DESCRIPTOR index=0 bytes=62 reports=1 display_bound=true uuid_kind=STRING
+2026-11-03T01:04:19.264550Z HID_TOUCH_UNSUPPORTED index=1 bytes=29[5, 11, 9, 1, -95, 1, 5, 11, 9, 32, 9, 38, 21, 0, 37, 1, 117, 1, -107, 2, -127, 2, 117, 6, -107, 1, -127, 1, -64] reason=DESCRIPTOR
+2026-11-03T01:04:19.265086Z HID_BACK_DESCRIPTOR index=2 bytes=72 reports=1
+2026-11-03T01:04:19.265378Z HID_CAPABILITIES devices=3 touch=1
+2026-11-03T01:04:19.265651Z EVTCP connect host=/192.168.5.1 port=6030 timeout_ms=10000
+2026-11-03T01:04:19.269720Z CARPLAY_SCREEN_ROUTE_OPENED epoch=1
+2026-11-03T01:04:19.270386Z CAPABILITY_HINT_SAVED route_accepted=true display_receipt_confirmed=false
+2026-11-03T01:04:19.274927Z CARPLAY_RESP op=STREAM_RECORD lastCseq=11
+2026-11-03T01:04:19.275733Z CARPLAY_MEDIA_READY 1280x768
+2026-11-03T01:04:19.276006Z CARPLAY_IAP_DIAG_U0=false
+2026-11-03T01:04:19.276325Z CARPLAY_IAP_DIAG_R0=null
+2026-11-03T01:04:19.276609Z CARPLAY_IAP_DIAG_J=null
+2026-11-03T01:04:19.277133Z CARPLAY_IAP_DIAG_A0=exists
+2026-11-03T01:04:19.277466Z CARPLAY_IAP_DIAG_M=64hex
+2026-11-03T01:04:19.277737Z V153_MEDIA_PATH_CONTINUE
+2026-11-03T01:04:19.279558Z CURRENT_WIFI_REUSE_ELIGIBLE authenticated=true process_local=true credentials_persisted=false
+2026-11-03T01:04:19.279970Z NATIVE_GEOMETRY_PREFLIGHT supported_candidate=true native_encoder_acceptance_confirmed=false fps=30
+2026-11-03T01:04:19.280248Z VIDEO_NEGOTIATED_REQUEST fps=30 receiver_max=30 actual_source_pending=false
+2026-11-03T01:04:19.280612Z VIDEO_EPOCH_WAITING_IDR=2
+2026-11-03T01:04:19.280949Z Wireless reauthenticated; native source retained; waiting for an actual IDR before resuming video
+2026-11-03T01:04:19.283603Z VIDEO_SELECTED_GEOMETRY target=1280x768 target_fps=30 planned_source_request=1280x768 exact_candidate=true native_source_retained=true native_init_reissued=false actual_source_pending=false
+2026-11-03T01:04:19.284242Z TX CMD 0x1800a body=0 encrypted=true
+2026-11-03T01:04:19.284559Z TX CMD 0x18009 body=0 encrypted=true
+2026-11-03T01:04:19.284838Z NATIVE_RECOVERY_VIDEO_SYNC command_pair_written=true source_session_retained=true idr_confirmed=false
+2026-11-03T01:04:19.334719Z Actual native video entered current wireless sender; waiting for first IDR send confirmation
+2026-11-03T01:04:19.334944Z VIDEO_EPOCH_WAITING_IDR=2
+2026-11-03T01:04:19.335564Z WAITING_ACTUAL_NATIVE_IDR_AFTER_CONNECTION
+2026-11-03T01:04:19.380509Z ACTUAL_NATIVE_IDR_ACCEPTED
+2026-11-03T01:04:19.381048Z ACTUAL_NATIVE_AVC_CONFIG_SENT
+2026-11-03T01:04:19.381321Z CARPLAY_VIDEO_CONFIG width=1280 height=768 encrypted=true
+2026-11-03T01:04:19.381616Z CARPLAY_AVC_DIAGNOSTIC profile_idc=66 constraints=128 level_idc=32 coded=1280x768 visible=1280x768 declared=1280x768 dimensions_match=true sps_metadata=PARSED
+2026-11-03T01:04:19.382928Z VIDEO_UNITS_SENT=1
+2026-11-03T01:04:19.383344Z VIDEO_PROGRESS units=1
+2026-11-03T01:04:19.383732Z VIDEO_EPOCH_FIRST_IDR_SENT=2
+2026-11-03T01:04:19.384165Z RECOVERY_WAIT count=1 p50_ms=1762 p95_ms=1762 receiver_render_confirmed=false
+2026-11-03T01:04:19.384594Z Actual source-derived IDR sent on authenticated transport; receiver display still requires confirmation
+2026-11-03T01:04:20.386251Z VIDEO_PROGRESS units=21
+2026-11-03T01:04:21.394156Z VIDEO_PROGRESS units=41
+2026-11-03T01:04:22.441172Z VIDEO_PROGRESS units=62
+2026-11-03T01:04:23.410339Z VIDEO_NATIVE_FLOW received_fps_x100=1987 passthrough_enqueued=260 adapted_enqueued=0 assembly_p50_us=50077 assembly_p95_us=58269 actual_display_unconfirmed=true
+2026-11-03T01:04:23.452815Z VIDEO_PROGRESS units=82
+2026-11-03T01:04:24.412981Z VIDEO_FLOW window=256 transport_received_fps_x100=1988 sent_fps_x100=1988 queue_depth=0 oldest_us=0 SOCKET_WRITE_p50_us=222_p95_us=879 SENDER_QUEUE_p50_us=119_p95_us=679 SOURCE_TO_WRITE_p50_us=50755_p95_us=58885 receiver_render_confirmed=false
+2026-11-03T01:04:24.460169Z VIDEO_PROGRESS units=102
+2026-11-03T01:04:25.505168Z VIDEO_PROGRESS units=123
+2026-11-03T01:04:26.509276Z VIDEO_PROGRESS units=143
+2026-11-03T01:04:27.518858Z VIDEO_PROGRESS units=163
+2026-11-03T01:04:28.418261Z VIDEO_NATIVE_FLOW received_fps_x100=1996 passthrough_enqueued=360 adapted_enqueued=0 assembly_p50_us=50050 assembly_p95_us=58227 actual_display_unconfirmed=true
+2026-11-03T01:04:28.519704Z VIDEO_PROGRESS units=183
+2026-11-03T01:04:29.419373Z VIDEO_FLOW window=256 transport_received_fps_x100=1997 sent_fps_x100=1997 queue_depth=0 oldest_us=0 SOCKET_WRITE_p50_us=202_p95_us=841 SENDER_QUEUE_p50_us=115_p95_us=442 SOURCE_TO_WRITE_p50_us=50755_p95_us=58885 receiver_render_confirmed=false
+2026-11-03T01:04:29.574323Z VIDEO_PROGRESS units=204
+2026-11-03T01:04:29.779541Z CARPLAY_EVENT_INPUT point=TRANSPORT_END RTSP_INPUT reader_started=true reader_ended=true closed=true stage=ENDED read_calls=2 raw_bytes=0 plain_bytes=0 messages=0 requests=0 responses=0 header_bytes=0 body_bytes=0 body_expected=-1 record_bytes=0 record_expected=-1 pending_plain_bytes=0
+2026-11-03T01:04:29.780991Z Recovering selected receiver 2/3; native_source_retained=true; reason=EVENT_CHANNEL_EOFException
+2026-11-03T01:04:32.794020Z NATIVE_COMPONENT_SUPPORT status=REVIEWED reason=REVIEWED_ARTIFACT host_code=17031002 plugin_code=260 producer_entry_observed=true runtime_handshake_required=true compatibility_confirmed=false
+2026-11-03T01:04:32.794369Z NATIVE_HOST_BUILD code=17031002 version=UNAVAILABLE
+2026-11-03T01:04:32.795542Z Discovering services on the manually selected receiver WLAN
+2026-11-03T01:04:32.798720Z CURRENT_WIFI_DISCOVERING selected_network_only=true bootstrap_parameters_required=false authentication_required=true
+2026-11-03T01:04:32.800178Z CTRL_ANNOUNCE name=OPPO_X8U port=36627 svc=OPPO_X8U manual=OPPO_X8U
+2026-11-03T01:04:32.802193Z ENDPOINT_DISCOVERY_STARTED_UNTRUSTED
+2026-11-03T01:04:33.440680Z VIDEO_NATIVE_FLOW received_fps_x100=1990 passthrough_enqueued=388 adapted_enqueued=0 assembly_p50_us=50183 assembly_p95_us=58071 actual_display_unconfirmed=true
+2026-11-03T01:04:33.825177Z CTRL_SERVICE_LIVE name=OPPO_X8U port=0
+2026-11-03T01:04:33.825752Z CTRL_RESOLVE_SUBMIT type=_carplay-ctrl._tcp name=OPPO_X8U port=0
+2026-11-03T01:04:33.826149Z CTRL_SERVICE_REGISTERED network_scoped=true real_identifier=true values_logged=false
+2026-11-03T01:04:33.831401Z CTRL_RESOLVE_OK name=OPPO_X8U port=36627 type=._carplay-ctrl._tcp host=/192.168.5.100
+2026-11-03T01:04:34.940873Z Selected current WLAN candidate found; full pairing and certificate authentication required
+2026-11-03T01:04:34.948883Z CONNECT_STAGE ENDPOINT_READY
+2026-11-03T01:04:34.950230Z CONNECT_STAGE SOCKET_FACTORY_READY
+2026-11-03T01:04:34.969362Z CONNECT_STAGE OWN_IDENTITY_VERIFIED
+2026-11-03T01:04:34.970006Z CONNECT_STAGE PEER_STORE_READY
+2026-11-03T01:04:34.971947Z CONNECT_STAGE CONNECTION_CREATED
+2026-11-03T01:04:34.972878Z CARPLAY_CONTROL_CONNECTING
+2026-11-03T01:04:34.980650Z CARPLAY_PAIRING_PROFILE hkp=2 verify_pd=1
+2026-11-03T01:04:34.981368Z CARPLAY_PAIR_SETUP
+2026-11-03T01:04:35.070387Z CARPLAY_RESP op=PAIR_SETUP lastCseq=2
+2026-11-03T01:04:35.110326Z CARPLAY_RESP op=PAIR_VERIFY lastCseq=4
+2026-11-03T01:04:35.134043Z CARPLAY_PAIR_VERIFIED
+2026-11-03T01:04:35.327019Z CTRL_RESOLVE_SUBMIT type=_carplay-ctrl._tcp name=OPPO_X8U port=0
+2026-11-03T01:04:35.331698Z CTRL_RESOLVE_OK name=OPPO_X8U port=36627 type=._carplay-ctrl._tcp host=/192.168.5.100
+2026-11-03T01:04:35.443030Z CARPLAY_RESP op=MFI_AUTH_SETUP lastCseq=6
+2026-11-03T01:04:35.445311Z MFI_SAP_CERTIFICATE_EXPIRY_COMPATIBLE fresh_proof_verified=true pinned=true encrypted_control=true
+2026-11-03T01:04:35.445738Z MFI_FRESH_PROOF_VERIFIED_PINNED_APPLE_CA_UNVERIFIED=true
+2026-11-03T01:04:35.446052Z CARPLAY_INITIAL_SETUP
+2026-11-03T01:04:35.446379Z CARPLAY_SETUP_DEVICE_ID value=E0:42:6D:B6:D5:78 len=17
+2026-11-03T01:04:35.446678Z CARPLAY_SETUP_TRANSPORT_ID source=BLUETOOTH_SNAPSHOT values_logged=false
+2026-11-03T01:04:35.446985Z AUDIO_WIRE_PROFILE profile=MODERN_RTP aad_bytes=8 compatibility_build_declared=true actual_android_build=false
+2026-11-03T01:04:35.447363Z CARPLAY_SETUP_KEYS n=10 keys=[name, model, deviceID, sessionUUID, sourceVersion, osBuildVersion, timingPort, timingProtocol, keepAliveLowPower, features]
+2026-11-03T01:04:35.455848Z CARPLAY_SETUP_RESP_KEYS n=3 keys=[keepAlivePort, eventPort, timingPort]
+2026-11-03T01:04:35.457512Z CARPLAY_UDP_KEEPALIVE advertised=true interval_ms=10000 expects_reply=false
+2026-11-03T01:04:35.457936Z CARPLAY_EVENT_CONNECTING
+2026-11-03T01:04:35.458335Z EVTCP connect host=/192.168.5.1 port=5001 timeout_ms=10000
+2026-11-03T01:04:35.461179Z CARPLAY_INFO_AFTER_AUTHENTICATED_SETUP
+2026-11-03T01:04:35.461501Z V153_EVENT_READY=true
+2026-11-03T01:04:35.461839Z HID_CHAIN_START obj=153332983
+2026-11-03T01:04:35.462302Z HID_GATE_CLOSED reason=REPORTED
+2026-11-03T01:04:35.470913Z CARPLAY_RESP op=INFO lastCseq=8
+2026-11-03T01:04:35.471950Z CARPLAY_INFO_KEYS n=22 keys=[pi, OSInfo, modes, manufacturer, audioLatencies, keepAliveLowPower, model, keepAliveSendStatsAsBody, audioFormats, rightHandDrive, extendedFeatures, statusFlags, oemIconVisible, bluetoothIDs, deviceID, nightMode, displays, hidDevices, hidLanguages, sourceVersion, features, name]
+2026-11-03T01:04:35.472169Z CARPLAY_INFO_FEATURES value=416679199360
+2026-11-03T01:04:35.475083Z HID_TOUCH_DESCRIPTOR index=0 bytes=62 reports=1 display_bound=true uuid_kind=STRING
+2026-11-03T01:04:35.475586Z HID_TOUCH_UNSUPPORTED index=1 bytes=29[5, 11, 9, 1, -95, 1, 5, 11, 9, 32, 9, 38, 21, 0, 37, 1, 117, 1, -107, 2, -127, 2, 117, 6, -107, 1, -127, 1, -64] reason=DESCRIPTOR
+2026-11-03T01:04:35.476057Z HID_BACK_DESCRIPTOR index=2 bytes=72 reports=1
+2026-11-03T01:04:35.476311Z HID_CAPABILITIES devices=3 touch=1
+2026-11-03T01:04:35.476707Z CAPS schema=1 displays=1 rejected_displays=0 main=1280x768@30 input=TOUCH_SCREEN hid=3 hid_valid=true touch=1 knobs=1 keys=1 audio_rows=9 audio_valid=true audio_legacy=false modes_declared=true modes_valid=true feature_bits=6104040280 feature_lists_valid=true negotiated=0 iap_channel=false fingerprint=c30dd619b5aef1838410f5b41718adca251a1ac626859fbf29ca8beedf1dc76b
+2026-11-03T01:04:35.477077Z CAPABILITY_PLAN policy=1 fingerprint=c30dd619b5aef1838410f5b41718adca251a1ac626859fbf29ca8beedf1dc76b display_candidates=1 audio_table_valid=true max_route_attempts=3 physical_receipt_confirmed=false
+2026-11-03T01:04:35.477440Z AUDIO_CAPABILITIES legacy=false output_rows=9 pcm=true
+2026-11-03T01:04:35.477689Z AUDIO_OUTPUT_CAPABILITY stream=100 type=default formats=0xc000050
+2026-11-03T01:04:35.477892Z AUDIO_OUTPUT_CAPABILITY stream=100 type=media formats=0x8000
+2026-11-03T01:04:35.478066Z AUDIO_OUTPUT_CAPABILITY stream=100 type=telephony formats=0xc000054
+2026-11-03T01:04:35.478238Z AUDIO_OUTPUT_CAPABILITY stream=100 type=speechRecognition formats=0x8000040
+2026-11-03T01:04:35.478418Z AUDIO_OUTPUT_CAPABILITY stream=100 type=alert formats=0x2008000
+2026-11-03T01:04:35.478590Z AUDIO_OUTPUT_CAPABILITY stream=100 type=compatibility formats=0x8054
+2026-11-03T01:04:35.478765Z AUDIO_OUTPUT_CAPABILITY stream=101 type=default formats=0x2008000
+2026-11-03T01:04:35.478946Z AUDIO_OUTPUT_CAPABILITY stream=101 type=compatibility formats=0x2008000
+2026-11-03T01:04:35.479154Z AUDIO_OUTPUT_CAPABILITY stream=102 type=media formats=0x808000
+2026-11-03T01:04:35.480894Z CARPLAY_INITIAL_MODES_ACCEPTED code=MODE_INFO_ACCEPTED kind=NONE row=-1 authentication_already_verified=true
+2026-11-03T01:04:35.481186Z MODE_INFO_REPRESENTATION representation=CHANGE_MODES screen_constraints=DECLARATION_DEFAULT_OR_TRANSFER audio_constraints=DECLARATION_DEFAULT_OR_TRANSFER
+2026-11-03T01:04:35.481431Z CARPLAY_RESOURCE_STATE source=INITIAL_INFO revision=0 screen_entity=2 screen_permanent=2 screen_borrows=0 screen_take=100 screen_borrow=100 screen_unborrow=100 audio_declared=false audio_entity=2 audio_permanent=2 audio_borrows=0 audio_take=100 audio_borrow=100 audio_unborrow=100 display_confirmed=false
+2026-11-03T01:04:35.481696Z CARPLAY_SCREEN_OWNER_PHONE=false
+2026-11-03T01:04:35.481966Z Accessory has the screen resource; native source retained
+2026-11-03T01:04:35.484146Z CARPLAY_RESOURCE_STATE source=LOCAL_CLAIM revision=0 screen_entity=1 screen_permanent=1 screen_borrows=0 screen_take=100 screen_borrow=100 screen_unborrow=100 audio_declared=false audio_entity=2 audio_permanent=2 audio_borrows=0 audio_take=100 audio_borrow=100 audio_unborrow=100 display_confirmed=false
+2026-11-03T01:04:35.484474Z CARPLAY_SCREEN_OWNER_PHONE=true
+2026-11-03T01:04:35.484726Z Screen resource returned; waiting for an actual IDR
+2026-11-03T01:04:35.492243Z CARPLAY_SCREEN_MODES_SENT screen_phone=true display_confirmed=false
+2026-11-03T01:04:35.510973Z CARPLAY_RESP op=STREAM_SETUP lastCseq=10
+2026-11-03T01:04:35.511687Z HID_TOUCH_DESCRIPTOR index=0 bytes=62 reports=1 display_bound=true uuid_kind=STRING
+2026-11-03T01:04:35.512185Z HID_TOUCH_UNSUPPORTED index=1 bytes=29[5, 11, 9, 1, -95, 1, 5, 11, 9, 32, 9, 38, 21, 0, 37, 1, 117, 1, -107, 2, -127, 2, 117, 6, -107, 1, -127, 1, -64] reason=DESCRIPTOR
+2026-11-03T01:04:35.512639Z HID_BACK_DESCRIPTOR index=2 bytes=72 reports=1
+2026-11-03T01:04:35.512935Z HID_CAPABILITIES devices=3 touch=1
+2026-11-03T01:04:35.513193Z EVTCP connect host=/192.168.5.1 port=6030 timeout_ms=10000
+2026-11-03T01:04:35.516565Z CARPLAY_SCREEN_ROUTE_OPENED epoch=1
+2026-11-03T01:04:35.517127Z CAPABILITY_HINT_SAVED route_accepted=true display_receipt_confirmed=false
+2026-11-03T01:04:35.521287Z CARPLAY_MEDIA_READY 1280x768
+2026-11-03T01:04:35.521739Z CARPLAY_IAP_DIAG_U0=false
+2026-11-03T01:04:35.522039Z CARPLAY_IAP_DIAG_R0=null
+2026-11-03T01:04:35.522252Z CARPLAY_IAP_DIAG_J=null
+2026-11-03T01:04:35.522481Z CARPLAY_IAP_DIAG_A0=exists
+2026-11-03T01:04:35.522881Z CARPLAY_IAP_DIAG_M=64hex
+2026-11-03T01:04:35.523463Z V153_MEDIA_PATH_CONTINUE
+2026-11-03T01:04:35.525366Z CURRENT_WIFI_REUSE_ELIGIBLE authenticated=true process_local=true credentials_persisted=false
+2026-11-03T01:04:35.525763Z NATIVE_GEOMETRY_PREFLIGHT supported_candidate=true native_encoder_acceptance_confirmed=false fps=30
+2026-11-03T01:04:35.526123Z VIDEO_NEGOTIATED_REQUEST fps=30 receiver_max=30 actual_source_pending=false
+2026-11-03T01:04:35.526497Z VIDEO_EPOCH_WAITING_IDR=2
+2026-11-03T01:04:35.526825Z Wireless reauthenticated; native source retained; waiting for an actual IDR before resuming video
+2026-11-03T01:04:35.529132Z VIDEO_SELECTED_GEOMETRY target=1280x768 target_fps=30 planned_source_request=1280x768 exact_candidate=true native_source_retained=true native_init_reissued=false actual_source_pending=false
+2026-11-03T01:04:35.530479Z TX CMD 0x1800a body=0 encrypted=true
+2026-11-03T01:04:35.530779Z TX CMD 0x18009 body=0 encrypted=true
+2026-11-03T01:04:35.530987Z NATIVE_RECOVERY_VIDEO_SYNC command_pair_written=true source_session_retained=true idr_confirmed=false
+2026-11-03T01:04:35.555084Z Actual native video entered current wireless sender; waiting for first IDR send confirmation
+2026-11-03T01:04:35.599058Z VIDEO_EPOCH_WAITING_IDR=2
+2026-11-03T01:04:35.599402Z ACTUAL_NATIVE_IDR_ACCEPTED
+2026-11-03T01:04:35.599773Z ACTUAL_NATIVE_AVC_CONFIG_SENT
+2026-11-03T01:04:35.599993Z CARPLAY_VIDEO_CONFIG width=1280 height=768 encrypted=true
+2026-11-03T01:04:35.600249Z CARPLAY_AVC_DIAGNOSTIC profile_idc=66 constraints=128 level_idc=32 coded=1280x768 visible=1280x768 declared=1280x768 dimensions_match=true sps_metadata=PARSED
+2026-11-03T01:04:35.601048Z VIDEO_UNITS_SENT=1
+2026-11-03T01:04:35.601263Z VIDEO_PROGRESS units=1
+2026-11-03T01:04:35.601477Z VIDEO_EPOCH_FIRST_IDR_SENT=2
+2026-11-03T01:04:35.601736Z RECOVERY_WAIT count=2 p50_ms=1762 p95_ms=5821 receiver_render_confirmed=false
+2026-11-03T01:04:35.601974Z Actual source-derived IDR sent on authenticated transport; receiver display still requires confirmation
+2026-11-03T01:04:36.605255Z VIDEO_PROGRESS units=21
+2026-11-03T01:04:37.608597Z VIDEO_PROGRESS units=41
+2026-11-03T01:04:38.465230Z VIDEO_NATIVE_FLOW received_fps_x100=1990 passthrough_enqueued=446 adapted_enqueued=0 assembly_p50_us=50239 assembly_p95_us=57411 actual_display_unconfirmed=true
+2026-11-03T01:04:38.619769Z VIDEO_PROGRESS units=61
+2026-11-03T01:04:39.621078Z VIDEO_PROGRESS units=81
+2026-11-03T01:04:40.606779Z VIDEO_FLOW window=256 transport_received_fps_x100=1978 sent_fps_x100=1978 queue_depth=0 oldest_us=0 SOCKET_WRITE_p50_us=214_p95_us=452 SENDER_QUEUE_p50_us=127_p95_us=277 SOURCE_TO_WRITE_p50_us=51467_p95_us=57959 receiver_render_confirmed=false
+2026-11-03T01:04:40.623024Z VIDEO_PROGRESS units=101
+2026-11-03T01:04:41.629860Z VIDEO_PROGRESS units=121
+2026-11-03T01:04:42.633081Z VIDEO_PROGRESS units=141
+2026-11-03T01:04:43.489034Z VIDEO_NATIVE_FLOW received_fps_x100=1990 passthrough_enqueued=546 adapted_enqueued=0 assembly_p50_us=50250 assembly_p95_us=57884 actual_display_unconfirmed=true
+2026-11-03T01:04:43.636439Z VIDEO_PROGRESS units=161
+2026-11-03T01:04:44.639120Z VIDEO_PROGRESS units=181
+2026-11-03T01:04:45.617398Z VIDEO_FLOW window=256 transport_received_fps_x100=1996 sent_fps_x100=1996 queue_depth=0 oldest_us=0 SOCKET_WRITE_p50_us=211_p95_us=485 SENDER_QUEUE_p50_us=120_p95_us=307 SOURCE_TO_WRITE_p50_us=50880_p95_us=59259 receiver_render_confirmed=false
+2026-11-03T01:04:45.642884Z VIDEO_PROGRESS units=201
+2026-11-03T01:04:45.782194Z CARPLAY_EVENT_INPUT point=TRANSPORT_END RTSP_INPUT reader_started=true reader_ended=true closed=true stage=ENDED read_calls=2 raw_bytes=0 plain_bytes=0 messages=0 requests=0 responses=0 header_bytes=0 body_bytes=0 body_expected=-1 record_bytes=0 record_expected=-1 pending_plain_bytes=0
+2026-11-03T01:04:45.785462Z Recovering selected receiver 3/3; native_source_retained=true; reason=EVENT_CHANNEL_EOFException
+2026-11-03T01:04:48.503424Z VIDEO_NATIVE_FLOW received_fps_x100=1994 passthrough_enqueued=592 adapted_enqueued=0 assembly_p50_us=50292 assembly_p95_us=58824 actual_display_unconfirmed=true
+2026-11-03T01:04:53.518235Z VIDEO_NATIVE_FLOW received_fps_x100=1994 passthrough_enqueued=592 adapted_enqueued=0 assembly_p50_us=50069 assembly_p95_us=57622 actual_display_unconfirmed=true
+2026-11-03T01:04:53.815555Z NATIVE_COMPONENT_SUPPORT status=REVIEWED reason=REVIEWED_ARTIFACT host_code=17031002 plugin_code=260 producer_entry_observed=true runtime_handshake_required=true compatibility_confirmed=false
+2026-11-03T01:04:53.816934Z NATIVE_HOST_BUILD code=17031002 version=UNAVAILABLE
+2026-11-03T01:04:53.820126Z Discovering services on the manually selected receiver WLAN
+2026-11-03T01:04:53.832044Z CURRENT_WIFI_DISCOVERING selected_network_only=true bootstrap_parameters_required=false authentication_required=true
+2026-11-03T01:04:53.836526Z CTRL_ANNOUNCE name=OPPO_X8U port=42351 svc=OPPO_X8U manual=OPPO_X8U
+2026-11-03T01:04:53.859475Z ENDPOINT_DISCOVERY_STARTED_UNTRUSTED
+2026-11-03T01:04:54.678362Z CTRL_SERVICE_LIVE name=OPPO_X8U port=0
+2026-11-03T01:04:54.681505Z CTRL_RESOLVE_SUBMIT type=_carplay-ctrl._tcp name=OPPO_X8U port=0
+2026-11-03T01:04:54.682244Z CTRL_SERVICE_REGISTERED network_scoped=true real_identifier=true values_logged=false
+2026-11-03T01:04:54.687904Z CTRL_RESOLVE_OK name=OPPO_X8U port=42351 type=._carplay-ctrl._tcp host=/192.168.5.100
+2026-11-03T01:04:55.942679Z Selected current WLAN candidate found; full pairing and certificate authentication required
+2026-11-03T01:04:55.948700Z CONNECT_STAGE ENDPOINT_READY
+2026-11-03T01:04:55.949779Z CONNECT_STAGE SOCKET_FACTORY_READY
+2026-11-03T01:04:55.969868Z CONNECT_STAGE OWN_IDENTITY_VERIFIED
+2026-11-03T01:04:55.970855Z CONNECT_STAGE PEER_STORE_READY
+2026-11-03T01:04:55.972295Z CONNECT_STAGE CONNECTION_CREATED
+2026-11-03T01:04:55.973880Z CARPLAY_CONTROL_CONNECTING
+2026-11-03T01:04:55.993316Z CARPLAY_PAIRING_PROFILE hkp=2 verify_pd=1
+2026-11-03T01:04:55.993710Z CARPLAY_PAIR_SETUP
+2026-11-03T01:04:56.023249Z CARPLAY_RESP op=PAIR_SETUP lastCseq=1
+2026-11-03T01:04:56.088404Z CARPLAY_RESP op=PAIR_SETUP lastCseq=3
+2026-11-03T01:04:56.126529Z CARPLAY_RESP op=PAIR_VERIFY lastCseq=5
+2026-11-03T01:04:56.127771Z CARPLAY_PAIR_VERIFIED
+2026-11-03T01:04:56.184170Z CTRL_RESOLVE_SUBMIT type=_carplay-ctrl._tcp name=OPPO_X8U port=0
+2026-11-03T01:04:56.191595Z CTRL_RESOLVE_OK name=OPPO_X8U port=42351 type=._carplay-ctrl._tcp host=/192.168.5.100
+2026-11-03T01:04:56.459973Z MFI_SAP_CERTIFICATE_EXPIRY_COMPATIBLE fresh_proof_verified=true pinned=true encrypted_control=true
+2026-11-03T01:04:56.462190Z MFI_FRESH_PROOF_VERIFIED_PINNED_APPLE_CA_UNVERIFIED=true
+2026-11-03T01:04:56.463462Z CARPLAY_INITIAL_SETUP
+2026-11-03T01:04:56.464732Z CARPLAY_SETUP_DEVICE_ID value=E0:42:6D:B6:D5:78 len=17
+2026-11-03T01:04:56.465820Z CARPLAY_SETUP_TRANSPORT_ID source=BLUETOOTH_SNAPSHOT values_logged=false
+2026-11-03T01:04:56.466887Z AUDIO_WIRE_PROFILE profile=MODERN_RTP aad_bytes=8 compatibility_build_declared=true actual_android_build=false
+2026-11-03T01:04:56.468225Z CARPLAY_SETUP_KEYS n=10 keys=[name, model, deviceID, sessionUUID, sourceVersion, osBuildVersion, timingPort, timingProtocol, keepAliveLowPower, features]
+2026-11-03T01:04:56.479169Z CARPLAY_RESP op=STREAM_SETUP lastCseq=7
+2026-11-03T01:04:56.479658Z CARPLAY_SETUP_RESP_KEYS n=3 keys=[keepAlivePort, eventPort, timingPort]
+2026-11-03T01:04:56.481769Z CARPLAY_UDP_KEEPALIVE advertised=true interval_ms=10000 expects_reply=false
+2026-11-03T01:04:56.482225Z CARPLAY_EVENT_CONNECTING
+2026-11-03T01:04:56.482699Z EVTCP connect host=/192.168.5.1 port=5001 timeout_ms=10000
+2026-11-03T01:04:56.485604Z CARPLAY_INFO_AFTER_AUTHENTICATED_SETUP
+2026-11-03T01:04:56.485939Z V153_EVENT_READY=true
+2026-11-03T01:04:56.486289Z HID_CHAIN_START obj=108785351
+2026-11-03T01:04:56.486712Z HID_GATE_CLOSED reason=REPORTED
+2026-11-03T01:04:56.493375Z CARPLAY_INFO_KEYS n=22 keys=[pi, OSInfo, modes, manufacturer, audioLatencies, keepAliveLowPower, model, keepAliveSendStatsAsBody, audioFormats, rightHandDrive, extendedFeatures, statusFlags, oemIconVisible, bluetoothIDs, deviceID, nightMode, displays, hidDevices, hidLanguages, sourceVersion, features, name]
+2026-11-03T01:04:56.493880Z CARPLAY_INFO_FEATURES value=416679199360
+2026-11-03T01:04:56.498955Z HID_TOUCH_DESCRIPTOR index=0 bytes=62 reports=1 display_bound=true uuid_kind=STRING
+2026-11-03T01:04:56.499977Z HID_TOUCH_UNSUPPORTED index=1 bytes=29[5, 11, 9, 1, -95, 1, 5, 11, 9, 32, 9, 38, 21, 0, 37, 1, 117, 1, -107, 2, -127, 2, 117, 6, -107, 1, -127, 1, -64] reason=DESCRIPTOR
+2026-11-03T01:04:56.500976Z HID_BACK_DESCRIPTOR index=2 bytes=72 reports=1
+2026-11-03T01:04:56.501558Z HID_CAPABILITIES devices=3 touch=1
+2026-11-03T01:04:56.502318Z CAPS schema=1 displays=1 rejected_displays=0 main=1280x768@30 input=TOUCH_SCREEN hid=3 hid_valid=true touch=1 knobs=1 keys=1 audio_rows=9 audio_valid=true audio_legacy=false modes_declared=true modes_valid=true feature_bits=6104040280 feature_lists_valid=true negotiated=0 iap_channel=false fingerprint=c30dd619b5aef1838410f5b41718adca251a1ac626859fbf29ca8beedf1dc76b
+2026-11-03T01:04:56.502888Z CAPABILITY_PLAN policy=1 fingerprint=c30dd619b5aef1838410f5b41718adca251a1ac626859fbf29ca8beedf1dc76b display_candidates=1 audio_table_valid=true max_route_attempts=3 physical_receipt_confirmed=false
+2026-11-03T01:04:56.503589Z AUDIO_CAPABILITIES legacy=false output_rows=9 pcm=true
+2026-11-03T01:04:56.504134Z AUDIO_OUTPUT_CAPABILITY stream=100 type=default formats=0xc000050
+2026-11-03T01:04:56.504638Z AUDIO_OUTPUT_CAPABILITY stream=100 type=media formats=0x8000
+2026-11-03T01:04:56.505298Z AUDIO_OUTPUT_CAPABILITY stream=100 type=telephony formats=0xc000054
+2026-11-03T01:04:56.505849Z AUDIO_OUTPUT_CAPABILITY stream=100 type=speechRecognition formats=0x8000040
+2026-11-03T01:04:56.506294Z AUDIO_OUTPUT_CAPABILITY stream=100 type=alert formats=0x2008000
+2026-11-03T01:04:56.506712Z AUDIO_OUTPUT_CAPABILITY stream=100 type=compatibility formats=0x8054
+2026-11-03T01:04:56.507160Z AUDIO_OUTPUT_CAPABILITY stream=101 type=default formats=0x2008000
+2026-11-03T01:04:56.507657Z AUDIO_OUTPUT_CAPABILITY stream=101 type=compatibility formats=0x2008000
+2026-11-03T01:04:56.508137Z AUDIO_OUTPUT_CAPABILITY stream=102 type=media formats=0x808000
+2026-11-03T01:04:56.508900Z CARPLAY_INITIAL_MODES_ACCEPTED code=MODE_INFO_ACCEPTED kind=NONE row=-1 authentication_already_verified=true
+2026-11-03T01:04:56.509380Z MODE_INFO_REPRESENTATION representation=CHANGE_MODES screen_constraints=DECLARATION_DEFAULT_OR_TRANSFER audio_constraints=DECLARATION_DEFAULT_OR_TRANSFER
+2026-11-03T01:04:56.509862Z CARPLAY_RESOURCE_STATE source=INITIAL_INFO revision=0 screen_entity=2 screen_permanent=2 screen_borrows=0 screen_take=100 screen_borrow=100 screen_unborrow=100 audio_declared=false audio_entity=2 audio_permanent=2 audio_borrows=0 audio_take=100 audio_borrow=100 audio_unborrow=100 display_confirmed=false
+2026-11-03T01:04:56.510303Z CARPLAY_SCREEN_OWNER_PHONE=false
+2026-11-03T01:04:56.510840Z Accessory has the screen resource; native source retained
+2026-11-03T01:04:56.514288Z CARPLAY_RESOURCE_STATE source=LOCAL_CLAIM revision=0 screen_entity=1 screen_permanent=1 screen_borrows=0 screen_take=100 screen_borrow=100 screen_unborrow=100 audio_declared=false audio_entity=2 audio_permanent=2 audio_borrows=0 audio_take=100 audio_borrow=100 audio_unborrow=100 display_confirmed=false
+2026-11-03T01:04:56.514744Z CARPLAY_SCREEN_OWNER_PHONE=true
+2026-11-03T01:04:56.515204Z Screen resource returned; waiting for an actual IDR
+2026-11-03T01:04:56.533611Z CARPLAY_RESP op=COMMAND lastCseq=9
+2026-11-03T01:04:56.534512Z CARPLAY_SCREEN_MODES_SENT screen_phone=true display_confirmed=false
+2026-11-03T01:04:56.564717Z HID_TOUCH_DESCRIPTOR index=0 bytes=62 reports=1 display_bound=true uuid_kind=STRING
+2026-11-03T01:04:56.567316Z HID_TOUCH_UNSUPPORTED index=1 bytes=29[5, 11, 9, 1, -95, 1, 5, 11, 9, 32, 9, 38, 21, 0, 37, 1, 117, 1, -107, 2, -127, 2, 117, 6, -107, 1, -127, 1, -64] reason=DESCRIPTOR
+2026-11-03T01:04:56.569354Z HID_BACK_DESCRIPTOR index=2 bytes=72 reports=1
+2026-11-03T01:04:56.570635Z HID_CAPABILITIES devices=3 touch=1
+2026-11-03T01:04:56.572263Z EVTCP connect host=/192.168.5.1 port=6030 timeout_ms=10000
+2026-11-03T01:04:56.578056Z CARPLAY_SCREEN_ROUTE_OPENED epoch=1
+2026-11-03T01:04:56.579784Z CAPABILITY_HINT_SAVED route_accepted=true display_receipt_confirmed=false
+2026-11-03T01:04:56.586964Z CARPLAY_RESP op=STREAM_RECORD lastCseq=11
+2026-11-03T01:04:56.588565Z CARPLAY_MEDIA_READY 1280x768
+2026-11-03T01:04:56.589396Z CARPLAY_IAP_DIAG_U0=false
+2026-11-03T01:04:56.590228Z CARPLAY_IAP_DIAG_R0=null
+2026-11-03T01:04:56.591144Z CARPLAY_IAP_DIAG_J=null
+2026-11-03T01:04:56.591984Z CARPLAY_IAP_DIAG_A0=exists
+2026-11-03T01:04:56.593013Z CARPLAY_IAP_DIAG_M=64hex
+2026-11-03T01:04:56.593751Z V153_MEDIA_PATH_CONTINUE
+2026-11-03T01:04:56.598881Z CURRENT_WIFI_REUSE_ELIGIBLE authenticated=true process_local=true credentials_persisted=false
+2026-11-03T01:04:56.600181Z NATIVE_GEOMETRY_PREFLIGHT supported_candidate=true native_encoder_acceptance_confirmed=false fps=30
+2026-11-03T01:04:56.601190Z VIDEO_NEGOTIATED_REQUEST fps=30 receiver_max=30 actual_source_pending=false
+2026-11-03T01:04:56.602440Z VIDEO_EPOCH_WAITING_IDR=2
+2026-11-03T01:04:56.603608Z Wireless reauthenticated; native source retained; waiting for an actual IDR before resuming video
+2026-11-03T01:04:56.609747Z VIDEO_SELECTED_GEOMETRY target=1280x768 target_fps=30 planned_source_request=1280x768 exact_candidate=true native_source_retained=true native_init_reissued=false actual_source_pending=false
+2026-11-03T01:04:56.611364Z TX CMD 0x1800a body=0 encrypted=true
+2026-11-03T01:04:56.612873Z TX CMD 0x18009 body=0 encrypted=true
+2026-11-03T01:04:56.613886Z NATIVE_RECOVERY_VIDEO_SYNC command_pair_written=true source_session_retained=true idr_confirmed=false
+2026-11-03T01:04:56.635561Z Actual native video entered current wireless sender; waiting for first IDR send confirmation
+2026-11-03T01:04:56.679404Z VIDEO_EPOCH_WAITING_IDR=2
+2026-11-03T01:04:56.680271Z ACTUAL_NATIVE_IDR_ACCEPTED
+2026-11-03T01:04:56.680844Z ACTUAL_NATIVE_AVC_CONFIG_SENT
+2026-11-03T01:04:56.681209Z CARPLAY_VIDEO_CONFIG width=1280 height=768 encrypted=true
+2026-11-03T01:04:56.681527Z CARPLAY_AVC_DIAGNOSTIC profile_idc=66 constraints=128 level_idc=32 coded=1280x768 visible=1280x768 declared=1280x768 dimensions_match=true sps_metadata=PARSED
+2026-11-03T01:04:56.682458Z VIDEO_UNITS_SENT=1
+2026-11-03T01:04:56.682751Z VIDEO_PROGRESS units=1
+2026-11-03T01:04:56.683048Z VIDEO_EPOCH_FIRST_IDR_SENT=2
+2026-11-03T01:04:56.683417Z RECOVERY_WAIT count=3 p50_ms=5821 p95_ms=10899 receiver_render_confirmed=false
+2026-11-03T01:04:56.683715Z Actual source-derived IDR sent on authenticated transport; receiver display still requires confirmation
+2026-11-03T01:04:57.698901Z VIDEO_PROGRESS units=21
+2026-11-03T01:04:58.533083Z VIDEO_NATIVE_FLOW received_fps_x100=1994 passthrough_enqueued=630 adapted_enqueued=0 assembly_p50_us=50354 assembly_p95_us=57778 actual_display_unconfirmed=true
+2026-11-03T01:04:58.741841Z VIDEO_PROGRESS units=42
+2026-11-03T01:04:59.778880Z VIDEO_PROGRESS units=63
+2026-11-03T01:05:00.782134Z VIDEO_PROGRESS units=83
+2026-11-03T01:05:01.713669Z VIDEO_FLOW window=256 transport_received_fps_x100=1988 sent_fps_x100=1988 queue_depth=0 oldest_us=0 SOCKET_WRITE_p50_us=205_p95_us=534 SENDER_QUEUE_p50_us=97_p95_us=363 SOURCE_TO_WRITE_p50_us=50997_p95_us=60624 receiver_render_confirmed=false
+2026-11-03T01:05:01.790119Z VIDEO_PROGRESS units=103
+2026-11-03T01:05:02.837673Z VIDEO_PROGRESS units=124
+2026-11-03T01:05:03.540517Z VIDEO_NATIVE_FLOW received_fps_x100=1996 passthrough_enqueued=730 adapted_enqueued=0 assembly_p50_us=50364 assembly_p95_us=58761 actual_display_unconfirmed=true
+2026-11-03T01:05:03.841301Z VIDEO_PROGRESS units=144
+2026-11-03T01:05:04.850806Z VIDEO_PROGRESS units=164
+2026-11-03T01:05:05.900742Z VIDEO_PROGRESS units=185
+2026-11-03T01:05:06.721701Z VIDEO_FLOW window=256 transport_received_fps_x100=1996 sent_fps_x100=1996 queue_depth=0 oldest_us=0 SOCKET_WRITE_p50_us=220_p95_us=534 SENDER_QUEUE_p50_us=112_p95_us=363 SOURCE_TO_WRITE_p50_us=50997_p95_us=59341 receiver_render_confirmed=false
+2026-11-03T01:05:06.845378Z CARPLAY_EVENT_INPUT point=TRANSPORT_END RTSP_INPUT reader_started=true reader_ended=true closed=true stage=ENDED read_calls=2 raw_bytes=0 plain_bytes=0 messages=0 requests=0 responses=0 header_bytes=0 body_bytes=0 body_expected=-1 record_bytes=0 record_expected=-1 pending_plain_bytes=0
+2026-11-03T01:05:06.851864Z CarPlay connection ended: EVENT_CHANNEL_EOFException; automatic recovery unavailable/exhausted
+2026-11-03T01:05:06.854907Z NATIVE_CHANNEL_FAIL channel=VIDEO error=IO encryption_ready=true init_done=true start_sent=true video_packets=1162 video_bytes=8915038 source_phase=VIDEO_BYTES_OBSERVED native_foreground_observed=true
+2026-11-03T01:05:06.857390Z Media reader stopped: VIDEO IOException: media operation failed
+2026-11-03T01:05:06.859218Z Final sender counters across transports: videoUnits=793, videoBytes=6442312, pcmBytes=0
+2026-11-03T01:05:06.867515Z NATIVE_SOURCE_FINAL first_channel_end=NATIVE_CHANNEL_FAIL_channel=VIDEO encryption_ready=true init_done=true start_sent=true video_packets=1162 video_bytes=8915038 source_phase=VIDEO_BYTES_OBSERVED native_foreground_observed=true
+2026-11-03T01:05:06.868410Z NATIVE_AUDIO_PROGRESS channel=MEDIA stage=FINAL reader_connected=true reader_ended=true packets=0 wire_body_bytes=0 init_packets=0 valid_inits=0 data_packets=0 valid_pcm_bytes=0 callback_returned_bytes=0 stop_packets=0 vr_interrupt_packets=0 withheld_no_init=0 withheld_unsupported=0 withheld_paused=0 withheld_session_gate=0 playback_expected=unknown sound_confirmed=false
+2026-11-03T01:05:06.872374Z NATIVE_AUDIO_PROGRESS channel=TTS stage=FINAL reader_connected=true reader_ended=true packets=0 wire_body_bytes=0 init_packets=0 valid_inits=0 data_packets=0 valid_pcm_bytes=0 callback_returned_bytes=0 stop_packets=0 vr_interrupt_packets=0 withheld_no_init=0 withheld_unsupported=0 withheld_paused=0 withheld_session_gate=0 playback_expected=unknown sound_confirmed=false
+2026-11-03T01:05:06.873003Z NATIVE_AUDIO_PROGRESS channel=VR stage=FINAL reader_connected=true reader_ended=true packets=2 wire_body_bytes=0 init_packets=0 valid_inits=0 data_packets=0 valid_pcm_bytes=0 callback_returned_bytes=0 stop_packets=0 vr_interrupt_packets=2 withheld_no_init=0 withheld_unsupported=0 withheld_paused=0 withheld_session_gate=0 playback_expected=unknown sound_confirmed=false
+2026-11-03T01:05:06.874870Z G3 outcome=e[a=true, b=true, c=true, d=VERIFIED, e=PASSED, f=true, g=true, h=1280, i=768, j=30, k=8925024, l=8915038, m=0, n=1162, o=2, p=VIDEO IOException: media operation failed]
+2026-11-03T01:05:06.875949Z Byte/packet counts are not decoded frames, native producer attribution, or complete identity/media/CarPlay acceptance
+2026-11-03T01:05:06.881459Z Native source outcome: e[a=true, b=true, c=true, d=VERIFIED, e=PASSED, f=true, g=true, h=1280, i=768, j=30, k=8925024, l=8915038, m=0, n=1162, o=2, p=VIDEO IOException: media operation failed]
+2026-11-03T01:05:06.882556Z Initial transport counters: videoUnits=179, videoBytes=1328680, pcmBytes=0
+2026-11-03T01:07:20.482443Z USER_NOTICE 正在联网核对版本、发布签名和安装包完整性…
+2026-11-03T01:07:20.494586Z USER_NOTICE 正在自动连接所选车机。仅在系统提示时允许 WLAN 连接，无需手动查找热点。
+
+===== 历史 HISTORY 3 =====
+2026-11-03T01:03:42.776695Z SESSION START | Car+ → CarPlay | PKJ110 | PKJ110_16.0.10.501(CN01)
+2026-11-03T01:03:42.782042Z SESSION_CPU_LEASE held=true screen_forced_on=false interactive=true power_save=false device_idle=false
+2026-11-03T01:03:42.783013Z Wireless session started; continuous until user stop/source exit/unrecoverable error; phone USB firmware interface unimplemented and unverified
+2026-11-03T01:03:42.788832Z APP_BUILD fix2 version=1.7.29 code=298
+2026-11-03T01:03:42.791865Z NATIVE_COMPONENT_SUPPORT status=REVIEWED reason=REVIEWED_ARTIFACT host_code=17031002 plugin_code=260 producer_entry_observed=true runtime_handshake_required=true compatibility_confirmed=false
+2026-11-03T01:03:42.792118Z NATIVE_HOST_BUILD code=17031002 version=UNAVAILABLE
+2026-11-03T01:03:42.793487Z Discovering services on the manually selected receiver WLAN
+2026-11-03T01:03:42.798483Z CURRENT_WIFI_DISCOVERING selected_network_only=true bootstrap_parameters_required=false authentication_required=true
+2026-11-03T01:03:42.801533Z CTRL_ANNOUNCE name=OPPO_X8U port=42799 svc=OPPO_X8U manual=OPPO_X8U
+2026-11-03T01:03:42.804864Z ENDPOINT_DISCOVERY_STARTED_UNTRUSTED
+2026-11-03T01:03:43.664284Z CTRL_SERVICE_LIVE name=OPPO_X8U port=0
+2026-11-03T01:03:43.665007Z CTRL_RESOLVE_SUBMIT type=_carplay-ctrl._tcp name=OPPO_X8U port=0
+2026-11-03T01:03:43.665273Z CTRL_SERVICE_REGISTERED network_scoped=true real_identifier=true values_logged=false
+2026-11-03T01:03:43.669781Z CTRL_RESOLVE_OK name=OPPO_X8U port=42799 type=._carplay-ctrl._tcp host=/192.168.5.100
+2026-11-03T01:03:45.043845Z Selected current WLAN candidate found; full pairing and certificate authentication required
+2026-11-03T01:03:45.051722Z CONNECT_STAGE ENDPOINT_READY
+2026-11-03T01:03:45.052746Z CONNECT_STAGE SOCKET_FACTORY_READY
+2026-11-03T01:03:45.093356Z CONNECT_STAGE OWN_IDENTITY_VERIFIED
+2026-11-03T01:03:45.093734Z CONNECT_STAGE PEER_STORE_READY
+2026-11-03T01:03:45.098078Z CONNECT_STAGE CONNECTION_CREATED
+2026-11-03T01:03:45.098306Z CARPLAY_CONTROL_CONNECTING
+2026-11-03T01:03:45.111728Z CARPLAY_PAIRING_PROFILE hkp=2 verify_pd=1
+2026-11-03T01:03:45.111946Z CARPLAY_PAIR_SETUP
+2026-11-03T01:03:45.166473Z CTRL_RESOLVE_SUBMIT type=_carplay-ctrl._tcp name=OPPO_X8U port=0
+2026-11-03T01:03:45.174250Z CTRL_RESOLVE_OK name=OPPO_X8U port=42799 type=._carplay-ctrl._tcp host=/192.168.5.100
+2026-11-03T01:03:45.205848Z CARPLAY_RESP op=PAIR_SETUP lastCseq=2
+2026-11-03T01:03:45.253313Z CARPLAY_RESP op=PAIR_VERIFY lastCseq=4
+2026-11-03T01:03:45.271377Z CARPLAY_PAIR_VERIFIED
+2026-11-03T01:03:45.806681Z CARPLAY_RESP op=MFI_AUTH_SETUP lastCseq=6
+2026-11-03T01:03:45.835020Z MFI_SAP_CERTIFICATE_EXPIRY_COMPATIBLE fresh_proof_verified=true pinned=true encrypted_control=true
+2026-11-03T01:03:45.835457Z MFI_FRESH_PROOF_VERIFIED_PINNED_APPLE_CA_UNVERIFIED=true
+2026-11-03T01:03:45.835690Z CARPLAY_INITIAL_SETUP
+2026-11-03T01:03:45.835921Z CARPLAY_SETUP_DEVICE_ID value=E0:42:6D:B6:D5:78 len=17
+2026-11-03T01:03:45.836140Z CARPLAY_SETUP_TRANSPORT_ID source=BLUETOOTH_SNAPSHOT values_logged=false
+2026-11-03T01:03:45.836511Z AUDIO_WIRE_PROFILE profile=MODERN_RTP aad_bytes=8 compatibility_build_declared=true actual_android_build=false
+2026-11-03T01:03:45.837106Z CARPLAY_SETUP_KEYS n=10 keys=[name, model, deviceID, sessionUUID, sourceVersion, osBuildVersion, timingPort, timingProtocol, keepAliveLowPower, features]
+2026-11-03T01:03:45.848646Z CARPLAY_SETUP_RESP_KEYS n=3 keys=[keepAlivePort, eventPort, timingPort]
+2026-11-03T01:03:45.850029Z CARPLAY_UDP_KEEPALIVE advertised=true interval_ms=10000 expects_reply=false
+2026-11-03T01:03:45.850317Z CARPLAY_EVENT_CONNECTING
+2026-11-03T01:03:45.850538Z EVTCP connect host=/192.168.5.1 port=5001 timeout_ms=10000
+2026-11-03T01:03:45.854567Z V153_EVENT_READY=true
+2026-11-03T01:03:45.854909Z CARPLAY_INFO_AFTER_AUTHENTICATED_SETUP
+2026-11-03T01:03:45.855081Z HID_CHAIN_START obj=102721437
+2026-11-03T01:03:45.855326Z HID_GATE_CLOSED reason=REPORTED
+2026-11-03T01:03:45.863242Z CARPLAY_RESP op=INFO lastCseq=8
+2026-11-03T01:03:45.864314Z CARPLAY_INFO_KEYS n=22 keys=[pi, OSInfo, modes, manufacturer, audioLatencies, keepAliveLowPower, model, keepAliveSendStatsAsBody, audioFormats, rightHandDrive, extendedFeatures, statusFlags, oemIconVisible, bluetoothIDs, deviceID, nightMode, displays, hidDevices, hidLanguages, sourceVersion, features, name]
+2026-11-03T01:03:45.864546Z CARPLAY_INFO_FEATURES value=416679199360
+2026-11-03T01:03:45.871131Z HID_TOUCH_DESCRIPTOR index=0 bytes=62 reports=1 display_bound=true uuid_kind=STRING
+2026-11-03T01:03:45.871687Z HID_TOUCH_UNSUPPORTED index=1 bytes=29[5, 11, 9, 1, -95, 1, 5, 11, 9, 32, 9, 38, 21, 0, 37, 1, 117, 1, -107, 2, -127, 2, 117, 6, -107, 1, -127, 1, -64] reason=DESCRIPTOR
+2026-11-03T01:03:45.872121Z HID_BACK_DESCRIPTOR index=2 bytes=72 reports=1
+2026-11-03T01:03:45.872266Z HID_CAPABILITIES devices=3 touch=1
+2026-11-03T01:03:45.872968Z CAPS schema=1 displays=1 rejected_displays=0 main=1280x768@30 input=TOUCH_SCREEN hid=3 hid_valid=true touch=1 knobs=1 keys=1 audio_rows=9 audio_valid=true audio_legacy=false modes_declared=true modes_valid=true feature_bits=6104040280 feature_lists_valid=true negotiated=0 iap_channel=false fingerprint=c30dd619b5aef1838410f5b41718adca251a1ac626859fbf29ca8beedf1dc76b
+2026-11-03T01:03:45.873239Z CAPABILITY_PLAN policy=1 fingerprint=c30dd619b5aef1838410f5b41718adca251a1ac626859fbf29ca8beedf1dc76b display_candidates=1 audio_table_valid=true max_route_attempts=3 physical_receipt_confirmed=false
+2026-11-03T01:03:45.873605Z AUDIO_CAPABILITIES legacy=false output_rows=9 pcm=true
+2026-11-03T01:03:45.873852Z AUDIO_OUTPUT_CAPABILITY stream=100 type=default formats=0xc000050
+2026-11-03T01:03:45.874012Z AUDIO_OUTPUT_CAPABILITY stream=100 type=media formats=0x8000
+2026-11-03T01:03:45.874144Z AUDIO_OUTPUT_CAPABILITY stream=100 type=telephony formats=0xc000054
+2026-11-03T01:03:45.874278Z AUDIO_OUTPUT_CAPABILITY stream=100 type=speechRecognition formats=0x8000040
+2026-11-03T01:03:45.874403Z AUDIO_OUTPUT_CAPABILITY stream=100 type=alert formats=0x2008000
+2026-11-03T01:03:45.874594Z AUDIO_OUTPUT_CAPABILITY stream=100 type=compatibility formats=0x8054
+2026-11-03T01:03:45.874777Z AUDIO_OUTPUT_CAPABILITY stream=101 type=default formats=0x2008000
+2026-11-03T01:03:45.874911Z AUDIO_OUTPUT_CAPABILITY stream=101 type=compatibility formats=0x2008000
+2026-11-03T01:03:45.875040Z AUDIO_OUTPUT_CAPABILITY stream=102 type=media formats=0x808000
+2026-11-03T01:03:45.875306Z CARPLAY_INITIAL_MODES_ACCEPTED code=MODE_INFO_ACCEPTED kind=NONE row=-1 authentication_already_verified=true
+2026-11-03T01:03:45.875459Z MODE_INFO_REPRESENTATION representation=CHANGE_MODES screen_constraints=DECLARATION_DEFAULT_OR_TRANSFER audio_constraints=DECLARATION_DEFAULT_OR_TRANSFER
+2026-11-03T01:03:45.875653Z CARPLAY_RESOURCE_STATE source=INITIAL_INFO revision=0 screen_entity=2 screen_permanent=2 screen_borrows=0 screen_take=100 screen_borrow=100 screen_unborrow=100 audio_declared=false audio_entity=2 audio_permanent=2 audio_borrows=0 audio_take=100 audio_borrow=100 audio_unborrow=100 display_confirmed=false
+2026-11-03T01:03:45.875799Z CARPLAY_SCREEN_OWNER_PHONE=false
+2026-11-03T01:03:45.875970Z CARPLAY_RESOURCE_STATE source=LOCAL_CLAIM revision=0 screen_entity=1 screen_permanent=1 screen_borrows=0 screen_take=100 screen_borrow=100 screen_unborrow=100 audio_declared=false audio_entity=2 audio_permanent=2 audio_borrows=0 audio_take=100 audio_borrow=100 audio_unborrow=100 display_confirmed=false
+2026-11-03T01:03:45.876103Z CARPLAY_SCREEN_OWNER_PHONE=true
+2026-11-03T01:03:45.882210Z CARPLAY_SCREEN_MODES_SENT screen_phone=true display_confirmed=false
+2026-11-03T01:03:45.950137Z CARPLAY_RESP op=STREAM_SETUP lastCseq=10
+2026-11-03T01:03:45.952412Z HID_TOUCH_DESCRIPTOR index=0 bytes=62 reports=1 display_bound=true uuid_kind=STRING
+2026-11-03T01:03:45.954182Z HID_TOUCH_UNSUPPORTED index=1 bytes=29[5, 11, 9, 1, -95, 1, 5, 11, 9, 32, 9, 38, 21, 0, 37, 1, 117, 1, -107, 2, -127, 2, 117, 6, -107, 1, -127, 1, -64] reason=DESCRIPTOR
+2026-11-03T01:03:45.955998Z HID_BACK_DESCRIPTOR index=2 bytes=72 reports=1
+2026-11-03T01:03:45.956614Z HID_CAPABILITIES devices=3 touch=1
+2026-11-03T01:03:45.957507Z EVTCP connect host=/192.168.5.1 port=6030 timeout_ms=10000
+2026-11-03T01:03:45.965307Z CARPLAY_SCREEN_ROUTE_OPENED epoch=1
+2026-11-03T01:03:45.967568Z CAPABILITY_HINT_SAVED route_accepted=true display_receipt_confirmed=false
+2026-11-03T01:03:45.977084Z CARPLAY_MEDIA_READY 1280x768
+2026-11-03T01:03:45.977846Z CARPLAY_IAP_DIAG_U0=false
+2026-11-03T01:03:45.978349Z CARPLAY_IAP_DIAG_R0=null
+2026-11-03T01:03:45.978808Z CARPLAY_IAP_DIAG_J=null
+2026-11-03T01:03:45.979293Z CARPLAY_IAP_DIAG_A0=exists
+2026-11-03T01:03:45.979918Z CARPLAY_IAP_DIAG_M=64hex
+2026-11-03T01:03:45.980533Z V153_MEDIA_PATH_CONTINUE
+2026-11-03T01:03:45.985747Z CURRENT_WIFI_REUSE_ELIGIBLE authenticated=true process_local=true credentials_persisted=false
+2026-11-03T01:03:46.042338Z NATIVE_GEOMETRY_PREFLIGHT supported_candidate=true native_encoder_acceptance_confirmed=false fps=30
+2026-11-03T01:03:46.042612Z VIDEO_NEGOTIATED_REQUEST fps=30 receiver_max=30 actual_source_pending=true
+2026-11-03T01:03:46.042763Z Receiver authenticated; waiting for native Car+ source
+2026-11-03T01:03:46.045556Z VIDEO_SELECTED_GEOMETRY target=1280x768 target_fps=30 planned_source_request=1280x768 exact_candidate=true native_source_retained=false native_init_reissued=false actual_source_pending=true
+2026-11-03T01:03:46.343080Z USER_NOTICE 请按原生 Car+ 提示完成首次连接。
+2026-11-03T01:03:46.347220Z Normal Car+ entry requested; source requested=1280x768 follows actual receiver declaration; original Car+ settings may override it. Continuous session, no fixed time limit.
+2026-11-03T01:03:46.352093Z NATIVE_NETWORK_SNAPSHOT phone_net_setting=0 default=[transport=CELLULAR,internet=true,validated=true,restricted=false,vpn=false] process_bound=SYSTEM_DEFAULT selected=[transport=WIFI,internet=true,validated=false,restricted=false,vpn=false] default_is_selected=false bound_is_selected=false our_process_route_only=true projected_app_route_observed=false stage=SOURCE_ARMED
+2026-11-03T01:03:46.354487Z NATIVE_COMPONENT_SUPPORT status=REVIEWED reason=REVIEWED_ARTIFACT host_code=17031002 plugin_code=260 producer_entry_observed=true runtime_handshake_required=true compatibility_confirmed=false
+2026-11-03T01:03:46.354817Z NATIVE_HOST_BUILD code=17031002 version=UNAVAILABLE
+2026-11-03T01:03:46.356847Z SOURCE_BACKEND_CAPABILITIES foreground=true visibility=true hard_keys=true night_mode=false view_area=false vehicle_information=false limited_ui=false display_confirmed=false
+2026-11-03T01:03:46.384221Z Local AES provider=BC; explicit AES/ECB/PKCS5Padding; actual peer READY still required
+2026-11-03T01:03:46.790876Z All seven localhost channels connected; not media/auth acceptance
+2026-11-03T01:03:46.792098Z TX CMD 0x18001 body=4 encrypted=false
+2026-11-03T01:03:46.890919Z RX CMD 0x10002 body=2
+2026-11-03T01:03:46.891436Z RX CMD 0x1001b body=0
+2026-11-03T01:03:46.891689Z RX CMD 0x10018 body=0
+2026-11-03T01:03:46.891926Z RX CMD 0x10004 body=327
+2026-11-03T01:03:46.892961Z TX CMD 0x18048 body=38 encrypted=false
+2026-11-03T01:03:46.897941Z RX CMD 0x10049 body=34
+2026-11-03T01:03:46.898582Z TX CMD 0x1804a body=2 encrypted=false
+2026-11-03T01:03:46.898806Z Fresh phone proof VERIFIED; no claim about separate phone eligibility
+2026-11-03T01:03:46.899209Z TX CMD 0x18003 body=28 encrypted=false
+2026-11-03T01:03:46.899585Z TX CMD 0x18027 body=65 encrypted=false
+2026-11-03T01:03:46.899755Z Own local experimental receiver UUID/channel sent; not a borrowed vehicle or officially allocated manufacturer identity
+2026-11-03T01:03:46.900186Z TX CMD 0x18052 body=57 encrypted=false
+2026-11-03T01:03:46.900380Z Sent actual supported CONTENT_ENCRYPTION=1 subset; no borrowed car channel
+2026-11-03T01:03:46.900616Z NATIVE_GEOMETRY_REQUEST target=1280x768 exact_source_requested=true applied_confirmed=false; waiting for actual VIDEO_INIT_DONE
+2026-11-03T01:03:46.902622Z RX CMD 0x10051 body=0
+2026-11-03T01:03:46.902853Z RX CMD 0x10031 body=0
+2026-11-03T01:03:46.903056Z RX CMD 0x1006a body=0
+2026-11-03T01:03:46.952956Z TX CMD 0x1806b body=395 encrypted=false
+2026-11-03T01:03:46.953563Z RX CMD 0x1006c body=347
+2026-11-03T01:03:46.954832Z TX CMD 0x1806d body=0 encrypted=false
+2026-11-03T01:03:46.955176Z RX CMD 0x1006e body=0
+2026-11-03T01:03:46.955266Z Actual MD_ENCRYPT_READY observed; own experimental receiver metadata only
+2026-11-03T01:03:46.955562Z TX CMD 0x18007 body=16 encrypted=true
+2026-11-03T01:03:46.955726Z RX CMD 0x1004b body=2
+2026-11-03T01:03:47.138238Z RX CMD 0x10008 body=8
+2026-11-03T01:03:47.141578Z NATIVE_NETWORK_SNAPSHOT phone_net_setting=0 default=[transport=CELLULAR,internet=true,validated=true,restricted=false,vpn=false] process_bound=SYSTEM_DEFAULT selected=[transport=WIFI,internet=true,validated=false,restricted=false,vpn=false] default_is_selected=false bound_is_selected=false our_process_route_only=true projected_app_route_observed=false stage=FIRST_NATIVE_FORMAT
+2026-11-03T01:03:47.141901Z Actual native video format=1280x768 fps=30
+2026-11-03T01:03:47.142067Z VIDEO_SOURCE_RATE requested=30 init_declared=30 cadence_confirmed=false fallback=NONE
+2026-11-03T01:03:47.142413Z VIDEO_EPOCH_WAITING_IDR=2
+2026-11-03T01:03:47.142655Z VIDEO_CANVAS_PLAN policy=NATIVE_DISPLAY_MATCH native_request=1280x768 auto_fit=true fill_display=false receiver=1280x768 output=1280x768 source=1280x768 target_fps=30 display_confirmed=false
+2026-11-03T01:03:47.142824Z VIDEO_ROUTE_NATIVE source=1280x768 requested=1280x768 source_declared_fps=30 reason=COMPRESSED_PASSTHROUGH
+2026-11-03T01:03:47.142959Z Actual VIDEO_INIT_DONE 1280x768 @30; not decoded frames
+2026-11-03T01:03:47.143140Z NATIVE_GEOMETRY_RESULT requested=1280x768 actual=1280x768 dimensions_match=true source_format_observed=true display_confirmed=false
+2026-11-03T01:03:47.143589Z TX CMD 0x18009 body=0 encrypted=true
+2026-11-03T01:03:47.143888Z RX CMD 0x1001b body=0
+2026-11-03T01:03:47.144036Z NATIVE_UI_SIGNAL kind=FOREGROUND
+2026-11-03T01:03:47.144863Z UI_SESSION_INTENT kind=CARPLUS accepted=true session_retained=true
+2026-11-03T01:03:47.341144Z RX CMD 0x10022 body=0
+2026-11-03T01:03:47.351854Z NATIVE_VIDEO_FIRST_BYTES bytes=9896 after_start_ms=207 encryption_ready=true init_done=true start_sent=true video_packets=1 video_bytes=9896 source_phase=VIDEO_BYTES_OBSERVED native_foreground_observed=true
+2026-11-03T01:03:47.352114Z Actual VIDEO chunk bytes=9896 encrypted=true signature=AnnexB_start_code_observed_codec_unconfirmed
+2026-11-03T01:03:47.353494Z Actual VIDEO chunk bytes=518 encrypted=true signature=AnnexB_start_code_observed_codec_unconfirmed
+2026-11-03T01:03:47.354852Z Actual native video entered current wireless sender; waiting for first IDR send confirmation
+2026-11-03T01:03:47.355073Z Actual VIDEO chunk bytes=597 encrypted=true signature=AnnexB_start_code_observed_codec_unconfirmed
+2026-11-03T01:03:47.357735Z VIDEO_EPOCH_WAITING_IDR=2
+2026-11-03T01:03:47.358149Z ACTUAL_NATIVE_IDR_ACCEPTED
+2026-11-03T01:03:47.361820Z ACTUAL_NATIVE_AVC_CONFIG_SENT
+2026-11-03T01:03:47.362167Z CARPLAY_VIDEO_CONFIG width=1280 height=768 encrypted=true
+2026-11-03T01:03:47.362559Z CARPLAY_AVC_DIAGNOSTIC profile_idc=66 constraints=128 level_idc=32 coded=1280x768 visible=1280x768 declared=1280x768 dimensions_match=true sps_metadata=PARSED
+2026-11-03T01:03:47.365983Z VIDEO_UNITS_SENT=1
+2026-11-03T01:03:47.366302Z VIDEO_PROGRESS units=1
+2026-11-03T01:03:47.366483Z VIDEO_EPOCH_FIRST_IDR_SENT=2
+2026-11-03T01:03:47.366747Z Actual source-derived IDR sent on authenticated transport; receiver display still requires confirmation
+2026-11-03T01:03:47.391590Z RX CMD 0x10026 body=44
+2026-11-03T01:03:47.391993Z NATIVE_MODULE_STATUS rows=7 connect=UNDECLARED mic=VEHICLE vr=IDLE diagnostic_only=true
+2026-11-03T01:03:47.923763Z Actual VR packet id=0x50006 wireBytes=0; PCM producer/format not assumed
+2026-11-03T01:03:47.924979Z RX CMD 0x10022 body=0
+2026-11-03T01:03:47.933021Z Actual VR packet id=0x50006 wireBytes=0; PCM producer/format not assumed
+2026-11-03T01:03:48.474617Z VIDEO_PROGRESS units=20
+2026-11-03T01:03:49.500887Z VIDEO_PROGRESS units=40
+2026-11-03T01:03:50.524720Z VIDEO_PROGRESS units=61
+2026-11-03T01:03:51.534978Z VIDEO_PROGRESS units=81
+2026-11-03T01:03:52.387637Z VIDEO_NATIVE_FLOW received_fps_x100=1928 passthrough_enqueued=97 adapted_enqueued=0 assembly_p50_us=50740 assembly_p95_us=74967 actual_display_unconfirmed=true
+2026-11-03T01:03:52.389952Z VIDEO_FLOW window=256 transport_received_fps_x100=1871 sent_fps_x100=1930 queue_depth=0 oldest_us=0 SOCKET_WRITE_p50_us=167_p95_us=2571 SENDER_QUEUE_p50_us=106_p95_us=7136 SOURCE_TO_WRITE_p50_us=52455_p95_us=81248 receiver_render_confirmed=false
+2026-11-03T01:03:52.550056Z VIDEO_PROGRESS units=101
+2026-11-03T01:03:53.565610Z VIDEO_PROGRESS units=121
+2026-11-03T01:03:54.615379Z VIDEO_PROGRESS units=142
+2026-11-03T01:03:55.620080Z VIDEO_PROGRESS units=162
+2026-11-03T01:03:56.230425Z CARPLAY_EVENT_INPUT point=TRANSPORT_END RTSP_INPUT reader_started=true reader_ended=true closed=true stage=ENDED read_calls=2 raw_bytes=0 plain_bytes=0 messages=0 requests=0 responses=0 header_bytes=0 body_bytes=0 body_expected=-1 record_bytes=0 record_expected=-1 pending_plain_bytes=0
+2026-11-03T01:03:56.231359Z Recovering selected receiver 1/3; native_source_retained=true; reason=EVENT_CHANNEL_EOFException
+2026-11-03T01:03:56.235873Z RECOVERY_REUSE_SELECTED_WIFI generation=2
+2026-11-03T01:03:57.349654Z CONNECT_STAGE ENDPOINT_READY
+2026-11-03T01:03:57.349979Z CONNECT_STAGE SOCKET_FACTORY_READY
+2026-11-03T01:03:57.359399Z NATIVE_AUDIO_PROGRESS channel=MEDIA stage=WAIT_AFTER_VIDEO_10S reader_connected=true reader_ended=false packets=0 wire_body_bytes=0 init_packets=0 valid_inits=0 data_packets=0 valid_pcm_bytes=0 callback_returned_bytes=0 stop_packets=0 vr_interrupt_packets=0 withheld_no_init=0 withheld_unsupported=0 withheld_paused=0 withheld_session_gate=0 playback_expected=unknown sound_confirmed=false
+2026-11-03T01:03:57.360522Z NATIVE_AUDIO_PROGRESS channel=TTS stage=WAIT_AFTER_VIDEO_10S reader_connected=true reader_ended=false packets=0 wire_body_bytes=0 init_packets=0 valid_inits=0 data_packets=0 valid_pcm_bytes=0 callback_returned_bytes=0 stop_packets=0 vr_interrupt_packets=0 withheld_no_init=0 withheld_unsupported=0 withheld_paused=0 withheld_session_gate=0 playback_expected=unknown sound_confirmed=false
+2026-11-03T01:03:57.362044Z NATIVE_AUDIO_PROGRESS channel=VR stage=WAIT_AFTER_VIDEO_10S reader_connected=true reader_ended=false packets=2 wire_body_bytes=0 init_packets=0 valid_inits=0 data_packets=0 valid_pcm_bytes=0 callback_returned_bytes=0 stop_packets=0 vr_interrupt_packets=2 withheld_no_init=0 withheld_unsupported=0 withheld_paused=0 withheld_session_gate=0 playback_expected=unknown sound_confirmed=false
+2026-11-03T01:03:57.367675Z CONNECT_STAGE OWN_IDENTITY_VERIFIED
+2026-11-03T01:03:57.367938Z CONNECT_STAGE PEER_STORE_READY
+2026-11-03T01:03:57.368483Z CONNECT_STAGE CONNECTION_CREATED
+2026-11-03T01:03:57.368845Z CARPLAY_CONTROL_CONNECTING
+2026-11-03T01:03:57.387760Z CARPLAY_PAIRING_PROFILE hkp=2 verify_pd=1
+2026-11-03T01:03:57.388068Z CARPLAY_PAIR_SETUP
+2026-11-03T01:03:57.411585Z CARPLAY_RESP op=PAIR_SETUP lastCseq=1
+2026-11-03T01:03:57.424909Z VIDEO_NATIVE_FLOW received_fps_x100=1964 passthrough_enqueued=174 adapted_enqueued=0 assembly_p50_us=50517 assembly_p95_us=70127 actual_display_unconfirmed=true
+2026-11-03T01:03:57.458479Z CARPLAY_RESP op=PAIR_SETUP lastCseq=3
+2026-11-03T01:03:57.479731Z CARPLAY_RESP op=PAIR_VERIFY lastCseq=5
+2026-11-03T01:03:57.480091Z CARPLAY_PAIR_VERIFIED
+2026-11-03T01:03:57.781787Z MFI_SAP_CERTIFICATE_EXPIRY_COMPATIBLE fresh_proof_verified=true pinned=true encrypted_control=true
+2026-11-03T01:03:57.782159Z MFI_FRESH_PROOF_VERIFIED_PINNED_APPLE_CA_UNVERIFIED=true
+2026-11-03T01:03:57.782456Z CARPLAY_INITIAL_SETUP
+2026-11-03T01:03:57.782863Z CARPLAY_SETUP_DEVICE_ID value=E0:42:6D:B6:D5:78 len=17
+2026-11-03T01:03:57.783107Z CARPLAY_SETUP_TRANSPORT_ID source=BLUETOOTH_SNAPSHOT values_logged=false
+2026-11-03T01:03:57.783381Z AUDIO_WIRE_PROFILE profile=MODERN_RTP aad_bytes=8 compatibility_build_declared=true actual_android_build=false
+2026-11-03T01:03:57.783684Z CARPLAY_SETUP_KEYS n=10 keys=[name, model, deviceID, sessionUUID, sourceVersion, osBuildVersion, timingPort, timingProtocol, keepAliveLowPower, features]
+2026-11-03T01:03:57.799063Z CARPLAY_RESP op=STREAM_SETUP lastCseq=7
+2026-11-03T01:03:57.799498Z CARPLAY_SETUP_RESP_KEYS n=3 keys=[keepAlivePort, eventPort, timingPort]
+2026-11-03T01:03:57.800533Z CARPLAY_UDP_KEEPALIVE advertised=true interval_ms=10000 expects_reply=false
+2026-11-03T01:03:57.800907Z CARPLAY_EVENT_CONNECTING
+2026-11-03T01:03:57.801191Z EVTCP connect host=/192.168.5.1 port=5001 timeout_ms=10000
+2026-11-03T01:03:57.804439Z CARPLAY_INFO_AFTER_AUTHENTICATED_SETUP
+2026-11-03T01:03:57.804816Z V153_EVENT_READY=true
+2026-11-03T01:03:57.805061Z HID_CHAIN_START obj=132640399
+2026-11-03T01:03:57.805436Z HID_GATE_CLOSED reason=REPORTED
+2026-11-03T01:03:57.816484Z CARPLAY_INFO_KEYS n=22 keys=[pi, OSInfo, modes, manufacturer, audioLatencies, keepAliveLowPower, model, keepAliveSendStatsAsBody, audioFormats, rightHandDrive, extendedFeatures, statusFlags, oemIconVisible, bluetoothIDs, deviceID, nightMode, displays, hidDevices, hidLanguages, sourceVersion, features, name]
+2026-11-03T01:03:57.816921Z CARPLAY_INFO_FEATURES value=416679199360
+2026-11-03T01:03:57.820982Z HID_TOUCH_DESCRIPTOR index=0 bytes=62 reports=1 display_bound=true uuid_kind=STRING
+2026-11-03T01:03:57.821624Z HID_TOUCH_UNSUPPORTED index=1 bytes=29[5, 11, 9, 1, -95, 1, 5, 11, 9, 32, 9, 38, 21, 0, 37, 1, 117, 1, -107, 2, -127, 2, 117, 6, -107, 1, -127, 1, -64] reason=DESCRIPTOR
+2026-11-03T01:03:57.822143Z HID_BACK_DESCRIPTOR index=2 bytes=72 reports=1
+2026-11-03T01:03:57.822418Z HID_CAPABILITIES devices=3 touch=1
+2026-11-03T01:03:57.822833Z CAPS schema=1 displays=1 rejected_displays=0 main=1280x768@30 input=TOUCH_SCREEN hid=3 hid_valid=true touch=1 knobs=1 keys=1 audio_rows=9 audio_valid=true audio_legacy=false modes_declared=true modes_valid=true feature_bits=6104040280 feature_lists_valid=true negotiated=0 iap_channel=false fingerprint=c30dd619b5aef1838410f5b41718adca251a1ac626859fbf29ca8beedf1dc76b
+2026-11-03T01:03:57.823055Z CAPABILITY_PLAN policy=1 fingerprint=c30dd619b5aef1838410f5b41718adca251a1ac626859fbf29ca8beedf1dc76b display_candidates=1 audio_table_valid=true max_route_attempts=3 physical_receipt_confirmed=false
+2026-11-03T01:03:57.823441Z AUDIO_CAPABILITIES legacy=false output_rows=9 pcm=true
+2026-11-03T01:03:57.823696Z AUDIO_OUTPUT_CAPABILITY stream=100 type=default formats=0xc000050
+2026-11-03T01:03:57.823912Z AUDIO_OUTPUT_CAPABILITY stream=100 type=media formats=0x8000
+2026-11-03T01:03:57.824163Z AUDIO_OUTPUT_CAPABILITY stream=100 type=telephony formats=0xc000054
+2026-11-03T01:03:57.824402Z AUDIO_OUTPUT_CAPABILITY stream=100 type=speechRecognition formats=0x8000040
+2026-11-03T01:03:57.824590Z AUDIO_OUTPUT_CAPABILITY stream=100 type=alert formats=0x2008000
+2026-11-03T01:03:57.824838Z AUDIO_OUTPUT_CAPABILITY stream=100 type=compatibility formats=0x8054
+2026-11-03T01:03:57.825092Z AUDIO_OUTPUT_CAPABILITY stream=101 type=default formats=0x2008000
+2026-11-03T01:03:57.825368Z AUDIO_OUTPUT_CAPABILITY stream=101 type=compatibility formats=0x2008000
+2026-11-03T01:03:57.825588Z AUDIO_OUTPUT_CAPABILITY stream=102 type=media formats=0x808000
+2026-11-03T01:03:57.825968Z CARPLAY_INITIAL_MODES_ACCEPTED code=MODE_INFO_ACCEPTED kind=NONE row=-1 authentication_already_verified=true
+2026-11-03T01:03:57.826205Z MODE_INFO_REPRESENTATION representation=CHANGE_MODES screen_constraints=DECLARATION_DEFAULT_OR_TRANSFER audio_constraints=DECLARATION_DEFAULT_OR_TRANSFER
+2026-11-03T01:03:57.826434Z CARPLAY_RESOURCE_STATE source=INITIAL_INFO revision=0 screen_entity=2 screen_permanent=2 screen_borrows=0 screen_take=100 screen_borrow=100 screen_unborrow=100 audio_declared=false audio_entity=2 audio_permanent=2 audio_borrows=0 audio_take=100 audio_borrow=100 audio_unborrow=100 display_confirmed=false
+2026-11-03T01:03:57.826637Z CARPLAY_SCREEN_OWNER_PHONE=false
+2026-11-03T01:03:57.826950Z Accessory has the screen resource; native source retained
+2026-11-03T01:03:57.829592Z CARPLAY_RESOURCE_STATE source=LOCAL_CLAIM revision=0 screen_entity=1 screen_permanent=1 screen_borrows=0 screen_take=100 screen_borrow=100 screen_unborrow=100 audio_declared=false audio_entity=2 audio_permanent=2 audio_borrows=0 audio_take=100 audio_borrow=100 audio_unborrow=100 display_confirmed=false
+2026-11-03T01:03:57.829927Z CARPLAY_SCREEN_OWNER_PHONE=true
+2026-11-03T01:03:57.830280Z Screen resource returned; waiting for an actual IDR
+2026-11-03T01:03:57.839558Z CARPLAY_RESP op=COMMAND lastCseq=9
+2026-11-03T01:03:57.839983Z CARPLAY_SCREEN_MODES_SENT screen_phone=true display_confirmed=false
+2026-11-03T01:03:57.859996Z HID_TOUCH_DESCRIPTOR index=0 bytes=62 reports=1 display_bound=true uuid_kind=STRING
+2026-11-03T01:03:57.860972Z HID_TOUCH_UNSUPPORTED index=1 bytes=29[5, 11, 9, 1, -95, 1, 5, 11, 9, 32, 9, 38, 21, 0, 37, 1, 117, 1, -107, 2, -127, 2, 117, 6, -107, 1, -127, 1, -64] reason=DESCRIPTOR
+2026-11-03T01:03:57.861820Z HID_BACK_DESCRIPTOR index=2 bytes=72 reports=1
+2026-11-03T01:03:57.862152Z HID_CAPABILITIES devices=3 touch=1
+2026-11-03T01:03:57.862573Z EVTCP connect host=/192.168.5.1 port=6030 timeout_ms=10000
+2026-11-03T01:03:57.866316Z CARPLAY_SCREEN_ROUTE_OPENED epoch=1
+2026-11-03T01:03:57.867166Z CAPABILITY_HINT_SAVED route_accepted=true display_receipt_confirmed=false
+2026-11-03T01:03:57.872481Z CARPLAY_RESP op=STREAM_RECORD lastCseq=11
+2026-11-03T01:03:57.873482Z CARPLAY_MEDIA_READY 1280x768
+2026-11-03T01:03:57.873793Z CARPLAY_IAP_DIAG_U0=false
+2026-11-03T01:03:57.874256Z CARPLAY_IAP_DIAG_R0=null
+2026-11-03T01:03:57.874701Z CARPLAY_IAP_DIAG_J=null
+2026-11-03T01:03:57.875091Z CARPLAY_IAP_DIAG_A0=exists
+2026-11-03T01:03:57.875590Z CARPLAY_IAP_DIAG_M=64hex
+2026-11-03T01:03:57.875972Z V153_MEDIA_PATH_CONTINUE
+2026-11-03T01:03:57.878889Z CURRENT_WIFI_REUSE_ELIGIBLE authenticated=true process_local=true credentials_persisted=false
+2026-11-03T01:03:57.879472Z NATIVE_GEOMETRY_PREFLIGHT supported_candidate=true native_encoder_acceptance_confirmed=false fps=30
+2026-11-03T01:03:57.879902Z VIDEO_NEGOTIATED_REQUEST fps=30 receiver_max=30 actual_source_pending=false
+2026-11-03T01:03:57.880356Z VIDEO_EPOCH_WAITING_IDR=2
+2026-11-03T01:03:57.880851Z Wireless reauthenticated; native source retained; waiting for an actual IDR before resuming video
+2026-11-03T01:03:57.885121Z VIDEO_SELECTED_GEOMETRY target=1280x768 target_fps=30 planned_source_request=1280x768 exact_candidate=true native_source_retained=true native_init_reissued=false actual_source_pending=false
+2026-11-03T01:03:57.885924Z TX CMD 0x1800a body=0 encrypted=true
+2026-11-03T01:03:57.886445Z TX CMD 0x18009 body=0 encrypted=true
+2026-11-03T01:03:57.886790Z NATIVE_RECOVERY_VIDEO_SYNC command_pair_written=true source_session_retained=true idr_confirmed=false
+2026-11-03T01:03:57.938157Z Actual native video entered current wireless sender; waiting for first IDR send confirmation
+2026-11-03T01:03:57.938380Z VIDEO_EPOCH_WAITING_IDR=2
+2026-11-03T01:03:57.938924Z WAITING_ACTUAL_NATIVE_IDR_AFTER_CONNECTION
+2026-11-03T01:03:57.984184Z ACTUAL_NATIVE_IDR_ACCEPTED
+2026-11-03T01:03:57.985096Z ACTUAL_NATIVE_AVC_CONFIG_SENT
+2026-11-03T01:03:57.986123Z CARPLAY_VIDEO_CONFIG width=1280 height=768 encrypted=true
+2026-11-03T01:03:57.986647Z CARPLAY_AVC_DIAGNOSTIC profile_idc=66 constraints=128 level_idc=32 coded=1280x768 visible=1280x768 declared=1280x768 dimensions_match=true sps_metadata=PARSED
+2026-11-03T01:03:57.987555Z VIDEO_UNITS_SENT=1
+2026-11-03T01:03:57.987757Z VIDEO_PROGRESS units=1
+2026-11-03T01:03:57.987925Z VIDEO_EPOCH_FIRST_IDR_SENT=2
+2026-11-03T01:03:57.989196Z RECOVERY_WAIT count=1 p50_ms=1758 p95_ms=1758 receiver_render_confirmed=false
+2026-11-03T01:03:57.989444Z Actual source-derived IDR sent on authenticated transport; receiver display still requires confirmation
+2026-11-03T01:03:59.039557Z VIDEO_PROGRESS units=22
+2026-11-03T01:04:00.044613Z VIDEO_PROGRESS units=42
+2026-11-03T01:04:01.054054Z VIDEO_PROGRESS units=62
+2026-11-03T01:04:02.061060Z VIDEO_PROGRESS units=82
+2026-11-03T01:04:02.325101Z USER_NOTICE 已断开连接。下次使用时点击连接车机。
+2026-11-03T01:04:02.325900Z Stopped by user
+2026-11-03T01:04:02.331574Z Final sender counters across transports: videoUnits=261, videoBytes=1979030, pcmBytes=0
+2026-11-03T01:04:02.334129Z NATIVE_SOURCE_FINAL first_channel_end=NONE encryption_ready=true init_done=true start_sent=true video_packets=295 video_bytes=2167458 source_phase=VIDEO_BYTES_OBSERVED native_foreground_observed=true
+2026-11-03T01:04:02.335320Z NATIVE_AUDIO_PROGRESS channel=MEDIA stage=FINAL reader_connected=true reader_ended=true packets=0 wire_body_bytes=0 init_packets=0 valid_inits=0 data_packets=0 valid_pcm_bytes=0 callback_returned_bytes=0 stop_packets=0 vr_interrupt_packets=0 withheld_no_init=0 withheld_unsupported=0 withheld_paused=0 withheld_session_gate=0 playback_expected=unknown sound_confirmed=false
+2026-11-03T01:04:02.336649Z NATIVE_AUDIO_PROGRESS channel=TTS stage=FINAL reader_connected=true reader_ended=true packets=0 wire_body_bytes=0 init_packets=0 valid_inits=0 data_packets=0 valid_pcm_bytes=0 callback_returned_bytes=0 stop_packets=0 vr_interrupt_packets=0 withheld_no_init=0 withheld_unsupported=0 withheld_paused=0 withheld_session_gate=0 playback_expected=unknown sound_confirmed=false
+2026-11-03T01:04:02.337777Z NATIVE_AUDIO_PROGRESS channel=VR stage=FINAL reader_connected=true reader_ended=true packets=2 wire_body_bytes=0 init_packets=0 valid_inits=0 data_packets=0 valid_pcm_bytes=0 callback_returned_bytes=0 stop_packets=0 vr_interrupt_packets=2 withheld_no_init=0 withheld_unsupported=0 withheld_paused=0 withheld_session_gate=0 playback_expected=unknown sound_confirmed=false
+2026-11-03T01:04:02.338143Z G3 outcome=e[a=true, b=true, c=true, d=VERIFIED, e=PASSED, f=true, g=true, h=1280, i=768, j=30, k=2170032, l=2167458, m=0, n=295, o=2, p=SocketException: bounded session ended]
+2026-11-03T01:04:02.338392Z Byte/packet counts are not decoded frames, native producer attribution, or complete identity/media/CarPlay acceptance
+2026-11-03T01:04:02.338770Z Native source outcome: e[a=true, b=true, c=true, d=VERIFIED, e=PASSED, f=true, g=true, h=1280, i=768, j=30, k=2170032, l=2167458, m=0, n=295, o=2, p=SocketException: bounded session ended]
+2026-11-03T01:04:02.339132Z Initial transport counters: videoUnits=174, videoBytes=1248088, pcmBytes=0
+2026-11-03T01:04:04.138539Z USER_NOTICE 正在联网核对版本、发布签名和安装包完整性…
+2026-11-03T01:04:04.153367Z USER_NOTICE 正在当前车机 WLAN 查找服务，随后进行配对和证书认证。请保持这个网络连接。
+
+===== 历史 HISTORY 4 =====
+2026-11-02T14:25:04.539381Z SESSION START | Car+ → CarPlay | PKJ110 | PKJ110_16.0.10.501(CN01)
+2026-11-02T14:25:04.544870Z SESSION_CPU_LEASE held=true screen_forced_on=false interactive=true power_save=false device_idle=false
+2026-11-02T14:25:04.545227Z Wireless session started; continuous until user stop/source exit/unrecoverable error; phone USB firmware interface unimplemented and unverified
+2026-11-02T14:25:04.548936Z APP_BUILD fix2 version=1.7.29 code=298
+2026-11-02T14:25:04.551376Z NATIVE_COMPONENT_SUPPORT status=REVIEWED reason=REVIEWED_ARTIFACT host_code=17031002 plugin_code=260 producer_entry_observed=true runtime_handshake_required=true compatibility_confirmed=false
+2026-11-02T14:25:04.551672Z NATIVE_HOST_BUILD code=17031002 version=UNAVAILABLE
+2026-11-02T14:25:04.553167Z Discovering services on the manually selected receiver WLAN
+2026-11-02T14:25:04.558732Z CURRENT_WIFI_DISCOVERING selected_network_only=true bootstrap_parameters_required=false authentication_required=true
+2026-11-02T14:25:04.565155Z CTRL_ANNOUNCE name=OPPO_X8U port=35933 svc=OPPO_X8U manual=OPPO_X8U
+2026-11-02T14:25:04.570508Z ENDPOINT_DISCOVERY_STARTED_UNTRUSTED
+2026-11-02T14:25:05.483440Z CTRL_SERVICE_LIVE name=OPPO_X8U port=0
+2026-11-02T14:25:05.485496Z CTRL_RESOLVE_SUBMIT type=_carplay-ctrl._tcp name=OPPO_X8U port=0
+2026-11-02T14:25:05.486714Z CTRL_SERVICE_REGISTERED network_scoped=true real_identifier=true values_logged=false
+2026-11-02T14:25:05.499643Z CTRL_RESOLVE_OK name=OPPO_X8U port=35933 type=._carplay-ctrl._tcp host=/192.168.1.51
+2026-11-02T14:25:06.570687Z USER_NOTICE 已断开连接。下次使用时点击连接车机。
+2026-11-02T14:25:06.575633Z Stopped by user
+2026-11-03T01:03:40.254927Z USER_UI_OPEN version=1.7.29
+2026-11-03T01:03:42.755463Z USER_NOTICE 正在联网核对版本、发布签名和安装包完整性…
+2026-11-03T01:03:42.771662Z USER_NOTICE 正在当前车机 WLAN 查找服务，随后进行配对和证书认证。请保持这个网络连接。
+
+中文诊断摘要：本次，会话通道曾中断，正在等待恢复，具体断开原因尚未确认。

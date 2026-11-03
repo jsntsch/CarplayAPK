@@ -37,7 +37,7 @@ public final class MfiSap {
 
     public static a a(EventChannel eventChannel, String str) throws GeneralSecurityException, IOException {
         if (str == null || !str.matches("(?i)[0-9a-f]{64}")) {
-            throw new c("MFiSAP requires the explicit 64-hex leaf certificate fingerprint from this accessory's normal pairing");
+            throw new c("MFiSAP requires the explicit 64-hex leaf certificate fingerprint from this accessory'AudioCapabilities normal pairing");
         }
         if (!eventChannel.n()) {
             throw new GeneralSecurityException("MFiSAP requires pair-verified encrypted RTSP control");
@@ -115,7 +115,7 @@ public final class MfiSap {
         if (iD > bArrC.length - 40) {
             throw new IOException("Truncated MFiSAP candidate certificate");
         }
-        m5 m5VarF = m5.f(Arrays.copyOfRange(bArrC, 36, iD + 36));
+        RsaPkcs1Cipher m5VarF = RsaPkcs1Cipher.f(Arrays.copyOfRange(bArrC, 36, iD + 36));
         try {
             f(bVarW.a(), bVarW.b(), bArrC, m5VarF.e());
         } catch (GeneralSecurityException | IOException e) {
@@ -158,7 +158,7 @@ public final class MfiSap {
         if (iD2 + i3 != bArr3.length) {
             throw new GeneralSecurityException("MFiSAP extended/BAA response requires an explicit BAA trust policy");
         }
-        m5 m5VarF = m5.f(bArrCopyOfRange2);
+        RsaPkcs1Cipher m5VarF = RsaPkcs1Cipher.f(bArrCopyOfRange2);
         if (!m5VarF.h(str)) {
             throw new c("MFiSAP accessory leaf fingerprint differs from the normally paired accessory");
         }
@@ -284,7 +284,7 @@ public final class MfiSap {
         private final byte[] a;
         private final String b;
 
-        private b(m5 m5Var) throws GeneralSecurityException {
+        private b(RsaPkcs1Cipher m5Var) throws GeneralSecurityException {
             super("Explicit current-WLAN certificate confirmation required");
             this.a = m5Var.a();
             this.b = m5Var.e();
@@ -298,7 +298,7 @@ public final class MfiSap {
             return this.b;
         }
 
-        public /* synthetic */ b(m5 m5Var, int i) throws GeneralSecurityException {
+        public /* synthetic */ b(RsaPkcs1Cipher m5Var, int i) throws GeneralSecurityException {
             this(m5Var);
         }
     }

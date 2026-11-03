@@ -17,8 +17,8 @@ public final /* synthetic */ class w implements BiFunction {
         switch (this.a) {
             case 0:
                 return Integer.valueOf(Integer.sum(num.intValue(), ((Integer) obj2).intValue()));
-            case p1.c /* 1 */:
-                return t4.F(num, (Integer) obj2);
+            case AudioSourceCapability.c /* 1 */:
+                return DisplaySession.F(num, (Integer) obj2);
             default:
                 return Integer.valueOf(Integer.sum(num.intValue(), ((Integer) obj2).intValue()));
         }

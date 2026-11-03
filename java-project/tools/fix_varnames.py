@@ -8,7 +8,8 @@
 """
 import os
 
-DST = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src", "main", "java")
+DST = os.environ.get("CARPLAY_SRC",
+    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src", "main", "java"))
 
 REPL = [
     ("{@code sendSetup} 附近 —— 构造 SETUP 的 9 个键 + V1.7.28 加的 features 数组",

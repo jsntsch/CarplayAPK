@@ -2,8 +2,8 @@ package org.bouncycastle.crypto.signers;
 
 import io.carplay.app.secured.Iap2Csm;
 import io.carplay.app.secured.SyntheticRefs;
-import io.carplay.app.secured.e;
-import io.carplay.app.secured.i2;
+import io.carplay.app.secured.ByteArrays;
+import io.carplay.app.secured.CryptoServicesRegistrar;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import org.bouncycastle.crypto.CipherParameters;
@@ -41,7 +41,7 @@ public class Ed25519Signer {
 
         @Override // java.io.ByteArrayOutputStream
         public synchronized void reset() {
-            e.f(this.buf, 0, this.count, (byte) 0);
+            ByteArrays.f(this.buf, 0, this.count, (byte) 0);
             this.count = 0;
         }
     }
@@ -65,7 +65,7 @@ public class Ed25519Signer {
             ed25519PublicKeyParameters = (Ed25519PublicKeyParameters) cipherParameters;
         }
         this.publicKey = ed25519PublicKeyParameters;
-        i2.a(org.bouncycastle.crypto.signers.a.a("Ed25519", Iap2Csm.b, cipherParameters, z));
+        CryptoServicesRegistrar.a(org.bouncycastle.crypto.signers.a.a("Ed25519", Iap2Csm.b, cipherParameters, z));
         reset();
     }
 

@@ -18,7 +18,7 @@ import java.util.Locale;
 public final class ControlRequestParser {
     public static final int a = 8192;
 
-    public static final class a extends w1 {
+    public static final class a extends ProtoMessageBase {
         private final int a;
         private final boolean b;
         private final boolean c;
@@ -59,7 +59,7 @@ public final class ControlRequestParser {
             Object[] objArr = {Integer.valueOf(this.a), Boolean.valueOf(this.b), Boolean.valueOf(this.c)};
             String[] strArrSplit = "a;b;c".length() == 0 ? new String[0] : "a;b;c".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(a.class, sb, "[");
+            ProtoMessageBase.f(a.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");

@@ -7,7 +7,7 @@ import android.os.SystemClock;
 import io.carplay.app.secured.EcdsaSignature;
 import io.carplay.app.secured.PcmConverter;
 import io.carplay.app.secured.SyntheticRefs;
-import io.carplay.app.secured.w5;
+import io.carplay.app.secured.ReleaseCatalog;
 import io.carplay.app.secured.x5;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -35,7 +35,7 @@ import javax.net.ssl.HttpsURLConnection;
 final class UpdateChecker {
     public static final ExecutorService a = Executors.newSingleThreadExecutor(new x());
     public static final x5 b = new x5();
-    public static q c;
+    public static InstalledPackageIdentity c;
     public static EcdsaSignature d;
     public static String e;
 
@@ -143,7 +143,7 @@ final class UpdateChecker {
                         throw th;
                     }
                 }
-                uriCreate = w5.j(uriCreate, httpsURLConnection.getHeaderField("Location"));
+                uriCreate = ReleaseCatalog.j(uriCreate, httpsURLConnection.getHeaderField("Location"));
                 httpsURLConnection.disconnect();
             } catch (Throwable th3) {
                 httpsURLConnection.disconnect();

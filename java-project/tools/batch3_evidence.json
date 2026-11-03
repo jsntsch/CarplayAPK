@@ -1,0 +1,32 @@
+[
+ [
+  "io.carplay.app.secured",
+  "w5",
+  "ReleaseCatalog",
+  "extends ProtoMessageBase；release integer / catalog redirect 校验 + carplus-carplay-updates/version.json"
+ ],
+ [
+  "io.carplay.app.secured",
+  "o5",
+  "CarLifeChannel",
+  "implements l5 + AutoCloseable；静态工厂写入 \"CARLIFE\" 魔数，按串读写长度前缀帧"
+ ],
+ [
+  "io.carplay.app.secured",
+  "g5",
+  "DeviceTimeRange",
+  "DEVICE_TIME_RANGE / DEVICE_TIME_MINUTE_PRECISION + g(Instant, ZoneId)"
+ ],
+ [
+  "io.carplay.app.secured",
+  "g3",
+  "AesCipher",
+  "实现 o 接口；AES encrypt/decrypt + \"AES encryption failed\" + Provider/SecretKey/AlgorithmParameters"
+ ],
+ [
+  "io.carplay.app.secured",
+  "p6",
+  "IoStatsSnapshot",
+  "EnumMap<ENCODE/DECODE/ADAPTER_QUEUE> 统计 + 五元 long 快照消息"
+ ]
+]

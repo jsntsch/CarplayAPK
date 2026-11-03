@@ -21,7 +21,7 @@ public final /* synthetic */ class i3 implements View.OnClickListener {
             case 0:
                 logActivity.l(view);
                 break;
-            case p1.c /* 1 */:
+            case AudioSourceCapability.c /* 1 */:
                 logActivity.m(view);
                 break;
             default:

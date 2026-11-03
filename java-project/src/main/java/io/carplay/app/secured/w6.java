@@ -20,7 +20,7 @@ public final /* synthetic */ class w6 implements Runnable {
             case 0:
                 this.b.O0(this.c);
                 break;
-            case p1.c /* 1 */:
+            case AudioSourceCapability.c /* 1 */:
                 this.b.V0(this.c);
                 break;
             case 2:

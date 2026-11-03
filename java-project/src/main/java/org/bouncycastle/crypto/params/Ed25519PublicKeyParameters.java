@@ -2,14 +2,14 @@ package org.bouncycastle.crypto.params;
 
 import io.carplay.app.secured.SyntheticRefs;
 import io.carplay.app.secured.X25519;
-import io.carplay.app.secured.f;
+import io.carplay.app.secured.AsymmetricKeyParameter;
 import io.carplay.app.secured.l6;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 
 /* JADX INFO: loaded from: classes.dex */
-public final class Ed25519PublicKeyParameters extends f {
+public final class Ed25519PublicKeyParameters extends AsymmetricKeyParameter {
     public static final int KEY_SIZE = 32;
     private final X25519.h publicPoint;
 

@@ -22,10 +22,10 @@ import io.carplay.app.secured.PcmConverter;
 import io.carplay.app.secured.SyntheticRefs;
 import io.carplay.app.secured.VideoCipher;
 import io.carplay.app.secured.d1;
-import io.carplay.app.secured.j;
-import io.carplay.app.secured.p6;
+import io.carplay.app.secured.AvcSpsParser;
+import io.carplay.app.secured.IoStatsSnapshot;
 import io.carplay.app.secured.q6;
-import io.carplay.app.secured.w1;
+import io.carplay.app.secured.ProtoMessageBase;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.invoke.VarHandle;
@@ -84,10 +84,10 @@ final class AvcEncoder implements AutoCloseable {
     private final f f;
     private final AvcEncoder g;
     private final CountDownLatch h;
-    private final VideoCipher.b i;
+    private final VideoCipher.AvcVideoInput i;
     private final ArrayBlockingQueue<h> j;
     private final Map<Long, d> k;
-    private final p6 l;
+    private final IoStatsSnapshot l;
     private final e m;
     private final b n;
     private final AtomicBoolean o;
@@ -191,7 +191,7 @@ final class AvcEncoder implements AutoCloseable {
         }
     }
 
-    public static final class c extends w1 {
+    public static final class c extends ProtoMessageBase {
         private final byte[] a;
         private final long b;
         private final int c;
@@ -222,7 +222,7 @@ final class AvcEncoder implements AutoCloseable {
             int i = this.c;
             long j = this.b;
             byte[] bArr = this.a;
-            return Objects.hashCode(bArr) + w1.a(j, i * 31, 31);
+            return Objects.hashCode(bArr) + ProtoMessageBase.a(j, i * 31, 31);
         }
 
         public long i() {
@@ -233,7 +233,7 @@ final class AvcEncoder implements AutoCloseable {
             Object[] objArr = {this.a, Long.valueOf(this.b), Integer.valueOf(this.c)};
             String[] strArrSplit = "a;b;c".length() == 0 ? new String[0] : "a;b;c".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(c.class, sb, "[");
+            ProtoMessageBase.f(c.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");
@@ -273,7 +273,7 @@ final class AvcEncoder implements AutoCloseable {
     public interface f {
         void a(String str);
 
-        default void b(io.carplay.app.secured.h hVar) throws IOException {
+        default void b(io.carplay.app.secured.AvcAccessUnit hVar) throws IOException {
             d(hVar.a(), hVar.n());
         }
 
@@ -294,7 +294,7 @@ final class AvcEncoder implements AutoCloseable {
                 byte[] bArr2 = (byte[]) bArr.clone();
                 this.a = bArr2;
                 this.b++;
-                return io.carplay.app.secured.j.a(bArr2, i, i2);
+                return io.carplay.app.secured.AvcSpsParser.a(bArr2, i, i2);
             }
             return null;
         }
@@ -302,10 +302,10 @@ final class AvcEncoder implements AutoCloseable {
 
     public AvcEncoder(q6 q6Var, int i, int i2, f fVar, AvcEncoder avcEncoder) {
         this.h = new CountDownLatch(1);
-        this.i = new VideoCipher.b();
+        this.i = new VideoCipher.AvcVideoInput();
         this.j = new ArrayBlockingQueue<>(8);
         this.k = new HashMap();
-        this.l = new p6();
+        this.l = new IoStatsSnapshot();
         this.m = new e();
         this.n = new b();
         this.o = new AtomicBoolean();
@@ -523,7 +523,7 @@ final class AvcEncoder implements AutoCloseable {
                             throw new IOException("AVC adapter metadata limit");
                         }
                         this.k.put(Long.valueOf(j5), new d(hVar, jNanoTime, 0L, 0));
-                        this.l.d(p6.b.ADAPTER_QUEUE, hVar.c, jNanoTime);
+                        this.l.d(IoStatsSnapshot.b.ADAPTER_QUEUE, hVar.c, jNanoTime);
                         this.F.queueInputBuffer(iDequeueInputBuffer, 0, hVar.i().length, j5, hVar.a.e() ? 1 : 0);
                         if (this.D < 0) {
                             this.D = System.nanoTime();
@@ -537,7 +537,7 @@ final class AvcEncoder implements AutoCloseable {
                         long jNanoTime2 = System.nanoTime();
                         if (dVar != null) {
                             j = jNanoTime2;
-                            this.l.d(p6.b.DECODE, dVar.b, j);
+                            this.l.d(IoStatsSnapshot.b.DECODE, dVar.b, j);
                         } else {
                             j = jNanoTime2;
                         }
@@ -553,7 +553,7 @@ final class AvcEncoder implements AutoCloseable {
                             }
                             s(this.T.presentationTimeUs);
                             long jNanoTime3 = System.nanoTime();
-                            this.l.d(p6.b.RENDER, j, jNanoTime3);
+                            this.l.d(IoStatsSnapshot.b.RENDER, j, jNanoTime3);
                             this.k.put(Long.valueOf(this.T.presentationTimeUs), new d(dVar.a, dVar.b, jNanoTime3, 0));
                             this.y = this.T.presentationTimeUs;
                             r();
@@ -570,8 +570,8 @@ final class AvcEncoder implements AutoCloseable {
                     long j6 = 5000000000L;
                     if (jNanoTime4 - this.B >= 5000000000L) {
                         this.B = jNanoTime4;
-                        for (Map.Entry<p6.b, p6.c> entry : this.l.e().entrySet()) {
-                            p6.c value = entry.getValue();
+                        for (Map.Entry<IoStatsSnapshot.b, IoStatsSnapshot.c> entry : this.l.e().entrySet()) {
+                            IoStatsSnapshot.c value = entry.getValue();
                             long j7 = j6;
                             long j8 = j2;
                             long j9 = j3;
@@ -701,8 +701,8 @@ final class AvcEncoder implements AutoCloseable {
             SyntheticRefs.c("native AVC config missing");
             return;
         }
-        mediaFormatCreateVideoFormat.setByteBuffer("csd-0", ByteBuffer.wrap(io.carplay.app.secured.i.c(List.of(bArrQ))));
-        mediaFormatCreateVideoFormat.setByteBuffer("csd-1", ByteBuffer.wrap(io.carplay.app.secured.i.c(List.of(bArrP))));
+        mediaFormatCreateVideoFormat.setByteBuffer("csd-0", ByteBuffer.wrap(io.carplay.app.secured.AvcLengthParser.c(List.of(bArrQ))));
+        mediaFormatCreateVideoFormat.setByteBuffer("csd-1", ByteBuffer.wrap(io.carplay.app.secured.AvcLengthParser.c(List.of(bArrP))));
         MediaCodec mediaCodecCreateDecoderByType = MediaCodec.createDecoderByType("video/avc");
         this.F = mediaCodecCreateDecoderByType;
         boolean zIsFeatureSupported = mediaCodecCreateDecoderByType.getCodecInfo().getCapabilitiesForType("video/avc").isFeatureSupported("low-latency");
@@ -910,7 +910,7 @@ final class AvcEncoder implements AutoCloseable {
                 for (int i3 = 0; i3 < 2; i3++) {
                     ByteBuffer byteBuffer = outputFormat.getByteBuffer(strArr[i3]);
                     if (byteBuffer != null) {
-                        byteArrayOutputStream.writeBytes(io.carplay.app.secured.i.a(p(byteBuffer)));
+                        byteArrayOutputStream.writeBytes(io.carplay.app.secured.AvcLengthParser.a(p(byteBuffer)));
                     }
                 }
                 this.Q = byteArrayOutputStream.toByteArray();
@@ -935,7 +935,7 @@ final class AvcEncoder implements AutoCloseable {
                     if (cVarA != null) {
                         byte[] bArrG = cVarA.g();
                         if ((cVarA.h() & 2) != 0) {
-                            this.Q = io.carplay.app.secured.i.a(bArrG);
+                            this.Q = io.carplay.app.secured.AvcLengthParser.a(bArrG);
                             G();
                         } else {
                             boolean z = (cVarA.h() & 1) != 0;
@@ -943,8 +943,8 @@ final class AvcEncoder implements AutoCloseable {
                             if (dVarRemove == null || dVarRemove.a.k() < this.C) {
                                 this.E = -1L;
                             } else {
-                                this.l.d(p6.b.ENCODE, dVarRemove.c, System.nanoTime());
-                                io.carplay.app.secured.h hVarU = u(this.Q, bArrG, z, dVarRemove.a.a, this.R, this.S);
+                                this.l.d(IoStatsSnapshot.b.ENCODE, dVarRemove.c, System.nanoTime());
+                                io.carplay.app.secured.AvcAccessUnit hVarU = u(this.Q, bArrG, z, dVarRemove.a.a, this.R, this.S);
                                 if (hVarU != null) {
                                     this.R = hVarU.k();
                                     this.S = hVarU.h();
@@ -995,8 +995,8 @@ final class AvcEncoder implements AutoCloseable {
         }
     }
 
-    public static io.carplay.app.secured.h t(byte[] bArr, byte[] bArr2, boolean z, io.carplay.app.secured.h hVar, byte[] bArr3, byte[] bArr4) throws IOException {
-        io.carplay.app.secured.h hVarD = io.carplay.app.secured.h.d(io.carplay.app.secured.i.b(bArr, bArr2, z), bArr3, bArr4, hVar.n(), hVar.c(), hVar.j());
+    public static io.carplay.app.secured.AvcAccessUnit t(byte[] bArr, byte[] bArr2, boolean z, io.carplay.app.secured.AvcAccessUnit hVar, byte[] bArr3, byte[] bArr4) throws IOException {
+        io.carplay.app.secured.AvcAccessUnit hVarD = io.carplay.app.secured.AvcAccessUnit.d(io.carplay.app.secured.AvcLengthParser.b(bArr, bArr2, z), bArr3, bArr4, hVar.n(), hVar.c(), hVar.j());
         if (hVarD.k() != null && hVarD.h() != null) {
             return hVarD;
         }
@@ -1004,8 +1004,8 @@ final class AvcEncoder implements AutoCloseable {
         return null;
     }
 
-    public static io.carplay.app.secured.h u(byte[] bArr, byte[] bArr2, boolean z, io.carplay.app.secured.h hVar, byte[] bArr3, byte[] bArr4) throws IOException {
-        io.carplay.app.secured.h hVarD = io.carplay.app.secured.h.d(io.carplay.app.secured.i.b(bArr, bArr2, z || bArr3 == null || bArr4 == null), bArr3, bArr4, hVar.n(), hVar.c(), hVar.j());
+    public static io.carplay.app.secured.AvcAccessUnit u(byte[] bArr, byte[] bArr2, boolean z, io.carplay.app.secured.AvcAccessUnit hVar, byte[] bArr3, byte[] bArr4) throws IOException {
+        io.carplay.app.secured.AvcAccessUnit hVarD = io.carplay.app.secured.AvcAccessUnit.d(io.carplay.app.secured.AvcLengthParser.b(bArr, bArr2, z || bArr3 == null || bArr4 == null), bArr3, bArr4, hVar.n(), hVar.c(), hVar.j());
         if (hVarD.k() != null && hVarD.h() != null) {
             return hVarD;
         }
@@ -1055,7 +1055,7 @@ final class AvcEncoder implements AutoCloseable {
     public /* synthetic */ void x(List list, long j, long j2, long j3) throws IOException {
         this.u = this.i.m();
         this.v = this.i.i();
-        m(new io.carplay.app.secured.h(list, this.u, this.v, list.stream().anyMatch(new io.carplay.app.prototype.e()), j, j2, j3));
+        m(new io.carplay.app.secured.AvcAccessUnit(list, this.u, this.v, list.stream().anyMatch(new io.carplay.app.prototype.e()), j, j2, j3));
     }
 
     /* JADX INFO: Access modifiers changed from: private */
@@ -1121,7 +1121,7 @@ final class AvcEncoder implements AutoCloseable {
         }
         try {
             try {
-                VideoCipher.b bVar = this.i;
+                VideoCipher.AvcVideoInput bVar = this.i;
                 long jNanoTime = System.nanoTime();
                 s sVar = new s(2);
                 sVar.b = this;
@@ -1135,7 +1135,7 @@ final class AvcEncoder implements AutoCloseable {
         }
     }
 
-    public synchronized void m(io.carplay.app.secured.h hVar) throws IOException {
+    public synchronized void m(io.carplay.app.secured.AvcAccessUnit hVar) throws IOException {
         try {
             if (this.o.get()) {
                 return;
@@ -1173,7 +1173,7 @@ final class AvcEncoder implements AutoCloseable {
                 byte[] bArrA = hVar.a();
                 if (hVar.e()) {
                     if (this.u != null && this.v != null) {
-                        bArrA = o(io.carplay.app.secured.i.c(List.of(this.u, this.v)), bArrA);
+                        bArrA = o(io.carplay.app.secured.AvcLengthParser.c(List.of(this.u, this.v)), bArrA);
                         this.s = false;
                     }
                     return;
@@ -1191,7 +1191,7 @@ final class AvcEncoder implements AutoCloseable {
         }
     }
 
-    public static final class d extends w1 {
+    public static final class d extends ProtoMessageBase {
         private final h a;
         private final long b;
         private final long c;
@@ -1214,7 +1214,7 @@ final class AvcEncoder implements AutoCloseable {
             long j = this.b;
             long j2 = this.c;
             h hVar = this.a;
-            return Objects.hashCode(hVar) + w1.a(j2, Long.hashCode(j) * 31, 31);
+            return Objects.hashCode(hVar) + ProtoMessageBase.a(j2, Long.hashCode(j) * 31, 31);
         }
 
         public long j() {
@@ -1233,7 +1233,7 @@ final class AvcEncoder implements AutoCloseable {
             Object[] objArr = {this.a, Long.valueOf(this.b), Long.valueOf(this.c)};
             String[] strArrSplit = "a;b;c".length() == 0 ? new String[0] : "a;b;c".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(d.class, sb, "[");
+            ProtoMessageBase.f(d.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");
@@ -1251,13 +1251,13 @@ final class AvcEncoder implements AutoCloseable {
         }
     }
 
-    public static final class h extends w1 {
-        private final io.carplay.app.secured.h a;
+    public static final class h extends ProtoMessageBase {
+        private final io.carplay.app.secured.AvcAccessUnit a;
         private final byte[] b;
         private final long c;
         private final long d;
 
-        private h(io.carplay.app.secured.h hVar, byte[] bArr, long j, long j2) {
+        private h(io.carplay.app.secured.AvcAccessUnit hVar, byte[] bArr, long j, long j2) {
             this.a = hVar;
             this.b = bArr;
             this.c = j;
@@ -1275,9 +1275,9 @@ final class AvcEncoder implements AutoCloseable {
         public final int hashCode() {
             long j = this.c;
             long j2 = this.d;
-            io.carplay.app.secured.h hVar = this.a;
+            io.carplay.app.secured.AvcAccessUnit hVar = this.a;
             byte[] bArr = this.b;
-            return Objects.hashCode(bArr) + ((Objects.hashCode(hVar) + w1.a(j2, Long.hashCode(j) * 31, 31)) * 31);
+            return Objects.hashCode(bArr) + ((Objects.hashCode(hVar) + ProtoMessageBase.a(j2, Long.hashCode(j) * 31, 31)) * 31);
         }
 
         public byte[] i() {
@@ -1292,7 +1292,7 @@ final class AvcEncoder implements AutoCloseable {
             return this.d;
         }
 
-        public io.carplay.app.secured.h l() {
+        public io.carplay.app.secured.AvcAccessUnit l() {
             return this.a;
         }
 
@@ -1300,7 +1300,7 @@ final class AvcEncoder implements AutoCloseable {
             Object[] objArr = {this.a, this.b, Long.valueOf(this.c), Long.valueOf(this.d)};
             String[] strArrSplit = "a;b;c;d".length() == 0 ? new String[0] : "a;b;c;d".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(h.class, sb, "[");
+            ProtoMessageBase.f(h.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");
@@ -1313,7 +1313,7 @@ final class AvcEncoder implements AutoCloseable {
             return sb.toString();
         }
 
-        public /* synthetic */ h(io.carplay.app.secured.h hVar, byte[] bArr, long j, long j2, int i) {
+        public /* synthetic */ h(io.carplay.app.secured.AvcAccessUnit hVar, byte[] bArr, long j, long j2, int i) {
             this(hVar, bArr, j, j2);
         }
     }

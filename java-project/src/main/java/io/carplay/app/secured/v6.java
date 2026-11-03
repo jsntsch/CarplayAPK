@@ -22,7 +22,7 @@ public final /* synthetic */ class v6 implements Runnable {
             case 0:
                 this.b.X0(this.c, this.d);
                 break;
-            case p1.c /* 1 */:
+            case AudioSourceCapability.c /* 1 */:
                 this.b.n1(this.c, this.d);
                 break;
             case 2:

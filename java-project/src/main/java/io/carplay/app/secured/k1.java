@@ -8,7 +8,7 @@ import java.util.List;
 
 /* JADX INFO: compiled from: CarPlus */
 /* JADX INFO: loaded from: classes.dex */
-public final /* synthetic */ class k1 implements VideoCipher.b.c, w4.b, AirPlaySession.j {
+public final /* synthetic */ class k1 implements VideoCipher.AvcVideoInput.c, w4.b, AirPlaySession.j {
     public final /* synthetic */ int a;
     public /* synthetic */ Object b;
 
@@ -22,11 +22,11 @@ public final /* synthetic */ class k1 implements VideoCipher.b.c, w4.b, AirPlayS
     }
 
     @Override // io.carplay.app.secured.w4.b
-    public void b(h hVar) throws IOException {
+    public void b(AvcAccessUnit hVar) throws IOException {
         int i = this.a;
         Object obj = this.b;
         switch (i) {
-            case p1.c /* 1 */:
+            case AudioSourceCapability.c /* 1 */:
                 w4.f((w4.a) obj, hVar);
                 break;
             default:
@@ -35,8 +35,8 @@ public final /* synthetic */ class k1 implements VideoCipher.b.c, w4.b, AirPlayS
         }
     }
 
-    @Override // io.carplay.app.secured.VideoCipher.b.c
+    @Override // io.carplay.app.secured.VideoCipher.AvcVideoInput.c
     public void c(List list, long j, long j2, long j3) throws IOException {
-        VideoCipher.b.g((VideoCipher.b.a) this.b, list, j, j2, j3);
+        VideoCipher.AvcVideoInput.g((VideoCipher.AvcVideoInput.a) this.b, list, j, j2, j3);
     }
 }

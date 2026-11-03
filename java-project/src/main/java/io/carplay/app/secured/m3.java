@@ -22,7 +22,7 @@ public final /* synthetic */ class m3 implements Predicate {
         switch (i) {
             case 0:
                 return MainActivity.R1(str, lVar);
-            case p1.c /* 1 */:
+            case AudioSourceCapability.c /* 1 */:
                 return MainActivity.G1(str, lVar);
             case 2:
                 return MainActivity.Z0(str, lVar);

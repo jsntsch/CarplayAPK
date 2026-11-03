@@ -40,7 +40,7 @@ import io.carplay.app.secured.Iap2Csm;
 import io.carplay.app.secured.a4;
 import io.carplay.app.secured.b4;
 import io.carplay.app.secured.c4;
-import io.carplay.app.secured.h5;
+import io.carplay.app.secured.BtDiscovery;
 import io.carplay.app.secured.m3;
 import io.carplay.app.secured.n3;
 import io.carplay.app.secured.o3;
@@ -53,7 +53,7 @@ import io.carplay.app.secured.u2;
 import io.carplay.app.secured.u3;
 import io.carplay.app.secured.v2;
 import io.carplay.app.secured.v3;
-import io.carplay.app.secured.w1;
+import io.carplay.app.secured.ProtoMessageBase;
 import io.carplay.app.secured.w3;
 import io.carplay.app.secured.x3;
 import io.carplay.app.secured.y3;
@@ -83,6 +83,8 @@ public final class MainActivity extends Activity {
     private static final String l0 = "1125859877";
     private static final String m0 = "ocarplay-consent";
     private static final String n0 = "2026-10-20-v1";
+    /** 上一次写入日志的组件结论，避免每秒刷屏。 */
+    private static String lastComponentSupport;
     private View[] A;
     private Button[] B;
     private RadioButton C;
@@ -158,7 +160,7 @@ public final class MainActivity extends Activity {
                 if (MainActivity.this.a && PairingPreparationService.f()) {
                     MainActivity.this.a = false;
                     try {
-                        MainActivity.this.startActivityForResult(new Intent("android.bluetooth.adapter.action.REQUEST_DISCOVERABLE").putExtra("android.bluetooth.adapter.extra.DISCOVERABLE_DURATION", h5.v), MainActivity.i0);
+                        MainActivity.this.startActivityForResult(new Intent("android.bluetooth.adapter.action.REQUEST_DISCOVERABLE").putExtra("android.bluetooth.adapter.extra.DISCOVERABLE_DURATION", BtDiscovery.v), MainActivity.i0);
                     } catch (RuntimeException unused) {
                         MainActivity.this.w2();
                         MainActivity.this.o2("系统暂时无法开启可被发现，请查看日志。");
@@ -367,6 +369,12 @@ public final class MainActivity extends Activity {
         TextView textView;
         CarLifeBridge.d dVarF = CarLifeBridge.f(this);
         this.e = dVarF.g();
+        // 组件结论写一行日志：BLOCKED 时可直接看到原因码，不必再靠界面截图判断。
+        String support = dVarF.h();
+        if (!support.equals(lastComponentSupport)) {
+            lastComponentSupport = support;
+            AppLogger.g(this, support);
+        }
         TextView textView2 = this.x;
         if (textView2 != null) {
             textView2.setText(dVarF.o());
@@ -749,7 +757,7 @@ public final class MainActivity extends Activity {
             return true;
         }
         if (this.d && !isFinishing() && !isDestroyed() && !WirelessCarPlayService.L1()) {
-            if (io.carplay.app.prototype.r.a(this, str).g() != null) {
+            if (io.carplay.app.prototype.BluetoothAdapterResolver.a(this, str).g() != null) {
                 return false;
             }
             this.l = str;
@@ -1432,7 +1440,7 @@ public final class MainActivity extends Activity {
         editText.setAutofillHints(null);
         editText.setImportantForAutofill(2);
         editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(17)});
-        editText.setText(io.carplay.app.prototype.r.b(this));
+        editText.setText(io.carplay.app.prototype.BluetoothAdapterResolver.b(this));
         editText.setPadding(O0(12), O0(12), O0(12), O0(12));
         GradientDrawable gradientDrawableB = UiFactory.B(this, -854534, 12);
         gradientDrawableB.setStroke(O0(1), -2300431);
@@ -1834,7 +1842,7 @@ public final class MainActivity extends Activity {
 
     /* JADX INFO: Access modifiers changed from: private */
     public /* synthetic */ void z1(String str, DialogInterface dialogInterface, int i) {
-        getSharedPreferences("wireless-ui", 0).edit().putBoolean(w1.e("fill_display_", str), i == 1).apply();
+        getSharedPreferences("wireless-ui", 0).edit().putBoolean(ProtoMessageBase.e("fill_display_", str), i == 1).apply();
         dialogInterface.dismiss();
         a2();
     }
@@ -2068,7 +2076,7 @@ public final class MainActivity extends Activity {
         o3Var20.b = this;
         VarHandle.storeStoreFence();
         this.H = G0(linearLayoutJ6, "检查更新", o3Var20);
-        x2(linearLayoutG3, w1.e("OcarPlay · v", A2(this)), 11).setTextColor(-10193265);
+        x2(linearLayoutG3, ProtoMessageBase.e("OcarPlay · v", A2(this)), 11).setTextColor(-10193265);
         LinearLayout linearLayout5 = new LinearLayout(this);
         linearLayout5.setOrientation(0);
         linearLayout5.setBaselineAligned(false);
@@ -2093,7 +2101,7 @@ public final class MainActivity extends Activity {
             T1();
         }
         a2();
-        AppLogger.g(this, w1.e("USER_UI_OPEN version=", A2(this)));
+        AppLogger.g(this, ProtoMessageBase.e("USER_UI_OPEN version=", A2(this)));
     }
 
     @Override // android.app.Activity

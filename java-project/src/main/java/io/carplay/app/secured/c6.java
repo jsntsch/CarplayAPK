@@ -11,7 +11,7 @@ abstract class c6 {
     }
 
     public static void b(byte[] bArr, int[] iArr) {
-        a2.d(bArr, 0, iArr, 0, 8);
+        LittleEndianShortCodec.d(bArr, 0, iArr, 0, 8);
     }
 
     public static void c(int[] iArr, int[] iArr2, int[] iArr3) {
@@ -22,28 +22,28 @@ abstract class c6 {
             m4.g(iArr, 0, iArr4, 4, 0);
         }
         byte[] bArr = new byte[48];
-        a2.g(iArr4, 0, 12, bArr, 0);
+        LittleEndianShortCodec.g(iArr4, 0, 12, bArr, 0);
         b(d(bArr), iArr3);
     }
 
     public static byte[] d(byte[] bArr) {
-        long jC = ((long) a2.c(bArr, 0)) & 4294967295L;
-        long jB = ((long) (a2.b(bArr, 4) << 4)) & 4294967295L;
-        long jC2 = ((long) a2.c(bArr, 7)) & 4294967295L;
-        long jB2 = ((long) (a2.b(bArr, 11) << 4)) & 4294967295L;
-        long jC3 = ((long) a2.c(bArr, 14)) & 4294967295L;
-        long jB3 = ((long) (a2.b(bArr, 18) << 4)) & 4294967295L;
-        long jC4 = ((long) a2.c(bArr, 21)) & 4294967295L;
-        long jB4 = ((long) (a2.b(bArr, 25) << 4)) & 4294967295L;
-        long jC5 = ((long) a2.c(bArr, 28)) & 4294967295L;
-        long jB5 = a2.b(bArr, 32) << 4;
+        long jC = ((long) LittleEndianShortCodec.c(bArr, 0)) & 4294967295L;
+        long jB = ((long) (LittleEndianShortCodec.b(bArr, 4) << 4)) & 4294967295L;
+        long jC2 = ((long) LittleEndianShortCodec.c(bArr, 7)) & 4294967295L;
+        long jB2 = ((long) (LittleEndianShortCodec.b(bArr, 11) << 4)) & 4294967295L;
+        long jC3 = ((long) LittleEndianShortCodec.c(bArr, 14)) & 4294967295L;
+        long jB3 = ((long) (LittleEndianShortCodec.b(bArr, 18) << 4)) & 4294967295L;
+        long jC4 = ((long) LittleEndianShortCodec.c(bArr, 21)) & 4294967295L;
+        long jB4 = ((long) (LittleEndianShortCodec.b(bArr, 25) << 4)) & 4294967295L;
+        long jC5 = ((long) LittleEndianShortCodec.c(bArr, 28)) & 4294967295L;
+        long jB5 = LittleEndianShortCodec.b(bArr, 32) << 4;
         long j = jB5 & 4294967295L;
-        long jC6 = a2.c(bArr, 35);
+        long jC6 = LittleEndianShortCodec.c(bArr, 35);
         long j2 = jC6 & 4294967295L;
-        long jB6 = a2.b(bArr, 39) << 4;
+        long jB6 = LittleEndianShortCodec.b(bArr, 39) << 4;
         long j3 = jB6 & 4294967295L;
-        long jC7 = a2.c(bArr, 42);
-        long jA = (((long) (a2.a(bArr, 46) << 4)) & 4294967295L) + ((jC7 & 4294967295L) >> 28);
+        long jC7 = LittleEndianShortCodec.c(bArr, 42);
+        long jA = (((long) (LittleEndianShortCodec.a(bArr, 46) << 4)) & 4294967295L) + ((jC7 & 4294967295L) >> 28);
         long j4 = jC5 - (jA * 5343);
         long j5 = (jC7 & 268435455) + (j3 >> 28);
         long j6 = (jC3 - (jA * (-50998291))) - (j5 * 19280294);
@@ -89,34 +89,34 @@ abstract class c6 {
         long j46 = (j36 & 268435455) + (j45 >> 28);
         long j47 = 268435455 & j45;
         byte[] bArr2 = new byte[64];
-        a2.h((j38 & 268435455) | ((j39 & 268435455) << 28), bArr2, 0);
-        a2.h((j40 & 268435455) | ((j41 & 268435455) << 28), bArr2, 7);
-        a2.h(((j43 & 268435455) << 28) | (j42 & 268435455), bArr2, 14);
-        a2.h((j47 << 28) | (j44 & 268435455), bArr2, 21);
-        a2.f((int) j46, bArr2, 28);
+        LittleEndianShortCodec.h((j38 & 268435455) | ((j39 & 268435455) << 28), bArr2, 0);
+        LittleEndianShortCodec.h((j40 & 268435455) | ((j41 & 268435455) << 28), bArr2, 7);
+        LittleEndianShortCodec.h(((j43 & 268435455) << 28) | (j42 & 268435455), bArr2, 14);
+        LittleEndianShortCodec.h((j47 << 28) | (j44 & 268435455), bArr2, 21);
+        LittleEndianShortCodec.f((int) j46, bArr2, 28);
         return bArr2;
     }
 
     public static byte[] e(byte[] bArr) {
-        long jC = ((long) a2.c(bArr, 0)) & 4294967295L;
-        long jB = ((long) (a2.b(bArr, 4) << 4)) & 4294967295L;
-        long jC2 = ((long) a2.c(bArr, 7)) & 4294967295L;
-        long jB2 = ((long) (a2.b(bArr, 11) << 4)) & 4294967295L;
-        long jC3 = ((long) a2.c(bArr, 14)) & 4294967295L;
-        long jB3 = ((long) (a2.b(bArr, 18) << 4)) & 4294967295L;
-        long jC4 = ((long) a2.c(bArr, 21)) & 4294967295L;
-        long jB4 = ((long) (a2.b(bArr, 25) << 4)) & 4294967295L;
-        long jC5 = ((long) a2.c(bArr, 28)) & 4294967295L;
-        long jB5 = ((long) (a2.b(bArr, 32) << 4)) & 4294967295L;
-        long jC6 = ((long) a2.c(bArr, 35)) & 4294967295L;
-        long jB6 = ((long) (a2.b(bArr, 39) << 4)) & 4294967295L;
-        long jC7 = ((long) a2.c(bArr, 42)) & 4294967295L;
-        long jB7 = ((long) (a2.b(bArr, 46) << 4)) & 4294967295L;
-        long jC8 = a2.c(bArr, 49);
+        long jC = ((long) LittleEndianShortCodec.c(bArr, 0)) & 4294967295L;
+        long jB = ((long) (LittleEndianShortCodec.b(bArr, 4) << 4)) & 4294967295L;
+        long jC2 = ((long) LittleEndianShortCodec.c(bArr, 7)) & 4294967295L;
+        long jB2 = ((long) (LittleEndianShortCodec.b(bArr, 11) << 4)) & 4294967295L;
+        long jC3 = ((long) LittleEndianShortCodec.c(bArr, 14)) & 4294967295L;
+        long jB3 = ((long) (LittleEndianShortCodec.b(bArr, 18) << 4)) & 4294967295L;
+        long jC4 = ((long) LittleEndianShortCodec.c(bArr, 21)) & 4294967295L;
+        long jB4 = ((long) (LittleEndianShortCodec.b(bArr, 25) << 4)) & 4294967295L;
+        long jC5 = ((long) LittleEndianShortCodec.c(bArr, 28)) & 4294967295L;
+        long jB5 = ((long) (LittleEndianShortCodec.b(bArr, 32) << 4)) & 4294967295L;
+        long jC6 = ((long) LittleEndianShortCodec.c(bArr, 35)) & 4294967295L;
+        long jB6 = ((long) (LittleEndianShortCodec.b(bArr, 39) << 4)) & 4294967295L;
+        long jC7 = ((long) LittleEndianShortCodec.c(bArr, 42)) & 4294967295L;
+        long jB7 = ((long) (LittleEndianShortCodec.b(bArr, 46) << 4)) & 4294967295L;
+        long jC8 = LittleEndianShortCodec.c(bArr, 49);
         long j = jC8 & 4294967295L;
-        long jB8 = ((long) (a2.b(bArr, 53) << 4)) & 4294967295L;
-        long jC9 = a2.c(bArr, 56);
-        long jB9 = ((long) (a2.b(bArr, 60) << 4)) & 4294967295L;
+        long jB8 = ((long) (LittleEndianShortCodec.b(bArr, 53) << 4)) & 4294967295L;
+        long jC9 = LittleEndianShortCodec.c(bArr, 56);
+        long jB9 = ((long) (LittleEndianShortCodec.b(bArr, 60) << 4)) & 4294967295L;
         long j2 = ((long) bArr[63]) & 255;
         long j3 = jB9 + ((jC9 & 4294967295L) >> 28);
         long j4 = jC9 & 268435455;
@@ -177,11 +177,11 @@ abstract class c6 {
         long j59 = (j49 & 268435455) + (j58 >> 28);
         long j60 = j58 & 268435455;
         byte[] bArr2 = new byte[32];
-        a2.h((j51 & 268435455) | ((j52 & 268435455) << 28), bArr2, 0);
-        a2.h((j53 & 268435455) | ((j54 & 268435455) << 28), bArr2, 7);
-        a2.h(((j56 & 268435455) << 28) | (j55 & 268435455), bArr2, 14);
-        a2.h((j60 << 28) | (j57 & 268435455), bArr2, 21);
-        a2.f((int) j59, bArr2, 28);
+        LittleEndianShortCodec.h((j51 & 268435455) | ((j52 & 268435455) << 28), bArr2, 0);
+        LittleEndianShortCodec.h((j53 & 268435455) | ((j54 & 268435455) << 28), bArr2, 7);
+        LittleEndianShortCodec.h(((j56 & 268435455) << 28) | (j55 & 268435455), bArr2, 14);
+        LittleEndianShortCodec.h((j60 << 28) | (j57 & 268435455), bArr2, 21);
+        LittleEndianShortCodec.f((int) j59, bArr2, 28);
         return bArr2;
     }
 
@@ -191,9 +191,9 @@ abstract class c6 {
         int[] iArr5 = new int[16];
         m4.f(iArr, iArr5);
         iArr5[0] = iArr5[0] + 1;
-        int[] iArr6 = new int[16];
+        int[] iArCarLifeFrame = new int[16];
         int[] iArr7 = a;
-        m4.c(iArr7, iArr, iArr6);
+        m4.c(iArr7, iArr, iArCarLifeFrame);
         int[] iArr8 = new int[16];
         int[] iArr9 = new int[4];
         System.arraycopy(iArr7, 0, iArr9, 0, 4);
@@ -215,13 +215,13 @@ abstract class c6 {
             if (i < 0) {
                 return false;
             }
-            int iC = d6.c(i2, iArr6) - iD;
+            int iC = d6.c(i2, iArCarLifeFrame) - iD;
             int i3 = iC & (~(iC >> 31));
-            if (iArr6[i2] < 0) {
-                d6.a(i2, i3, iArr16, iArr17, iArr6, iArr8);
+            if (iArCarLifeFrame[i2] < 0) {
+                d6.a(i2, i3, iArr16, iArr17, iArCarLifeFrame, iArr8);
                 d6.b(3, i3, iArr14, iArr13, iArr15, iArr12);
             } else {
-                d6.f(i2, i3, iArr16, iArr17, iArr6, iArr8);
+                d6.f(i2, i3, iArr16, iArr17, iArCarLifeFrame, iArr8);
                 d6.g(3, i3, iArr14, iArr13, iArr15, iArr12);
             }
             int[] iArr18 = iArr15;

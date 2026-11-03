@@ -21,7 +21,7 @@ public final /* synthetic */ class t3 implements DialogInterface.OnDismissListen
             case 0:
                 mainActivity.K1(dialogInterface);
                 break;
-            case p1.c /* 1 */:
+            case AudioSourceCapability.c /* 1 */:
                 mainActivity.Q1(dialogInterface);
                 break;
             case 2:

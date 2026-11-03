@@ -37,7 +37,7 @@ public final class SessionStateMachine {
     private String h = "NOT_INITIALIZED";
     private a i = new a("MODE_INFO_NOT_INITIALIZED", "NONE", -1);
 
-    public static final class a extends w1 {
+    public static final class a extends ProtoMessageBase {
         private final String a;
         private final String b;
         private final int c;
@@ -68,7 +68,7 @@ public final class SessionStateMachine {
             int i = this.c;
             String str = this.a;
             String str2 = this.b;
-            return Objects.hashCode(str2) + w1.b(str, i * 31, 31);
+            return Objects.hashCode(str2) + ProtoMessageBase.b(str, i * 31, 31);
         }
 
         public int i() {
@@ -79,7 +79,7 @@ public final class SessionStateMachine {
             Object[] objArr = {this.a, this.b, Integer.valueOf(this.c)};
             String[] strArrSplit = "a;b;c".length() == 0 ? new String[0] : "a;b;c".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(a.class, sb, "[");
+            ProtoMessageBase.f(a.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");

@@ -3,7 +3,7 @@ package io.carplay.app.secured;
 /* JADX INFO: loaded from: classes.dex */
 public final class u4 {
 
-    public static final class a extends w1 {
+    public static final class a extends ProtoMessageBase {
         private final int a;
         private final int b;
         private final int c;
@@ -43,7 +43,7 @@ public final class u4 {
             Object[] objArr = {Integer.valueOf(this.a), Integer.valueOf(this.b), Integer.valueOf(this.c)};
             String[] strArrSplit = "a;b;c".length() == 0 ? new String[0] : "a;b;c".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(a.class, sb, "[");
+            ProtoMessageBase.f(a.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");
@@ -62,7 +62,7 @@ public final class u4 {
 
     public static boolean a(int i, int i2, int i3, int i4) {
         if (i3 >= 8 && i4 >= 8 && Math.max(i3, i4) <= 1920 && (i3 & 1) == 0 && (i4 & 1) == 0) {
-            p1.b bVarL = p1.l(i3, i4, 30);
+            AudioSourceCapability.b bVarL = AudioSourceCapability.l(i3, i4, 30);
             if (i == bVarL.i() && i2 == bVarL.h() && (i != i3 || i2 != i4)) {
                 return true;
             }
@@ -71,7 +71,7 @@ public final class u4 {
     }
 
     public static a b(int i, int i2, int i3) {
-        p1.b bVarL = p1.l(i, i2, i3);
+        AudioSourceCapability.b bVarL = AudioSourceCapability.l(i, i2, i3);
         return Math.max(i, i2) > 1920 ? new a(bVarL.i(), bVarL.h(), bVarL.g()) : new a(i & (-2), i2 & (-2), bVarL.g());
     }
 }

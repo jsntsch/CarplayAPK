@@ -20,13 +20,13 @@ public final /* synthetic */ class u6 implements Runnable {
             case 0:
                 pairingSession.T0();
                 break;
-            case p1.c /* 1 */:
+            case AudioSourceCapability.c /* 1 */:
                 pairingSession.W0();
                 break;
             case 2:
                 pairingSession.S0();
                 break;
-            case p1.d /* 3 */:
+            case AudioSourceCapability.d /* 3 */:
                 pairingSession.Q0();
                 break;
             case 4:

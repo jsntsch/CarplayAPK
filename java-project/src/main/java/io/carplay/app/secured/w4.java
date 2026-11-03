@@ -6,7 +6,7 @@ import java.util.List;
 
 /* JADX INFO: loaded from: classes.dex */
 public final class w4 {
-    private final VideoCipher.b a = new VideoCipher.b();
+    private final VideoCipher.AvcVideoInput a = new VideoCipher.AvcVideoInput();
     private volatile AirPlaySession.g b;
 
     @FunctionalInterface
@@ -16,14 +16,14 @@ public final class w4 {
 
     @FunctionalInterface
     public interface b {
-        void b(h hVar) throws IOException;
+        void b(AvcAccessUnit hVar) throws IOException;
     }
 
     /* JADX INFO: Access modifiers changed from: private */
-    public static /* synthetic */ void f(a aVar, h hVar) throws IOException {
+    public static /* synthetic */ void f(a aVar, AvcAccessUnit hVar) throws IOException {
         byte[] bArrK = hVar.k();
         byte[] bArrH = hVar.h();
-        aVar.a(i.b((bArrK == null || bArrH == null) ? null : i.c(List.of(bArrK, bArrH)), hVar.a(), hVar.e()));
+        aVar.a(AvcLengthParser.b((bArrK == null || bArrH == null) ? null : AvcLengthParser.c(List.of(bArrK, bArrH)), hVar.a(), hVar.e()));
     }
 
     /* JADX INFO: Access modifiers changed from: private */
@@ -33,7 +33,7 @@ public final class w4 {
         if (bArrM != null && bArrI != null) {
             this.b = new AirPlaySession.g(bArrM, bArrI);
         }
-        bVar.b(new h(list, bArrM, bArrI, list.stream().anyMatch(new w0(20)), j, j2, j3));
+        bVar.b(new AvcAccessUnit(list, bArrM, bArrI, list.stream().anyMatch(new w0(20)), j, j2, j3));
     }
 
     /* JADX INFO: Access modifiers changed from: private */
@@ -74,7 +74,7 @@ public final class w4 {
             throw new IOException("native AVC generation invalid");
         }
         try {
-            VideoCipher.b bVar2 = this.a;
+            VideoCipher.AvcVideoInput bVar2 = this.a;
             z2 z2Var = new z2();
             z2Var.a = this;
             z2Var.b = bVar;

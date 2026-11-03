@@ -15,12 +15,14 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /* JADX INFO: loaded from: classes.dex */
 /**
@@ -42,6 +44,9 @@ public final class EventChannel implements Closeable {
     public static final int L = 4194304;
     public static final int M = 32768;
     private static final int N = 16;
+    private static final byte[] EMPTY = new byte[0];
+    /** 保活请求在 {@code pendingCommands} 里的标签，也是响应回调里给出的事件名。 */
+    private static final String FEEDBACK_TAG = "FEEDBACK";
     private volatile long A;
     private volatile long B;
     private volatile long C;
@@ -58,23 +63,25 @@ public final class EventChannel implements Closeable {
     private final Closeable c;
     private final Socket d;
     private final int e;
-    private byte[] f;
-    private byte[] g;
+    private byte[] readKey;
+    private byte[] writeKey;
     private byte[] h;
     private int i;
-    private int j;
+    private int cSeqCounter;
     private long k;
     private long l;
     private long m;
     private int n;
-    private volatile boolean o;
-    private c p;
-    private e q;
-    private final Map<Integer, a> r;
-    private final Map<Integer, a> s;
-    private boolean t;
+    private volatile boolean closed;
+    private c requestHandler;
+    private e responseListener;
+    private final Map<Integer, a> pendingEventRequests;
+    private final Map<Integer, a> pendingCommands;
+    private boolean asyncStarted;
     private boolean u;
     private final AtomicBoolean v;
+    private final AtomicInteger unmatchedResponses = new AtomicInteger();
+    private final AtomicInteger inboundHandlerFailures = new AtomicInteger();
     private volatile boolean w;
     private volatile boolean x;
     private volatile long y;
@@ -113,7 +120,7 @@ public final class EventChannel implements Closeable {
             if (h() == 200) {
                 return;
             }
-            throw new d(this.d, EventChannel.f(h()), 0);
+            throw new d(this.d, EventChannel.normalizeStatus(h()), 0);
         }
 
         public int h() {
@@ -139,8 +146,8 @@ public final class EventChannel implements Closeable {
 
     private EventChannel(InputStream inputStream, OutputStream outputStream, Closeable closeable, Socket socket, int i) {
         this.h = new byte[0];
-        this.r = new LinkedHashMap();
-        this.s = new LinkedHashMap();
+        this.pendingEventRequests = new LinkedHashMap();
+        this.pendingCommands = new LinkedHashMap();
         this.v = new AtomicBoolean();
         this.G = -1;
         this.I = -1;
@@ -182,63 +189,89 @@ public final class EventChannel implements Closeable {
         return 0;
     }
 
-    private void c(b bVar) throws IOException {
-        a aVarRemove;
-        e eVar;
-        String strD = bVar.d("cseq");
-        if (strD == null || strD.isEmpty() || strD.length() > 10) {
+    /**
+     * 处理事件通道上的 RTSP 响应（读线程唯一入口）。
+     *
+     * <p>补丁（2026-11-03，对应 smali 版 {@code y5.c()} 的 {@code :cond_4}）：
+     * <b>对不上号的 CSeq 只记账丢弃，绝不抛 IOException。</b>
+     * 原实现走 {@code SyntheticRefs.c(...)} 抛异常，读线程 {@code runReadLoop} 捕获后
+     * 会 {@code close()} 整条事件通道——只要有一条保活 /feedback 的应答没登记，
+     * 事件连接就被动断开，真机表现为每 10.4s 断一次、约 1 分钟耗尽重试后投屏中断。
+     *
+     * <p>同时补上「{@code /command} 队列的应答也在这里配对」：保活 /feedback 与
+     * 排队的 {@code /command} 都登记在 {@code pendingCommands}，而原实现只查
+     * {@code pendingEventRequests}，等于自断了配对路径。
+     */
+    private void handleEventResponse(b response) throws IOException {
+        String cseqText = response.d("cseq");
+        if (cseqText == null || cseqText.isEmpty() || cseqText.length() > 10) {
             SyntheticRefs.c("Invalid RTSP event response sequence");
             return;
         }
-        for (int i = 0; i < strD.length(); i++) {
-            char cCharAt = strD.charAt(i);
-            if (cCharAt < '0' || cCharAt > '9') {
+        for (int i = 0; i < cseqText.length(); i++) {
+            char ch = cseqText.charAt(i);
+            if (ch < '0' || ch > '9') {
                 SyntheticRefs.c("Invalid RTSP event response sequence");
                 return;
             }
         }
         try {
-            int i2 = Integer.parseInt(strD);
+            int cseq = Integer.parseInt(cseqText);
+            a pending;
+            e listener;
             synchronized (this) {
-                aVarRemove = this.r.remove(Integer.valueOf(i2));
-                eVar = this.q;
+                pending = this.pendingEventRequests.remove(Integer.valueOf(cseq));
+                if (pending == null) {
+                    // 补丁：排队 /command（含保活 /feedback）的应答也走这里配对
+                    pending = this.pendingCommands.remove(Integer.valueOf(cseq));
+                }
+                listener = this.responseListener;
             }
-            if (aVarRemove == null) {
-                SyntheticRefs.c("Unknown RTSP event response sequence");
+            if (pending == null) {
+                // 补丁：未知序号静默丢弃，只记数（绝不 close 事件通道）
+                int unmatched = this.unmatchedResponses.incrementAndGet();
+                if (unmatched <= 3 || unmatched % 50 == 0) {
+                    ControlChannel.Log("CARPLAY_RESP_UNMATCHED cseq=" + cseq + " count=" + unmatched);
+                }
                 return;
             }
-            bVar.d = aVarRemove.g();
-            if (eVar != null) {
+            response.d = pending.g();
+            if (listener != null) {
                 try {
-                    eVar.c(bVar.d, f(bVar.h()), i2, this.f != null);
+                    listener.c(response.d, normalizeStatus(response.h()), cseq, this.readKey != null);
                 } catch (RuntimeException unused) {
                 }
             }
-            aVarRemove.h().complete(bVar);
+            pending.h().complete(response);
         } catch (NumberFormatException unused2) {
             SyntheticRefs.c("Invalid RTSP event response sequence");
         }
     }
 
-    private boolean e(b bVar) {
-        a aVarRemove;
-        String strD = bVar.d("cseq");
-        boolean z = false;
-        if (strD != null) {
+    /**
+     * 同步路径（{@link #w}）里配对 {@code pendingCommands} 的应答。
+     *
+     * @return true 表示已配对并完成 future
+     */
+    private boolean matchQueuedCommandResponse(b response) {
+        String cseqText = response.d("cseq");
+        if (cseqText != null) {
             try {
-                int i = Integer.parseInt(strD);
-                if (Integer.toString(i).equals(strD) && (aVarRemove = this.s.remove(Integer.valueOf(i))) != null) {
-                    bVar.d = aVarRemove.g();
-                    e eVar = this.q;
-                    z = true;
-                    if (eVar != null) {
-                        try {
-                            eVar.c(bVar.d, f(bVar.h()), i, true);
-                        } catch (RuntimeException unused) {
+                int cseq = Integer.parseInt(cseqText);
+                if (Integer.toString(cseq).equals(cseqText)) {
+                    a pending = this.pendingCommands.remove(Integer.valueOf(cseq));
+                    if (pending != null) {
+                        response.d = pending.g();
+                        e listener = this.responseListener;
+                        if (listener != null) {
+                            try {
+                                listener.c(response.d, normalizeStatus(response.h()), cseq, true);
+                            } catch (RuntimeException unused) {
+                            }
                         }
+                        pending.h().complete(response);
+                        return true;
                     }
-                    aVarRemove.h().complete(bVar);
-                    return z;
                 }
             } catch (NumberFormatException unused2) {
             }
@@ -247,7 +280,7 @@ public final class EventChannel implements Closeable {
     }
 
     /* JADX INFO: Access modifiers changed from: private */
-    public static int f(int i) {
+    public static int normalizeStatus(int i) {
         if (i < 100 || i > 599) {
             return -1;
         }
@@ -255,18 +288,18 @@ public final class EventChannel implements Closeable {
     }
 
     private void k() throws IOException {
-        if (this.o) {
+        if (this.closed) {
             SyntheticRefs.c("RTSP connection closed");
         }
     }
 
-    private int o() {
+    private int nextCSeq() {
         while (true) {
-            int i = this.j;
+            int i = this.cSeqCounter;
             int i2 = i == Integer.MAX_VALUE ? 1 : i + 1;
-            this.j = i2;
-            if (!this.r.containsKey(Integer.valueOf(i2)) && !this.s.containsKey(Integer.valueOf(this.j))) {
-                return this.j;
+            this.cSeqCounter = i2;
+            if (!this.pendingEventRequests.containsKey(Integer.valueOf(i2)) && !this.pendingCommands.containsKey(Integer.valueOf(this.cSeqCounter))) {
+                return this.cSeqCounter;
             }
         }
     }
@@ -348,7 +381,7 @@ public final class EventChannel implements Closeable {
                             }
                             String lowerCase = strArrSplit[i].substring(0, iIndexOf).trim().toLowerCase(Locale.ROOT);
                             if (linkedHashMap.put(lowerCase, strArrSplit[i].substring(iIndexOf + 1).trim()) != null) {
-                                SyntheticRefs.c(w1.e("Duplicate RTSP header: ", lowerCase));
+                                SyntheticRefs.c(ProtoMessageBase.e("Duplicate RTSP header: ", lowerCase));
                                 return null;
                             }
                         }
@@ -430,7 +463,7 @@ public final class EventChannel implements Closeable {
     }
 
     private int t() throws IOException {
-        if (this.f == null) {
+        if (this.readKey == null) {
             int iU = u();
             if (iU >= 0) {
                 this.A++;
@@ -475,7 +508,7 @@ public final class EventChannel implements Closeable {
             }
             try {
                 this.K = "RECORD_AUTHENTICATE";
-                byte[] bArr3 = this.f;
+                byte[] bArr3 = this.readKey;
                 long j = this.k;
                 this.k = j + 1;
                 this.h = DerCodec.o(bArr3, DerCodec.m(j), bArr2, new byte[]{(byte) iU2, (byte) iU3});
@@ -511,7 +544,7 @@ public final class EventChannel implements Closeable {
         return i2;
     }
 
-    public synchronized void D(String str, Map<String, String> map, byte[] bArr) throws IOException {
+    public synchronized void writeMessage(String str, Map<String, String> map, byte[] bArr) throws IOException {
         AppleHttpHeaders.Apply(map);
         try {
             k();
@@ -539,7 +572,7 @@ public final class EventChannel implements Closeable {
                 throw new IOException("RTSP header too large");
             }
             byte[] bArrD = DerCodec.d(bytes, bArr);
-            if (this.g == null) {
+            if (this.writeKey == null) {
                 this.b.write(bArrD);
             } else {
                 int i = 0;
@@ -551,7 +584,7 @@ public final class EventChannel implements Closeable {
                     byte[] bArrCopyOfRange = Arrays.copyOfRange(bArrD, i, Math.min(bArrD.length, i2));
                     byte[] bArr2 = {(byte) bArrCopyOfRange.length, (byte) (bArrCopyOfRange.length >>> 8)};
                     try {
-                        byte[] bArr3 = this.g;
+                        byte[] bArr3 = this.writeKey;
                         long j = this.l;
                         this.l = 1 + j;
                         byte[] bArrS = DerCodec.s(bArr3, DerCodec.m(j), bArrCopyOfRange, bArr2);
@@ -572,7 +605,7 @@ public final class EventChannel implements Closeable {
     @Override // java.io.Closeable, java.lang.AutoCloseable
     public void close() throws IOException {
         a[] aVarArr;
-        this.o = true;
+        this.closed = true;
         int i = 0;
         try {
             if (this.c != null && this.v.compareAndSet(false, true)) {
@@ -580,16 +613,16 @@ public final class EventChannel implements Closeable {
             }
             synchronized (this) {
                 try {
-                    ArrayList arrayList = new ArrayList(this.r.values());
-                    arrayList.addAll(this.s.values());
+                    ArrayList arrayList = new ArrayList(this.pendingEventRequests.values());
+                    arrayList.addAll(this.pendingCommands.values());
                     aVarArr = (a[]) arrayList.toArray(new a[0]);
-                    this.r.clear();
-                    this.s.clear();
-                    byte[] bArr = this.f;
+                    this.pendingEventRequests.clear();
+                    this.pendingCommands.clear();
+                    byte[] bArr = this.readKey;
                     if (bArr != null) {
                         Arrays.fill(bArr, (byte) 0);
                     }
-                    byte[] bArr2 = this.g;
+                    byte[] bArr2 = this.writeKey;
                     if (bArr2 != null) {
                         Arrays.fill(bArr2, (byte) 0);
                     }
@@ -605,16 +638,16 @@ public final class EventChannel implements Closeable {
         } catch (Throwable th2) {
             synchronized (this) {
                 try {
-                    ArrayList arrayList2 = new ArrayList(this.r.values());
-                    arrayList2.addAll(this.s.values());
+                    ArrayList arrayList2 = new ArrayList(this.pendingEventRequests.values());
+                    arrayList2.addAll(this.pendingCommands.values());
                     a[] aVarArr2 = (a[]) arrayList2.toArray(new a[0]);
-                    this.r.clear();
-                    this.s.clear();
-                    byte[] bArr3 = this.f;
+                    this.pendingEventRequests.clear();
+                    this.pendingCommands.clear();
+                    byte[] bArr3 = this.readKey;
                     if (bArr3 != null) {
                         Arrays.fill(bArr3, (byte) 0);
                     }
-                    byte[] bArr4 = this.g;
+                    byte[] bArr4 = this.writeKey;
                     if (bArr4 != null) {
                         Arrays.fill(bArr4, (byte) 0);
                     }
@@ -635,7 +668,7 @@ public final class EventChannel implements Closeable {
         CompletableFuture<b> completableFuture;
         try {
             k();
-            if (this.t || this.f == null || this.g == null) {
+            if (this.asyncStarted || this.readKey == null || this.writeKey == null) {
                 throw new IOException("Queued command requires encrypted main control");
             }
             if (!"POST".equals(str) || !"/command".equals(str2) || !"application/x-apple-binary-plist".equals(str3)) {
@@ -646,21 +679,21 @@ public final class EventChannel implements Closeable {
             if (bArr == null) {
                 throw new NullPointerException("body");
             }
-            if (this.s.size() >= 16) {
+            if (this.pendingCommands.size() >= 16) {
                 throw new IOException("Too many pending RTSP control commands");
             }
-            int iO = o();
+            int cseq = nextCSeq();
             completableFuture = new CompletableFuture<>();
             LinkedHashMap linkedHashMap = new LinkedHashMap();
-            linkedHashMap.put("CSeq", Integer.toString(iO));
+            linkedHashMap.put("CSeq", Integer.toString(cseq));
             if (str3 != null) {
                 linkedHashMap.put("Content-Type", str3);
             }
-            this.s.put(Integer.valueOf(iO), new a(q(str, str2), completableFuture, 0));
+            this.pendingCommands.put(Integer.valueOf(cseq), new a(q(str, str2), completableFuture, 0));
             try {
-                D(str + " " + str2 + " RTSP/1.0", linkedHashMap, bArr);
+                writeMessage(str + " " + str2 + " RTSP/1.0", linkedHashMap, bArr);
             } catch (IOException | RuntimeException e2) {
-                this.s.remove(Integer.valueOf(iO));
+                this.pendingCommands.remove(Integer.valueOf(cseq));
                 completableFuture.completeExceptionally(e2);
                 close();
                 throw e2;
@@ -671,19 +704,61 @@ public final class EventChannel implements Closeable {
         return completableFuture;
     }
 
+    /**
+     * 事件通道保活：在 event 连接上发一条空体 {@code POST /feedback RTSP/1.0}。
+     *
+     * <p>背景（2026-11-03 真机日志 OcarPlay-log-20261103-090755）：本 App 对事件通道
+     * 只读不写，车机 accept 后约 10.4s 收不到任何 RTSP 报文就 FIN 掉这条连接
+     * （{@code CARPLAY_EVENT_INPUT point=TRANSPORT_END ... read_calls=2 raw_bytes=0}），
+     * App 又把每次 EOF 升级成整会话重认证，3 次重试耗尽后约 60s 断开投屏。
+     * AirPlay 的约定正好是 device 在事件连接上周期上报 /feedback（既是保活，
+     * 也是播放进度回执，见 {@code POST /feedback} 走 event 连接而非 control 连接）。
+     *
+     * <p>为什么必须走 {@code pendingCommands} 队列而不是 {@code v(...)}：{@code v()} 会同步等应答，
+     * 与读线程抢同一个 BufferedInputStream；写进队列后由读线程的
+     * {@link #handleEventResponse} 按 CSeq 匹配并完成 future。
+     *
+     * @return true 已写出；false 通道未就绪（未加密 / 读线程未启动 / 已关闭）
+     */
+    public synchronized boolean sendFeedback() throws IOException {
+        if (this.closed || this.readKey == null || this.writeKey == null || !this.asyncStarted) {
+            return false;
+        }
+        if (this.pendingCommands.size() >= 8) {
+            // 车机长时间不回 /feedback 时，先丢旧的保活请求，避免队列无限堆积
+            Iterator<Map.Entry<Integer, a>> entryIterator = this.pendingCommands.entrySet().iterator();
+            while (entryIterator.hasNext()) {
+                if (FEEDBACK_TAG.equals(entryIterator.next().getValue().g())) {
+                    entryIterator.remove();
+                }
+            }
+        }
+        int cseq = nextCSeq();
+        LinkedHashMap<String, String> headers = new LinkedHashMap<>();
+        headers.put("CSeq", Integer.toString(cseq));
+        this.pendingCommands.put(Integer.valueOf(cseq), new a(FEEDBACK_TAG, new CompletableFuture<>()));
+        try {
+            writeMessage("POST /feedback RTSP/1.0", headers, EMPTY);
+        } catch (IOException | RuntimeException writeFailure) {
+            this.pendingCommands.remove(Integer.valueOf(cseq));
+            throw writeFailure;
+        }
+        return true;
+    }
+
     public synchronized void i(byte[] bArr, byte[] bArr2) throws IOException {
         k();
-        if (this.t) {
+        if (this.asyncStarted) {
             throw new IOException("Encryption change on event connection");
         }
-        if (this.f != null) {
+        if (this.readKey != null) {
             throw new IOException("Control encryption already active");
         }
         if (bArr.length != 32 || bArr2.length != 32) {
             throw new IllegalArgumentException("Control key length");
         }
-        this.f = (byte[]) bArr.clone();
-        this.g = (byte[]) bArr2.clone();
+        this.readKey = (byte[]) bArr.clone();
+        this.writeKey = (byte[]) bArr2.clone();
         this.l = 0L;
         this.k = 0L;
     }
@@ -703,24 +778,24 @@ public final class EventChannel implements Closeable {
                     if (bArr == null) {
                         throw new NullPointerException("body");
                     }
-                    if (this.r.size() >= 16) {
+                    if (this.pendingEventRequests.size() >= 16) {
                         throw new IOException("Too many pending RTSP event requests");
                     }
-                    this.t = true;
-                    int iO = o();
+                    this.asyncStarted = true;
+                    int cseq = nextCSeq();
                     LinkedHashMap linkedHashMap = new LinkedHashMap();
-                    linkedHashMap.put("CSeq", Integer.toString(iO));
+                    linkedHashMap.put("CSeq", Integer.toString(cseq));
                     if (str3 != null) {
                         linkedHashMap.put("Content-Type", str3);
                     }
-                    this.r.put(Integer.valueOf(iO), new a(q(str, str2), completableFuture, 0));
+                    this.pendingEventRequests.put(Integer.valueOf(cseq), new a(q(str, str2), completableFuture, 0));
                     try {
-                        D(str + " " + str2 + " RTSP/1.0", linkedHashMap, bArr);
+                        writeMessage(str + " " + str2 + " RTSP/1.0", linkedHashMap, bArr);
                         e = null;
                     } catch (IOException | RuntimeException e2) {
                         e = e2;
-                        this.r.remove(Integer.valueOf(iO));
-                        this.o = true;
+                        this.pendingEventRequests.remove(Integer.valueOf(cseq));
+                        this.closed = true;
                     }
                 } catch (RuntimeException th) {
                     throw th;
@@ -741,17 +816,17 @@ public final class EventChannel implements Closeable {
     }
 
     public String m() {
-        return "RTSP_INPUT reader_started=" + this.w + " reader_ended=" + this.x + " closed=" + this.o + " stage=" + this.K + " read_calls=" + this.y + " raw_bytes=" + this.z + " plain_bytes=" + this.A + " messages=" + this.B + " requests=" + this.C + " responses=" + this.D + " header_bytes=" + this.E + " body_bytes=" + this.F + " body_expected=" + this.G + " record_bytes=" + this.H + " record_expected=" + this.I + " pending_plain_bytes=" + this.J;
+        return "RTSP_INPUT reader_started=" + this.w + " reader_ended=" + this.x + " closed=" + this.closed + " stage=" + this.K + " read_calls=" + this.y + " raw_bytes=" + this.z + " plain_bytes=" + this.A + " messages=" + this.B + " requests=" + this.C + " responses=" + this.D + " unmatched_responses=" + this.unmatchedResponses.get() + " header_bytes=" + this.E + " body_bytes=" + this.F + " body_expected=" + this.G + " record_bytes=" + this.H + " record_expected=" + this.I + " pending_plain_bytes=" + this.J;
     }
 
     public synchronized boolean n() {
-        return (this.o || this.f == null || this.g == null) ? false : true;
+        return (this.closed || this.readKey == null || this.writeKey == null) ? false : true;
     }
 
     public synchronized b r() throws IOException {
         b bVarS;
         k();
-        if (this.t) {
+        if (this.asyncStarted) {
             throw new IOException("Synchronous read on event connection");
         }
         this.m = (((long) this.e) * 1000000) + System.nanoTime();
@@ -773,25 +848,25 @@ public final class EventChannel implements Closeable {
         b bVarS;
         try {
             k();
-            if (this.t) {
+            if (this.asyncStarted) {
                 throw new IOException("Synchronous request on event connection");
             }
             B(str);
             A(str2);
-            int iO = o();
+            int cseq = nextCSeq();
             LinkedHashMap linkedHashMap = new LinkedHashMap(map);
-            linkedHashMap.put("CSeq", Integer.toString(iO));
+            linkedHashMap.put("CSeq", Integer.toString(cseq));
             if (str3 != null) {
                 linkedHashMap.put("Content-Type", str3);
             }
             this.m = (((long) this.e) * 1000000) + System.nanoTime();
             try {
                 try {
-                    D(str + " " + str2 + " RTSP/1.0", linkedHashMap, bArr);
+                    writeMessage(str + " " + str2 + " RTSP/1.0", linkedHashMap, bArr);
                     for (int i = 0; i < 32; i++) {
                         bVarS = s();
                         if (!bVarS.a.startsWith("RTSP/") && !bVarS.a.startsWith("HTTP/")) {
-                            c cVar = this.p;
+                            c cVar = this.requestHandler;
                             byte[] bArrA = cVar == null ? null : cVar.a(bVarS);
                             LinkedHashMap linkedHashMap2 = new LinkedHashMap();
                             if (bVarS.d("cseq") != null) {
@@ -801,17 +876,17 @@ public final class EventChannel implements Closeable {
                             if (bArrA == null) {
                                 bArrA = new byte[0];
                             }
-                            D(str4, linkedHashMap2, bArrA);
-                        } else if (!e(bVarS)) {
+                            writeMessage(str4, linkedHashMap2, bArrA);
+                        } else if (!matchQueuedCommandResponse(bVarS)) {
                             String strD = bVarS.d("cseq");
-                            if (strD != null && !strD.equals(Integer.toString(iO))) {
+                            if (strD != null && !strD.equals(Integer.toString(cseq))) {
                                 throw new IOException("RTSP CSeq mismatch");
                             }
                             bVarS.d = q(str, str2);
-                            e eVar = this.q;
+                            e eVar = this.responseListener;
                             if (eVar != null) {
                                 try {
-                                    eVar.c(bVarS.d, f(bVarS.h()), iO, this.f != null);
+                                    eVar.c(bVarS.d, normalizeStatus(bVarS.h()), cseq, this.readKey != null);
                                 } catch (RuntimeException unused) {
                                 }
                             }
@@ -833,11 +908,11 @@ public final class EventChannel implements Closeable {
     }
 
     public synchronized void x(c cVar) {
-        this.p = cVar;
+        this.requestHandler = cVar;
     }
 
     public synchronized void y(e eVar) {
-        this.q = eVar;
+        this.responseListener = eVar;
     }
 
     public void z(c cVar) throws IOException {
@@ -849,7 +924,7 @@ public final class EventChannel implements Closeable {
             if (this.u) {
                 throw new IOException("RTSP event reader already active");
             }
-            this.t = true;
+            this.asyncStarted = true;
             this.u = true;
             this.w = true;
             this.m = 0L;
@@ -860,12 +935,28 @@ public final class EventChannel implements Closeable {
                 if (socket != null) {
                     socket.setSoTimeout(0);
                 }
-                while (!this.o) {
+                while (!this.closed) {
                     b bVarS = s();
                     if (bVarS.a.startsWith("RTSP/") || bVarS.a.startsWith("HTTP/")) {
-                        c(bVarS);
+                        handleEventResponse(bVarS);
                     } else {
-                        byte[] bArrA = cVar.a(bVarS);
+                        byte[] replyBody;
+                        try {
+                            replyBody = cVar.a(bVarS);
+                        } catch (Throwable handlerFailure) {
+                            // 补丁（2026-11-03）：入站请求处理器的异常只回 501，绝不能关掉整条事件通道。
+                            // 背景：AirPlaySession.s1(...) 仍是 jadx 桩，车机一旦发 /command
+                            // 就会抛 UnsupportedOperationException，原逻辑会一路冒到读线程的
+                            // catch 里 close()，把保活刚救回来的事件连接又打断。
+                            int failed = this.inboundHandlerFailures.incrementAndGet();
+                            if (failed <= 3 || failed % 20 == 0) {
+                                ControlChannel.Log("CARPLAY_INBOUND_HANDLER_FAILED uri=" + bVarS.a
+                                        + " type=" + handlerFailure.getClass().getSimpleName()
+                                        + " count=" + failed);
+                            }
+                            replyBody = null;
+                        }
+                        byte[] bArrA = replyBody;
                         LinkedHashMap linkedHashMap = new LinkedHashMap();
                         if (bVarS.d("cseq") != null) {
                             linkedHashMap.put("CSeq", bVarS.d("cseq"));
@@ -880,7 +971,7 @@ public final class EventChannel implements Closeable {
                                 if (bArrA == null) {
                                     bArrA = new byte[0];
                                 }
-                                D(str2, linkedHashMap, bArrA);
+                                writeMessage(str2, linkedHashMap, bArrA);
                             } catch (RuntimeException th) {
                                 throw th;
                             }
@@ -906,7 +997,7 @@ public final class EventChannel implements Closeable {
         }
     }
 
-    public static final class a extends w1 {
+    public static final class a extends ProtoMessageBase {
         private final String a;
         private final CompletableFuture<b> b;
 
@@ -941,7 +1032,7 @@ public final class EventChannel implements Closeable {
             Object[] objArr = {this.a, this.b};
             String[] strArrSplit = "a;b".length() == 0 ? new String[0] : "a;b".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(a.class, sb, "[");
+            ProtoMessageBase.f(a.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");

@@ -12,7 +12,7 @@ import android.os.Looper;
 import io.carplay.app.secured.ControlChannel;
 import io.carplay.app.secured.Iap2Csm;
 import io.carplay.app.secured.SyntheticRefs;
-import io.carplay.app.secured.w1;
+import io.carplay.app.secured.ProtoMessageBase;
 import java.io.IOException;
 import java.lang.invoke.VarHandle;
 import java.net.Inet6Address;
@@ -85,7 +85,7 @@ final class WifiNetworkMonitor implements AutoCloseable {
         public void onLinkPropertiesChanged(Network network, LinkProperties linkProperties) {
             if (WifiNetworkMonitor.this.b.equals(network)) {
                 Handler handler = WifiNetworkMonitor.this.f;
-                g gVar = new g(1);
+                ReleaseCheckTask gVar = new ReleaseCheckTask(1);
                 gVar.b = this;
                 gVar.c = linkProperties;
                 VarHandle.storeStoreFence();
@@ -132,7 +132,7 @@ final class WifiNetworkMonitor implements AutoCloseable {
 
         /* JADX INFO: Access modifiers changed from: private */
         public /* synthetic */ void g(String str) {
-            WifiNetworkMonitor.this.s(w1.e("CURRENT_WIFI_", str));
+            WifiNetworkMonitor.this.s(ProtoMessageBase.e("CURRENT_WIFI_", str));
         }
 
         @Override // io.carplay.app.prototype.AirplayServiceProbe.d
@@ -143,7 +143,7 @@ final class WifiNetworkMonitor implements AutoCloseable {
         @Override // io.carplay.app.prototype.AirplayServiceProbe.d
         public void b(String str) {
             Handler handler = WifiNetworkMonitor.this.f;
-            g gVar = new g(2);
+            ReleaseCheckTask gVar = new ReleaseCheckTask(2);
             gVar.b = this;
             gVar.c = str;
             VarHandle.storeStoreFence();
@@ -171,7 +171,7 @@ final class WifiNetworkMonitor implements AutoCloseable {
         void e(Network network, Iap2Csm.a aVar, String str, String str2);
     }
 
-    public static final class e extends w1 {
+    public static final class e extends ProtoMessageBase {
         private final Network a;
         private final String b;
         private final Set<LinkAddress> c;
@@ -205,7 +205,7 @@ final class WifiNetworkMonitor implements AutoCloseable {
             Network network = this.a;
             String str = this.b;
             Set<LinkAddress> set = this.c;
-            return Objects.hashCode(set) + w1.b(str, Objects.hashCode(network) * 31, 31);
+            return Objects.hashCode(set) + ProtoMessageBase.b(str, Objects.hashCode(network) * 31, 31);
         }
 
         public Network i() {
@@ -216,7 +216,7 @@ final class WifiNetworkMonitor implements AutoCloseable {
             Object[] objArr = {this.a, this.b, this.c};
             String[] strArrSplit = "a;b;c".length() == 0 ? new String[0] : "a;b;c".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(e.class, sb, "[");
+            ProtoMessageBase.f(e.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");

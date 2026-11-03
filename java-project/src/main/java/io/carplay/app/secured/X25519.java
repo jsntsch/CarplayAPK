@@ -117,7 +117,7 @@ public abstract class X25519 {
         int[] iArr3 = bVar.a;
         int[] iArr4 = bVar.b;
         int[] iArr5 = gVar.a;
-        int[] iArr6 = bVar.c;
+        int[] iArCarLifeFrame = bVar.c;
         int[] iArr7 = bVar.d;
         int[] iArr8 = bVar.e;
         if (z) {
@@ -132,9 +132,9 @@ public abstract class X25519 {
         l7.E(iArr2, fVar.b, iArr2);
         l7.E(bVar.d, bVar.e, iArr5);
         l7.E(iArr5, fVar.c, iArr5);
-        l7.E(bVar.c, fVar.d, iArr6);
+        l7.E(bVar.c, fVar.d, iArCarLifeFrame);
         l7.c(iArr4, iArr3, iArr8, iArr7);
-        l7.c(iArr6, iArr5, iArr2, iArr);
+        l7.c(iArCarLifeFrame, iArr5, iArr2, iArr);
         l7.E(iArr3, iArr4, bVar.c);
         l7.E(iArr3, iArr7, bVar.a);
         l7.E(iArr4, iArr8, bVar.b);
@@ -313,8 +313,8 @@ public abstract class X25519 {
                         e eVar = new e();
                         int[] iArr5 = dVar4.a;
                         l7.E(iArr5, dVar4.c, iArr5);
-                        int[] iArr6 = dVar4.b;
-                        l7.E(iArr6, dVar4.c, iArr6);
+                        int[] iArCarLifeFrame = dVar4.b;
+                        l7.E(iArCarLifeFrame, dVar4.c, iArCarLifeFrame);
                         l7.c(dVar4.b, dVar4.a, eVar.b, eVar.a);
                         l7.E(dVar4.a, dVar4.b, eVar.c);
                         int[] iArr7 = eVar.c;
@@ -345,13 +345,13 @@ public abstract class X25519 {
                     e eVar3 = new e();
                     int i14 = 0;
                     for (int i15 = 32; i15 < 96; i15++) {
-                        d dVar6 = dVarArr[i15];
-                        int[] iArr11 = dVar6.a;
-                        l7.E(iArr11, dVar6.c, iArr11);
-                        int[] iArr12 = dVar6.b;
-                        l7.E(iArr12, dVar6.c, iArr12);
-                        l7.c(dVar6.b, dVar6.a, eVar3.b, eVar3.a);
-                        l7.E(dVar6.a, dVar6.b, eVar3.c);
+                        d dVaCarLifeFrame = dVarArr[i15];
+                        int[] iArr11 = dVaCarLifeFrame.a;
+                        l7.E(iArr11, dVaCarLifeFrame.c, iArr11);
+                        int[] iArr12 = dVaCarLifeFrame.b;
+                        l7.E(iArr12, dVaCarLifeFrame.c, iArr12);
+                        l7.c(dVaCarLifeFrame.b, dVaCarLifeFrame.a, eVar3.b, eVar3.a);
+                        l7.E(dVaCarLifeFrame.a, dVaCarLifeFrame.b, eVar3.c);
                         int[] iArr13 = eVar3.c;
                         l7.E(iArr13, k, iArr13);
                         l7.G(eVar3.a);
@@ -527,7 +527,7 @@ public abstract class X25519 {
         c6.b(bArr3, iArr3);
         m4.e(iArr2, iArr3, iArr);
         byte[] bArr4 = new byte[64];
-        a2.g(iArr, 0, 16, bArr4, 0);
+        LittleEndianShortCodec.g(iArr, 0, 16, bArr4, 0);
         return c6.e(bArr4);
     }
 
@@ -576,35 +576,35 @@ public abstract class X25519 {
     }
 
     private static boolean e(byte[] bArr) {
-        int iC = a2.c(bArr, 28) & Integer.MAX_VALUE;
+        int iC = LittleEndianShortCodec.c(bArr, 28) & Integer.MAX_VALUE;
         int i2 = b[7] ^ iC;
         int i3 = c[7] ^ iC;
         int i4 = d[7] ^ iC;
         for (int i5 = 6; i5 > 0; i5--) {
-            int iC2 = a2.c(bArr, i5 * 4);
+            int iC2 = LittleEndianShortCodec.c(bArr, i5 * 4);
             iC |= iC2;
             i2 |= b[i5] ^ iC2;
             i3 |= c[i5] ^ iC2;
             i4 |= iC2 ^ d[i5];
         }
-        int iC3 = a2.c(bArr, 0);
-        if (iC == 0 && d3.c(iC3, 1) <= 0) {
+        int iC3 = LittleEndianShortCodec.c(bArr, 0);
+        if (iC == 0 && IntegerMath.c(iC3, 1) <= 0) {
             return false;
         }
-        if (i2 == 0 && d3.c(iC3, b[0] - 1) >= 0) {
+        if (i2 == 0 && IntegerMath.c(iC3, b[0] - 1) >= 0) {
             return false;
         }
         return (((c[0] ^ iC3) | i3) != 0) & (((iC3 ^ d[0]) | i4) != 0);
     }
 
     private static boolean f(byte[] bArr) {
-        int iC = a2.c(bArr, 28) & Integer.MAX_VALUE;
+        int iC = LittleEndianShortCodec.c(bArr, 28) & Integer.MAX_VALUE;
         int[] iArr = b;
         if (iC < iArr[7]) {
             return true;
         }
         int[] iArr2 = new int[8];
-        a2.d(bArr, 0, iArr2, 0, 8);
+        LittleEndianShortCodec.d(bArr, 0, iArr2, 0, 8);
         iArr2[7] = iArr2[7] & Integer.MAX_VALUE;
         return !m4.b(iArr2, iArr);
     }
@@ -718,7 +718,7 @@ public abstract class X25519 {
         }
     }
 
-    private static void r(q2 q2Var, byte[] bArr, byte[] bArr2, byte[] bArr3, int i2, byte[] bArr4, byte b2, byte[] bArr5, int i3, int i4, byte[] bArr6, int i5) {
+    private static void r(q2 q2Var, byte[] bArr, byte[] bArr2, byte[] bArr3, int i2, byte[] bArr4, byte b2, byte[] bArr5, int i3, int i4, byte[] bArCarLifeFrame, int i5) {
         if (bArr4 != null) {
             j(q2Var, b2, bArr4);
         }
@@ -736,8 +736,8 @@ public abstract class X25519 {
         q2Var.b(bArr5, i3, i4);
         q2Var.a(bArr, 0);
         byte[] bArrA = a(bArrE, c6.e(bArr), bArr2);
-        System.arraycopy(bArr7, 0, bArr6, i5, 32);
-        System.arraycopy(bArrA, 0, bArr6, i5 + 32, 32);
+        System.arraycopy(bArr7, 0, bArCarLifeFrame, i5, 32);
+        System.arraycopy(bArrA, 0, bArCarLifeFrame, i5 + 32, 32);
     }
 
     private static void s(byte[] bArr, int i2, byte[] bArr2, int i3, byte[] bArr3, byte b2, byte[] bArr4, int i4, int i5, byte[] bArr5, int i6) {
@@ -746,12 +746,12 @@ public abstract class X25519 {
             return;
         }
         q2 q2VarH = h();
-        byte[] bArr6 = new byte[64];
+        byte[] bArCarLifeFrame = new byte[64];
         q2VarH.b(bArr, i2, 32);
-        q2VarH.a(bArr6, 0);
+        q2VarH.a(bArCarLifeFrame, 0);
         byte[] bArr7 = new byte[32];
-        K(bArr6, 0, bArr7);
-        r(q2VarH, bArr6, bArr7, bArr2, i3, bArr3, b2, bArr4, i4, i5, bArr5, i6);
+        K(bArCarLifeFrame, 0, bArr7);
+        r(q2VarH, bArCarLifeFrame, bArr7, bArr2, i3, bArr3, b2, bArr4, i4, i5, bArr5, i6);
     }
 
     private static boolean t(byte[] bArr, int i2, h hVar, byte[] bArr2, byte b2, byte[] bArr3, int i3, int i4) {
@@ -891,7 +891,7 @@ public abstract class X25519 {
         int[] iArr3 = bVar.a;
         int[] iArr4 = bVar.b;
         int[] iArr5 = gVar.a;
-        int[] iArr6 = bVar.d;
+        int[] iArCarLifeFrame = bVar.d;
         int[] iArr7 = bVar.e;
         if (z) {
             iArr2 = iArr3;
@@ -905,10 +905,10 @@ public abstract class X25519 {
         l7.E(iArr2, eVar.b, iArr2);
         l7.E(bVar.d, bVar.e, iArr5);
         l7.E(iArr5, eVar.c, iArr5);
-        l7.c(iArr4, iArr3, iArr7, iArr6);
+        l7.c(iArr4, iArr3, iArr7, iArCarLifeFrame);
         l7.c(bVar.c, iArr5, iArr2, iArr);
         l7.E(iArr3, iArr4, bVar.c);
-        l7.E(iArr3, iArr6, bVar.a);
+        l7.E(iArr3, iArCarLifeFrame, bVar.a);
         l7.E(iArr4, iArr7, bVar.b);
     }
 }

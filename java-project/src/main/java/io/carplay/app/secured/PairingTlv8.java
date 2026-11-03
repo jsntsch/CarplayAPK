@@ -93,7 +93,7 @@ public final class PairingTlv8 {
         void c(b bVar) throws IOException;
     }
 
-    public static final class d {
+    public static final class Srp3072 {
         static final BigInteger e = new BigInteger("FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E088A67CC74020BBEA63B139B22514A08798E3404DDEF9519B3CD3A431B302B0A6DF25F14374FE1356D6D51C245E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7EDEE386BFB5A899FA5AE9F24117C4B1FE649286651ECE45B3DC2007CB8A163BF0598DA48361C55D39A69163FA8FD24CF5F83655D23DCA3AD961C62F356208552BB9ED529077096966D670C354E4ABC9804F1746C08CA18217C32905E462E36CE3BE39E772C180E86039B2783A2EC07A28FB5C55DF06F4C52C9DE2BCBF6955817183995497CEA956AE515D2261898FA051015728E5A8AAAC42DAD33170D04507A33A85521ABDF1CBA64ECFB850458DBEF0A8AEA71575D060C7DB3970F85A6E1E4C7ABF5AE8CDB0933D71E8C94E04A25619DCEE3D2261AD2EE6BF12FFA06D98A0864D87602733EC86A64521F2B18177B200CBBE117577A615D6C770988C0BAD946E208E24FA074E5AB3143DB5BFCE0FD108E4B82D120A93AD2CAFFFFFFFFFFFFFFFF", 16);
         static final BigInteger f = BigInteger.valueOf(5);
         final byte[] a;
@@ -101,7 +101,7 @@ public final class PairingTlv8 {
         final byte[] c;
         final byte[] d;
 
-        public d(byte[] bArr, byte[] bArr2, String str) throws GeneralSecurityException {
+        public Srp3072(byte[] bArr, byte[] bArr2, String str) throws GeneralSecurityException {
             BigInteger bigIntegerA = a(bArr2);
             if (bigIntegerA.signum() != 0) {
                 BigInteger bigInteger = e;
@@ -160,7 +160,7 @@ public final class PairingTlv8 {
     }
 
     private b c(EventChannel eventChannel, String str, Map<Integer, byte[]> map) throws GeneralSecurityException, IOException {
-        d dVar = new d(k(map, 2, 16, 64), k(map, 3, 384, 384), str);
+        Srp3072 dVar = new Srp3072(k(map, 2, 16, 64), k(map, 3, 384, 384), str);
         if (!MessageDigest.isEqual(k(e(eventChannel, "/pair-setup", m(6, new byte[]{3}, 3, dVar.d, 4, dVar.b), 4), 4, 64, 64), dVar.c)) {
             throw new GeneralSecurityException("Accessory SRP proof does not match");
         }
@@ -212,7 +212,7 @@ public final class PairingTlv8 {
                 return null;
             }
             if (linkedHashMap.containsKey(Integer.valueOf(i5)) && (i != i5 || i3 != 255)) {
-                SyntheticRefs.c(w1.d("Duplicate nonfragment TLV field ", i5));
+                SyntheticRefs.c(ProtoMessageBase.d("Duplicate nonfragment TLV field ", i5));
                 return null;
             }
             ((ByteArrayOutputStream) linkedHashMap.computeIfAbsent(Integer.valueOf(i5), new r(3))).write(bArr, i6, i7);
@@ -238,7 +238,7 @@ public final class PairingTlv8 {
         if (bArr2 != null && bArr2.length == 1 && (bArr2[0] & 255) == i) {
             return mapD;
         }
-        SyntheticRefs.c(w1.d("Unexpected pairing state; expected ", i));
+        SyntheticRefs.c(ProtoMessageBase.d("Unexpected pairing state; expected ", i));
         return null;
     }
 

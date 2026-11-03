@@ -2,8 +2,8 @@ package org.bouncycastle.crypto.params;
 
 import io.carplay.app.secured.SyntheticRefs;
 import io.carplay.app.secured.X25519;
-import io.carplay.app.secured.e;
-import io.carplay.app.secured.f;
+import io.carplay.app.secured.ByteArrays;
+import io.carplay.app.secured.AsymmetricKeyParameter;
 import io.carplay.app.secured.l6;
 import java.io.EOFException;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.io.InputStream;
 import java.security.SecureRandom;
 
 /* JADX INFO: loaded from: classes.dex */
-public final class Ed25519PrivateKeyParameters extends f {
+public final class Ed25519PrivateKeyParameters extends AsymmetricKeyParameter {
     public static final int KEY_SIZE = 32;
     public static final int SIGNATURE_SIZE = 64;
     private Ed25519PublicKeyParameters cachedPublicKey;
@@ -54,7 +54,7 @@ public final class Ed25519PrivateKeyParameters extends f {
     }
 
     public byte[] getEncoded() {
-        return e.d(this.data);
+        return ByteArrays.d(this.data);
     }
 
     public void sign(int i, byte[] bArr, byte[] bArr2, int i2, int i3, byte[] bArr3, int i4) {

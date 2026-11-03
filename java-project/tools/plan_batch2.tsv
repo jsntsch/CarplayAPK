@@ -1,0 +1,9 @@
+io.carplay.app.prototype.g	ReleaseCheckTask
+io.carplay.app.prototype.q	InstalledPackageIdentity
+io.carplay.app.prototype.r	BluetoothAdapterResolver
+io.carplay.app.prototype.v	NetworkTransportDescriber
+io.carplay.app.prototype.w	NetworkSelector
+io.carplay.app.secured.d3	IntegerMath
+io.carplay.app.secured.h1	ProtoFieldAccessor
+io.carplay.app.secured.a2	LittleEndianShortCodec
+io.carplay.app.secured.y4	LittleEndianIntCodec

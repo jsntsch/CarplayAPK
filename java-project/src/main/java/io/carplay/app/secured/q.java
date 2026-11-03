@@ -15,9 +15,9 @@ public final /* synthetic */ class q implements ToIntFunction {
     public final int applyAsInt(Object obj) {
         switch (this.a) {
             case 0:
-                return s.m((s.a) obj);
-            case p1.c /* 1 */:
-                return ((x.c) obj).p();
+                return AudioCapabilities.m((AudioCapabilities.a) obj);
+            case AudioSourceCapability.c /* 1 */:
+                return ((HidCapabilities.c) obj).p();
             default:
                 return ((Integer) obj).intValue();
         }

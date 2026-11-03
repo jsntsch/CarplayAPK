@@ -22,13 +22,13 @@ public final /* synthetic */ class t6 implements Consumer {
             case 0:
                 pairingSession.S1((String) obj);
                 break;
-            case p1.c /* 1 */:
+            case AudioSourceCapability.c /* 1 */:
                 pairingSession.U0((BluetoothSocket) obj);
                 break;
             case 2:
                 pairingSession.S1((String) obj);
                 break;
-            case p1.d /* 3 */:
+            case AudioSourceCapability.d /* 3 */:
                 pairingSession.f1((BluetoothSocket) obj);
                 break;
             default:

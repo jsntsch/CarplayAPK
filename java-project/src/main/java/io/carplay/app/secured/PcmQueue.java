@@ -24,7 +24,7 @@ public final class PcmQueue implements AutoCloseable {
     private boolean j;
 
     private PcmQueue(int i, int i2, long j, int i3, boolean z) throws IOException {
-        if (s.v(i, i2, 16) == 0 || j < 0) {
+        if (AudioCapabilities.v(i, i2, 16) == 0 || j < 0) {
             throw f("PCM_QUEUE_FORMAT");
         }
         if (i3 < 1 || (i3 > 352 && i3 != 1024)) {

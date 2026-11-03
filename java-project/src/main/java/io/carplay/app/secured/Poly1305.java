@@ -46,11 +46,11 @@ public class Poly1305 implements l3 {
                 this.o[i2] = 0;
             }
         }
-        long jF = y4.f(this.o, 0);
+        long jF = LittleEndianIntCodec.f(this.o, 0);
         long j = jF & 4294967295L;
-        long jF2 = ((long) y4.f(this.o, 4)) & 4294967295L;
-        long jF3 = ((long) y4.f(this.o, 8)) & 4294967295L;
-        long jF4 = 4294967295L & ((long) y4.f(this.o, 12));
+        long jF2 = ((long) LittleEndianIntCodec.f(this.o, 4)) & 4294967295L;
+        long jF3 = ((long) LittleEndianIntCodec.f(this.o, 8)) & 4294967295L;
+        long jF4 = 4294967295L & ((long) LittleEndianIntCodec.f(this.o, 12));
         int i3 = (int) (((long) this.q) + (jF & 67108863));
         this.q = i3;
         this.r = (int) (((long) this.r) + ((((jF2 << 32) | j) >>> 26) & 67108863));
@@ -83,10 +83,10 @@ public class Poly1305 implements l3 {
             SyntheticRefs.b("Poly1305 key must be 256 bits.");
             return;
         }
-        int iF = y4.f(bArr, 0);
-        int iF2 = y4.f(bArr, 4);
-        int iF3 = y4.f(bArr, 8);
-        int iF4 = y4.f(bArr, 12);
+        int iF = LittleEndianIntCodec.f(bArr, 0);
+        int iF2 = LittleEndianIntCodec.f(bArr, 4);
+        int iF3 = LittleEndianIntCodec.f(bArr, 8);
+        int iF4 = LittleEndianIntCodec.f(bArr, 12);
         this.b = 67108863 & iF;
         int i = ((iF >>> 26) | (iF2 << 6)) & 67108611;
         this.c = i;
@@ -100,16 +100,16 @@ public class Poly1305 implements l3 {
         this.h = i2 * 5;
         this.i = i3 * 5;
         this.j = i4 * 5;
-        this.k = y4.f(bArr, 16);
-        this.l = y4.f(bArr, 4 + 16);
-        this.m = y4.f(bArr, 8 + 16);
-        this.n = y4.f(bArr, 16 + 12);
+        this.k = LittleEndianIntCodec.f(bArr, 16);
+        this.l = LittleEndianIntCodec.f(bArr, 4 + 16);
+        this.m = LittleEndianIntCodec.f(bArr, 8 + 16);
+        this.n = LittleEndianIntCodec.f(bArr, 16 + 12);
     }
 
     @Override // io.carplay.app.secured.l3
     public int a(byte[] bArr, int i) {
         if (i + 16 > bArr.length) {
-            throw new x4("Output buffer is too short.");
+            throw new OutputLengthException("Output buffer is too short.");
         }
         if (this.p > 0) {
             g();
@@ -148,12 +148,12 @@ public class Poly1305 implements l3 {
         long j2 = (((long) ((i23 >>> 6) | (i24 << 20))) & 4294967295L) + (((long) this.l) & 4294967295L);
         long j3 = (((long) ((i24 >>> 12) | (i25 << 14))) & 4294967295L) + (((long) this.m) & 4294967295L);
         long j4 = (((long) ((i25 >>> 18) | (i26 << 8))) & 4294967295L) + (((long) this.n) & 4294967295L);
-        y4.d((int) j, bArr, i);
+        LittleEndianIntCodec.d((int) j, bArr, i);
         long j5 = j2 + (j >>> 32);
-        y4.d((int) j5, bArr, i + 4);
+        LittleEndianIntCodec.d((int) j5, bArr, i + 4);
         long j6 = j3 + (j5 >>> 32);
-        y4.d((int) j6, bArr, i + 8);
-        y4.d((int) (j4 + (j6 >>> 32)), bArr, i + 12);
+        LittleEndianIntCodec.d((int) j6, bArr, i + 8);
+        LittleEndianIntCodec.d((int) (j4 + (j6 >>> 32)), bArr, i + 12);
         h();
         return 16;
     }

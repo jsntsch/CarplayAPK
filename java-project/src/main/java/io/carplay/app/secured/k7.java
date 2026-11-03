@@ -14,7 +14,7 @@ public abstract class k7 {
 
     public static boolean a(byte[] bArr, int i, byte[] bArr2, int i2, byte[] bArr3, int i3) {
         g(bArr, i, bArr2, i2, bArr3, i3);
-        return !e.a(bArr3, i3, 32);
+        return !ByteArrays.a(bArr3, i3, 32);
     }
 
     public static void b(byte[] bArr) {

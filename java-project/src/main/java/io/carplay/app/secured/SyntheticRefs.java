@@ -25,8 +25,8 @@ public final /* synthetic */ class SyntheticRefs implements EventChannelConnecto
         throw new IllegalStateException(str);
     }
 
-    public static /* synthetic */ void f(String str) throws r5 {
-        throw new r5(str);
+    public static /* synthetic */ void f(String str) throws ProtocolIOException {
+        throw new ProtocolIOException(str);
     }
 
     @Override // io.carplay.app.secured.EventChannelConnector.b

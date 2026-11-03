@@ -11,7 +11,7 @@ import java.util.Arrays;
  * <p>命名依据：ICCOA callback size / missing sink
  */
 public final class IccoaBridge {
-    private final g4 a;
+    private final MediaFormat a;
     private long b;
     private long c;
     private long d;
@@ -19,15 +19,15 @@ public final class IccoaBridge {
     private ConfigState f;
     private ConfigState g;
     private String h;
-    private g4.g i;
+    private MediaFormat.g i;
     private String j;
     private String k;
     private int l;
     private int m;
     private int n;
     private int o;
-    private g4.h p;
-    private g4.e q;
+    private MediaFormat.VideoMime p;
+    private MediaFormat.PcmFormat q;
     private int r;
     private long s;
     private long t;
@@ -50,7 +50,7 @@ public final class IccoaBridge {
         DELTA
     }
 
-    public IccoaBridge(g4 g4Var) {
+    public IccoaBridge(MediaFormat g4Var) {
         ConfigState dVar = ConfigState.UNCONFIGURED;
         this.f = dVar;
         this.g = dVar;
@@ -106,7 +106,7 @@ public final class IccoaBridge {
         return (i >= 1 && i <= 7) || i == 16;
     }
 
-    public synchronized void a(long j, String str, g4.g gVar) {
+    public synchronized void a(long j, String str, MediaFormat.g gVar) {
         if (j >= 1 && str != null) {
             if (!str.isEmpty() && str.length() <= 512 && gVar != null) {
                 if (this.b != 0 || j <= this.c) {
@@ -126,7 +126,7 @@ public final class IccoaBridge {
         if (i != this.r || j < 0 || i2 % this.q.h() != 0) {
             throw new IllegalStateException("ICCOA PCM source/format/alignment/clock");
         }
-        return new a(bVar, new g4.c(bVar.b, this.i, f(bArr, i2), j, false), 0);
+        return new a(bVar, new MediaFormat.c(bVar.b, this.i, f(bArr, i2), j, false), 0);
     }
 
     public synchronized b c(long j, String str) throws Throwable {
@@ -151,7 +151,7 @@ public final class IccoaBridge {
         if (i != 1 || eVar == null || eVar == KeyState.UNKNOWN || j < 0) {
             throw new IllegalStateException("ICCOA video type/format/clock");
         }
-        return new f(gVar, new g4.c(gVar.b, this.i, f(bArr, i2), j, eVar == KeyState.KEY), 0);
+        return new f(gVar, new MediaFormat.c(gVar.b, this.i, f(bArr, i2), j, eVar == KeyState.KEY), 0);
     }
 
     public synchronized g e(long j, String str) throws Throwable {
@@ -171,12 +171,12 @@ public final class IccoaBridge {
         }
     }
 
-    public synchronized void g(b bVar, int i, g4.e eVar, TimeBase cVar, boolean z) {
+    public synchronized void g(b bVar, int i, MediaFormat.PcmFormat eVar, TimeBase cVar, boolean z) {
         q(bVar);
         if (this.g != ConfigState.UNCONFIGURED) {
             throw new IllegalStateException("audio epoch configuring/configured/invalid; new initialization required");
         }
-        if (!s(i) || !"audio/pcm".equals(this.k) || eVar == null || eVar.n() == g4.a.MICROPHONE || eVar.m() != this.n || eVar.i() != this.o || cVar != TimeBase.MICROSECONDS || !z) {
+        if (!s(i) || !"audio/pcm".equals(this.k) || eVar == null || eVar.n() == MediaFormat.a.MICROPHONE || eVar.m() != this.n || eVar.i() != this.o || cVar != TimeBase.MICROSECONDS || !z) {
             throw new IllegalStateException("ICCOA PCM/type/clock unverified");
         }
         eVar.l();
@@ -206,7 +206,7 @@ public final class IccoaBridge {
         }
     }
 
-    public synchronized void h(g gVar, g4.h hVar, TimeBase cVar, boolean z) {
+    public synchronized void h(g gVar, MediaFormat.VideoMime hVar, TimeBase cVar, boolean z) {
         try {
             r(gVar);
             if (this.f != ConfigState.UNCONFIGURED) {
@@ -375,14 +375,14 @@ public final class IccoaBridge {
 
     public static final class a {
         private final b a;
-        private final g4.c b;
+        private final MediaFormat.c b;
 
-        private a(b bVar, g4.c cVar) {
+        private a(b bVar, MediaFormat.c cVar) {
             this.a = bVar;
             this.b = cVar;
         }
 
-        public g4.c c() {
+        public MediaFormat.c c() {
             return this.b;
         }
 
@@ -390,21 +390,21 @@ public final class IccoaBridge {
             return this.a;
         }
 
-        public /* synthetic */ a(b bVar, g4.c cVar, int i) {
+        public /* synthetic */ a(b bVar, MediaFormat.c cVar, int i) {
             this(bVar, cVar);
         }
     }
 
     public static final class f {
         private final g a;
-        private final g4.c b;
+        private final MediaFormat.c b;
 
-        private f(g gVar, g4.c cVar) {
+        private f(g gVar, MediaFormat.c cVar) {
             this.a = gVar;
             this.b = cVar;
         }
 
-        public g4.c c() {
+        public MediaFormat.c c() {
             return this.b;
         }
 
@@ -412,7 +412,7 @@ public final class IccoaBridge {
             return this.a;
         }
 
-        public /* synthetic */ f(g gVar, g4.c cVar, int i) {
+        public /* synthetic */ f(g gVar, MediaFormat.c cVar, int i) {
             this(gVar, cVar);
         }
     }

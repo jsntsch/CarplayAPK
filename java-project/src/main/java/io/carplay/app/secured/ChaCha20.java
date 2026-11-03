@@ -12,7 +12,7 @@ import org.bouncycastle.crypto.params.KeyParameter;
  * <p>命名依据：expand 16-byte k / 32-byte k
  */
 public abstract class ChaCha20 {
-    private static final int[] j = y4.i(m6.a("expand 16-byte kexpand 32-byte k"), 0, 8);
+    private static final int[] j = LittleEndianIntCodec.i(m6.a("expand 16-byte kexpand 32-byte k"), 0, 8);
     protected static final byte[] k = m6.a("expand 32-byte k");
     protected static final byte[] l = m6.a("expand 16-byte k");
     protected int a;
@@ -90,7 +90,7 @@ public abstract class ChaCha20 {
             }
             byte[] key = ((KeyParameter) cipherParametersB).getKey();
             l(key, bArrA);
-            i2.a(new p2(c(), key.length * 8, cipherParameters, o6.a(z)));
+            CryptoServicesRegistrar.a(new p2(c(), key.length * 8, cipherParameters, o6.a(z)));
         }
         i();
         this.f = true;
@@ -110,13 +110,13 @@ public abstract class ChaCha20 {
             throw new IllegalStateException(c() + " not initialised");
         }
         if (i + i2 > bArr.length) {
-            throw new n2("input buffer too short");
+            throw new DataLengthException("input buffer too short");
         }
         if (i3 + i2 > bArr2.length) {
-            throw new x4("output buffer too short");
+            throw new OutputLengthException("output buffer too short");
         }
         if (f(i2)) {
-            throw new d4("2^70 byte limit per IV would be exceeded; Change IV");
+            throw new MaxBytesExceededException("2^70 byte limit per IV would be exceeded; Change IV");
         }
         for (int i4 = 0; i4 < i2; i4++) {
             byte[] bArr3 = this.e;

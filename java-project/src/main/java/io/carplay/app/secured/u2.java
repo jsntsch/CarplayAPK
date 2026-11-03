@@ -21,7 +21,7 @@ public final /* synthetic */ class u2 implements View.OnClickListener {
             case 0:
                 ((HelpActivity) obj).d(view);
                 break;
-            case p1.c /* 1 */:
+            case AudioSourceCapability.c /* 1 */:
                 ((HelpActivity) obj).e(view);
                 break;
             default:

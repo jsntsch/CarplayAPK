@@ -50,7 +50,7 @@ public final class MfiCertificateVerifier {
     private boolean G0;
     private int H;
     private boolean H0;
-    private m5 I;
+    private RsaPkcs1Cipher I;
     private long I0;
     private int J;
     private final j5 J0;
@@ -59,7 +59,7 @@ public final class MfiCertificateVerifier {
     private int L;
     private boolean L0;
     private int M;
-    private i5 M0;
+    private DeviceMetadataStore M0;
     private int N;
     private Iap2Csm.a N0;
     private int O;
@@ -75,7 +75,7 @@ public final class MfiCertificateVerifier {
     private int Y;
     private int Z;
     private final c a;
-    private int a0;
+    private int HidCommandSender;
     private boolean b;
     private int b0;
     private boolean c;
@@ -88,7 +88,7 @@ public final class MfiCertificateVerifier {
     private boolean f0;
     private final String g;
     private int g0;
-    private final Iap2Csm.f h;
+    private final Iap2Csm.Iap2FrameValidator h;
     private int h0;
     private Iap2Csm.d i;
     private int i0;
@@ -121,11 +121,11 @@ public final class MfiCertificateVerifier {
     private boolean w;
     private int w0;
     private boolean x;
-    private boolean x0;
+    private boolean HidBackParser;
     private byte[] y;
-    private boolean y0;
+    private boolean HidConsumerParser;
     private int z;
-    private String z0;
+    private String HidDescriptorParser;
 
     public enum DetectionState {
         COMPLETE_DETECTION_WITHOUT_LINK
@@ -142,7 +142,7 @@ public final class MfiCertificateVerifier {
 
         void b(Iap2Csm.a aVar) throws IOException;
 
-        default i5 c() throws IOException {
+        default DeviceMetadataStore c() throws IOException {
             return null;
         }
 
@@ -164,8 +164,8 @@ public final class MfiCertificateVerifier {
         default void i(Iap2Csm.a aVar) {
         }
 
-        default g5 j() {
-            return g5.j();
+        default DeviceTimeRange j() {
+            return DeviceTimeRange.j();
         }
 
         default void k(Iap2Csm.a aVar) {
@@ -189,7 +189,7 @@ public final class MfiCertificateVerifier {
         }
     }
 
-    public static final class e extends w1 {
+    public static final class e extends ProtoMessageBase {
         private final String a;
 
         public e(String str) {
@@ -216,7 +216,7 @@ public final class MfiCertificateVerifier {
             Object[] objArr = {this.a};
             String[] strArrSplit = "a".length() == 0 ? new String[0] : "a".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(e.class, sb, "[");
+            ProtoMessageBase.f(e.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");
@@ -231,7 +231,7 @@ public final class MfiCertificateVerifier {
     }
 
     public MfiCertificateVerifier(String str, String str2, boolean z, c cVar) {
-        this.h = new Iap2Csm.f();
+        this.h = new Iap2Csm.Iap2FrameValidator();
         this.i = new Iap2Csm.d();
         this.j = new ArrayDeque<>();
         this.k = new ArrayDeque<>();
@@ -251,7 +251,7 @@ public final class MfiCertificateVerifier {
         this.M = -2;
         this.Y = -1;
         this.Z = -1;
-        this.a0 = -1;
+        this.HidCommandSender = -1;
         this.b0 = -1;
         this.d0 = "NONE";
         this.e0 = "NONE";
@@ -283,7 +283,7 @@ public final class MfiCertificateVerifier {
 
     private void D(String str) {
         this.d0 = str;
-        B(w1.e("IAP2_RX_ROUTE decision=", str));
+        B(ProtoMessageBase.e("IAP2_RX_ROUTE decision=", str));
     }
 
     /* JADX INFO: Access modifiers changed from: private */
@@ -455,7 +455,7 @@ public final class MfiCertificateVerifier {
                         return;
                     }
                     this.p = i6;
-                    B(w1.d("IAP2_LSP_SELECTED_CONTROL sid=", i6));
+                    B(ProtoMessageBase.d("IAP2_LSP_SELECTED_CONTROL sid=", i6));
                     this.a.h(this.w ? "IAP2_LSP_MODE_ZERO_ACK" : "IAP2_LSP_MODE_STANDARD_ACK");
                     return;
                 }
@@ -473,7 +473,7 @@ public final class MfiCertificateVerifier {
     }
 
     private void W() throws IOException {
-        g5 g5VarJ;
+        DeviceTimeRange g5VarJ;
         if (this.F0) {
             return;
         }
@@ -673,12 +673,12 @@ public final class MfiCertificateVerifier {
             }
             byte[] bArrV4 = Iap2Csm.v(cVar.b, 0);
             try {
-                m5 m5VarF = m5.f(bArrV4);
+                RsaPkcs1Cipher m5VarF = RsaPkcs1Cipher.f(bArrV4);
                 this.I = m5VarF;
                 if (m5VarF.d()) {
                     this.a.h("MFI_CERTIFICATE_EXPIRY_COMPATIBLE fresh_proof_required=true trust_policy_unchanged=true");
                 }
-                String str = this.z0;
+                String str = this.HidDescriptorParser;
                 if (str == null) {
                     str = this.e;
                 }
@@ -696,11 +696,11 @@ public final class MfiCertificateVerifier {
             } catch (GeneralSecurityException e2) {
                 String strQ = q(e2);
                 this.a.h("MFI_CERTIFICATE_REJECTED reason=" + strQ + " encoded_bytes=" + bArrV4.length + " container=" + ((bArrV4.length <= 0 || bArrV4[0] != 48) ? (bArrV4.length <= 0 || bArrV4[0] != 45) ? "OTHER" : "TEXT_LIKE" : "ASN1_LIKE"));
-                throw new IOException(w1.e("MFI_CERTIFICATE_INVALID reason=", strQ), e2);
+                throw new IOException(ProtoMessageBase.e("MFI_CERTIFICATE_INVALID reason=", strQ), e2);
             }
         }
         if (i2 == 43523) {
-            m5 m5Var = this.I;
+            RsaPkcs1Cipher m5Var = this.I;
             if (m5Var == null || this.t) {
                 SyntheticRefs.c("MFI_RESPONSE_OUT_OF_ORDER");
                 return;
@@ -840,7 +840,7 @@ public final class MfiCertificateVerifier {
     }
 
     private void b0() throws IOException {
-        this.z0 = this.I.e();
+        this.HidDescriptorParser = this.I.e();
         this.w0++;
         c cVar = this.a;
         cVar.h("IAP2_DETECT_RESTART attempt=1 max=1 fresh_proof_required=true deadline_extended=false retired_tx=" + j0(this.y == null ? -2 : this.A) + " retired_availability_reannouncements=" + this.u0);
@@ -855,7 +855,7 @@ public final class MfiCertificateVerifier {
         this.i = new Iap2Csm.d();
         this.r = false;
         this.v = false;
-        this.x0 = true;
+        this.HidBackParser = true;
         this.s = false;
         this.t = false;
         this.I = null;
@@ -1124,7 +1124,7 @@ public final class MfiCertificateVerifier {
         int i4 = this.V;
         int i5 = this.Y;
         int i6 = this.Z;
-        int i7 = this.a0;
+        int i7 = this.HidCommandSender;
         int i8 = this.b0;
         int i9 = this.c0;
         String str2 = this.d0;
@@ -1215,12 +1215,12 @@ public final class MfiCertificateVerifier {
                         if (this.v0 >= 2 && R() && this.t && !this.u && this.n0 == null && this.s0 >= 0 && (this.y == null || this.A == 17152)) {
                             if (this.w0 == 0) {
                                 b0();
-                            } else if (!this.y0) {
-                                this.y0 = true;
+                            } else if (!this.HidConsumerParser) {
+                                this.HidConsumerParser = true;
                                 this.a.h("IAP2_DETECT_RESTART_LIMIT max=1");
                             }
                         }
-                    } else if (!this.x0 && !z && !this.v) {
+                    } else if (!this.HidBackParser && !z && !this.v) {
                         m0((byte[]) Iap2Csm.a.clone());
                         this.S = d0(this.S, 1);
                     }
@@ -1232,7 +1232,7 @@ public final class MfiCertificateVerifier {
                     int i5 = bVar.b;
                     this.Z = i5;
                     int i6 = bVar.c;
-                    this.a0 = i6;
+                    this.HidCommandSender = i6;
                     int i7 = bVar.d;
                     this.b0 = i7;
                     this.c0 = bArrB == null ? 0 : bArrB.length;
@@ -1249,7 +1249,7 @@ public final class MfiCertificateVerifier {
                         SyntheticRefs.c("IAP2_EXTENDED_ACK_RECOVERY_REQUIRED");
                         return;
                     }
-                    if (this.x0 && (i8 & 128) == 0) {
+                    if (this.HidBackParser && (i8 & 128) == 0) {
                         D("RETIRED_UNTIL_SYN");
                     } else {
                         this.v0 = 0;
@@ -1272,7 +1272,7 @@ public final class MfiCertificateVerifier {
                                 n0((byte[]) next.j().clone(), -1, 0);
                             }
                         }
-                        boolean z4 = this.H0 && !this.x0 && !this.r && !this.v && this.k.isEmpty() && bVar.a == 192 && this.y != null && this.A == -1 && bVar.c == this.z;
+                        boolean z4 = this.H0 && !this.HidBackParser && !this.r && !this.v && this.k.isEmpty() && bVar.a == 192 && this.y != null && this.A == -1 && bVar.c == this.z;
                         if ((bVar.a & 64) != 0 && this.y != null && bVar.c == this.z) {
                             int i9 = this.A;
                             this.L = i9;
@@ -1301,12 +1301,12 @@ public final class MfiCertificateVerifier {
                                 SyntheticRefs.c("IAP2_LINK_NEGOTIATION_LIMIT");
                                 return;
                             }
-                            if (this.H0 && !this.x0 && !this.v && this.k.isEmpty() && bVar.a == 192 && !z4) {
+                            if (this.H0 && !this.HidBackParser && !this.v && this.k.isEmpty() && bVar.a == 192 && !z4) {
                                 SyntheticRefs.c("IAP2_INITIAL_SYN_ACK_MISMATCH");
                                 return;
                             }
                             U(bArrB);
-                            this.x0 = false;
+                            this.HidBackParser = false;
                             int i11 = bVar.b;
                             this.o = i11;
                             if (z4) {
@@ -1372,9 +1372,9 @@ public final class MfiCertificateVerifier {
                                     g();
                                     if (bVar.d != this.p) {
                                         this.V = d0(this.V, 1);
-                                        D(w1.d("OTHER_SESSION expected_sid=", this.p));
+                                        D(ProtoMessageBase.d("OTHER_SESSION expected_sid=", this.p));
                                     } else {
-                                        D(w1.d("CONTROL_ASSEMBLY csm_pending_before=", this.i.d()));
+                                        D(ProtoMessageBase.d("CONTROL_ASSEMBLY csm_pending_before=", this.i.d()));
                                         try {
                                             List<Iap2Csm.c> listC2 = this.i.c(bArrB);
                                             B("IAP2_RX_ASSEMBLY layer=CSM decoded_messages=" + listC2.size() + " pending_bytes=" + this.i.d() + " expected_bytes=" + this.i.b());
@@ -1407,7 +1407,7 @@ public final class MfiCertificateVerifier {
     }
 
     public e h0() {
-        if (!this.C0 && R() && this.r && this.s && this.t && this.F0 && this.I != null && !this.u && this.n0 == null && this.q0 && this.s0 >= 0 && this.G >= 1 && this.y == null && this.j.isEmpty() && !this.x0 && !A()) {
+        if (!this.C0 && R() && this.r && this.s && this.t && this.F0 && this.I != null && !this.u && this.n0 == null && this.q0 && this.s0 >= 0 && this.G >= 1 && this.y == null && this.j.isEmpty() && !this.HidBackParser && !A()) {
             return new e(this.I.e());
         }
         return null;
@@ -1420,7 +1420,7 @@ public final class MfiCertificateVerifier {
                 int i = this.B + 1;
                 this.B = i;
                 if (i > this.D) {
-                    SyntheticRefs.c(w1.e("IAP2_ACK_TIMEOUT_", j0(this.A)));
+                    SyntheticRefs.c(ProtoMessageBase.e("IAP2_ACK_TIMEOUT_", j0(this.A)));
                     return;
                 } else {
                     n0((byte[]) bArr.clone(), this.A, this.B);
@@ -1529,7 +1529,7 @@ public final class MfiCertificateVerifier {
         boolean z3 = this.q0 && R();
         int i7 = this.u0;
         int i8 = this.w0;
-        boolean z4 = this.x0;
+        boolean z4 = this.HidBackParser;
         int i9 = this.G;
         int i10 = this.H;
         // smali: iget v15,A; const/16 0x4300; if-ne -> false，否则 true，汇合点只求值一次
@@ -1552,7 +1552,7 @@ public final class MfiCertificateVerifier {
         return "IAP2_FINAL authenticated=" + z2 + " last_tx=" + strJ0 + " last_sent=" + strJ1 + " last_ack=" + strJ2 + " last_rx=" + strJ3 + " rx_bytes=" + i + " tx_bytes=" + i2 + " rx_frames=" + i3 + " tx_frames=" + i4 + " rx_detect=" + i5 + " tx_detect=" + i6 + " waiting=" + str + " modern_only=" + zR + " availability_identifier_present=" + z + " availability_reannouncements=" + i7 + " link_restarts=" + i8 + " awaiting_restart_syn=" + z4 + " availability_complete_deliveries=" + i9 + " availability_link_retries=" + i10 + " start_ack_pending=" + z5 + " startup_order=" + str2;
     }
 
-    public static final class f extends w1 {
+    public static final class f extends ProtoMessageBase {
         private final int a;
         private final int b;
         private final int c;
@@ -1615,7 +1615,7 @@ public final class MfiCertificateVerifier {
             Object[] objArr = {Integer.valueOf(this.a), Integer.valueOf(this.b), Integer.valueOf(this.c), Integer.valueOf(this.d), this.e, this.f};
             String[] strArrSplit = "a;b;c;d;e;f".length() == 0 ? new String[0] : "a;b;c;d;e;f".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(f.class, sb, "[");
+            ProtoMessageBase.f(f.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");

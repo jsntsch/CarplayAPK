@@ -15,7 +15,7 @@ import java.util.function.Consumer;
  * <p>命名依据：AUDIO_RELAY_PROGRESS channel= —— 音频转发进度
  */
 public final class AudioRelay {
-    private final r6.a a;
+    private final CarLifeFrame.a a;
     private final Consumer<String> b;
     private final AtomicLong c = new AtomicLong();
     private final AtomicLong d = new AtomicLong();
@@ -36,7 +36,7 @@ public final class AudioRelay {
     private final AtomicBoolean s = new AtomicBoolean();
 
     public static final class a {
-        private final AtomicLongArray a = new AtomicLongArray(r6.a.values().length);
+        private final AtomicLongArray a = new AtomicLongArray(CarLifeFrame.a.values().length);
 
         /* JADX INFO: renamed from: io.carplay.app.secured.AudioRelay$a$a, reason: collision with other inner class name */
         public enum EnumC0000a {
@@ -54,24 +54,24 @@ public final class AudioRelay {
             Code decompiled incorrectly, please refer to instructions dump.
             To view partially-correct add '--show-bad-code' argument
         */
-        public void a(io.carplay.app.secured.r6.a r11, io.carplay.app.secured.AudioRelay.a.EnumC0000a r12, java.util.function.Consumer<java.lang.String> r13) {
+        public void a(io.carplay.app.secured.CarLifeFrame.a r11, io.carplay.app.secured.AudioRelay.a.EnumC0000a r12, java.util.function.Consumer<java.lang.String> r13) {
             /*
                 r10 = this;
                 int r1 = r11.ordinal()
                 r2 = 1
                 int r0 = r12.ordinal()
-                long r6 = r2 << r0
+                long CarLifeFrame = r2 << r0
             Lc:
                 java.util.concurrent.atomic.AtomicLongArray r0 = r10.a
                 long r2 = r0.get(r1)
-                long r4 = r2 & r6
+                long r4 = r2 & CarLifeFrame
                 r8 = 0
                 int r0 = (r4 > r8 ? 1 : (r4 == r8 ? 0 : -1))
                 if (r0 == 0) goto L1b
                 goto L4e
             L1b:
                 java.util.concurrent.atomic.AtomicLongArray r0 = r10.a
-                long r4 = r2 | r6
+                long r4 = r2 | CarLifeFrame
                 boolean r0 = r0.compareAndSet(r1, r2, r4)
                 if (r0 == 0) goto Lc
                 java.lang.String r10 = java.lang.String.valueOf(r11)     // Catch: java.lang.RuntimeException -> L4e
@@ -91,7 +91,7 @@ public final class AudioRelay {
             L4e:
                 return
             */
-            throw new UnsupportedOperationException("Method not decompiled: io.carplay.app.secured.AudioRelay.a.a(io.carplay.app.secured.r6$a, io.carplay.app.secured.AudioRelay$a$a, java.util.function.Consumer):void");
+            throw new UnsupportedOperationException("Method not decompiled: io.carplay.app.secured.AudioRelay.a.a(io.carplay.app.secured.CarLifeFrame$a, io.carplay.app.secured.AudioRelay$a$a, java.util.function.Consumer):void");
         }
     }
 
@@ -102,8 +102,8 @@ public final class AudioRelay {
         SESSION_GATE
     }
 
-    public AudioRelay(r6.a aVar, Consumer<String> consumer) {
-        if (aVar != r6.a.MEDIA && aVar != r6.a.TTS && aVar != r6.a.VR) {
+    public AudioRelay(CarLifeFrame.a aVar, Consumer<String> consumer) {
+        if (aVar != CarLifeFrame.a.MEDIA && aVar != CarLifeFrame.a.TTS && aVar != CarLifeFrame.a.VR) {
             SyntheticRefs.b("native audio channel required");
             throw null;
         }

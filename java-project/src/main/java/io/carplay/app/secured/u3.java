@@ -21,13 +21,13 @@ public final /* synthetic */ class u3 implements DialogInterface.OnClickListener
             case 0:
                 mainActivity.s1(dialogInterface, i);
                 break;
-            case p1.c /* 1 */:
+            case AudioSourceCapability.c /* 1 */:
                 mainActivity.t1(dialogInterface, i);
                 break;
             case 2:
                 mainActivity.v1(dialogInterface, i);
                 break;
-            case p1.d /* 3 */:
+            case AudioSourceCapability.d /* 3 */:
                 mainActivity.W0(dialogInterface, i);
                 break;
             case 4:

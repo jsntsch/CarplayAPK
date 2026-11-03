@@ -21,7 +21,7 @@ public final /* synthetic */ class x3 implements View.OnClickListener {
             case 0:
                 mainActivity.c1(view);
                 break;
-            case p1.c /* 1 */:
+            case AudioSourceCapability.c /* 1 */:
                 mainActivity.b1(view);
                 break;
             case 2:

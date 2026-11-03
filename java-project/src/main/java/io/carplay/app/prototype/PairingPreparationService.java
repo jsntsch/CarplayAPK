@@ -12,7 +12,7 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import io.carplay.app.secured.a5;
 import io.carplay.app.secured.b5;
-import io.carplay.app.secured.h5;
+import io.carplay.app.secured.BtDiscovery;
 import java.lang.invoke.VarHandle;
 
 /* JADX INFO: loaded from: classes.dex */
@@ -21,14 +21,14 @@ public final class PairingPreparationService extends Service {
     public static final String f = "io.carplus.STOP_PAIRING";
     private static final Object g = new Object();
     private static PairingPreparationService h;
-    private h5 a;
+    private BtDiscovery a;
     private PowerManager.WakeLock b;
     private boolean c;
     private boolean d;
 
     /* JADX INFO: Access modifiers changed from: private */
     public void d() {
-        h5 h5Var;
+        BtDiscovery h5Var;
         synchronized (g) {
             try {
                 this.c = true;
@@ -75,7 +75,7 @@ public final class PairingPreparationService extends Service {
 
     public static boolean f() {
         boolean z;
-        h5 h5Var;
+        BtDiscovery h5Var;
         synchronized (g) {
             try {
                 PairingPreparationService pairingPreparationService = h;
@@ -95,7 +95,7 @@ public final class PairingPreparationService extends Service {
         a5 a5Var = new a5(1);
         a5Var.b = this;
         VarHandle.storeStoreFence();
-        h5 h5Var = new h5(b5Var, a5Var);
+        BtDiscovery h5Var = new BtDiscovery(b5Var, a5Var);
         synchronized (g) {
             try {
                 if (this.c) {
@@ -120,12 +120,12 @@ public final class PairingPreparationService extends Service {
         AppLogger.g(this, str);
     }
 
-    public static h5 i() {
-        h5 h5Var;
+    public static BtDiscovery i() {
+        BtDiscovery h5Var;
         synchronized (g) {
             PairingPreparationService pairingPreparationService = h;
             if (pairingPreparationService != null && (h5Var = pairingPreparationService.a) != null && h5Var.m()) {
-                h5 h5Var2 = pairingPreparationService.a;
+                BtDiscovery h5Var2 = pairingPreparationService.a;
                 pairingPreparationService.a = null;
                 pairingPreparationService.c = true;
                 h = null;

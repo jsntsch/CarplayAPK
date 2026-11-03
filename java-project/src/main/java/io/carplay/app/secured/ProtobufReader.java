@@ -88,7 +88,7 @@ public final class ProtobufReader {
             this.a = bArr;
         }
 
-        public byte[] b(int i) throws r5 {
+        public byte[] b(int i) throws ProtocolIOException {
             if (i >= 0) {
                 byte[] bArr = this.a;
                 int length = bArr.length;
@@ -103,7 +103,7 @@ public final class ProtobufReader {
             return null;
         }
 
-        public long c() throws r5 {
+        public long c() throws ProtocolIOException {
             long j = 0;
             for (int i = 0; i < 10; i++) {
                 int i2 = this.b;
@@ -128,7 +128,7 @@ public final class ProtobufReader {
         }
     }
 
-    public static final class d extends w1 {
+    public static final class d extends ProtoMessageBase {
         private final int a;
         private final int b;
         private final int c;
@@ -176,7 +176,7 @@ public final class ProtobufReader {
             Object[] objArr = {Integer.valueOf(this.a), Integer.valueOf(this.b), Integer.valueOf(this.c)};
             String[] strArrSplit = "a;b;c".length() == 0 ? new String[0] : "a;b;c".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(d.class, sb, "[");
+            ProtoMessageBase.f(d.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");
@@ -193,11 +193,11 @@ public final class ProtobufReader {
     private ProtobufReader() {
     }
 
-    public static e a(byte[] bArr) throws r5 {
+    public static e a(byte[] bArr) throws ProtocolIOException {
         return b(bArr, d.j());
     }
 
-    public static e b(byte[] bArr, d dVar) throws r5 {
+    public static e b(byte[] bArr, d dVar) throws ProtocolIOException {
         byte[] bArr2;
         byte[] bArrB;
         Objects.requireNonNull(bArr);
@@ -237,7 +237,7 @@ public final class ProtobufReader {
                     bArrB = bVar.b((int) jC3);
                 } else {
                     if (i2 != 5) {
-                        SyntheticRefs.f(w1.d("unsupported protobuf wire type ", i2));
+                        SyntheticRefs.f(ProtoMessageBase.d("unsupported protobuf wire type ", i2));
                         return null;
                     }
                     bArrB = bVar.b(4);
@@ -269,16 +269,16 @@ public final class ProtobufReader {
             return cVar;
         }
 
-        private c k(int i, int i2) throws r5 {
+        private c k(int i, int i2) throws ProtocolIOException {
             c cVarB = b(i);
             if (cVarB == null) {
-                SyntheticRefs.f(w1.d("missing protobuf field ", i));
+                SyntheticRefs.f(ProtoMessageBase.d("missing protobuf field ", i));
                 return null;
             }
             if (cVarB.b == i2) {
                 return cVarB;
             }
-            SyntheticRefs.f(w1.d("wrong wire type for field ", i));
+            SyntheticRefs.f(ProtoMessageBase.d("wrong wire type for field ", i));
             return null;
         }
 
@@ -286,7 +286,7 @@ public final class ProtobufReader {
             return b(i) != null;
         }
 
-        public List<e> c(int i, d dVar) throws r5 {
+        public List<e> c(int i, d dVar) throws ProtocolIOException {
             ArrayList arrayList = new ArrayList();
             for (c cVar : this.a) {
                 if (cVar.a == i) {
@@ -300,53 +300,53 @@ public final class ProtobufReader {
             return List.copyOf(arrayList);
         }
 
-        public boolean d(int i, boolean z) throws r5 {
+        public boolean d(int i, boolean z) throws ProtocolIOException {
             return a(i) ? g(i) : z;
         }
 
-        public int e(int i, int i2) throws r5 {
+        public int e(int i, int i2) throws ProtocolIOException {
             return a(i) ? i(i) : i2;
         }
 
-        public String f(int i, String str) throws r5 {
+        public String f(int i, String str) throws ProtocolIOException {
             return a(i) ? j(i) : str;
         }
 
-        public boolean g(int i) throws r5 {
+        public boolean g(int i) throws ProtocolIOException {
             long j = k(i, 0).c;
             if (j == 0 || j == 1) {
                 return j == 1;
             }
-            SyntheticRefs.f(w1.d("invalid bool at field ", i));
+            SyntheticRefs.f(ProtoMessageBase.d("invalid bool at field ", i));
             return false;
         }
 
-        public byte[] h(int i) throws r5 {
+        public byte[] h(int i) throws ProtocolIOException {
             return (byte[]) k(i, 2).d.clone();
         }
 
-        public int i(int i) throws r5 {
+        public int i(int i) throws ProtocolIOException {
             long j = k(i, 0).c;
             if (j <= 2147483647L && j >= -2147483648L) {
                 return (int) j;
             }
-            SyntheticRefs.f(w1.d("int32 overflow at field ", i));
+            SyntheticRefs.f(ProtoMessageBase.d("int32 overflow at field ", i));
             return 0;
         }
 
-        public String j(int i) throws r5 {
+        public String j(int i) throws ProtocolIOException {
             try {
                 CharsetDecoder charsetDecoderNewDecoder = StandardCharsets.UTF_8.newDecoder();
                 CodingErrorAction codingErrorAction = CodingErrorAction.REPORT;
                 return charsetDecoderNewDecoder.onMalformedInput(codingErrorAction).onUnmappableCharacter(codingErrorAction).decode(ByteBuffer.wrap(h(i))).toString();
             } catch (CharacterCodingException e) {
-                throw new r5(w1.d("invalid UTF-8 at field ", i), e);
+                throw new ProtocolIOException(ProtoMessageBase.d("invalid UTF-8 at field ", i), e);
             }
         }
 
     }
 
-    public static final class c extends w1 {
+    public static final class c extends ProtoMessageBase {
         private final int a;
         private final int b;
         private final long c;
@@ -372,7 +372,7 @@ public final class ProtobufReader {
             int i2 = this.b;
             long j = this.c;
             byte[] bArr = this.d;
-            return Objects.hashCode(bArr) + w1.a(j, ((i * 31) + i2) * 31, 31);
+            return Objects.hashCode(bArr) + ProtoMessageBase.a(j, ((i * 31) + i2) * 31, 31);
         }
 
         public byte[] k() {
@@ -395,7 +395,7 @@ public final class ProtobufReader {
             Object[] objArr = {Integer.valueOf(this.a), Integer.valueOf(this.b), Long.valueOf(this.c), this.d};
             String[] strArrSplit = "a;b;c;d".length() == 0 ? new String[0] : "a;b;c;d".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(c.class, sb, "[");
+            ProtoMessageBase.f(c.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");

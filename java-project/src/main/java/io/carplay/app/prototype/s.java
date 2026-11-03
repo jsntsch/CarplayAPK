@@ -6,7 +6,7 @@ import java.util.List;
 
 /* JADX INFO: compiled from: CarPlus */
 /* JADX INFO: loaded from: classes.dex */
-public final /* synthetic */ class s implements UpdateChecker.a, VideoCipher.b.c {
+public final /* synthetic */ class s implements UpdateChecker.a, VideoCipher.AvcVideoInput.c {
     public final /* synthetic */ int a;
     public /* synthetic */ Object b;
 
@@ -28,7 +28,7 @@ public final /* synthetic */ class s implements UpdateChecker.a, VideoCipher.b.c
         }
     }
 
-    @Override // io.carplay.app.secured.VideoCipher.b.c
+    @Override // io.carplay.app.secured.VideoCipher.AvcVideoInput.c
     public void c(List list, long j, long j2, long j3) throws IOException {
         ((AvcEncoder) this.b).x(list, j, j2, j3);
     }

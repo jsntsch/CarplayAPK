@@ -1,0 +1,181 @@
+name	pkg	loc	kind	extends	implements	use_total	users	strings	methods
+e4	io.carplay.app.secured	117	class		g4	22	DisplaySession(5),PcmEndpoint(3),AvcEncoder(2),PairingSession(2),AirPlaySession(2),DerCodec(2)	sink/evidence | stale/wrong media source | video format/clock | PCM format/alignment/clock | end active source/use a fresh generation	i,a,b,c,e,f,g
+b2	io.carplay.app.secured	288	class			65	X25519(21),CarLifeBridge(6),WirelessCarPlayService(5),HidCapabilities(5),MainActivity(3),BinaryPlist(3)	RFCOMM_SELECTED_PEER_CONNECTED | RFCOMM_SELECTED_PEER_ACCEPTED | RFCOMM_LISTENING_SELECTED_PEER | RFCOMM_SELECTED_PEER_ACTIVE_CONNECT_START | MFI_KEY_POSSESSION_VERIFIED | MFI_FRESH_PROOF_VERIFIED | IAP2_AUTHENTICATED_WAITING_CARPLAY_START | IAP2_AUTHENTICATED_WIFI_CONFIGURATION_RECEIVED | WIFI_AUTHENTICATED_TARGET | WIFI_NETWORK_READY_WAITING_CARPLAY_ENDPOINT | WIFI_AND_CARPLAY_ENDPOINT_READY_SOCKET_BINDING_REQUIRED | CARPLAY_CONTROL_CONNECTING | CARPLAY_PAIR_SETUP | CARPLAY_INITIAL_SETUP	b,c,d,a,b,c
+m1	io.carplay.app.secured	220	class			25	WirelessCarPlayService(10),AirPlaySession(10),MainActivity(1),PairingSession(1),j6(1),v6(1)	REMOTE_NIGHT_MODE_INVALID | REMOTE_VIEW_AREA_NOT_DECLARED | REMOTE_VIEW_AREA_BINDING_INVALID | REMOTE_VIEW_AREA_ADJACENCY_INVALID | REMOTE_VIEW_AREA_PARAMETERS_INVALID | REMOTE_COMMAND_ENVELOPE_INVALID	b,c,equals,g,hashCode,toString,equals,g,h,hashCode,i,j,toString,a
+c3	io.carplay.app.secured	135	class			17	EventChannel(5),WirelessCarPlayService(4),z1(4),AudioCapabilities(3),AirPlaySession(1)	NON_STRING | OVERSIZE | HASH_UNAVAILABLE | INITIAL_RESOURCE | RESOURCE | APP_STATE |  key_fingerprints= |  unknown_fields= |  keys_logged=false values_logged=false	a,b,c
+g4	io.carplay.app.secured	318	interface			82	PcmEndpoint(35),e4(19),IccoaBridge(19),MicCapture(8),Iap2Ncm(1)	video/avc | video/hevc | video dimensions/layout | PCM sample encoding unsupported/unverified	equals,g,h,hashCode,i,j,k,toString,h,equals,g,hashCode,i,j
+j3	io.carplay.app.secured	243	class		q2	261	WirelessCarPlayService(41),AirPlaySession(29),m4(18),d6(12),DisplaySession(12),l7(11)		e,f,g,h,i,j,k,b,l,m,n,o,p,q
+z	io.carplay.app.secured	167	class			860	WirelessCarPlayService(87),AirPlaySession(79),PairingSession(75),MainActivity(60),MfiCertificateVerifier(57),SessionStateMachine(40)	CAP_HINT_INVALID | CAP_HINT_CACHE_BOUND | CAP_HINT_NOT_CURRENT	equals,g,h,hashCode,i,j,k,toString,c,e,f,b,d,g
+j2	io.carplay.app.secured	71	class		CipherParameters	607	WirelessCarPlayService(129),AirPlaySession(68),DisplaySession(50),CarLifeBridge(24),d6(24),AvcEncoder(21)	org.bouncycastle.dh.allow_unsafe_p_value	a,b,c,equals,hashCode
+i1	io.carplay.app.secured	68	class		AutoCloseable	108	WirelessCarPlayService(85),AirPlaySession(13),MainActivity(3),o0(2),p0(1),PairingSession(1)	KEEPALIVE_PORT_INVALID	b,c,close,e
+l2	io.carplay.app.secured	48	class		CipherParameters	19	i2(10),AirPlaySession(4),MainActivity(3),WirelessCarPlayService(1),i7(1)		a,b,c,d,equals,hashCode
+c	io.carplay.app.secured	122	class			2780	WirelessCarPlayService(142),AirPlaySession(129),PairingSession(124),X25519(115),Iap2Csm(95),AvcEncoder(89)	AES/ECB/PKCS5Padding	equals,g,h,hashCode,i,j,k,toString,a
+f	io.carplay.app.secured	17	class		CipherParameters	1173	DisplaySession(80),HidCapabilities(57),AirPlaySession(51),Poly1305(41),WirelessCarPlayService(34),CarLifeBridge(33)		isPrivate
+i6	io.carplay.app.secured	106	class			300	k4(30),l7(25),HidCapabilities(22),X25519(20),m4(18),ChaCha20Poly1305(18)	touch coordinates/action	equals,g,h,hashCode,toString,a,b
+b	io.carplay.app.secured	321	class			3443	WirelessCarPlayService(206),PairingSession(158),AirPlaySession(144),X25519(132),DisplaySession(116),EncryptProofNeg(105)		g,equals,h,hashCode,i,j,k,l,m,n,o,p,q,r
+h	io.carplay.app.secured	175	class			898	DisplaySession(115),WirelessCarPlayService(67),MfiCertificateVerifier(56),AvcEncoder(55),PairingSession(54),HidCapabilities(44)		d,m,a,b,c,e,f,g,h,i,j,k,l,n
+i5	io.carplay.app.secured	160	class			443	BinaryPlist(39),k4(38),X25519(32),l7(26),HidCapabilities(23),d6(22)		d,a,b,c,e,close,e,d,e,c
+j5	io.carplay.app.secured	181	class			106	m4(18),l7(14),WirelessCarPlayService(9),c6(9),d6(8),MfiCertificateVerifier(8)		equals,g,hashCode,toString,equals,g,h,hashCode,toString,c,a,b,d,e
+j6	io.carplay.app.secured	118	interface			105	m4(22),DisplaySession(17),WirelessCarPlayService(14),l7(14),d6(12),k4(7)		equals,g,h,hashCode,i,j,k,l,m,toString,b,c
+l7	io.carplay.app.secured	611	class			267	X25519(219),k7(48)		A,B,C,D,E,F,G,H,I,J,K,L,M,N
+p6	io.carplay.app.secured	168	class			27	WirelessCarPlayService(11),AvcEncoder(10),AirPlaySession(4),r(2)		equals,g,h,hashCode,i,j,k,toString,b,c,d,e,f
+q6	io.carplay.app.secured	218	class	w1		16	WirelessCarPlayService(10),AvcEncoder(4),AirPlaySession(2)		equals,g,h,hashCode,toString,i,l,r,equals,g,h,hashCode,j,k
+t1	io.carplay.app.secured	196	class			75	DisplaySession(46),EncryptProofNeg(18),PairingSession(3),WirelessCarPlayService(3),MainActivity(1),AirPlaySession(1)		equals,g,h,hashCode,toString,equals,g,h,hashCode,i,toString,b,c,d
+y4	io.carplay.app.secured	69	class			32	Poly1305(16),a6(8),y1(3),ChaCha20Poly1305(3),ChaCha20(1),j3(1)		a,b,c,d,e,f,g,h,i,j,k
+g	io.carplay.app.secured	63	class			1034	WirelessCarPlayService(74),DisplaySession(70),AirPlaySession(67),HidCapabilities(39),PairingSession(36),IccoaBridge(35)	AUDIO_PACER_RATE | AUDIO_PACER_PACKET	a,b,c
+e	io.carplay.app.secured	86	class			1437	DisplaySession(140),WirelessCarPlayService(84),AirPlaySession(67),HidCapabilities(53),CarLifeBridge(42),X25519(39)		a,b,c,d,e,f,g,h,i
+l4	io.carplay.app.secured	314	class		AutoCloseable	13	DisplaySession(7),EncryptProofNeg(6)		equals,g,h,hashCode,i,j,toString,equals,g,h,hashCode,i,toString,i
+a2	io.carplay.app.secured	47	class			70	c6(44),MainActivity(9),X25519(6),AudioSourceCapability(5),EcdsaSignature(3),p(1)		a,b,c,d,e,f,g,h
+o2	io.carplay.app.secured	17	class	IllegalStateException		54	MainActivity(48),AirPlaySession(4),WirelessCarPlayService(1),w2(1)		getCause
+z1	io.carplay.app.secured	157	class	ChaCha20		29	PairingSession(19),WirelessCarPlayService(4),j0(2),MainActivity(1),AirPlaySession(1),s3(1)		m
+h1	io.carplay.app.secured	84	class			59	WirelessCarPlayService(41),AirPlaySession(8),HidCapabilities(6),MainActivity(1),PairingSession(1),s(1)	UUID	a,b,c,d
+i2	io.carplay.app.secured	118	class			1754	AirPlaySession(139),X25519(88),l7(74),WirelessCarPlayService(71),k4(58),MfiCertificateVerifier(55)		a,a,b,c,d,e,f
+t	io.carplay.app.secured	21	interface	AutoCloseable		298	AirPlaySession(52),WirelessCarPlayService(50),MfiCertificateVerifier(28),SessionStateMachine(25),MainActivity(17),Poly1305(12)		
+n2	io.carplay.app.secured	9	class	z5		20	MainActivity(5),HelpActivity(3),WirelessCarPlayService(3),AirPlaySession(3),ChaCha20Poly1305(3),ChaCha20(1)		
+r5	io.carplay.app.secured	17	class	IOException		156	DisplaySession(50),EncryptProofNeg(32),MicCapture(15),ProtobufReader(14),l4(10),VideoStreamNeg(9)		
+z5	io.carplay.app.secured	9	class	RuntimeException		35	HidCapabilities(9),MfiCertificateVerifier(7),DisplaySession(6),MainActivity(5),j6(4),WirelessCarPlayService(2)		
+d3	io.carplay.app.secured	32	class			49	z1(32),WirelessCarPlayService(5),PcmConverter(4),k4(3),d6(2),X25519(2)		a,b,c,d,e,f
+w1	io.carplay.app.secured	33	?			361	WirelessCarPlayService(25),m4(21),AirPlaySession(19),DisplaySession(19),CarLifeBridge(16),HidCapabilities(13)		a,b,c,d,e,f
+x2	io.carplay.app.secured	72	class			22	MainActivity(16),WirelessCarPlayService(4),w2(2)	invalid offset and/or length specified	a,b
+j0	io.carplay.app.secured	64	?			49	AirPlaySession(18),MfiCertificateVerifier(14),WirelessCarPlayService(12),MainActivity(3),DonationDialog(2)		a,b,c,d,e
+y1	io.carplay.app.secured	49	class	ChaCha20		15	WirelessCarPlayService(4),PairingSession(3),AirPlaySession(3),ChaCha20Poly1305(3),MainActivity(1),c4(1)		a,b,c,d,j,l
+i	io.carplay.app.secured	61	class			3942	DisplaySession(161),WirelessCarPlayService(131),HidCapabilities(128),AirPlaySession(123),l7(119),Iap2Csm(118)		a,b,c
+k1	io.carplay.app.secured	43	?			27	WirelessCarPlayService(14),PairingSession(4),AirPlaySession(2),VideoCipher(2),w4(2),MainActivity(1)		a,b,c
+z2	io.carplay.app.secured	42	?			152	HidCapabilities(25),DisplaySession(20),WirelessCarPlayService(19),PairingSession(17),MainActivity(10),MfiCertificateVerifier(9)		a,c,run
+a	org.bouncycastle.crypto.signers	18	class			3905	AirPlaySession(261),DisplaySession(256),WirelessCarPlayService(235),PairingSession(121),MfiCertificateVerifier(119),AvcEncoder(115)		a,b
+s	io.carplay.app.prototype	36	?			279	WirelessCarPlayService(81),MfiCertificateVerifier(18),PairingSession(17),AirPlaySession(16),EventChannel(16),WifiNetworkMonitor(13)		a,c
+t0	io.carplay.app.secured	16	?			21	WirelessCarPlayService(7),MfiCertificateVerifier(6),AirPlaySession(5),PairingSession(3)		b,e
+c0	io.carplay.app.secured	26	?			73	WirelessCarPlayService(26),AirPlaySession(17),DisplaySession(13),MfiCertificateVerifier(12),MainActivity(3),BluetoothRfcommProfiles(2)		c0,getAsLong
+c2	io.carplay.app.secured	54	class			73	DisplaySession(17),d6(16),EventChannel(11),EncryptProofNeg(5),k4(4),w5(4)		a,b
+l5	io.carplay.app.secured	23	interface			40	l4(13),o5(10),EncryptProofNeg(8),DisplaySession(5),k5(4)		b,e
+r4	io.carplay.app.secured	22	?			30	AirPlaySession(18),DisplaySession(7),AudioRelay(5)		r4,accept
+a0	io.carplay.app.prototype	27	?			23	DisplaySession(5),BluetoothRfcommProfiles(4),WirelessCarPlayService(4),HidCommandSender(3),CarPlayCtrlAdvertiser(2),MainActivity(2)		run
+b0	io.carplay.app.secured	42	?			61	AirPlaySession(30),MainActivity(10),WirelessCarPlayService(6),MfiCertificateVerifier(6),DisplaySession(5),BluetoothRfcommProfiles(2)		run
+d	io.carplay.app.prototype	26	?			1802	WirelessCarPlayService(206),AirPlaySession(91),DisplaySession(80),X25519(70),HidCapabilities(68),PairingSession(51)		run
+e0	io.carplay.app.secured	16	?			44	WirelessCarPlayService(17),AirPlaySession(14),MfiCertificateVerifier(8),MainActivity(3),DonationDialog(2)		getAsBoolean
+f0	io.carplay.app.secured	15	?			29	AirPlaySession(7),WirelessCarPlayService(6),MfiCertificateVerifier(6),MainActivity(3),UiFactory(2),EcdsaSignature(2)		accept
+g0	io.carplay.app.secured	18	?			33	AirPlaySession(17),WirelessCarPlayService(6),MfiCertificateVerifier(6),MainActivity(4)		accept
+h0	io.carplay.app.secured	31	?			26	WirelessCarPlayService(9),AirPlaySession(8),MfiCertificateVerifier(4),MainActivity(3),UiFactory(2)		run
+i0	io.carplay.app.prototype	37	?			30	AirPlaySession(8),WirelessCarPlayService(7),MfiCertificateVerifier(7),MainActivity(3),DonationDialog(2),PairingSession(2)		run
+k	io.carplay.app.secured	28	?			580	WirelessCarPlayService(69),AirPlaySession(44),SessionStateMachine(44),DisplaySession(36),EncryptProofNeg(25),PairingSession(22)		test
+l	io.carplay.app.prototype	27	?			508	UiFactory(78),DisplaySession(43),AirPlaySession(36),WirelessCarPlayService(26),MfiCertificateVerifier(25),MainActivity(23)		run
+l0	io.carplay.app.secured	34	?			25	AirPlaySession(10),MfiCertificateVerifier(6),MainActivity(4),WirelessCarPlayService(3),UiFactory(2)		get
+n	io.carplay.app.secured	21	class			556	AirPlaySession(168),HelpActivity(40),DisplaySession(32),MainActivity(31),WirelessCarPlayService(29),j3(18)		a
+n0	io.carplay.app.secured	39	?			51	MfiCertificateVerifier(24),WirelessCarPlayService(11),AirPlaySession(8),MainActivity(3),AirplayServiceProbe(1),PairingSession(1)		newThread
+o0	io.carplay.app.secured	15	?			26	AirPlaySession(15),UiFactory(4),WirelessCarPlayService(4),MfiCertificateVerifier(3)		a
+p	io.carplay.app.secured	32	?			378	AirPlaySession(36),DisplaySession(22),IccoaBridge(17),AvcEncoder(15),CarPlayCtrlAdvertiser(15),PairingSession(13)		applyAsLong
+p0	io.carplay.app.secured	54	?			32	AirPlaySession(11),WirelessCarPlayService(7),PairingSession(4),MfiCertificateVerifier(3),LogActivity(2),UiFactory(2)		run
+q	io.carplay.app.secured	26	?			222	AirPlaySession(34),AvcEncoder(15),IccoaBridge(13),MfiCertificateVerifier(12),Poly1305(11),AirplayServiceProbe(10)		applyAsInt
+q0	io.carplay.app.secured	32	?			43	AirPlaySession(27),WirelessCarPlayService(8),MfiCertificateVerifier(8)		run
+r	io.carplay.app.secured	38	?			233	MainActivity(21),MfiCertificateVerifier(18),CarPlayCtrlAdvertiser(17),PairingSession(17),EventChannel(17),AirPlaySession(12)		apply
+s0	io.carplay.app.prototype	21	?			28	WirelessCarPlayService(13),MfiCertificateVerifier(9),AirPlaySession(4),ControlRequestParser(2)		run
+v	io.carplay.app.secured	13	?			144	MfiCertificateVerifier(20),AvcEncoder(14),PairingSession(13),DisplaySession(10),WirelessCarPlayService(9),AirPlaySession(9)		compare
+w	io.carplay.app.secured	27	?			104	AirPlaySession(14),WirelessCarPlayService(10),DisplaySession(10),MfiCertificateVerifier(9),AvcEncoder(8),MainActivity(5)		apply
+x	io.carplay.app.prototype	17	?			139	WirelessCarPlayService(21),DisplaySession(17),MfiCertificateVerifier(17),AirPlaySession(14),PairingSession(8),EventChannel(7)		newThread
+y	io.carplay.app.secured	29	?			128	MfiCertificateVerifier(22),PairingSession(18),AirPlaySession(13),MainActivity(10),WirelessCarPlayService(10),EncryptProofNeg(9)		test
+b5	io.carplay.app.secured	32	?			21	WirelessCarPlayService(13),X25519(5),PairingPreparationService(3)		accept
+d1	io.carplay.app.secured	44	?			32	AvcEncoder(7),AirPlaySession(7),WirelessCarPlayService(4),Iap2WirelessSetup(4),LogActivity(3),BtDiscovery(2)		run
+e3	io.carplay.app.secured	9	class			57	WirelessCarPlayService(13),AirPlaySession(9),AvcEncoder(7),DisplaySession(6),EventChannelConnector(5),EventChannel(4)		a
+f1	io.carplay.app.secured	33	?			22	WirelessCarPlayService(10),AirPlaySession(4),Iap2WirelessSetup(2),MainActivity(1),PairingSession(1),i5(1)		get
+g1	io.carplay.app.secured	24	?			85	WirelessCarPlayService(63),AirPlaySession(16),Iap2WirelessSetup(2),MainActivity(1),PairingSession(1),o3(1)		getAsBoolean
+i3	io.carplay.app.secured	33	?			1006	k4(63),X25519(57),AirPlaySession(54),l7(46),DisplaySession(32),Iap2Csm(32)		onClick
+i7	io.carplay.app.secured	15	?			223	d6(22),k4(21),m4(18),l7(16),ChaCha20Poly1305(16),HidCapabilities(14)		a
+j7	io.carplay.app.secured	44	class			60	m4(16),d6(12),l7(12),k4(7),c6(4),j3(4)		a
+k0	io.carplay.app.secured	24	?			30	WirelessCarPlayService(11),AirPlaySession(8),MainActivity(5),MfiCertificateVerifier(4),StatusText(2)		accept
+m	io.carplay.app.secured	10	class			372	PairingSession(34),AirPlaySession(31),DisplaySession(23),b(18),WirelessCarPlayService(16),MainActivity(15)		a
+m0	io.carplay.app.secured	16	?			32	AirPlaySession(10),MfiCertificateVerifier(10),WirelessCarPlayService(7),MainActivity(3),UiFactory(2)		getAsBoolean
+o3	io.carplay.app.secured	95	?			45	MainActivity(45)		run
+r0	io.carplay.app.secured	18	?			60	AirPlaySession(37),AudioRelay(12),MfiCertificateVerifier(6),WirelessCarPlayService(3),PairingSession(2)		a
+s1	io.carplay.app.secured	30	?			22	PairingSession(6),MainActivity(5),AirPlaySession(5),EncryptProofNeg(2),t1(2),WirelessCarPlayService(1)		accept
+u	io.carplay.app.secured	29	?			179	PairingSession(45),MfiCertificateVerifier(19),Poly1305(13),AvcEncoder(11),AirPlaySession(11),BtDiscovery(9)		test
+u0	io.carplay.app.secured	16	?			23	WirelessCarPlayService(9),MfiCertificateVerifier(6),AirPlaySession(5),AirplayServiceProbe(3)		execute
+u6	io.carplay.app.secured	62	?			30	PairingSession(30)		run
+v0	io.carplay.app.secured	29	?			36	AirPlaySession(16),WirelessCarPlayService(9),MfiCertificateVerifier(6),AirplayServiceProbe(5)		run
+w0	io.carplay.app.secured	64	?			42	AirPlaySession(19),MfiCertificateVerifier(8),WirelessCarPlayService(3),HidCapabilities(3),AirplayServiceProbe(2),AudioCapabilities(1)		test
+z3	io.carplay.app.secured	16	?			72	HidCapabilities(14),DisplaySession(11),MainActivity(10),WirelessCarPlayService(9),PairingSession(8),MfiCertificateVerifier(7)		onCheckedChanged
+z6	io.carplay.app.secured	21	?			20	WirelessCarPlayService(6),PairingSession(5),j6(4),DisplaySession(3),HidCapabilities(2)		run
+o	io.carplay.app.secured	9	interface			310	AirPlaySession(64),AvcEncoder(19),DisplaySession(19),PairingSession(16),WirelessCarPlayService(12),EventChannel(12)		
+e2	io.carplay.app.secured	6	interface			230	AirPlaySession(56),PairingSession(30),WirelessCarPlayService(22),EventChannel(19),DisplaySession(17),AvcEncoder(10)		
+f2	io.carplay.app.secured	16	enum			29	UiFactory(5),a(4),WirelessCarPlayService(3),n6(3),o6(3),p2(3)		
+q2	io.carplay.app.secured	13	interface			26	MainActivity(7),X25519(6),AirPlaySession(5),a6(3),WirelessCarPlayService(2),j3(2)		
+c6	io.carplay.app.secured	256	class			15	X25519(13),z1(2)		a,b,c,d,e,f,g
+w5	io.carplay.app.secured	242	class	w1		3	UpdateChecker(2),v5(1)	/eyessx/carplus-carplay-updates/raw/master/version.json | CARPLUS_RELEASES_V1 | release stale/clock/rollback	equals,hashCode,toString,g,j,k,equals,h,hashCode,i,toString
+m5	io.carplay.app.secured	247	class			10	MfiSap(6),MfiCertificateVerifier(4)	RSA/ECB/PKCS1Padding	c,f,g,i,a,b,d,e,h,j
+o5	io.carplay.app.secured	116	class		l5, AutoCloseable	7	DisplaySession(6),HidCommandSender(1)	CARLIFE	g,i,k,close,f
+r1	io.carplay.app.secured	16	?			17	CarPlusApplication(3),PairingSession(3),AirPlaySession(3),AudioRelay(3),WirelessCarPlayService(2),CarLifeBridge(1)		uncaughtException
+u2	io.carplay.app.secured	33	?			17	MainActivity(6),HelpActivity(5),WirelessCarPlayService(3),AirPlaySession(2),b0(1)		onClick
+h2	io.carplay.app.secured	40	class	Permission		11	MainActivity(4),i2(4),WirelessCarPlayService(1),AirPlaySession(1),b7(1)		equals,getActions,hashCode,implies
+c5	io.carplay.app.secured	29	class		CipherParameters	10	ChaCha20Poly1305(5),ChaCha20(3),z1(2)		a,b
+g5	io.carplay.app.secured	76	class	w1		3	MfiCertificateVerifier(3)	DEVICE_TIME_RANGE | DEVICE_TIME_MINUTE_PRECISION	g,j,equals,h,hashCode,i,k,l,toString
+f3	io.carplay.app.secured	9	class	d2		12	UiFactory(6),ChaCha20Poly1305(4),WirelessCarPlayService(2)		
+g3	io.carplay.app.secured	73	class		o	6	WirelessCarPlayService(4),DisplaySession(2)	explicit algorithm/mode/padding required	c,a,b
+a1	io.carplay.app.secured	28	?			15	AirPlaySession(4),MainActivity(2),WirelessCarPlayService(2),m1(2),SessionStateMachine(2),PairingSession(1)		test
+t6	io.carplay.app.secured	40	?			15	PairingSession(15)		accept
+v2	io.carplay.app.secured	34	?			15	MainActivity(6),HelpActivity(3),WirelessCarPlayService(2),AirPlaySession(2),BtDiscovery(2)		onClick
+d6	io.carplay.app.secured	323	class			11	c6(8),PcmConverter(3)		a,b,c,d,e,f,g
+w4	io.carplay.app.secured	104	class			11	WirelessCarPlayService(4),k1(4),z2(2),w0(1)		f,g,h,d,e,i,j
+p2	io.carplay.app.secured	21	class		e2	9	AirPlaySession(3),a(2),MainActivity(2),WirelessCarPlayService(1),ChaCha20(1)		
+t5	io.carplay.app.secured	161	class			7	WirelessCarPlayService(7)	legacy_owner	equals,g,h,hashCode,i,toString,equals,g,h,hashCode,toString,a,b
+d2	io.carplay.app.secured	16	class	Exception		10	PcmConverter(3),WirelessCarPlayService(2),MainActivity(1),AirPlaySession(1),f3(1),f7(1)		getCause
+m2	io.carplay.app.secured	42	class			12	i2(4),l2(3),AirPlaySession(2),MainActivity(1),WirelessCarPlayService(1),o3(1)		a,b,equals,hashCode
+g2	io.carplay.app.secured	7	interface			14	i2(6),MainActivity(3),AirPlaySession(3),q0(1),WirelessCarPlayService(1)		
+u3	io.carplay.app.secured	42	?			13	MainActivity(13)		onClick
+w2	io.carplay.app.secured	15	class			13	MainActivity(5),i2(4),WirelessCarPlayService(2),AirPlaySession(2)		a
+o1	io.carplay.app.secured	15	?			12	AirPlaySession(3),PairingSession(2),WirelessCarPlayService(2),AudioSourceCapability(2),MainActivity(1),o3(1)		apply
+r3	io.carplay.app.secured	20	?			12	AirPlaySession(9),MainActivity(3)		onClick
+m4	io.carplay.app.secured	370	class			8	c6(6),X25519(2)		a,b,c,d,e,f,g
+s5	io.carplay.app.secured	142	class	w1		2	EncryptProofNeg(2)		m,equals,g,h,hashCode,i,j,k,l,n,o,p,q,r
+v6	io.carplay.app.secured	37	?			11	PairingSession(11)		run
+k2	io.carplay.app.secured	28	class			10	WirelessCarPlayService(4),j2(2),MainActivity(1),AirPlaySession(1),i2(1),o3(1)		equals,hashCode
+f4	io.carplay.app.secured	99	class			5	AirPlaySession(3),UiFactory(2)		equals,g,hashCode,toString,a,b,c,d,e,f
+a4	io.carplay.app.secured	36	?			10	WirelessCarPlayService(5),MainActivity(3),BtDiscovery(2)		test
+n3	io.carplay.app.secured	33	?			10	MainActivity(7),HelpActivity(3)		onClick
+x4	io.carplay.app.secured	9	class	n2		6	ChaCha20Poly1305(4),ChaCha20(1),Poly1305(1)		
+k7	io.carplay.app.secured	130	class			5	X25519PrivateKeyParameters(4),X25519(1)		a,b,c,d,e,f,g,h
+m3	io.carplay.app.secured	34	?			9	MainActivity(9)		test
+t3	io.carplay.app.secured	36	?			9	MainActivity(9)		onDismiss
+w6	io.carplay.app.secured	35	?			9	PairingSession(9)		run
+x3	io.carplay.app.secured	36	?			9	MainActivity(9)		onClick
+n4	io.carplay.app.secured	42	class			7	HelpActivity(2),c6(2),k4(2),MainActivity(1)		a,b,c,d
+l6	io.carplay.app.secured	24	class			8	Ed25519PrivateKeyParameters(2),Ed25519PublicKeyParameters(2),X25519PrivateKeyParameters(2),X25519PublicKeyParameters(2)		a,b
+a6	io.carplay.app.secured	57	class	j3		2	X25519(2)		a,c,d,p,r
+e6	io.carplay.app.secured	6	interface			9	i2(3),AvcEncoder(2),PairingSession(2),AirPlaySession(2)		
+l3	io.carplay.app.secured	17	interface			9	Poly1305(6),ChaCha20Poly1305(3)		
+u4	io.carplay.app.secured	78	class			4	WirelessCarPlayService(4)		equals,g,h,hashCode,i,toString,a,b
+b4	io.carplay.app.secured	16	?			8	X25519(5),MainActivity(3)		run
+t2	io.carplay.app.secured	40	class			6	WirelessCarPlayService(3),AirPlaySession(2),MainActivity(1)	UNKNOWN	a
+d4	io.carplay.app.secured	9	class	z5		4	PcmConverter(3),ChaCha20(1)		
+k4	io.carplay.app.secured	402	class			2	l7(2)		a,b,c,d,e,f,g,h,i,j,k,l,m,n
+b7	io.carplay.app.secured	32	?			7	WirelessCarPlayService(7)		run
+c4	io.carplay.app.secured	17	?			7	z1(4),MainActivity(3)		onDismiss
+h3	io.carplay.app.secured	28	?			7	LogActivity(5),MainActivity(1),WirelessCarPlayService(1)		run
+a5	io.carplay.app.secured	29	?			5	PairingPreparationService(5)		run
+d7	io.carplay.app.secured	17	?			5	WirelessCarPlayService(3),PcmConverter(2)		run
+e7	io.carplay.app.secured	17	?			5	WirelessCarPlayService(3),AirPlaySession(2)		run
+g7	io.carplay.app.secured	32	?			5	WirelessCarPlayService(5)		run
+s3	io.carplay.app.secured	30	?			5	MainActivity(5)		onClick
+s6	io.carplay.app.secured	32	?			5	PairingSession(5)		run
+y6	io.carplay.app.secured	28	?			5	PairingSession(5)		run
+m7	io.carplay.app.secured	6	class	a		1	i2(1)		
+m6	io.carplay.app.secured	39	class			3	ChaCha20(3)		run,a
+x5	io.carplay.app.secured	46	class			3	UpdateChecker(3)		a,b
+p5	io.carplay.app.secured	64	class			1	j2(1)		run,run,a,b,c
+a7	io.carplay.app.secured	16	?			3	WirelessCarPlayService(3)		run
+h7	io.carplay.app.secured	18	?			3	WirelessCarPlayService(3)		run
+p3	io.carplay.app.secured	21	?			3	MainActivity(3)		onShow
+q3	io.carplay.app.secured	20	?			3	MainActivity(3)		onDismiss
+v3	io.carplay.app.secured	18	?			3	MainActivity(3)		onShow
+w3	io.carplay.app.secured	16	?			3	MainActivity(3)		onCheckedChanged
+x6	io.carplay.app.secured	20	?			3	PairingSession(3)		test
+y3	io.carplay.app.secured	16	?			3	MainActivity(3)		run
+k3	io.carplay.app.secured	16	class			2	ChaCha20Poly1305(2)		a,b
+c7	io.carplay.app.secured	13	?			2	z1(2)		a
+f7	io.carplay.app.secured	13	?			2	WirelessCarPlayService(2)		run
+n6	io.carplay.app.secured	24	class			2	HelpActivity(1),a6(1)		a
+v5	io.carplay.app.secured	15	?			2	w5(2)		test
+g6	io.carplay.app.secured	9	class			2	x5(2)		
+h4	io.carplay.app.secured	13	?			1	PcmEndpoint(1)		apply
+k5	io.carplay.app.secured	11	?			1	l5(1)		f
+o6	io.carplay.app.secured	9	class			1	ChaCha20(1)		a
+q4	io.carplay.app.secured	11	?			1	DisplaySession(1)		a
+s4	io.carplay.app.secured	13	?			1	DisplaySession(1)		h

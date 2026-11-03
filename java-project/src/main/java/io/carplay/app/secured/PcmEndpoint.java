@@ -15,20 +15,20 @@ import java.util.function.Supplier;
  */
 public final class PcmEndpoint {
     private final d a;
-    private final Supplier<io.carplay.app.secured.b.C0003b> b;
+    private final Supplier<io.carplay.app.secured.SessionVerificationTracker.C0003b> b;
     private final Map<StreamIdentity, PcmStream> c = new LinkedHashMap();
     private long d;
     private long e;
-    private g4.g f;
+    private MediaFormat.g f;
 
-    public final class PcmStream implements g4 {
+    public final class PcmStream implements MediaFormat {
         private final StreamIdentity a;
         private final long b;
-        private final e4 c;
+        private final MediaSourceTracker c;
         private boolean d = true;
 
         /* JADX INFO: renamed from: io.carplay.app.secured.PcmEndpoint$a$a, reason: collision with other inner class name */
-        public class C0001a implements g4 {
+        public class C0001a implements MediaFormat {
             final /* synthetic */ StreamIdentity a;
             final /* synthetic */ PcmStream b;
 
@@ -38,17 +38,17 @@ public final class PcmEndpoint {
             }
 
             @Override // io.carplay.app.secured.g4
-            public void a(long j, g4.g gVar, g4.e eVar) {
+            public void a(long j, MediaFormat.g gVar, MediaFormat.PcmFormat eVar) {
                 PcmEndpoint.this.a.b(this.a, j, gVar, eVar);
             }
 
             @Override // io.carplay.app.secured.g4
-            public void b(long j, g4.g gVar, g4.h hVar) {
+            public void b(long j, MediaFormat.g gVar, MediaFormat.VideoMime hVar) {
                 throw new IllegalStateException("PCM endpoint");
             }
 
             @Override // io.carplay.app.secured.g4
-            public void c(g4.c cVar) {
+            public void c(MediaFormat.c cVar) {
                 throw new IllegalStateException("PCM endpoint");
             }
 
@@ -58,15 +58,15 @@ public final class PcmEndpoint {
             }
 
             @Override // io.carplay.app.secured.g4
-            public void f(g4.c cVar) {
+            public void f(MediaFormat.c cVar) {
                 PcmEndpoint.this.a.a(this.a, cVar);
             }
         }
 
-        public PcmStream(StreamIdentity cVar, long j, g4.g gVar) {
+        public PcmStream(StreamIdentity cVar, long j, MediaFormat.g gVar) {
             this.a = cVar;
             this.b = j;
-            e4 e4Var = new e4(new C0001a(this, cVar), PcmEndpoint.this.b);
+            MediaSourceTracker e4Var = new MediaSourceTracker(new C0001a(this, cVar), PcmEndpoint.this.b);
             this.c = e4Var;
             e4Var.g(j, gVar);
         }
@@ -79,7 +79,7 @@ public final class PcmEndpoint {
         }
 
         @Override // io.carplay.app.secured.g4
-        public void a(long j, g4.g gVar, g4.e eVar) {
+        public void a(long j, MediaFormat.g gVar, MediaFormat.PcmFormat eVar) {
             synchronized (PcmEndpoint.this) {
                 try {
                     g();
@@ -94,12 +94,12 @@ public final class PcmEndpoint {
         }
 
         @Override // io.carplay.app.secured.g4
-        public void b(long j, g4.g gVar, g4.h hVar) {
+        public void b(long j, MediaFormat.g gVar, MediaFormat.VideoMime hVar) {
             throw new IllegalStateException("PCM endpoint");
         }
 
         @Override // io.carplay.app.secured.g4
-        public void c(g4.c cVar) {
+        public void c(MediaFormat.c cVar) {
             throw new IllegalStateException("PCM endpoint");
         }
 
@@ -119,7 +119,7 @@ public final class PcmEndpoint {
         }
 
         @Override // io.carplay.app.secured.g4
-        public void f(g4.c cVar) {
+        public void f(MediaFormat.c cVar) {
             synchronized (PcmEndpoint.this) {
                 g();
                 this.c.f(cVar);
@@ -137,12 +137,12 @@ public final class PcmEndpoint {
         ICCOA
     }
 
-    public static final class StreamIdentity extends w1 {
+    public static final class StreamIdentity extends ProtoMessageBase {
         private final b a;
         private final int b;
-        private final g4.a c;
+        private final MediaFormat.a c;
 
-        public StreamIdentity(b bVar, int i, g4.a aVar) {
+        public StreamIdentity(b bVar, int i, MediaFormat.a aVar) {
             if (bVar == null || aVar == null || i < 0 || i > 65535) {
                 SyntheticRefs.b("explicit stream identity required");
                 throw null;
@@ -171,12 +171,12 @@ public final class PcmEndpoint {
         public final int hashCode() {
             int i = this.b;
             b bVar = this.a;
-            g4.a aVar = this.c;
+            MediaFormat.a aVar = this.c;
             int iHashCode = Objects.hashCode(bVar);
             return Objects.hashCode(aVar) + ((iHashCode + (i * 31)) * 31);
         }
 
-        public g4.a i() {
+        public MediaFormat.a i() {
             return this.c;
         }
 
@@ -184,7 +184,7 @@ public final class PcmEndpoint {
             Object[] objArr = {this.a, Integer.valueOf(this.b), this.c};
             String[] strArrSplit = "a;b;c".length() == 0 ? new String[0] : "a;b;c".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(StreamIdentity.class, sb, "[");
+            ProtoMessageBase.f(StreamIdentity.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");
@@ -199,14 +199,14 @@ public final class PcmEndpoint {
     }
 
     public interface d {
-        void a(StreamIdentity cVar, g4.c cVar2);
+        void a(StreamIdentity cVar, MediaFormat.c cVar2);
 
-        void b(StreamIdentity cVar, long j, g4.g gVar, g4.e eVar);
+        void b(StreamIdentity cVar, long j, MediaFormat.g gVar, MediaFormat.PcmFormat eVar);
 
         void c(StreamIdentity cVar, long j, String str);
     }
 
-    public PcmEndpoint(d dVar, Supplier<io.carplay.app.secured.b.C0003b> supplier) {
+    public PcmEndpoint(d dVar, Supplier<io.carplay.app.secured.SessionVerificationTracker.C0003b> supplier) {
         if (dVar == null || supplier == null) {
             SyntheticRefs.b("target/evidence");
             throw null;
@@ -220,7 +220,7 @@ public final class PcmEndpoint {
         return new PcmStream[i];
     }
 
-    public synchronized void f(long j, g4.g gVar) {
+    public synchronized void f(long j, MediaFormat.g gVar) {
         if (this.d != 0 || j <= this.e || gVar == null) {
             throw new IllegalStateException("fresh inactive session required");
         }
@@ -250,7 +250,7 @@ public final class PcmEndpoint {
         }
     }
 
-    public synchronized g4 i(StreamIdentity cVar) throws Throwable {
+    public synchronized MediaFormat i(StreamIdentity cVar) throws Throwable {
         Throwable th = null;
         try {
             try {

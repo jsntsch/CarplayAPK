@@ -4,21 +4,21 @@ package io.carplay.app.secured;
 public class a6 extends j3 {
     public a6(f2 f2Var) {
         super(f2Var);
-        i2.a(r());
+        CryptoServicesRegistrar.a(r());
         p();
     }
 
     @Override // io.carplay.app.secured.q2
     public int a(byte[] bArr, int i) {
         l();
-        y4.j(this.f, bArr, i);
-        y4.j(this.g, bArr, i + 8);
-        y4.j(this.h, bArr, i + 16);
-        y4.j(this.i, bArr, i + 24);
-        y4.j(this.j, bArr, i + 32);
-        y4.j(this.k, bArr, i + 40);
-        y4.j(this.l, bArr, i + 48);
-        y4.j(this.m, bArr, i + 56);
+        LittleEndianIntCodec.j(this.f, bArr, i);
+        LittleEndianIntCodec.j(this.g, bArr, i + 8);
+        LittleEndianIntCodec.j(this.h, bArr, i + 16);
+        LittleEndianIntCodec.j(this.i, bArr, i + 24);
+        LittleEndianIntCodec.j(this.j, bArr, i + 32);
+        LittleEndianIntCodec.j(this.k, bArr, i + 40);
+        LittleEndianIntCodec.j(this.l, bArr, i + 48);
+        LittleEndianIntCodec.j(this.m, bArr, i + 56);
         p();
         return 64;
     }

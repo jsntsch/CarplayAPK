@@ -8,7 +8,7 @@ public final class f4 {
     private long d;
     private long e;
 
-    public static final class a extends w1 {
+    public static final class a extends ProtoMessageBase {
         private final long a;
 
         public a(long j) {
@@ -31,7 +31,7 @@ public final class f4 {
             Object[] objArr = {Long.valueOf(this.a)};
             String[] strArrSplit = "a".length() == 0 ? new String[0] : "a".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(a.class, sb, "[");
+            ProtoMessageBase.f(a.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");

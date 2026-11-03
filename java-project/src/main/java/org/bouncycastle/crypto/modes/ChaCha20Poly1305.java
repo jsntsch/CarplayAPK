@@ -3,16 +3,16 @@ package org.bouncycastle.crypto.modes;
 import io.carplay.app.secured.Poly1305;
 import io.carplay.app.secured.SyntheticRefs;
 import io.carplay.app.secured.c5;
-import io.carplay.app.secured.e;
-import io.carplay.app.secured.f3;
+import io.carplay.app.secured.ByteArrays;
+import io.carplay.app.secured.InvalidCipherTextException;
 import io.carplay.app.secured.k3;
 import io.carplay.app.secured.l3;
-import io.carplay.app.secured.n2;
-import io.carplay.app.secured.p1;
-import io.carplay.app.secured.w1;
-import io.carplay.app.secured.x4;
+import io.carplay.app.secured.DataLengthException;
+import io.carplay.app.secured.AudioSourceCapability;
+import io.carplay.app.secured.ProtoMessageBase;
+import io.carplay.app.secured.OutputLengthException;
 import io.carplay.app.secured.y1;
-import io.carplay.app.secured.y4;
+import io.carplay.app.secured.LittleEndianIntCodec;
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.params.AEADParameters;
 import org.bouncycastle.crypto.params.KeyParameter;
@@ -74,11 +74,11 @@ public class ChaCha20Poly1305 {
 
     private void checkData() {
         switch (this.state) {
-            case p1.c /* 1 */:
+            case AudioSourceCapability.c /* 1 */:
             case 2:
                 finishAAD(3);
                 return;
-            case p1.d /* 3 */:
+            case AudioSourceCapability.d /* 3 */:
             case 7:
                 return;
             case 4:
@@ -101,8 +101,8 @@ public class ChaCha20Poly1305 {
     private void finishData(int i) {
         padMAC(this.dataCount);
         byte[] bArr = new byte[16];
-        y4.k(this.aadCount, bArr, 0);
-        y4.k(this.dataCount, bArr, 8);
+        LittleEndianIntCodec.k(this.aadCount, bArr, 0);
+        LittleEndianIntCodec.k(this.dataCount, bArr, 8);
         this.poly1305.b(bArr, 0, 16);
         this.poly1305.a(this.mac, 0);
         this.state = i;
@@ -123,7 +123,7 @@ public class ChaCha20Poly1305 {
             this.chacha20.h(bArr, 0, 64, bArr, 0);
             this.poly1305.c(new KeyParameter(bArr, 0, 32));
         } finally {
-            e.c(bArr);
+            ByteArrays.c(bArr);
         }
     }
 
@@ -136,26 +136,26 @@ public class ChaCha20Poly1305 {
 
     private void processData(byte[] bArr, int i, int i2, byte[] bArr2, int i3) {
         if (i3 > bArr2.length - i2) {
-            throw new x4("Output buffer too short");
+            throw new OutputLengthException("Output buffer too short");
         }
         this.chacha20.h(bArr, i, i2, bArr2, i3);
         this.dataCount = incrementCount(this.dataCount, i2, DATA_LIMIT);
     }
 
     private void reset(boolean z, boolean z2) {
-        e.c(this.buf);
+        ByteArrays.c(this.buf);
         if (z) {
-            e.c(this.mac);
+            ByteArrays.c(this.mac);
         }
         this.aadCount = 0L;
         this.dataCount = 0L;
         this.bufPos = 0;
         switch (this.state) {
-            case p1.c /* 1 */:
+            case AudioSourceCapability.c /* 1 */:
             case 5:
                 break;
             case 2:
-            case p1.d /* 3 */:
+            case AudioSourceCapability.d /* 3 */:
             case 4:
                 this.state = 4;
                 return;
@@ -177,7 +177,7 @@ public class ChaCha20Poly1305 {
         }
     }
 
-    public int doFinal(byte[] bArr, int i) throws f3 {
+    public int doFinal(byte[] bArr, int i) throws InvalidCipherTextException {
         int i2;
         int i3;
         if (bArr == null) {
@@ -188,13 +188,13 @@ public class ChaCha20Poly1305 {
             return 0;
         }
         checkData();
-        e.c(this.mac);
+        ByteArrays.c(this.mac);
         int i4 = this.state;
         if (i4 == 3) {
             int i5 = this.bufPos;
             int i6 = i5 + 16;
             if (i > bArr.length - i6) {
-                throw new x4("Output buffer too short");
+                throw new OutputLengthException("Output buffer too short");
             }
             if (i5 > 0) {
                 processData(this.buf, 0, i5, bArr, i);
@@ -209,11 +209,11 @@ public class ChaCha20Poly1305 {
             }
             int i7 = this.bufPos;
             if (i7 < 16) {
-                throw new f3("data too short");
+                throw new InvalidCipherTextException("data too short");
             }
             int i8 = i7 - 16;
             if (i > bArr.length - i8) {
-                throw new x4("Output buffer too short");
+                throw new OutputLengthException("Output buffer too short");
             }
             if (i8 > 0) {
                 this.poly1305.b(this.buf, 0, i8);
@@ -223,8 +223,8 @@ public class ChaCha20Poly1305 {
                 i3 = i8;
             }
             finishData(8);
-            if (!e.e(16, this.mac, 0, this.buf, i3)) {
-                throw new f3("mac check in ChaCha20Poly1305 failed");
+            if (!ByteArrays.e(16, this.mac, 0, this.buf, i3)) {
+                throw new InvalidCipherTextException("mac check in ChaCha20Poly1305 failed");
             }
             i2 = i3;
         }
@@ -237,7 +237,7 @@ public class ChaCha20Poly1305 {
     }
 
     public byte[] getMac() {
-        return e.d(this.mac);
+        return ByteArrays.d(this.mac);
     }
 
     public int getOutputSize(int i) {
@@ -272,7 +272,7 @@ public class ChaCha20Poly1305 {
             AEADParameters aEADParameters = (AEADParameters) cipherParameters;
             int macSize = aEADParameters.getMacSize();
             if (128 != macSize) {
-                SyntheticRefs.b(w1.d("Invalid value for MAC size: ", macSize));
+                SyntheticRefs.b(ProtoMessageBase.d("Invalid value for MAC size: ", macSize));
                 return;
             }
             key = aEADParameters.getKey();
@@ -302,7 +302,7 @@ public class ChaCha20Poly1305 {
             SyntheticRefs.b("Nonce must be 96 bits");
             return;
         }
-        if (this.state != 0 && z && e.b(this.nonce, bArrA) && (key == null || e.b(this.key, key.getKey()))) {
+        if (this.state != 0 && z && ByteArrays.b(this.nonce, bArrA) && (key == null || ByteArrays.b(this.key, key.getKey()))) {
             SyntheticRefs.b("cannot reuse nonce for ChaCha20Poly1305 encryption");
             return;
         }
@@ -334,7 +334,7 @@ public class ChaCha20Poly1305 {
             return;
         }
         if (i > bArr.length - i2) {
-            throw new n2("Input buffer too short");
+            throw new DataLengthException("Input buffer too short");
         }
         checkAAD();
         if (i2 > 0) {
@@ -395,10 +395,10 @@ public class ChaCha20Poly1305 {
             str = "'len' cannot be negative";
         } else {
             if (i6 > bArr.length - i7) {
-                throw new n2("Input buffer too short");
+                throw new DataLengthException("Input buffer too short");
             }
             if (i3 >= 0) {
-                if (bArr == bArr2 && e.i(i, i7, i3, getUpdateOutputSize(i7))) {
+                if (bArr == bArr2 && ByteArrays.i(i, i7, i3, getUpdateOutputSize(i7))) {
                     bArr = new byte[i7];
                     System.arraycopy(bArr2, i, bArr, 0, i7);
                     i6 = 0;

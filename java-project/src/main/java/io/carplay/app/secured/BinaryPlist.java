@@ -112,7 +112,7 @@ public final class BinaryPlist {
         /* JADX WARN: Multi-variable type inference failed */
         /* JADX WARN: Type inference failed for: r2v25, types: [java.lang.Object[]] */
         /* JADX WARN: Type inference failed for: r3v0 */
-        /* JADX WARN: Type inference failed for: r3v1, types: [byte[]] */
+        /* JADX WARN: Type inference failed for: r3EncryptProofNeg, types: [byte[]] */
         /* JADX WARN: Type inference failed for: r3v10, types: [java.util.ArrayList] */
         /* JADX WARN: Type inference failed for: r3v14, types: [java.util.LinkedHashMap, java.util.Map] */
         /* JADX WARN: Type inference failed for: r3v20, types: [io.carplay.app.secured.BinaryPlist$c] */
@@ -280,7 +280,7 @@ public final class BinaryPlist {
         }
     }
 
-    public static final class c extends w1 {
+    public static final class c extends ProtoMessageBase {
         private final BigInteger a;
 
         public c(BigInteger bigInteger) {
@@ -307,7 +307,7 @@ public final class BinaryPlist {
             Object[] objArr = {this.a};
             String[] strArrSplit = "a".length() == 0 ? new String[0] : "a".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(c.class, sb, "[");
+            ProtoMessageBase.f(c.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");
@@ -533,7 +533,7 @@ public final class BinaryPlist {
         }
     }
 
-    public static final class b extends w1 {
+    public static final class b extends ProtoMessageBase {
         private final byte[] a;
         private final int[] b;
 
@@ -568,7 +568,7 @@ public final class BinaryPlist {
             Object[] objArr = {this.a, this.b};
             String[] strArrSplit = "a;b".length() == 0 ? new String[0] : "a;b".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(b.class, sb, "[");
+            ProtoMessageBase.f(b.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");

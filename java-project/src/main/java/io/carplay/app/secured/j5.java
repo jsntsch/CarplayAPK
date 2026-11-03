@@ -20,7 +20,7 @@ final class j5 {
         void run();
     }
 
-    public static final class b extends w1 {
+    public static final class b extends ProtoMessageBase {
         private final boolean a;
 
         public b(boolean z) {
@@ -43,7 +43,7 @@ final class j5 {
             Object[] objArr = {Boolean.valueOf(this.a)};
             String[] strArrSplit = "a".length() == 0 ? new String[0] : "a".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(b.class, sb, "[");
+            ProtoMessageBase.f(b.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");
@@ -57,7 +57,7 @@ final class j5 {
         }
     }
 
-    public static final class c extends w1 {
+    public static final class c extends ProtoMessageBase {
         private final long a;
         private final boolean b;
 
@@ -92,7 +92,7 @@ final class j5 {
             Object[] objArr = {Long.valueOf(this.a), Boolean.valueOf(this.b)};
             String[] strArrSplit = "a;b".length() == 0 ? new String[0] : "a;b".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(c.class, sb, "[");
+            ProtoMessageBase.f(c.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");

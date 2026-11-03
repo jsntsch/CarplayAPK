@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Process;
 import io.carplay.app.secured.ControlChannel;
 import io.carplay.app.secured.r1;
-import io.carplay.app.secured.w1;
+import io.carplay.app.secured.ProtoMessageBase;
 import java.lang.invoke.VarHandle;
 
 /* JADX INFO: loaded from: classes.dex */
@@ -34,10 +34,10 @@ public final class CarPlusApplication extends Application {
         ControlChannel.APP_CTX = this;
         SharedPreferences sharedPreferences = getSharedPreferences(WirelessCarPlayService.b1, 0);
         if (sharedPreferences.getBoolean("running", false) && !WirelessCarPlayService.L1()) {
-            AppLogger.g(this, w1.e("PREVIOUS_SESSION_PROCESS_EXIT state=", sharedPreferences.getString("state", "unknown")));
+            AppLogger.g(this, ProtoMessageBase.e("PREVIOUS_SESSION_PROCESS_EXIT state=", sharedPreferences.getString("state", "unknown")));
             sharedPreferences.edit().putBoolean("running", false).putBoolean("ready_for_source", false).putString("state", "STOPPED").putString("reason", "Application process restarted; previous connection ended").apply();
         }
-        AppLogger.g(this, w1.e("APP_START version=", MainActivity.A2(this)));
+        AppLogger.g(this, ProtoMessageBase.e("APP_START version=", MainActivity.A2(this)));
         Thread.UncaughtExceptionHandler defaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         r1 r1Var = new r1();
         r1Var.a = this;

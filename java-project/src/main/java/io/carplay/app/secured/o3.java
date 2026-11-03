@@ -20,13 +20,13 @@ public final /* synthetic */ class o3 implements Runnable {
             case 0:
                 mainActivity.A1();
                 break;
-            case p1.c /* 1 */:
+            case AudioSourceCapability.c /* 1 */:
                 mainActivity.U1();
                 break;
             case 2:
                 mainActivity.W1();
                 break;
-            case p1.d /* 3 */:
+            case AudioSourceCapability.d /* 3 */:
                 mainActivity.n1();
                 break;
             case 4:

@@ -25,13 +25,13 @@ import io.carplay.app.secured.ControlChannel;
 import io.carplay.app.secured.Iap2Csm;
 import io.carplay.app.secured.MfiCertificateVerifier;
 import io.carplay.app.secured.SyntheticRefs;
-import io.carplay.app.secured.h5;
-import io.carplay.app.secured.i5;
+import io.carplay.app.secured.BtDiscovery;
+import io.carplay.app.secured.DeviceMetadataStore;
 import io.carplay.app.secured.s6;
 import io.carplay.app.secured.t6;
 import io.carplay.app.secured.u6;
 import io.carplay.app.secured.v6;
-import io.carplay.app.secured.w1;
+import io.carplay.app.secured.ProtoMessageBase;
 import io.carplay.app.secured.w6;
 import io.carplay.app.secured.x6;
 import io.carplay.app.secured.y6;
@@ -80,7 +80,7 @@ public final class PairingSession implements AutoCloseable {
     private LinkProperties A;
     private AirplayServiceProbe B;
     private CarPlayCtrlAdvertiser C;
-    private r.a D;
+    private BluetoothAdapterResolver.a D;
     private boolean E;
     private int F;
     private int G;
@@ -109,8 +109,8 @@ public final class PairingSession implements AutoCloseable {
     private BluetoothServerSocket k;
     private BluetoothSocket l;
     private BluetoothSocket m;
-    private h5 n;
-    private h5 o;
+    private BtDiscovery n;
+    private BtDiscovery o;
     private BluetoothRfcommProfiles p;
     private boolean q;
     private boolean r;
@@ -164,7 +164,7 @@ public final class PairingSession implements AutoCloseable {
         }
 
         @Override // io.carplay.app.secured.MfiCertificateVerifier.c
-        public i5 c() throws IOException {
+        public DeviceMetadataStore c() throws IOException {
             if (!this.c.isClosed()) {
                 return this.c.b.c();
             }
@@ -202,7 +202,7 @@ public final class PairingSession implements AutoCloseable {
         @Override // io.carplay.app.secured.MfiCertificateVerifier.c
         public void i(Iap2Csm.a aVar) {
             Handler handler = this.c.h;
-            io.carplay.app.prototype.g gVar = new io.carplay.app.prototype.g(4);
+            io.carplay.app.prototype.ReleaseCheckTask gVar = new io.carplay.app.prototype.ReleaseCheckTask(4);
             gVar.b = this;
             gVar.c = aVar;
             VarHandle.storeStoreFence();
@@ -216,12 +216,12 @@ public final class PairingSession implements AutoCloseable {
 
         @Override // io.carplay.app.secured.MfiCertificateVerifier.c
         public String l() {
-            r.a aVar;
+            BluetoothAdapterResolver.a aVar;
             synchronized (this.c.i) {
                 try {
                     if (this.c.D == null) {
                         PairingSession pairingSession = this.c;
-                        pairingSession.D = io.carplay.app.prototype.r.a(pairingSession.a, this.a.getRemoteDevice().getAddress());
+                        pairingSession.D = io.carplay.app.prototype.BluetoothAdapterResolver.a(pairingSession.a, this.a.getRemoteDevice().getAddress());
                     }
                     aVar = this.c.D;
                 } catch (Throwable th) {
@@ -587,7 +587,7 @@ public final class PairingSession implements AutoCloseable {
 
         void b(String str);
 
-        default i5 c() throws IOException {
+        default DeviceMetadataStore c() throws IOException {
             return null;
         }
 
@@ -780,7 +780,7 @@ public final class PairingSession implements AutoCloseable {
                     u6 u6Var = new u6(i2);
                     u6Var.b = this;
                     VarHandle.storeStoreFence();
-                    h5 h5Var = new h5(t6Var, u6Var);
+                    BtDiscovery h5Var = new BtDiscovery(t6Var, u6Var);
                     synchronized (this.i) {
                         if (!this.u && this.m == null) {
                             this.o = h5Var;
@@ -944,12 +944,12 @@ public final class PairingSession implements AutoCloseable {
                     this.h.postDelayed(this.S, V);
                     z1(this.k);
                     this.k = null;
-                    h5 h5Var = this.n;
+                    BtDiscovery h5Var = this.n;
                     if (h5Var != null && (!this.q || !h5Var.r())) {
                         this.n.close();
                         this.n = null;
                     }
-                    h5 h5Var2 = this.o;
+                    BtDiscovery h5Var2 = this.o;
                     if (h5Var2 != null && (!this.q || !h5Var2.r())) {
                         this.o.close();
                         this.o = null;
@@ -1062,7 +1062,7 @@ public final class PairingSession implements AutoCloseable {
                                             }
                                             S1("RFCOMM_CONNECT_DIAGNOSTIC attempt=" + i2 + " stage=" + str + " elapsed_ms=" + (SystemClock.elapsedRealtime() - jElapsedRealtime) + " error_code=" + M1(e2) + " service_cache=" + B0(bluetoothDevice));
                                             if (!z && i3 == 0 && i2 < 3 && H1(e2) && K1(bluetoothDevice, atomicInteger, i2 + 1)) {
-                                                S1(w1.e("RFCOMM_CONNECT_UNAVAILABLE: ", J1(e2)));
+                                                S1(ProtoMessageBase.e("RFCOMM_CONNECT_UNAVAILABLE: ", J1(e2)));
                                                 return;
                                             }
                                             if (!z && i3 == 0 && i2 == 3 && H1(e2) && B1(bluetoothDevice, atomicInteger)) {
@@ -1246,7 +1246,7 @@ public final class PairingSession implements AutoCloseable {
                         k kVar = this.b;
                         String strG = null;
                         Network network = hVar.b;
-                        r.a aVar = this.D;
+                        BluetoothAdapterResolver.a aVar = this.D;
                         if (aVar != null) {
                             strG = aVar.g();
                         }
@@ -1272,7 +1272,7 @@ public final class PairingSession implements AutoCloseable {
                     S1("WIFI_AND_CARPLAY_ENDPOINT_READY_SOCKET_BINDING_REQUIRED");
                     k kVar2 = this.b;
                     Network network2 = this.z;
-                    r.a aVar2 = this.D;
+                    BluetoothAdapterResolver.a aVar2 = this.D;
                     kVar2.e(network2, aVarL1, interfaceName2, aVar2 == null ? null : aVar2.g());
                     AirplayServiceProbe airplayServiceProbe = this.B;
                     this.B = null;
@@ -1617,7 +1617,7 @@ public final class PairingSession implements AutoCloseable {
                             carPlayCtrlAdvertiser2.close();
                             this.C = null;
                         }
-                        r.a aVar = this.D;
+                        BluetoothAdapterResolver.a aVar = this.D;
                         if (aVar != null && aVar.g() != null) {
                             int i2 = this.F;
                             if (i2 >= 3) {
@@ -1727,12 +1727,12 @@ public final class PairingSession implements AutoCloseable {
                 this.R = null;
                 z1(this.k);
                 this.k = null;
-                h5 h5Var = this.n;
+                BtDiscovery h5Var = this.n;
                 if (h5Var != null) {
                     h5Var.close();
                     this.n = null;
                 }
-                h5 h5Var2 = this.o;
+                BtDiscovery h5Var2 = this.o;
                 if (h5Var2 != null) {
                     h5Var2.close();
                     this.o = null;
@@ -1856,7 +1856,7 @@ public final class PairingSession implements AutoCloseable {
     public /* synthetic */ void b1(int i2, BluetoothDevice bluetoothDevice, AtomicInteger atomicInteger) {
         synchronized (this.i) {
             if (!this.u && this.m == null && SystemClock.elapsedRealtime() < this.M) {
-                S1(w1.d("RFCOMM_SELECTED_PEER_RETRY_CONNECT_START attempt=", i2));
+                S1(ProtoMessageBase.d("RFCOMM_SELECTED_PEER_RETRY_CONNECT_START attempt=", i2));
                 try {
                     ExecutorService executorService = this.j;
                     s6 s6Var = new s6(1);
@@ -2153,7 +2153,7 @@ public final class PairingSession implements AutoCloseable {
     /* JADX WARN: Code duplicated, block: B:128:0x01a3 A[Catch: Exception -> 0x0062, TryCatch #7 {Exception -> 0x0062, blocks: (B:15:0x0023, B:20:0x0039, B:23:0x0041, B:24:0x004a, B:26:0x0050, B:32:0x0068, B:35:0x006f, B:36:0x0084, B:46:0x0093, B:51:0x009e, B:53:0x00b3, B:58:0x00c0, B:60:0x00c4, B:62:0x00cc, B:65:0x00d5, B:67:0x00d9, B:69:0x00e3, B:70:0x00e5, B:80:0x00f7, B:83:0x0112, B:86:0x011b, B:87:0x0138, B:97:0x0149, B:99:0x0150, B:103:0x0175, B:98:0x014d, B:105:0x0179, B:106:0x017e, B:116:0x0191, B:119:0x0196, B:126:0x01a0, B:128:0x01a3, B:131:0x01da, B:129:0x01b9, B:134:0x01f8, B:49:0x0098, B:50:0x0099, B:135:0x01f9, B:18:0x0032, B:71:0x00e6, B:73:0x00ea, B:74:0x00ed, B:78:0x00f4, B:79:0x00f6, B:107:0x017f, B:109:0x0183, B:112:0x0189, B:88:0x0139, B:90:0x013d, B:93:0x0142, B:94:0x0144, B:122:0x019a, B:123:0x019d), top: B:158:0x0023, inners: #0, #1, #2, #3, #4 }] */
     /* JADX WARN: Code duplicated, block: B:129:0x01b9 A[Catch: Exception -> 0x0062, TryCatch #7 {Exception -> 0x0062, blocks: (B:15:0x0023, B:20:0x0039, B:23:0x0041, B:24:0x004a, B:26:0x0050, B:32:0x0068, B:35:0x006f, B:36:0x0084, B:46:0x0093, B:51:0x009e, B:53:0x00b3, B:58:0x00c0, B:60:0x00c4, B:62:0x00cc, B:65:0x00d5, B:67:0x00d9, B:69:0x00e3, B:70:0x00e5, B:80:0x00f7, B:83:0x0112, B:86:0x011b, B:87:0x0138, B:97:0x0149, B:99:0x0150, B:103:0x0175, B:98:0x014d, B:105:0x0179, B:106:0x017e, B:116:0x0191, B:119:0x0196, B:126:0x01a0, B:128:0x01a3, B:131:0x01da, B:129:0x01b9, B:134:0x01f8, B:49:0x0098, B:50:0x0099, B:135:0x01f9, B:18:0x0032, B:71:0x00e6, B:73:0x00ea, B:74:0x00ed, B:78:0x00f4, B:79:0x00f6, B:107:0x017f, B:109:0x0183, B:112:0x0189, B:88:0x0139, B:90:0x013d, B:93:0x0142, B:94:0x0144, B:122:0x019a, B:123:0x019d), top: B:158:0x0023, inners: #0, #1, #2, #3, #4 }] */
     /* JADX WARN: Code duplicated, block: B:131:0x01da A[Catch: Exception -> 0x0062, TRY_LEAVE, TryCatch #7 {Exception -> 0x0062, blocks: (B:15:0x0023, B:20:0x0039, B:23:0x0041, B:24:0x004a, B:26:0x0050, B:32:0x0068, B:35:0x006f, B:36:0x0084, B:46:0x0093, B:51:0x009e, B:53:0x00b3, B:58:0x00c0, B:60:0x00c4, B:62:0x00cc, B:65:0x00d5, B:67:0x00d9, B:69:0x00e3, B:70:0x00e5, B:80:0x00f7, B:83:0x0112, B:86:0x011b, B:87:0x0138, B:97:0x0149, B:99:0x0150, B:103:0x0175, B:98:0x014d, B:105:0x0179, B:106:0x017e, B:116:0x0191, B:119:0x0196, B:126:0x01a0, B:128:0x01a3, B:131:0x01da, B:129:0x01b9, B:134:0x01f8, B:49:0x0098, B:50:0x0099, B:135:0x01f9, B:18:0x0032, B:71:0x00e6, B:73:0x00ea, B:74:0x00ed, B:78:0x00f4, B:79:0x00f6, B:107:0x017f, B:109:0x0183, B:112:0x0189, B:88:0x0139, B:90:0x013d, B:93:0x0142, B:94:0x0144, B:122:0x019a, B:123:0x019d), top: B:158:0x0023, inners: #0, #1, #2, #3, #4 }] */
-    public void P1(String str, boolean z, h5 h5Var) {
+    public void P1(String str, boolean z, BtDiscovery h5Var) {
         synchronized (this.i) {
             if (!this.t && !this.u) {
                 this.n = h5Var;
@@ -2199,7 +2199,7 @@ public final class PairingSession implements AutoCloseable {
                             }
                             this.p = bluetoothRfcommProfiles;
                             bluetoothRfcommProfiles.u();
-                            this.D = io.carplay.app.prototype.r.a(this.a, bluetoothDevice.getAddress());
+                            this.D = io.carplay.app.prototype.BluetoothAdapterResolver.a(this.a, bluetoothDevice.getAddress());
                             boolean z2 = false;
                             boolean z3 = this.b.p() && this.b.k();
                             if (z3 || (this.c != null && this.b.k() && this.b.i())) {
@@ -2224,7 +2224,7 @@ public final class PairingSession implements AutoCloseable {
                                             u6 u6Var = new u6(9);
                                             u6Var.b = this;
                                             VarHandle.storeStoreFence();
-                                            h5 h5Var2 = new h5(t6Var2, u6Var);
+                                            BtDiscovery h5Var2 = new BtDiscovery(t6Var2, u6Var);
                                             synchronized (this.i) {
                                                 if (!this.u && this.m == null) {
                                                     this.o = h5Var2;
@@ -2338,7 +2338,7 @@ public final class PairingSession implements AutoCloseable {
             }
             T1("BLUETOOTH_ENABLE_BY_USER_REQUIRED");
         } catch (Exception e2) {
-            T1(w1.e("RFCOMM_START_FAILED: ", J1(e2)));
+            T1(ProtoMessageBase.e("RFCOMM_START_FAILED: ", J1(e2)));
         }
     }
 
@@ -2365,7 +2365,7 @@ public final class PairingSession implements AutoCloseable {
         }
     }
 
-    public static final class m extends w1 {
+    public static final class m extends ProtoMessageBase {
         private final byte[] a;
         private final IOException b;
 
@@ -2400,7 +2400,7 @@ public final class PairingSession implements AutoCloseable {
             Object[] objArr = {this.a, this.b};
             String[] strArrSplit = "a;b".length() == 0 ? new String[0] : "a;b".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(m.class, sb, "[");
+            ProtoMessageBase.f(m.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");
@@ -2418,7 +2418,7 @@ public final class PairingSession implements AutoCloseable {
         }
     }
 
-    public static final class g extends w1 {
+    public static final class g extends ProtoMessageBase {
         private final Network a;
         private final String b;
         private final boolean c;
@@ -2467,7 +2467,7 @@ public final class PairingSession implements AutoCloseable {
             Object[] objArr = {this.a, this.b, Boolean.valueOf(this.c), Boolean.valueOf(this.d)};
             String[] strArrSplit = "a;b;c;d".length() == 0 ? new String[0] : "a;b;c;d".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(g.class, sb, "[");
+            ProtoMessageBase.f(g.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");

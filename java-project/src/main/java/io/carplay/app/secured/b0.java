@@ -18,17 +18,17 @@ public final /* synthetic */ class b0 implements Runnable {
             case 0:
                 airPlaySession.c1();
                 break;
-            case p1.c /* 1 */:
+            case AudioSourceCapability.c /* 1 */:
                 airPlaySession.N0();
                 break;
             case 2:
                 airPlaySession.r2();
                 break;
-            case p1.d /* 3 */:
+            case AudioSourceCapability.d /* 3 */:
                 airPlaySession.u2();
                 break;
             case 4:
-                airPlaySession.P0();
+                airPlaySession.eventKeepAliveTick();
                 break;
             case 5:
                 airPlaySession.f0();

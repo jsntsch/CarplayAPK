@@ -30,7 +30,7 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SRC = os.path.join(ROOT, "src", "main", "java")
+SRC = os.environ.get("CARPLAY_SRC", os.path.join(ROOT, "src", "main", "java"))
 
 # (文件相对路径, 旧名, 新名, 成员名列表或 None, 所属外层类名或 None)
 JOBS = [
@@ -44,10 +44,12 @@ JOBS = [
     # ---- 其余文件：嵌套类型与同名字段冲突 ----
     ("io/carplay/app/secured/b.java", "a", "VerifyResult",
      ["UNKNOWN", "PASSED", "FAILED", "NOT_APPLICABLE"], "b"),
-    ("io/carplay/app/secured/x.java", "g", "HidTouchType",
-     ["UNKNOWN", "TOUCH_SCREEN", "TOUCHPAD", "KNOB"], "x"),
-    ("io/carplay/app/secured/f5.java", "c", "PacketType",
-     ["INIT", "DATA", "STOP", "PAUSE", "RESUME", "SEEK"], "f5"),
+    # x 已在 rename_map.CORE 中改名为 HidCapabilities（含嵌套 g->HidTouchType）
+    ("io/carplay/app/secured/HidCapabilities.java", "g", "HidTouchType",
+     ["UNKNOWN", "TOUCH_SCREEN", "TOUCHPAD", "KNOB"], "HidCapabilities"),
+    # f5 已在 rename_map.CORE 中改名为 PcmAudioOutput（含嵌套 c->PacketType）
+    ("io/carplay/app/secured/PcmAudioOutput.java", "c", "PacketType",
+     ["INIT", "DATA", "STOP", "PAUSE", "RESUME", "SEEK"], "PcmAudioOutput"),
     ("io/carplay/app/prototype/CarLifeBridge.java", "c", "ReviewState",
      ["REVIEWED", "CANDIDATE", "BLOCKED"], "CarLifeBridge"),
     ("io/carplay/app/secured/i6.java", "a", "TouchAction",
@@ -57,7 +59,16 @@ JOBS = [
     ("io/carplay/app/secured/g4.java", "b", "Endian",
      ["LITTLE_ENDIAN", "BIG_ENDIAN", "UNKNOWN"], "g4"),
     ("io/carplay/app/secured/l4.java", "a", "SwitchMap", ["a"], "l4"),
-    ("io/carplay/app/secured/v1.java", "a", "SwitchMap", ["a"], "v1"),
+    # v1 已在 rename_map.CORE 中改名为 EncryptProofNeg（含嵌套 a->SwitchMap）
+    ("io/carplay/app/secured/EncryptProofNeg.java", "a", "SwitchMap", ["a"], "EncryptProofNeg"),
+    # ---- 说明：31 新增里的「嵌套类」条目（j1$b/j1$a/j1$c、z0$e、g4$e/g4$h、
+    # i0$b、t4$a、y2$f、l1$d、x0$a、u1 之外的内层类）暂时 **不在此处改名**。
+    # 原因：这些内层类与「同名的字段/方法/局部变量」大量共存，Java 文本层无法
+    # 可靠区分（例如 VideoCipher 里既有嵌套类 b，又有方法 VideoCipher.b(...)；
+    # g4 里既有枚举 e/h，又有 `instanceof h`/`(e) obj` 强转）。实测直接改会
+    # 产生 300+ 处 "cannot find symbol / incompatible types"，远不如保持混淆名。
+    # 这些名称仍保留在 rename_map.CORE 里作为分析结论，待后续用 smali 描述符级
+    # 改名（dex_rename.py 路线）安全落地。
 ]
 
 IDENT = r"[A-Za-z_$][\w$]*"
@@ -109,7 +120,48 @@ def apply(rel, old, new, members, outer, text):
         text, k = re.subn(r"\b" + outer + r"\." + old + r"\b", outer + "." + new, text)
         n += k
 
+    # 7. 构造器 old( -> new(：只在「被重命名的嵌套类 new 的体内」做，避免误改
+    #    外层或其它同名方法/构造器（如 DisplaySession 里还有别的 a() 方法）。
+    text, k = _rename_ctor_in_body(text, new, old)
+    n += k
+
     return text, n
+
+
+def _rename_ctor_in_body(text, new, old):
+    """在被重命名为 new 的嵌套类体内，把构造器 old( 改成 new(。返回 (text, count)。"""
+    decls = ["class", "interface", "enum"]
+    # 找到 new 的声明起点
+    idx = -1
+    for kw in decls:
+        m = re.search(r"\b" + kw + r"\s+" + re.escape(new) + r"\b", text)
+        if m:
+            idx = m.start()
+            break
+    if idx < 0:
+        return text, 0
+    # 从声明处开始 brace 匹配，定位类体
+    depth = 0
+    started = False
+    end = -1
+    for i in range(idx, len(text)):
+        c = text[i]
+        if c == "{":
+            depth += 1
+            started = True
+        elif c == "}":
+            depth -= 1
+            if started and depth == 0:
+                end = i
+                break
+    if end < 0:
+        return text, 0
+    body = text[idx:end]
+    # 体内：old( → new(（构造器，无返回类型；同体方法恰好同名极罕见，可接受）
+    new_body, k = re.subn(r"(?<![\w.$])" + re.escape(old) + r"(?=\s*\()", new, body)
+    if k:
+        text = text[:idx] + new_body + text[end:]
+    return text, k
 
 
 def main():
@@ -117,7 +169,19 @@ def main():
     changed = {}
     for rel, old, new, members, outer in JOBS:
         target = os.path.join(SRC, rel)
+        if not os.path.exists(target):
+            print(f"{rel:46s} {old:3s} -> {new:14s} SKIP(文件不存在)")
+            continue
         text = open(target, encoding="utf-8", errors="replace").read()
+        # 幂等保护：若声明已经是 new 且已没有 old，说明这一条早已应用过
+        # （39 名树本身就带着这批嵌套改名）。此时绝不能再跑一遍——rule 6 的
+        # 跨文件扫描 `\bOuter.old\b` 会把「字段 Outer 上调方法 old(...)」误改
+        # 成 `Outer.new(...)`（实测 4 处 this.b.a(...) 被改成 this.b.VerifyResult）。
+        has_new = re.search(r"\b(class|interface|enum)\s+" + re.escape(new) + r"\b", text)
+        has_old = re.search(r"\b(class|interface|enum)\s+" + re.escape(old) + r"\b", text)
+        if has_new and not has_old:
+            print(f"{rel:46s} {old:3s} -> {new:14s} skip(已应用)")
+            continue
         new_text, n = apply(rel, old, new, members, outer, text)
         # 本文件还会被别的文件以 `Outer.old` 引用，需要全项目扫一遍
         if outer:

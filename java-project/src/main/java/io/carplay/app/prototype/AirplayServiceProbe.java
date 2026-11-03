@@ -8,7 +8,7 @@ import android.os.Build;
 import io.carplay.app.secured.u0;
 import io.carplay.app.secured.v0;
 import io.carplay.app.secured.w0;
-import io.carplay.app.secured.w1;
+import io.carplay.app.secured.ProtoMessageBase;
 import java.lang.invoke.VarHandle;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -414,7 +414,7 @@ public final class AirplayServiceProbe implements AutoCloseable {
         }
     }
 
-    public static final class c extends w1 {
+    public static final class c extends ProtoMessageBase {
         private final String a;
         private final int b;
         private final String c;
@@ -445,7 +445,7 @@ public final class AirplayServiceProbe implements AutoCloseable {
             int i = this.b;
             String str = this.a;
             String str2 = this.c;
-            return Objects.hashCode(str2) + w1.b(str, i * 31, 31);
+            return Objects.hashCode(str2) + ProtoMessageBase.b(str, i * 31, 31);
         }
 
         public int i() {
@@ -456,7 +456,7 @@ public final class AirplayServiceProbe implements AutoCloseable {
             Object[] objArr = {this.a, Integer.valueOf(this.b), this.c};
             String[] strArrSplit = "a;b;c".length() == 0 ? new String[0] : "a;b;c".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(c.class, sb, "[");
+            ProtoMessageBase.f(c.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");

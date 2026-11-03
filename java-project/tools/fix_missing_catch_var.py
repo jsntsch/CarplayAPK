@@ -35,8 +35,9 @@ import os
 import re
 import sys
 
-SRC = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                   "src", "main", "java")
+SRC = os.environ.get("CARPLAY_SRC",
+    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                   "src", "main", "java"))
 VAR = "th"
 USE_RE = re.compile(r"(?<![\w.$])" + VAR + r"(?![\w])")
 # 只认「对 th 赋值」这个确定形态：`th = th2;`。

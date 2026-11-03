@@ -11,7 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
-import io.carplay.app.secured.b2;
+import io.carplay.app.secured.RfcommSessionLog;
 import io.carplay.app.secured.d1;
 import io.carplay.app.secured.h3;
 import io.carplay.app.secured.i3;
@@ -68,7 +68,7 @@ public final class LogActivity extends Activity {
                 if (outputStreamOpenOutputStream == null) {
                     throw new IOException("No output stream");
                 }
-                outputStreamOpenOutputStream.write(b2.b(AppLogger.d(this)).getBytes(StandardCharsets.UTF_8));
+                outputStreamOpenOutputStream.write(RfcommSessionLog.b(AppLogger.d(this)).getBytes(StandardCharsets.UTF_8));
                 outputStreamOpenOutputStream.flush();
                 str = "日志文件已保存";
                 AppLogger.g(this, "USER_LOG_EXPORT_COMPLETE");

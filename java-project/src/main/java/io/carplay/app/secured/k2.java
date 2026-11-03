@@ -6,7 +6,7 @@ public class k2 {
     private int b;
 
     public k2(byte[] bArr, int i) {
-        this.a = e.d(bArr);
+        this.a = ByteArrays.d(bArr);
         this.b = i;
     }
 
@@ -18,10 +18,10 @@ public class k2 {
         if (k2Var.b != this.b) {
             return false;
         }
-        return e.b(this.a, k2Var.a);
+        return ByteArrays.b(this.a, k2Var.a);
     }
 
     public int hashCode() {
-        return e.g(this.a) ^ this.b;
+        return ByteArrays.g(this.a) ^ this.b;
     }
 }

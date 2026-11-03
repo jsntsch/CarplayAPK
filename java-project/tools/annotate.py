@@ -7,7 +7,8 @@
 import os, re, sys
 import rename_map as RM
 
-DST = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src", "main", "java")
+_DST_DEF = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src", "main", "java")
+DST = os.environ.get("CARPLAY_SRC", _DST_DEF)
 
 # 核心类的补充说明（在自动依据之外）
 EXTRA = {

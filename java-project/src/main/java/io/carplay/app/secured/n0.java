@@ -19,14 +19,14 @@ public final /* synthetic */ class n0 implements ThreadFactory {
         switch (this.a) {
             case 0:
                 return AirPlaySession.U0(runnable);
-            case p1.c /* 1 */:
+            case AudioSourceCapability.c /* 1 */:
                 return AirPlaySession.V0(runnable);
             case 2:
                 return AirplayServiceProbe.u(runnable);
-            case p1.d /* 3 */:
-                return t4.C(runnable);
+            case AudioSourceCapability.d /* 3 */:
+                return DisplaySession.C(runnable);
             case 4:
-                return h5.o(runnable);
+                return BtDiscovery.o(runnable);
             case 5:
                 return PairingSession.R0(runnable);
             case 6:

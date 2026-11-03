@@ -464,7 +464,7 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
                         this.a.registerService(nsdServiceInfo, 1, this.q);
                         if (!this.i.get()) {
                             for (ServerSocket serverSocket : this.k) {
-                                g gVar = new g(i);
+                                ReleaseCheckTask gVar = new ReleaseCheckTask(i);
                                 gVar.b = this;
                                 gVar.c = serverSocket;
                                 VarHandle.storeStoreFence();

@@ -23,7 +23,7 @@ public final /* synthetic */ class h0 implements Runnable {
                 this.c.I0((List) this.d, (EventChannel) this.e, this.b);
                 break;
             default:
-                ((WirelessCarPlayService) this.d).P1(this.b, this.c, (t4) this.e);
+                ((WirelessCarPlayService) this.d).P1(this.b, this.c, (DisplaySession) this.e);
                 break;
         }
     }

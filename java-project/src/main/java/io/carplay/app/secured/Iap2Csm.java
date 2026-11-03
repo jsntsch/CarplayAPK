@@ -134,7 +134,7 @@ public final class Iap2Csm {
         }
     }
 
-    public static final class f {
+    public static final class Iap2FrameValidator {
         private byte[] a = new byte[0];
 
         public void a() throws EOFException {
@@ -285,7 +285,7 @@ public final class Iap2Csm {
         if (i2 == 0 || i2 == 2) {
             return new g(i2, i, strZ, bArrQ == null ? "" : z(bArrQ));
         }
-        SyntheticRefs.c(w1.d("IAP2_WIFI_CONFIG_SECURITY_UNSUPPORTED_", i2));
+        SyntheticRefs.c(ProtoMessageBase.d("IAP2_WIFI_CONFIG_SECURITY_UNSUPPORTED_", i2));
         return null;
     }
 
@@ -489,7 +489,7 @@ public final class Iap2Csm {
         for (e eVar : list) {
             if (eVar.a == i) {
                 if (bArr != null) {
-                    SyntheticRefs.c(w1.d("Duplicate iAP2 field ", i));
+                    SyntheticRefs.c(ProtoMessageBase.d("Duplicate iAP2 field ", i));
                     return null;
                 }
                 bArr = eVar.b;
@@ -572,7 +572,7 @@ public final class Iap2Csm {
         for (e eVar : list) {
             if (eVar.a == i) {
                 if (bArr != null) {
-                    SyntheticRefs.c(w1.d("Duplicate iAP2 field ", i));
+                    SyntheticRefs.c(ProtoMessageBase.d("Duplicate iAP2 field ", i));
                     return null;
                 }
                 bArr = eVar.b;
@@ -581,7 +581,7 @@ public final class Iap2Csm {
         if (bArr != null) {
             return (byte[]) bArr.clone();
         }
-        SyntheticRefs.c(w1.d("Missing iAP2 field ", i));
+        SyntheticRefs.c(ProtoMessageBase.d("Missing iAP2 field ", i));
         return null;
     }
 
@@ -835,7 +835,7 @@ public final class Iap2Csm {
                 throw null;
             }
             if (i != 0 && i != 2 && i != 3 && i != 4) {
-                SyntheticRefs.c(w1.d("Unsupported Wi-Fi security ", i));
+                SyntheticRefs.c(ProtoMessageBase.d("Unsupported Wi-Fi security ", i));
                 throw null;
             }
             if (i != 0 && (str2.length() < 8 || str2.length() > 63)) {
@@ -885,7 +885,7 @@ public final class Iap2Csm {
         }
 
         public String toString() {
-            return w1.d("Authenticated Wi-Fi credentials; security=", this.b);
+            return ProtoMessageBase.d("Authenticated Wi-Fi credentials; security=", this.b);
         }
 
         public /* synthetic */ g(int i, int i2, String str, String str2) throws IOException {

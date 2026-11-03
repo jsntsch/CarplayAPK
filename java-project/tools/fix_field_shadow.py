@@ -35,7 +35,7 @@ import sys
 from collections import defaultdict
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SRC = os.path.join(ROOT, "src", "main", "java")
+SRC = os.environ.get("CARPLAY_SRC", os.path.join(ROOT, "src", "main", "java"))
 
 ERR_RE = re.compile(r"^(.*?):(\d+): error: .*cannot be dereferenced$")
 MEM_RE = re.compile(r"(?<![\w$.])([A-Za-z_$][\w$]*)\s*\.\s*([A-Za-z_$][\w$]*)")

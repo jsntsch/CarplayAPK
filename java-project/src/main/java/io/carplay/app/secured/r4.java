@@ -6,7 +6,7 @@ import java.util.function.Consumer;
 /* JADX INFO: loaded from: classes.dex */
 public final /* synthetic */ class r4 implements Consumer {
     public final /* synthetic */ int a;
-    public /* synthetic */ t4.c b;
+    public /* synthetic */ DisplaySession.c b;
 
     /* smali 中为 public synthetic constructor <init>(I)V，jadx 漏生成 */
     public r4(int i) {

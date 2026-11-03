@@ -1,15 +1,15 @@
 package org.bouncycastle.crypto.params;
 
 import io.carplay.app.secured.SyntheticRefs;
-import io.carplay.app.secured.e;
-import io.carplay.app.secured.f;
+import io.carplay.app.secured.ByteArrays;
+import io.carplay.app.secured.AsymmetricKeyParameter;
 import io.carplay.app.secured.l6;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 
 /* JADX INFO: loaded from: classes.dex */
-public final class X25519PublicKeyParameters extends f {
+public final class X25519PublicKeyParameters extends AsymmetricKeyParameter {
     public static final int KEY_SIZE = 32;
     private final byte[] data;
 
@@ -35,7 +35,7 @@ public final class X25519PublicKeyParameters extends f {
     }
 
     public byte[] getEncoded() {
-        return e.d(this.data);
+        return ByteArrays.d(this.data);
     }
 
     public X25519PublicKeyParameters(byte[] bArr) {

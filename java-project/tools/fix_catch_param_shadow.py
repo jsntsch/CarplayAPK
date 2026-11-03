@@ -34,8 +34,9 @@ import os
 import re
 import sys
 
-SRC = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                   "src", "main", "java")
+SRC = os.environ.get("CARPLAY_SRC",
+    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                   "src", "main", "java"))
 OLD = "th"
 NEW = "thCaught"
 CATCH_RE = re.compile(r"catch\s*\(\s*Throwable\s+" + OLD + r"\s*\)\s*\{")

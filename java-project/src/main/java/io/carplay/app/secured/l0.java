@@ -20,7 +20,7 @@ public final /* synthetic */ class l0 implements Supplier {
         switch (i) {
             case 0:
                 return ((AirPlaySession.n) obj).e();
-            case p1.c /* 1 */:
+            case AudioSourceCapability.c /* 1 */:
                 return ((AirPlaySession.n) obj).e();
             default:
                 return ((MfiCertificateVerifier.c) obj).e();

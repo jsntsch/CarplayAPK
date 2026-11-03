@@ -16,18 +16,18 @@ public final /* synthetic */ class r implements Function {
     public final Object apply(Object obj) {
         switch (this.a) {
             case 0:
-                return s.n((s.a) obj);
-            case p1.c /* 1 */:
-                int i = x.p;
-                return ((x.c) obj).h();
+                return AudioCapabilities.n((AudioCapabilities.a) obj);
+            case AudioSourceCapability.c /* 1 */:
+                int i = HidCapabilities.p;
+                return ((HidCapabilities.c) obj).h();
             case 2:
-                return Boolean.valueOf(((x.c) obj).t());
-            case p1.d /* 3 */:
+                return Boolean.valueOf(((HidCapabilities.c) obj).t());
+            case AudioSourceCapability.d /* 3 */:
                 return PairingTlv8.f((Integer) obj);
             case 4:
                 return ((PairingSession.l) obj).a;
             case 5:
-                return p6.b((p6.b) obj);
+                return IoStatsSnapshot.b((IoStatsSnapshot.b) obj);
             case 6:
                 return ((PairingSession.l) obj).a;
             default:

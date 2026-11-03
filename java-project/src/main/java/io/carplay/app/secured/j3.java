@@ -194,7 +194,7 @@ public abstract class j3 implements q2 {
     }
 
     public void o(byte[] bArr, int i) {
-        this.n[this.o] = y4.b(bArr, i);
+        this.n[this.o] = LittleEndianIntCodec.b(bArr, i);
         int i2 = this.o + 1;
         this.o = i2;
         if (i2 == 16) {

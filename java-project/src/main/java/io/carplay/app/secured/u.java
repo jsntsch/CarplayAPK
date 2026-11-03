@@ -18,9 +18,9 @@ public final /* synthetic */ class u implements Predicate {
         int i2 = this.b;
         switch (i) {
             case 0:
-                return x.A(i2, (x.e) obj);
-            case p1.c /* 1 */:
-                return x.w(i2, (x.c) obj);
+                return HidCapabilities.A(i2, (HidCapabilities.e) obj);
+            case AudioSourceCapability.c /* 1 */:
+                return HidCapabilities.w(i2, (HidCapabilities.c) obj);
             default:
                 return MfiCertificateVerifier.K(i2, (Iap2Csm.e) obj);
         }

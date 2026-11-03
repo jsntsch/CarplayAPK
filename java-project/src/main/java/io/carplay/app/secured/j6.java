@@ -5,7 +5,7 @@ import java.io.IOException;
 /* JADX INFO: loaded from: classes.dex */
 public interface j6 {
 
-    public static final class a extends w1 {
+    public static final class a extends ProtoMessageBase {
         private final boolean a;
         private final boolean b;
         private final boolean c;
@@ -75,7 +75,7 @@ public interface j6 {
             Object[] objArr = {Boolean.valueOf(this.a), Boolean.valueOf(this.b), Boolean.valueOf(this.c), Boolean.valueOf(this.d), Boolean.valueOf(this.e), Boolean.valueOf(this.f), Boolean.valueOf(this.g)};
             String[] strArrSplit = "a;b;c;d;e;f;g".length() == 0 ? new String[0] : "a;b;c;d;e;f;g".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(a.class, sb, "[");
+            ProtoMessageBase.f(a.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");
@@ -99,7 +99,7 @@ public interface j6 {
         return false;
     }
 
-    default boolean c(m1.d dVar) {
+    default boolean c(RemoteCommandHandler.d dVar) {
         return false;
     }
 

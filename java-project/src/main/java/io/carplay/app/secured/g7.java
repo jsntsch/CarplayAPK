@@ -8,7 +8,7 @@ import io.carplay.app.prototype.WirelessCarPlayService;
 public final /* synthetic */ class g7 implements Runnable {
     public final /* synthetic */ int a;
     public /* synthetic */ WirelessCarPlayService b;
-    public /* synthetic */ u5.a c;
+    public /* synthetic */ Iap2Bootstrap.a c;
     public /* synthetic */ Network d;
     public /* synthetic */ Iap2Csm.a e;
     public /* synthetic */ String f;

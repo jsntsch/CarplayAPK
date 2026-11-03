@@ -6,11 +6,11 @@ import java.util.List;
 
 /* JADX INFO: compiled from: CarPlus */
 /* JADX INFO: loaded from: classes.dex */
-public final /* synthetic */ class z2 implements j5.a, f6.a, VideoCipher.b.c {
+public final /* synthetic */ class z2 implements j5.a, RsaAesCrypto.a, VideoCipher.AvcVideoInput.c {
     public /* synthetic */ Object a;
     public /* synthetic */ Object b;
 
-    public /* synthetic */ z2(t4 t4Var, Provider provider) {
+    public /* synthetic */ z2(DisplaySession t4Var, Provider provider) {
         this.a = t4Var;
         this.b = provider;
     }
@@ -20,12 +20,12 @@ public final /* synthetic */ class z2 implements j5.a, f6.a, VideoCipher.b.c {
     public /* synthetic */ z2() {
     }
 
-    @Override // io.carplay.app.secured.f6.a
+    @Override // io.carplay.app.secured.RsaAesCrypto.a
     public o a(byte[] bArr) {
-        return ((t4) this.a).G((Provider) this.b, bArr);
+        return ((DisplaySession) this.a).G((Provider) this.b, bArr);
     }
 
-    @Override // io.carplay.app.secured.VideoCipher.b.c
+    @Override // io.carplay.app.secured.VideoCipher.AvcVideoInput.c
     public void c(List list, long j, long j2, long j3) throws IOException {
         ((w4) this.a).g((w4.b) this.b, list, j, j2, j3);
     }

@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 /* JADX INFO: loaded from: classes.dex */
 public final class t5 {
 
-    public static final class a extends w1 {
+    public static final class a extends ProtoMessageBase {
         private final b a;
         private final Map<String, String> b;
         private final boolean c;
@@ -52,7 +52,7 @@ public final class t5 {
             Object[] objArr = {this.a, this.b, Boolean.valueOf(this.c)};
             String[] strArrSplit = "a;b;c".length() == 0 ? new String[0] : "a;b;c".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(a.class, sb, "[");
+            ProtoMessageBase.f(a.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");
@@ -66,7 +66,7 @@ public final class t5 {
         }
     }
 
-    public static final class b extends w1 {
+    public static final class b extends ProtoMessageBase {
         private final String a;
         private final int b;
 
@@ -100,7 +100,7 @@ public final class t5 {
             Object[] objArr = {this.a, Integer.valueOf(this.b)};
             String[] strArrSplit = "a;b".length() == 0 ? new String[0] : "a;b".split(";");
             StringBuilder sb = new StringBuilder();
-            w1.f(b.class, sb, "[");
+            ProtoMessageBase.f(b.class, sb, "[");
             for (int i = 0; i < strArrSplit.length; i++) {
                 sb.append(strArrSplit[i]);
                 sb.append("=");

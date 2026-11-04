@@ -12,7 +12,7 @@
 #   2) 另开一条到 eventPort 的裸连接，看对端是否主动推数据
 #      0 字节 = 与客户端实现无关，是对端策略/会话状态问题
 #
-# 背景见 references/touch-input-hid.md
+# 背景见 references/verify-links.md
 
 set -u
 

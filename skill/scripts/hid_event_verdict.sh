@@ -2,7 +2,7 @@
 # hid_event_verdict.sh -- 抓 HID 通道判定日志并直接给结论
 #
 # 用途：验证「车机是否接受在事件通道上收 POST /command」，
-#       对应 OcarPlay V1.3.0 的 carrier 判读表（见 references/touch-input-hid.md 第 7 节）。
+#       判读表见 references/verify-links.md 第 5 节「触摸」。
 #
 # 用法：
 #   ./hid_event_verdict.sh            # 抓 90 秒，边抓边判
@@ -69,7 +69,7 @@ if [ "$LOCK" -gt 0 ]; then
     else
         echo "结论 B: 车机接受事件通道上的 POST /command（200），但一个 HID report 都没推。"
         echo "        通道选择已排除，转查会话完整性：audio stream 是否 SETUP、"
-        echo "        AUDIO_MAIN_MODES_CONFIRMED 是否出现（touch-input-hid.md 候选 2）。"
+        echo "        AUDIO_MAIN_MODES_CONFIRMED 是否出现（见 references/verify-links.md §4）。"
     fi
 elif [ "$REJECT" -gt 0 ]; then
     echo "结论 C: 车机不接受事件通道上的 POST /command（连续 2 次失败已自动回退控制通道）。"

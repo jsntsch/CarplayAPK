@@ -1,0 +1,34 @@
+/*
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2026 SCH
+ *
+ * 本文件以 MIT 协议发布，完整条款见项目根目录 LICENSE。
+ * This file is released under the MIT License; see LICENSE in the project root.
+ *
+ * 文件用途 / File purpose:
+ *   本文件定义 o1。转换函数：把一个对象映射为另一个对象。
+ *   This file defines o1. Function mapping one object to another.
+ *
+ * 所属子系统 / Subsystem:
+ *   协议栈核心层（AirPlay / iAP2 / HID / 加解密 / 媒体通道） / protocol core (AirPlay / iAP2 / HID / crypto / media channels)
+ */
+
+package io.carplay.app.secured;
+
+import java.util.function.Function;
+
+
+
+/**
+ * 转换函数：把一个对象映射为另一个对象。
+ *
+ * Function mapping one object to another.
+ */
+public final  class o1 implements Function {
+    public  HidCapabilities.c a;
+
+    @Override 
+    public final Object apply(Object obj) {
+        return AudioSourceCapability.h(this.a, (HidCapabilities.c) obj);
+    }
+}

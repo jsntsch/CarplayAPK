@@ -35,12 +35,14 @@ google-services.json
 *.hprof
 
 # ---------------------------------------------------------------
-# 本仓库是「逆向分析材料」，不是 Android 工程：
-# firmware/ 与 java-project/ 里的 APK 是研究素材，不是构建产物，
-# 因此对这两棵子树恢复 *.apk（上面的通用规则会误伤）。
+# android-project/ 是真正的 Android 工程；apk/ 与 firmware/ 是研究素材。
+# dist/ 与 build/ 下的 APK 属于构建产物，继续忽略（上面的 *.apk 规则即为此）。
+# 参考 APK（apk/、firmware/）需要入库，故对这两棵子树恢复 *.apk。
+# android-project/ is the real Android project; apk/ and firmware/ are reference material.
+# Build outputs under dist/ and build/ stay ignored; reference APKs are restored below.
 # ---------------------------------------------------------------
+!apk/**/*.apk
 !firmware/**/*.apk
-!java-project/**/*.apk
 
 # 绝不提交：配对私钥 / 设备身份
 *identity*.json

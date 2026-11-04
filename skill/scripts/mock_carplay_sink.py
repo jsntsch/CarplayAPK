@@ -6,10 +6,10 @@ mock_carplay_sink.py — 模拟「无线 CarPlay 接收端」（假的 Head Unit
 ## 目的
 
 在没有车机、或车机不便上电时，用一台普通机器（PC / Termux 手机）扮演车机侧的
-AirPlay/CarPlay 接收端，用来把 OcarPlay 的「Car+ → CarPlay」这段链路单独调通：
+AirPlay/CarPlay 接收端，用来把 CarPlayAPK 的「Car+ → CarPlay」这段链路单独调通：
 
 ```
-OcarPlay(手机)  --mDNS-->  mock(本脚本 :7000)
+CarPlayAPK(手机)  --mDNS-->  mock(本脚本 :7000)
                 --OPTIONS / GET /info / POST /pair-verify / POST /stream-setup-->
                 --屏幕流(TCP 6030 或 RTSP 交织 $ 帧)-->
 ```
@@ -38,13 +38,13 @@ python mock_carplay_sink.py
 
 > Android 上监听 <1024 的端口需要 root，7000 没问题；6030 也没问题。
 
-## 与 OcarPlay 的对接
+## 与 CarPlayAPK 的对接
 
 1. 手机与模拟端必须在**同一个局域网**（家/办公室路由器即可，不必是车机热点）。
-2. OcarPlay 里用「WLAN 连接」手动填当前 WiFi 的 SSID/密码 —— 手动模式会**跳过
+2. CarPlayAPK 里用「WLAN 连接」手动填当前 WiFi 的 SSID/密码 —— 手动模式会**跳过
    车机网段校验**，否则 192.168.5.x 的检查会把这个局域网挡掉。
-3. 启动后 OcarPlay 会自己 mDNS 发现本脚本；若网络屏蔽组播，用 `--no-mdns` 起，
-   并把 IP 直接告诉 OcarPlay。
+3. 启动后 CarPlayAPK 会自己 mDNS 发现本脚本；若网络屏蔽组播，用 `--no-mdns` 起，
+   并把 IP 直接告诉 CarPlayAPK。
 
 ## 端口
 
@@ -205,7 +205,7 @@ class AccessoryKeys:
 def plist_xml(width: int, height: int) -> bytes:
     """返回一个 XML plist 能力表。
 
-    刻意用 XML 而不是二进制 plist：OcarPlay 的 `/info` 解析目前是「正则找 3~4 位数字」，
+    刻意用 XML 而不是二进制 plist：CarPlayAPK 的 `/info` 解析目前是「正则找 3~4 位数字」，
     XML 里 1280/768 都是明文数字，能直接命中，省得再造一个 bin-plist 编码器。
     """
     body = f"""<?xml version="1.0" encoding="UTF-8"?>
@@ -646,7 +646,7 @@ def main():
     log(f"能力表         : {args.width}x{args.height}")
     log(f"日志           : {os.path.abspath(args.log)}")
     log("=" * 62)
-    log("让 OcarPlay 用「WLAN 连接」手动填当前 SSID，即可跳过车机网段校验")
+    log("让 CarPlayAPK 用「WLAN 连接」手动填当前 SSID，即可跳过车机网段校验")
 
     state = RtspServer(args)
 

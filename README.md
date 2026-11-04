@@ -1,112 +1,243 @@
 # CarplayAPK
 
-把别克（上汽通用 GM INFO3.6）车机的无线 CarPlay 接进 OPPO Car+ 车机投屏的分析材料与工具集。
+把别克（上汽通用 GM INFO3.6）车机的**无线 CarPlay** 接进 Android 手机的可编译工程，
+外加车机端参考材料与一套「源码编译 + USB 调试」技能包。
 
-这里没有可直接编译运行的 Android 工程，只有三类东西：**读懂协议栈用的 Java 源码**、
-**读懂车机端实现用的固件提取物**、**排障用的技能与脚本**。
+A buildable Android project that makes an Android phone act as the wireless CarPlay sender for
+a Buick / SAIC-GM INFO3.6 head unit, plus head-unit reference material and a
+"build from source + debug over USB" skill package.
 
-```
-CarplayAPK/
-├── java-project/    手机端 App（OcarPlay V1.7.29）反编译 + 语义重命名后的可读源码
-├── firmware/        车机端固件（V167.3.1-GA）里与 CarPlay 相关的程序、库与配置
-└── skill/           这套逆向工作沉淀下来的排障技能：协议笔记 + 判定脚本
-```
-
----
-
-## java-project — 手机端协议栈
-
-来源：`Carplay-V1.7.29.apk`（versionCode 298），jadx 反编译后**按语义重命名 39 个类**，
-并为每个重命名类写了中文职责注释。
-
-```
-java-project/
-├── README.md        怎么读这份代码（先看这个）
-├── RENAME-MAP.md    39 项「混淆名 ↔ 可读名」对照表，附 smali 路径
-├── src/main/java/io/carplay/app/
-│   ├── secured/     224 个类 —— 协议栈本体（RTSP、事件通道、配对、加密、编解码）
-│   └── prototype/    52 个类 —— 业务层（Service、Activity、mDNS 广播、配对会话）
-└── tools/           可重跑的生成脚本（重命名引擎、特征提取、文档生成）
-```
-
-按「一条触摸从车机回到手机」的顺序读：
-
-| 可读名 | 原混淆名 | 职责 |
-|---|---|---|
-| `CarPlayCtrlAdvertiser` | `prototype.h` | 广播 `_carplay-ctrl._tcp`，让车机知道本机在等它 |
-| `AirplayServiceProbe` | `prototype.j` | 发现车机 `_airplay._tcp`，选候选去连 |
-| `AirPlaySession` | `secured.i0` | SETUP / INFO / RECORD / `POST /command` 全流程，4400 行 |
-| `EventChannel` | `secured.y5` | 事件通道：车机推来的触摸、按键、`/command` |
-| `ControlChannel` | `secured.hx` | 控制通道：邀请与 iAP2 |
-
-**只改有证据的，不猜**：新名字的依据只有三类——类里的协议字符串常量、实现的框架接口、
-已确认的实测结论。对不上任何一条的 248 个类保留混淆原名，因为给它们编名字比留着更有害。
-
-工程**不能编译**（缺 `R` 类、`.so`、资源），它是用来读的，不是用来跑的。
+> 一句话：手机负责 AirPlay 发送端（画面/音频源），车机是接收端（解码显示）；
+> 本项目在手机侧完整重建了建链、握手、投屏、音频与触摸五条链路。
+>
+> In one line: the phone is the AirPlay sender (screen/audio source) and the head unit is the
+> receiver. This project reconstructs all five links on the phone side — discovery, handshake,
+> video, audio and touch.
 
 ---
 
-## firmware — 车机端实现
+## 目录结构 / Repository layout
 
-从 `V167.3.1-GA` 固件包（18 个交付文件）中解包 `SOC_SYSTEM` / `SOC_VENDOR` 分区，
-提取出与 CarPlay 相关的 43 MB / 73 个文件，按分区原始路径组织。
+| 路径 / Path | 说明 / Description |
+| --- | --- |
+| `android-project/` | **可编译的 Android 工程**（Gradle + AGP），产出一个可安装的 APK<br>A **buildable Android project** (Gradle + AGP) producing an installable APK |
+| `apk/` | 对照用安装包：原始 OcarPlay 0.8.53、历史外壳包、Car+ / CarLife 依赖<br>Reference APKs: original OcarPlay 0.8.53, legacy shell APK, Car+ / CarLife dependencies |
+| `firmware/` | 车机端固件提取物（程序、原生库、配置），只作行为对照，不参与构建<br>Head-unit firmware extracts used for behaviour comparison only; not part of the build |
+| `skill/` | 「CarplayAPK 源码编译 + USB 调试」技能包，中英对照<br>The "build CarplayAPK from source and debug over USB" skill, bilingual |
+| `LICENSE` | MIT（仅覆盖本仓库自有代码，固件与第三方 APK 除外）<br>MIT, covering this repository's own code only |
 
-| 项 | 值 |
-|---|---|
-| 产品 | `gminfo36`（GM INFO3.6 座舱） |
-| 版本 | `W40E-V167.3.1-MIHC21A-232` |
+---
+
+## 1. 快速开始 / Quick start
+
+**环境要求 / Requirements**
+
+| 项 / Item | 版本 / Version |
+| --- | --- |
+| JDK | 17 或更高（Android Studio 自带 JBR 即可）/ 17+ (Android Studio's bundled JBR works) |
+| Gradle | 9.4.1（wrapper 自带，走腾讯云镜像）/ bundled via wrapper, Tencent mirror |
+| Android Gradle Plugin | 9.2.0 |
+| compileSdk / targetSdk | 37 |
+| minSdk | 33（Android 13）/ Android 13 |
+| Build-tools | 36.0.0 |
+
+**构建 / Build**
+
+```bash
+cd android-project
+
+# 调试包 → dist/Carplay-V1.7.61-debug.apk（debuggable = true）
+gradlew.bat exportApk            # macOS / Linux: ./gradlew exportApk
+
+# Release 包 → dist/Carplay-V1.7.61-release.apk（debuggable = false）
+gradlew.bat exportRelease
+
+# 仅编译校验（最快）
+gradlew.bat compileDebugJavaWithJavac
+```
+
+首次构建会从腾讯云镜像拉取 Gradle 分发包；若内网限制，改
+`gradle/wrapper/gradle-wrapper.properties` 的 `distributionUrl` 即可。
+The first build downloads the Gradle distribution from the Tencent mirror; point
+`distributionUrl` elsewhere if your network requires it.
+
+---
+
+## 2. android-project — 手机端实现 / the phone-side implementation
+
+### 2.1 功能范围 / Scope
+
+| 能力 / Capability | 状态 / Status | 关键实现 / Key implementation |
+| --- | --- | --- |
+| mDNS 发现与广播 / discovery & advertising | ✅ | `prototype/CarPlayCtrlAdvertiser`、`prototype/AirplayServiceProbe` |
+| 蓝牙 RFCOMM + iAP2 握手 / RFCOMM + iAP2 | ✅ | `prototype/PairingSession`、`secured/Iap2*` |
+| WiFi 凭据协商与关联 / WiFi credential setup | ✅ | `secured/Iap2WirelessSetup`、`prototype/WifiNetworkMonitor` |
+| AirPlay 建流（SETUP/INFO/RECORD）/ stream setup | ✅ | `secured/AirPlaySession` |
+| 视频（H.264 编解码与投屏）/ video | ✅ ≈20 fps | `prototype/AvcEncoder`、`secured/VideoCipher`、`secured/DisplaySession` |
+| 音频（48 kHz PCM 上行至车机）/ audio | ✅ 实时 | `secured/PcmQueue`、`secured/PcmConverter`、`secured/PcmAudioOutput`、`secured/AudioPacer` |
+| 触摸与按键（HID）/ touch & keys | ✅ | `secured/HidDescriptorParser`、`secured/TouchGestureEncoder` |
+| 会话保活与恢复 / keep-alive & recovery | ✅ | `secured/KeepAliveServer`、`secured/EventChannel` |
+
+### 2.2 代码结构 / Source layout
+
+```
+android-project/app/src/main/java/           273 个源文件 / 60.0k 行
+├── io/carplay/app/prototype/    43 个  业务层：界面、前台服务、配对编排、原生桥接
+├── io/carplay/app/secured/     220 个  协议栈：AirPlay、iAP2、HID、加解密、媒体通道
+└── org/bouncycastle/            10 个  随包编译的 Bouncy Castle 子集（Ed25519 / X25519 / ChaCha20-Poly1305）
+```
+
+> 业务层负责「什么时候做什么」，协议层负责「字节怎么走」。改协议行为先看 `secured/`，
+> 改交互与生命周期先看 `prototype/`。
+>
+> The app layer decides *when* things happen; the protocol layer decides *how the bytes flow*.
+> Touch `secured/` for protocol behaviour and `prototype/` for lifecycle and UI.
+
+### 2.3 关键类 / Key classes
+
+| 类 / Class | 行数 | 职责 / Responsibility |
+| --- | --- | --- |
+| `secured/AirPlaySession` | ~4.9k | AirPlay 会话主流程：SETUP / INFO / RECORD / `POST /command`，各通道的建立与拆除<br>main AirPlay session and channel lifecycle |
+| `secured/DisplaySession` | ~2.3k | 视频帧 + 触摸事件编码成 CarLife 原生帧写入车机<br>encodes video frames and touch events into CarLife native frames |
+| `secured/HidDescriptorParser` | ~830 | HID 描述符解析：按物理集合分配触摸 slot，提取 X/Y、Tip Switch、Contact ID<br>HID descriptor parsing with one slot per multitouch collection |
+| `secured/EventChannel` | ~1.1k | 车机推来的触摸/按键/命令（`/command`、`/feedback`）<br>event channel for head-unit pushed touch, keys and commands |
+| `secured/PcmAudioOutput` | ~360 | 按「16 B INIT + 4096 B DATA」写车机原生音频通道<br>native audio output framing |
+| `secured/KeepAliveServer` | ~70 | UDP 保活，5 秒间隔（与车机看门狗等长会断链）<br>UDP keep-alive every 5 s |
+| `prototype/WirelessCarPlayService` | ~4.3k | 前台服务：整条链路的生命周期编排<br>foreground service orchestrating the whole link |
+
+### 2.4 版本号与产物 / Version and artifacts
+
+版本号只有一处真源 / single source of truth —— `app/build.gradle.kts`：
+
+```kotlin
+val appVersionName = "1.7.61"   // → Carplay-V1.7.61-debug.apk / -release.apk
+val appVersionCode = 298       // 每次发版 +1 / bump on every release
+```
+
+| 产物 / Artifact | 说明 / Notes |
+| --- | --- |
+| `dist/Carplay-V1.7.61-debug.apk` | debug 变体，`debuggable = true`，可 `run-as` 读日志 |
+| `dist/Carplay-V1.7.61-release.apk` | release 变体，`debuggable = false`，同样用 debug 证书签发 |
+
+> **两个变体的调试开关是分开的**：`-debug` 开调试，供现场用
+> `adb shell run-as io.carplay.app cat files/connection-log-*.txt` 取日志；
+> `-release` 关调试，`run-as` 会报 `package not debuggable`。
+>
+> The two variants differ on purpose: `-debug` keeps `debuggable=true` for `run-as`
+> log access, while `-release` ships with `debuggable=false`.
+
+### 2.5 注释与许可头 / Comments and license headers
+
+每个 `.java` 文件顶部都有中英对照的协议头（MIT + 文件用途 + 所属子系统），
+每个类型声明前都有中英对照的用途 Javadoc。这一层注释由脚本统一维护：
+
+```bash
+python tools/annotate_sources.py            # 幂等补齐，已标注的文件会跳过
+python tools/annotate_sources.py --check    # 只报告未标注文件
+```
+
+> Every `.java` file carries a bilingual header (MIT, file purpose, subsystem) and every type
+> declaration has a bilingual purpose Javadoc. The script above is idempotent.
+
+源码含中文注释，工程已固定 `options.encoding = "UTF-8"`；移植到其他机器不会再出现乱码。
+The build pins `options.encoding = "UTF-8"` so the Chinese comments cannot break other machines.
+
+---
+
+## 3. 真机调试 / On-device debugging
+
+```bash
+adb install -r android-project/dist/Carplay-V1.7.61-debug.apk
+adb shell am start -n io.carplay.app/.prototype.MainActivity
+
+# 应用内日志（不进 logcat，必须用 run-as 读）
+adb shell run-as io.carplay.app cat files/connection-log-0.txt
+```
+
+**判断「真的通了」的日志标志 / markers that prove the link is healthy**
+
+| 日志 / Log line | 含义 / Meaning |
+| --- | --- |
+| `APP_BUILD version=1.7.61 code=298 dex=SRC` | 装的是源码构建的包，不是旧外壳 / built from source |
+| `SESSION START` → `TX CMD 0x18001` → `RX CMD 0x10004` | 建链与首轮握手 / link up and first handshake |
+| `HID_CAPABILITIES devices=4 touch=1` | 触摸描述符被接受（`touch=0` 表示被拒）/ touch descriptor accepted |
+| `HID_TOUCH_RANGE ... descriptor_driven=true` | 坐标映射已按描述符建立 / coordinate mapping ready |
+| `TOUCH_FORWARDED=N` 递增 | 触摸确实转发出去了 / touches really forwarded |
+| `VIDEO_PROGRESS units=...` 持续递增，≈20 fps | 视频在流 / video streaming |
+| `AUDIO_FLOW ... sent_packets_total` ≈136 包/秒、`dropped_frames_total=0` | 音频实时且无丢帧 / audio real-time, no drops |
+
+排障顺序与判定脚本见 `skill/`。
+For the troubleshooting decision tree see `skill/`.
+
+---
+
+## 4. firmware — 车机端参考 / head-unit reference
+
+从 `V167.3.1-GA` 固件包解出的 CarPlay 相关程序、原生库与配置（43 MB），
+用于解释「车机为什么这样回」，**不参与构建**。
+CarPlay-related binaries, libraries and configuration extracted from the `V167.3.1-GA`
+firmware (43 MB). They explain *why the head unit answers the way it does*; they are **not**
+part of the build.
+
+| 项 / Item | 值 / Value |
+| --- | --- |
+| 产品 / Product | `gminfo36`（GM INFO3.6 座舱 / cockpit） |
+| 版本 / Version | `W40E-V167.3.1-MIHC21A-232` |
 | Android | 6.0.1 / SDK 23 |
-| 架构 | x86_64（Intel Apollo Lake） |
+| 架构 / ABI | x86_64（Intel Apollo Lake） |
 
-关键内容：
-
-- `system/app/GMCarPlay/` —— CarPlay HMI（连接提示、授权弹窗、SurfaceView 承载画面），
-  代码在 `oat/x86_64/*.odex` 里
-- `system/lib64/libNme*.so` —— 车机端 AirPlay/CarPlay 原生栈（`libNmeCarPlay.so`、
-  `libNmeAppleAuth.so`、`libNmeAudio*.so`、`libNmeVideoSW.so` …）
-- `system/bin/carplay.sh`、`native_enableApple.sh`、`remote_display`、`vehicleinputservice`
-  —— 启停与输入注入入口
-- `system/etc/*.conf` —— 音频路由与车辆音频服务配置
-- `analysis/` —— 从上述文件提取的字符串与清单（`*.strings.txt`、`inventory.csv`）
-
-`firmware/README.md` 有完整的提取过程与文件级说明。
+重点目录：`system/app/GMCarPlay/`（HMI）、`system/lib64/libNme*.so`（车机端 AirPlay 栈）、
+`system/bin/carplay.sh` 等启停入口、`analysis/`（字符串与清单）。
+详见 `firmware/Buick Info3.6/README.md`。
 
 ---
 
-## skill — 排障技能
+## 5. skill — 编译与调试技能 / build & debug skill
 
-`skill/SKILL.md` 是这份工作的主体笔记：六十多条「铁律」，每条都对应一次踩过的坑，
-外加协议笔记（RTSP 流程、iAP2 链路层、触摸与 HID、原生握手）和判定脚本。
+`skill/SKILL.md` 是一份可执行的「从源码编出 APK 并在真机上验证」手册：环境核对、
+构建、装机、日志取证、五条链路（发现 / 握手 / 视频 / 音频 / 触摸）的判定与会诊，
+外加配套脚本。
+
+`skill/SKILL.md` is an executable playbook for "build the APK from source and verify it on a
+real device": environment checks, build, install, log forensics, verdicts for the five links
+(discovery / handshake / video / audio / touch), plus helper scripts.
 
 ```
 skill/
-├── SKILL.md         主笔记：架构、铁律、排障决策树、混淆名对照
-├── references/      专题：airplay-pairing-spec / rtsp-flow / iap2-link-layer
-│                    / native-carplay-handshake / touch-input-hid
-│                    / android-pitfalls / troubleshooting
-└── scripts/         判定脚本：mdns_probe / probe_event_channel / hid_event_verdict
-                     / verify_dex_outs / mock_carplay_sink / sysdiag_strings_probe …
+├── SKILL.md                 主手册（中英对照）/ main playbook (bilingual)
+├── references/              专题：构建 / 装机 / 日志 / 视频 / 音频 / 触摸 / 排障
+└── scripts/                 判定脚本（adb、日志、HID、音频速率、dex 校验）
 ```
-
-几条最有普适价值的结论：
-
-- **日志有两条通道**：走 `Log.d` 的只进 logcat，只有走 App 自身回调的才落文件。
-  拿「日志里没有」当「代码没执行」，会得出完全相反的结论。
-- **建链成功 ≠ 握手成功**。TCP 连上只证明端口对；车机愿不愿意推事件，
-  取决于 SETUP 协商出来的 `enabledFeatures`。
-- **修好一个 bug 会激活下一个 bug**。让一条从未成功过的路径第一次成功时，
-  必须复查它下游所有从未执行过的代码。
-- **一次性门禁会把指标压扁**。用 `compareAndSet` 只放行第一条日志，
-  统计出来的 0 不是「没发生」，是「没记录」。
 
 ---
 
-## 免责声明
+## 6. 已知限制 / Known limitations
+
+1. **Android 13+（minSdk 33）**：依赖较新的蓝牙与网络 API。
+   Requires Android 13+ (minSdk 33) for the newer Bluetooth and network APIs.
+2. **仅无线 CarPlay**：USB 有线 CarPlay 不在范围内。
+   Wireless CarPlay only; wired USB CarPlay is out of scope.
+3. **无原生 `.so`**：视频解码/显示由车机侧原生组件承担，本工程只负责发送端。
+   No bundled native libraries; decoding/display happens on the head unit.
+4. **debug / release 调试开关分离**：见 2.4 的说明。
+   Debug and release differ on `debuggable` — see 2.4.
+
+---
+
+## 7. 免责声明 / Disclaimer
 
 `firmware/` 下的程序、库与配置版权归原厂（上汽通用 / 神龙 / NME 等）所有，
 此处仅作为**互操作性研究**的参考资料，不做分发、不用于商业用途。
-如需公开传播，请自行评估合规风险，必要时把仓库转为私有。
+The binaries, libraries and configuration under `firmware/` remain the property of their
+respective vendors (SAIC-GM, Dongfeng PSA, NME, …). They are kept solely as interoperability
+research material — not redistributed, not used commercially.
 
-`java-project/` 是对公开可下载 APK 的逆向分析结果，同样仅用于互操作性与排障研究。
+`apk/` 下的第三方安装包同理；仓库自有代码以 MIT 发布。
+The third-party APKs under `apk/` are treated the same way. This repository's own code is MIT.
 
-代码与笔记部分（`skill/`、`tools/`）以 MIT 协议发布，见 `LICENSE`。
+---
+
+## 8. 许可 / License
+
+自有代码（`android-project/`、`skill/`、脚本）以 **MIT** 发布，全文见 `LICENSE`。
+Own code (`android-project/`, `skill/`, scripts) is released under the **MIT** license; see `LICENSE`.

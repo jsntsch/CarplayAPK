@@ -1,299 +1,180 @@
-# 真机日志样本对照
+# 排障实例 / Troubleshooting cases
 
-按「日志特征 → 判断 → 根因 → 修法」组织。日志取自 PKJ110 / Android 16 / ColorOS 与 22 款别克君威 myBuick 的实测记录。
+每个案例都按「现象 → 证据 → 根因 → 修法 → 验收」写，方便对照自己遇到的版本。
+Each case follows symptom → evidence → root cause → fix → acceptance, so you can match your build.
 
-## 1. 车机完全沉默
+---
 
-### 1.1 零字节 + 快速断开
+## 案例 1：投屏黑屏，握手卡在加密段 / Black screen, handshake stops in the crypto phase
 
-```
-RFCOMM 连接成功: myBuick (10:E8:A7:13:AD:5B) uuid=…caff
-（此后无任何 RX）
-Broken pipe
-```
+**现象**：蓝牙连上、`TX CMD 0x18001` 发出，但之后没有 `RX CMD`，或到 `0x1806b` 就没下文。
+Symptom: Bluetooth connects and `0x18001` goes out, but no `RX CMD` follows, or it dies at `0x1806b`.
 
-**根因**：车机未进入「无线 CarPlay 待机」界面。此时车机的 SDP 记录仍在、也接受 RFCOMM 连接，但 iAP2 状态机没启动。
+**证据**：日志里最后一条 `TX` 之后没有对应 `RX`；`HID_CAPABILITIES` 压根没出现（会话没跑到 HID）。
+Evidence: no `RX` after the last `TX`; `HID_CAPABILITIES` never appears.
 
-**确认**：
+**根因（两类，都会出现）**
 
-```bash
-adb shell "cmd wifi list-scan-results" | grep -i buick
-```
+1. **命令分支缺失**：加密握手需要的 `0x1006a`（RSA 公钥交换请求）没有对应处理分支，
+   于是 RSA 上下文一直为空，下一步 `0x1006c` 直接报 “unexpected encrypted seed”。
+   A missing case for the RSA-exchange request leaves the RSA context null, so the next step
+   fails with "unexpected encrypted seed".
+2. **判断极性写反**：MFi 结果判断写成「验证成功就抛异常」，于是验证通过反而断开。
+   An inverted MFi verdict throws exactly when verification succeeds.
 
-扫不到车机热点即确认。
+**修法**：按命令号逐个补齐处理分支；把「验证成功」的分支改成继续流程。
+Fix: add the missing case; make the success path continue.
 
-**修法**：让车机通电并进入 CarPlay / 手机互联界面，使热点出现在扫描结果里。这一步不通过，任何协议修改都无效。
+**验收**：`TX 0x18001 → RX 0x10004 → TX 0x18048 → RX 0x10049 → TX 0x1806b → RX 0x1006c → RX 0x1006e
+→ TX 0x18007 → RX 0x10008 → TX 0x18009`，随后 `NATIVE_VIDEO_FIRST_BYTES` 与 `VIDEO_PROGRESS`。
+Acceptance: the full sequence above, followed by `NATIVE_VIDEO_FIRST_BYTES` and `VIDEO_PROGRESS`.
 
-### 1.2 收到 MARKER 但没下文
+---
 
-```
-RX 6B: FF 55 02 00 EE 10
-RX 6B: FF 55 02 00 EE 10
-... （共 10 次，间隔 1 秒）
-（9 秒后车机断开）
-```
+## 案例 2：投屏一帧后卡死闪退 / One frame then a freeze and crash
 
-**根因**：收到 MARKER 没有回。MARKER 是双向探测，不回等于拒绝握手。
+**现象**：画面出一帧就卡住，几秒后 ANR 或闪退。
+Symptom: one frame appears, the UI freezes, then ANR or a crash.
 
-**修法**：收到立刻回一个 MARKER，并主动发 SYN。
+**证据**：`adb bugreport` 里 `FS/data/anr/anr_*`，主线程停在
+`waiting to lock <0x…> held by thread <id>`，持锁线程停在阻塞式 socket 读。
+Evidence: in the ANR trace the main thread waits on a lock whose owner sits in a blocking socket read.
 
-### 1.3 MARKER 被当垃圾丢掉
+**根因**：把**阻塞式 socket 读**放进了 `synchronized` 临界区。读一帧要等车机，等的时候
+全局锁一直被占，主线程拿不到锁 → ANR。
+Root cause: a blocking socket read inside a `synchronized` block. While waiting for the head unit
+the global lock stays held, so the main thread blocks and the watchdog fires.
 
-```
-收到 6B 非 iAP2 数据: FF 55 02 00 EE 10
-```
+**修法**：把阻塞读移出临界区（只在锁内做内存状态更新）。
+Fix: move the blocking read outside the critical section; keep only state updates inside.
 
-**根因**：解析循环下界写成 `i + 9 <= size`，6 字节的 MARKER 进不去。
+**验收**：连续投屏 5 分钟不 ANR；`bugreport` 里不再出现该锁的长时间持有。
+Acceptance: five minutes of projection without ANR; no long lock holds in the trace.
 
-**修法**：下界改 6，先判 `FF 55` 再按 `length` 分流。
+---
 
-## 2. 握手卡住
+## 案例 3：触摸完全无反应 / Touch does nothing
 
-### 2.1 车机反复重传 SYN
+**现象**：画面正常，车机屏点划无反应，日志里 `COMMAND_REJECTED=TOUCH_UNKNOWN_DEVICE` 持续递增。
+Symptom: video is fine, taps do nothing, `COMMAND_REJECTED=TOUCH_UNKNOWN_DEVICE` keeps growing.
 
-```
-RX 26B ctl=0x80 seq=29 ...
-RX 26B ctl=0x80 seq=29 ...
-RX 26B ctl=0x80 seq=29 ...   （每秒一次，共 10 次）
-```
-
-**根因**：我方已发过 SYN，收到车机 SYN 时回了纯 ACK（0x40）。此时正确应答是 **SYN|ACK（0xC0, ack=车机 seq）**。
-
-**修法**：维护握手进度状态；`step >= 1` 时改用 `sendSynAckPacket()`。
-
-### 2.2 LSP 解析失败
+**证据**：
 
 ```
-← 车机 SYN 携带 LSP 解析失败（16B）
+HID_CAPABILITIES devices=4 touch=0
+HID_TOUCH_UNSUPPORTED index=0 bytes=109 … reason=DESCRIPTOR
 ```
 
-**根因**：帧头长度或校验算错，导致 payload 偏移错位。
+**根因**：多点触控描述符里有**两个物理集合**（两指），解析时把触摸集合的 slot **写死成 1**。
+两指的 contact id 落到同一个 slot → 第二指被判为「contact id 冲突」
+（`HID_AMBIGUOUS_CONTACT_ID`）→ 整个描述符被拒 → `touch=0` → 车机不认识该设备。
+Root cause: the descriptor carries two physical collections (two fingers) but every touch
+collection was assigned slot **1**. Both contact IDs land in the same slot, the parser reports an
+ambiguous contact ID, the whole descriptor is rejected and `touch` ends up 0.
 
-**修法**：跑 `scripts/verify_iap2_frames.py`，逐帧核对 `length`、`header_cs`、`payload_cs`。
+**修法**：为每个物理触摸集合分配**唯一递增**的 slot（单指描述符仍然得到 1，行为不变）。
+Fix: give each physical touch collection a unique, increasing slot. Single-finger descriptors still
+get slot 1, so existing behaviour is preserved.
 
-### 2.3 握手成功但没后续
+**验收**：`HID_CAPABILITIES devices=4 touch=1` → `HID_TOUCH_RANGE … descriptor_driven=true`
+→ 触摸时 `TOUCH_FORWARDED` 递增，且不再出现 `TOUCH_UNKNOWN_DEVICE`。
+Acceptance: `touch=1`, `descriptor_driven=true`, `TOUCH_FORWARDED` climbing, no
+`TOUCH_UNKNOWN_DEVICE`.
 
-```
-✓ IAP2_LINK_READY
-（无 1D00 发出）
-```
+> 注意：`HID_TOUCH_UNSUPPORTED index=3 bytes=57` 是多媒体按键描述符，不属触摸，被拒是正常的。
+> `index=3 bytes=57` is a consumer-key descriptor; rejecting it is expected.
 
-**根因**：链路状态已置 NORMAL，但上层没收到「就绪」事件。
+---
 
-**修法**：`establish()` 返回 true 后立即发 `0x1D00`，不要依赖额外回调。
+## 案例 4：没有声音，同时有无法关闭的异响 / No audio plus unstoppable noise
 
-## 3. WiFi 凭据（0x5703）
+**现象**：车机不出音乐，却有持续异响，断开 App 才停。
+Symptom: no music, but a constant buzzing that only stops when the app is killed.
 
-### 3.1 车机对 0x5702 沉默
-
-```
-→ 0x5702（第 1/3 轮）
-（无 0x5703）
-→ 0x5702（第 2/3 轮）
-（无 0x5703）
-```
-
-**根因**：车机侧需用户在屏上确认 CarPlay；或请求被自己的白名单挡掉。
-
-**确认**：检查 `1D01` 解析出的可接收表。若 `SEND=0`，说明 `0x5703` 只能是应答，请求必须主动发出且重试。
-
-**修法**：`0x5702` 重试 3 轮，每轮间隔 3~4 秒，并在第 2 轮后提示用户去车机屏点「允许」。若最终仍沉默，跳过蓝牙凭据，直接用已保存的热点密码走 WiFi 段。
-
-### 3.2 官方 App 主动丢弃请求
+**证据**：
 
 ```
-IAP2_TX_SKIPPED_NOT_ADVERTISED id=5702
-IAP2_TX_SKIPPED_NOT_ADVERTISED id=4300
-IAP2_LOCAL_BLUETOOTH_IDENTIFIER_NOT_PROVIDED_NO_PLACEHOLDER_SENT
+AUDIO_FLOW … sent_packets_total      5 秒涨 6.4 万   (≈13,000 包/秒)
+AUDIO_FLOW … dropped_frames_total    每 5 秒 +24 万
+PcmQueue queued_frames=12000/12000   backpressure_events=3742
 ```
 
-**根因**：把 `1D01` 的 RECEIVE 表当硬门禁。该表只有 8 项（`4E09,4E0A,4E0B,4E0C,4E0D,4E0E,EA00,EA01`），不含 `5702`/`4300`。
+**根因（两层，第二层修完才暴露）**
 
-**修法**：识别、认证、`4300`、`5700/5701/5702` 一律放行。
+1. **发送循环少了跳出**：发完一个音频包后没有 `break`，内层循环拿着**同一块 PCM** 反复重发，
+   于是车机反复播放同一段 352 帧 → 异响；队列永不排空 → 真实音乐全被丢弃。
+   Missing `break`: the inner loop resends the *same* PCM buffer forever, so the head unit repeats
+   352 frames (the noise) while the queue never drains (all real audio dropped).
+2. **补了跳出却多了 `return`**：内层循环结束后直接 `return`，整个发送方法退出，
+   `sent_packets_total` 停在 1。正确控制流是「取一包 → 发一包 → 回外层取下一包」。
+   After adding the break, an extra `return` ended the whole send loop after one packet.
 
-### 3.3 解析出空密码
+**修法**：内层发送一次后跳出，回到外层取下一包；只有线程被中断时才退出方法。
+Fix: send exactly one packet per outer iteration; leave the method only on interrupt.
 
-**根因**：TLV 写成「id 在前」，或字段号错位（把 passphrase 当 3、security 当 4）。
+**验收**：`sent_packets_total` ≈**136 包/秒**、`dropped_frames_total` 停止增长、
+`sent_frames` 每秒约 48k（= 实时）；车机出声且异响消失。
+Acceptance: ≈136 packets/s, `dropped_frames_total` frozen, ≈48k frames/s (real-time), clean audio.
 
-**修法**：改为 `[len][id][value]`，`1=SSID 2=Passphrase 3=Security 4=Channel`。跑 `verify_wifi_config.py` 验证。
+---
 
-## 4. WiFi 关联
+## 案例 5：重连后画面有了，声音/触摸哑掉 / After a reconnect video returns but audio is dead
 
-### 4.1 Specifier 权限被拒
+**现象**：会话因事件通道断开而重启，重连后视频恢复，但 `converted_frames` / `sent_frames` 恒 0。
+Symptom: the session restarts after an event-channel drop; video returns but the audio counters
+stay at 0.
 
-```
-WifiNetworkSpecifier 连接异常: com.ocarplay was not granted
-android.permission.CHANGE_NETWORK_STATE / WRITE_SETTINGS
-```
+**证据**：新会话里没有 `NATIVE_AUDIO_PROGRESS … FIRST_VALID_PCM`，即音频读取线程从未启动。
+Evidence: no `FIRST_VALID_PCM` in the new session — the reader thread never started.
 
-**修法**：改 `WifiNetworkSuggestion`。
+**根因**：恢复路径只重建了视频与事件通道，音频（以及触摸相关）线程没有跟着重建。
+Root cause: the recovery path rebuilds video and the event channel but not the audio/touch threads.
 
-### 4.2 提交建议后整条链路断流
+**修法**：会话恢复时按「新会话」处理，所有子系统一律重建；禁止复用上一会话的对象。
+Fix: treat a reconnect as a brand-new session and rebuild every subsystem; never reuse objects.
 
-```
-WifiConnection: addNetworkSuggestions(status=0) ssid=myBuick GS
-WifiConnection: ✓ WiFi 建议已提交，等待系统关联
-（此后 App 无任何日志，但系统日志显示 15:12:02 WiFi 已 CONNECTED）
-```
+**验收**：重连后 `FIRST_VALID_PCM reader_connected=true` 出现，`sent_packets_total` 恢复 136 包/秒。
+Acceptance: `reader_connected=true` shows up and the packet rate returns to ≈136/s.
 
-**根因**：只挂了 `onStateChanged` 回调，而内部提交建议后只发 `CONNECTING`，从不发 `CONNECTED`。
+**临时绕过**：`am force-stop` 后重启 App（会新建会话），可立刻判断是不是恢复路径的问题。
+Workaround: force-stop and relaunch — if audio comes back, it is the recovery path.
 
-**修法**：提交后显式调用 `awaitConnected()` 轮询等待。
+---
 
-### 4.3 一直等不到「已关联」
+## 案例 6：改了常量或格式串导致类初始化失败 / Editing constants or format strings breaks init
 
-**根因**：`WifiInfo.ssid` 被脱敏成 `<unknown ssid>`，或 `netId = -1`、`ipAddress = 0`。
+**现象**：某个功能整块不可用，日志里出现 `NumberFormatException` 或
+`UnknownFormatConversionException`。
+Symptom: a whole feature is dead with `NumberFormatException` or
+`UnknownFormatConversionException`.
 
-**修法**：三判据递进（SSID 匹配 → 脱敏但拿到 IP → 从 `ConnectivityManager` 的 `LinkProperties` 反查）。
+**根因**：十六进制密钥常量、`String.format` 的格式串被「顺手改」了。前者在类初始化时抛异常，
+整个类不可用（例如签名算法加载失败）；后者只在打印日志时抛，把正常流程一起打断。
+Root cause: a hex key constant or a `String.format` pattern was accidentally edited. The former
+throws during class initialisation (killing the whole class); the latter throws while logging and
+takes the normal path down with it.
 
-## 5. 发现与建流
+**修法**：改动后跑一次全量编译，并检查格式串占位符与常量长度；日志格式串改动要单独复查。
+Fix: rebuild fully after edits and re-check format placeholders and constant lengths.
 
-### 5.1 mDNS 发现成功（正常）
+**验收**：`compileDebugJavaWithJavac` 通过，且相关功能日志正常打印、无异常栈。
+Acceptance: clean compile, and the feature logs normally with no exception stack.
 
-```
-serviceDiscovery: [MdnsDiscoveryManager._airplay._tcp.local] Handling response from service: CarPlay
-BonjourDiscovery: 发现 CarPlay 端点: ._airplay._tcp @ 192.168.5.1:7000 (CarPlay)
-BonjourDiscovery: 发现完成，共 2 个端点
-```
+---
 
-两个端点是：车机的 `_airplay._tcp`（`192.168.5.1:7000`）与自己的 `_carplay-ctrl._tcp`。
-
-### 5.2 自己注册失败
-
-```
-MdnsAdvertiser: ✓ mDNS 已注册: OcarPlay null port=0
-serviceDiscovery: Skipping SocketKey{...} as ifIndex ... was requested
-```
-
-**根因**：`NsdManager` 在无 Internet 的 ephemeral 网络上注册受限，`port=0` 表示未真正生效。
-
-**修法**：不阻断发现流程；必要时改用手工组播（`MulticastSocket` 绑定 wlan0 接口）自行响应 PTR 查询。
-
-### 5.3 车机不广播
-
-**修法**：用 `wifiLinkInfo()` 读出的真实网关 IP 直接 `OPTIONS *` 探 `:7000`。
-
-## 6. 车机行为（非 Bug）
-
-| 现象 | 说明 |
-|---|---|
-| `AA03` 之后车机对所有消息沉默 | 车机策略：MFi 之后需屏上确认，或蓝牙仅用于敲门 |
-| `wireless_carplay=0` | 传输组件表的读法问题，不代表不支持无线 |
-| 音频 `pcmBytes=0` | 官方 App 同样如此，不是失败标志 |
-| 车机不下发 `0x5703` | 见 3.1，主动请求 + 重试仍可拿到；拿不到就走已保存密码 |
-
-## 7. 车机反复连接（蓝牙 ACL 打环）
-
-### 7.1 每 1~2 秒一次 ACL，150 ms 就断
+## 速查决策树 / Decision tree
 
 ```
-22:31:50.913 on_incoming_connection addr:xx:xx:xx:xx:ad:5b cod:760-4-08
-22:31:50.929 OnConnectSuccess  initiator:remote handle:14
-22:31:50.930 btm_sec_execute_procedure: security_required:0x0 ... Start get name
-22:31:50.985 l2c_csm_open: Calling Disconnect_Ind_Cb(), CID: 0x0061
-22:31:51.073 OnClassicLinkDisconnected reason:REMOTE_USER_TERMINATED_CONNECTION(0x13)
-22:31:51.074 bta_dm_pm_stop: bta_dm_conn_srvcs.count=0
-22:31:51.074 oplus_btif_hf: acl_disconnected: Invalid index -1
-22:31:51.074 btif_av_handle_event: handle=0x0 event=ACL_DISCONNECTED
-22:31:52.3xx （1.3 秒后下一轮敲门）
+装的是源码包吗？(APP_BUILD … dex=SRC)
+ ├─ 否 → 重装 dist/ 里的包
+ └─ 是
+    ├─ 有 RFCOMM_SELECTED_PEER_ACCEPTED 吗？
+    │   ├─ 否 → 发现/广播问题（车机缓存、广播注册）
+    │   └─ 是
+    │      ├─ 握手序列走完 0x18001…0x18009 吗？
+    │      │   ├─ 否 → 查缺的那一步（案例 1）
+    │      │   └─ 是
+    │      │      ├─ VIDEO_PROGRESS 递增吗？  否 → 视频通道（案例 1/2）
+    │      │      ├─ AUDIO_FLOW 136 包/秒吗？ 否 → 音频（案例 4/5）
+    │      │      └─ HID_CAPABILITIES touch=1 且 TOUCH_FORWARDED 递增吗？ 否 → 触摸（案例 3）
 ```
-
-3.5 分钟窗口实测：**145 次 Connected / 80 次 Disconnected**，链路寿命 140~150 ms，回连间隔 1.2~1.3 s。
-
-**先确认发起方**：`initiator:remote` + `is local inistated: false` → 车机发起、车机断开。手机侧没有打环。
-
-**关键判据：数 L2CAP PSM 分布。**
-
-```bash
-adb logcat -d | grep -aoE "psm: [A-Z_0-9()x]+" | sort | uniq -c
-```
-
-| 分布 | 含义 |
-|---|---|
-| 只有 `BT_PSM_SDP`（实测 823 次），`BT_PSM_RFCOMM` 为 0 | 车机在 SDP 里查不到 iAP2 服务记录，**连 RFCOMM 都不尝试**就挂断 → 见 7.2 |
-| 有 `BT_PSM_RFCOMM` 但连上零字节 | 另一个问题：连错 SCN，见排障决策树 |
-
-`bta_dm_conn_srvcs.count=0` 也印证同样结论：HFP / A2DP / AVRCP 一个都没起来，车机是因为「连上了却拿不到服务」才反复重试。
-
-### 7.2 根因：iAP2 服务记录只活了 90 秒
-
-手机侧确实有 `listenUsingRfcommWithServiceRecord("… iAP2 Phone", 00000000-deca-fade-deca-deafdecacafe)`，但监听窗口是 **90000 ms**，用在三处（accept 循环截止、`postDelayed` 定时关闭、截止时间戳 `elapsedRealtime()+V`）。
-
-窗口一过 → SDP 记录消失 → 车机查不到 → 挂断 → 1.3 秒后重试 → 无限循环。
-
-**对照证据**：某一轮恰好在车机敲门期间应用把监听建起来，日志立刻出现
-
-```
-23:06:47.696 Bluetooth: RFCOMM_BufDataInd: event 4, p_mcb=…, scn=4
-```
-
-同一秒敲门停止，`23:06:46` 之后再无 `on_incoming_connection`。
-
-**修法**：三处窗口值全部改成 `0x7fffffff`（约 24.8 天），让监听随进程常驻。只改一处等于没改。
-
-**验证**：用 `cmd bluetooth_manager disable → enable` 做全链路复位，然后
-
-```bash
-adb logcat -d | grep -c "on_incoming_connection"      # 修复后应为 1~2 次后归零
-adb logcat -d | grep -c "RFCOMM_BufDataInd"           # 应有持续心跳（约 30s 一次）
-```
-
-实测修复前后：`145 次/3.5 分钟持续敲门` → `2 次即建成，0 次断开`；静置 60 秒敲门数 2→2（零新增）。
-
-**注意**：应用进程被杀，监听随之消失，车机会回到打环。要彻底根治需常驻前台服务。
-
-### 7.3 排除掉的两个嫌疑人
-
-| 嫌疑人 | 排除方法 | 结论 |
-|---|---|---|
-| OPPO「Car+ 车机互联」在打环 | `am force-stop com.oplus.ocar` 后统计敲门次数 | 127→142，照旧。它只是被敲门唤醒的旁观者 |
-| 配对 / link key 陈旧 | `dumpsys bluetooth_manager` 查 Bonded devices 与 btif 配置 | 配对完好、有 32 字节 link key；`security_required:0x0` 说明根本没走到加密 |
-
-## 8. 投屏正常但触摸/方向盘无反应
-
-完整分析见 **`references/touch-input-hid.md`**。这里只放最短的日志对照。
-
-### 8.1 应用侧一切正常的证据（说明不是解析问题）
-
-```
-HID_CAPABILITIES devices=3 touch=1
-HID_TOUCH_DESCRIPTOR index=0 bytes=62 display_bound=true
-HID_BACK_DESCRIPTOR  index=2 bytes=72
-STATE I0=1  →  d0 gatePassed==true
->>> EXECUTE send hidSetInputMode
-HID_INPUT_MODE_SENT slot=0 carrier=CONTROL
-HID_INPUT_MODE_ACCEPTED slot=0 status=200
-HID_INPUT_MODE_ACCEPTED slot=1 status=200
-```
-
-握手全绿，但 `HID_REPORT_RECEIVED` 恒为 **0**。
-
-### 8.2 决定性判据：事件通道两侧都是 0
-
-```
-CARPLAY_EVENT_INPUT point=TRANSPORT_END stage=RECORD_HEADER read_calls=1 raw_bytes=0 messages=0 requests=0
-SCREEN_WRITE_STALLED
-```
-
-```bash
-adb shell "cat /proc/net/tcp /proc/net/tcp6" | grep -i "0105A8C0" | awk '{print "st="$4, $2"->"$3, "tx:rx="$5}'
-# st=01 …:5001 -> …:5001 tx:rx=0:0     ← 车机一个字节没写
-```
-
-裸探测同端口也是 0 字节 → 与我们的实现无关。
-
-### 8.3 命令发到了错误的通道（隐蔽的真凶）
-
-```
-23:42:01.123  CARPLAY_EVENT_CONNECTING
-23:42:01.197  W: d0 gatePassed==true
-23:42:01.197  W: b0=NULL          ← 事件通道对象此刻还不存在
-```
-
-`hidSetInputMode` 因此永远落在控制通道上。控制通道上这条命令只会拿到 200，不构成「事件通道已激活」的信号。
-
-### 8.4 会话精确 60 秒被拆
-
-三次实测 79 s / 106 s / **62 s**，其中一次 `22:52:25 → 22:53:25 = 60.0 s`。固定时长 = 超时，不是随机掉线。
-
-**「投屏一会儿就断」和「触摸没反应」是同一根因的两个表现**，不要拆成两个问题分别调。

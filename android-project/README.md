@@ -1,6 +1,6 @@
 # CarPlayAPK（io.carplay.app）— Android Studio 工程
 
-**标准 Gradle / Android Studio 工程**，可以直接打开、编译、调试、出包。功能与已验证的 `Carplay-V1.7.61` 一致（含触摸与音频修复），已移除赞助、检查更新与 QQ 群入口。
+**标准 Gradle / Android Studio 工程**，可以直接打开、编译、调试、出包。功能与已验证的 `Carplay-V1.7.61` 一致（含触摸与音频修复）。
 
 ## 环境要求
 

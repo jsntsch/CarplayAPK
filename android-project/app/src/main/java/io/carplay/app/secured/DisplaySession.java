@@ -1173,6 +1173,15 @@ public final class DisplaySession implements AutoCloseable, j6 {
                                                                     map = map;
                                                                     exc = null;
                                                                     break;
+                                                                case 65590:
+                                                                    try {
+                                                                        S(98358, bArrA);
+                                                                        this.a.a("VIDEO_HEARTBEAT_REPLY sent=0x18036 body=" + bArrA.length);
+                                                                    } catch (Throwable heartbeatEx) {
+                                                                        this.a.a("VIDEO_HEARTBEAT_REPLY_FAILED reason=" + heartbeatEx.getMessage());
+                                                                    }
+                                                                    break;
+
                                                                 case 65563:
                                                                 case 65564:
                                                                 case 65569:

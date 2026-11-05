@@ -32,13 +32,20 @@ android {
     buildTypes {
         debug {
             isDebuggable = true
-            isMinifyEnabled = false
+            // debug 包也开启 R8 shrink：移除未引用类（主要是 BouncyCastle 未用算法），
+            // 保留类名不混淆，日志仍可读。
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
         release {
             // 发布变体：关闭调试，避免 run-as / 调试器附加；现场排障请使用 -debug 变体。
             // Release variant: debuggable disabled; use the -debug variant for on-device troubleshooting.
             isDebuggable = false
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             // 内部工具：沿用 debug 证书签发，保证 assembleRelease 产物可直接 adb install -r 覆盖安装。
             // 对外分发时请替换为自有 keystore。
             signingConfig = signingConfigs.getByName("debug")

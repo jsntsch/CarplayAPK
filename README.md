@@ -21,7 +21,6 @@ a Buick / SAIC-GM INFO3.6 head unit, plus head-unit reference material and a
 | 路径 / Path | 说明 / Description |
 | --- | --- |
 | `android-project/` | **可编译的 Android 工程**（Gradle + AGP），产出一个可安装的 APK<br>A **buildable Android project** (Gradle + AGP) producing an installable APK |
-| `apk/` | 对照用安装包：原始 OcarPlay 0.8.53、历史外壳包、Car+ / CarLife 依赖<br>Reference APKs: original OcarPlay 0.8.53, legacy shell APK, Car+ / CarLife dependencies |
 | `firmware/` | 车机端固件提取物（程序、原生库、配置），只作行为对照，不参与构建<br>Head-unit firmware extracts used for behaviour comparison only; not part of the build |
 | `skill/` | 「CarplayAPK 源码编译 + USB 调试」技能包，中英对照<br>The "build CarplayAPK from source and debug over USB" skill, bilingual |
 | `LICENSE` | MIT（仅覆盖本仓库自有代码，固件与第三方 APK 除外）<br>MIT, covering this repository's own code only |
@@ -226,7 +225,7 @@ skill/
 
 ## 7. 免责声明 / Disclaimer
 
-`firmware/` 下的程序、库与配置版权归原厂（上汽通用 / 神龙 / NME 等）所有，
+`firmware/` 下的程序、库与配置版权归原厂（上汽通用 / NME 等）所有，
 此处仅作为**互操作性研究**的参考资料，不做分发、不用于商业用途。
 The binaries, libraries and configuration under `firmware/` remain the property of their
 respective vendors (SAIC-GM, Dongfeng PSA, NME, …). They are kept solely as interoperability

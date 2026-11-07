@@ -3391,6 +3391,13 @@ public final class AirPlaySession implements AutoCloseable {
                                 Object obj2 = map2.get("hidDescriptor");
                                 Object obj3 = map2.get("uuid");
                                 String strA0 = A0(obj3);
+                                // [V1.8.24] 逐项打印车机声明的原始 uuid 与我们实际发送的值，
+                                // 下一轮抓包可直接核对「类型规范化后是否仍一一对应」。
+                                this.n.a("HID_DEVICE_UUID index=" + i2
+                                        + " raw=" + obj3
+                                        + " class=" + (obj3 == null ? "null" : obj3.getClass().getSimpleName())
+                                        + " internal_key=" + strA0
+                                        + " send_as=" + (obj3 == null ? "null" : HidUuid(obj3)));
                                 if (strA0 == null || !(obj2 instanceof byte[])) {
                                     list = list2;
                                     it = it2;
@@ -4954,6 +4961,35 @@ public final class AirPlaySession implements AutoCloseable {
         }
     }
 
+    // [V1.8.24] hidSetInputMode.uuid 规范化（规范 Table 23-75：uuid 必须是 string，
+    // 且要与车机 /info 的 hidDevices[].uuid 对应）。
+    // 历史日志 HID_SEND_CMD 三条分别是 uuid=3 / 4 / s:2：
+    //   I0/J0/K0 存的是 /info 原始对象（Integer 3、Integer 4）；
+    //   ControlChannel.PEND 存的却是 A0() 生成的内部 key（"s:2"）。
+    // 旧代码把两种来源直接塞进 plist ⇒ 同一批命令混用 integer 与带前缀字符串，
+    // 车机上层按 uuid 匹配 HID 设备失败 ⇒ 即使 hidSetInputMode 回 200 也不启用触摸。
+    private static String HidUuid(Object raw) {
+        if (raw instanceof Number) {
+            return raw.toString();
+        }
+        if (raw instanceof String) {
+            String s = (String) raw;
+            if (s.length() > 2 && s.charAt(1) == ':'
+                    && (s.charAt(0) == 's' || s.charAt(0) == 'n' || s.charAt(0) == 'b')) {
+                return s.substring(2);
+            }
+            return s;
+        }
+        if (raw instanceof byte[]) {
+            StringBuilder sb = new StringBuilder();
+            for (byte b : (byte[]) raw) {
+                sb.append(String.format("%02x", b & 0xff));
+            }
+            return sb.toString();
+        }
+        return String.valueOf(raw);
+    }
+
     public List<Map<String, Object>> z0() throws IOException {
         List<Map<String, Object>> listCopyOf;
         // [V1.8.23] payload 固定 hidInputMode=0 (Default)。
@@ -4971,21 +5007,21 @@ public final class AirPlaySession implements AutoCloseable {
                 while (it.hasNext()) {
                     Object obj = it.next().a;
                     if (obj != null) {
-                        arrayList.add(Map.of("type", "hidSetInputMode", "params", Map.of("hidInputMode", numValueOf, "uuid", obj)));
+                        arrayList.add(Map.of("type", "hidSetInputMode", "params", Map.of("hidInputMode", numValueOf, "uuid", HidUuid(obj))));
                     }
                 }
                 Iterator<h> it2 = this.J0.values().iterator();
                 while (it2.hasNext()) {
                     Object obj2 = it2.next().a;
                     if (obj2 != null) {
-                        arrayList.add(Map.of("type", "hidSetInputMode", "params", Map.of("hidInputMode", numValueOf, "uuid", obj2)));
+                        arrayList.add(Map.of("type", "hidSetInputMode", "params", Map.of("hidInputMode", numValueOf, "uuid", HidUuid(obj2))));
                     }
                 }
                 Iterator<i> it3 = this.K0.values().iterator();
                 while (it3.hasNext()) {
                     Object obj3 = it3.next().a;
                     if (obj3 != null) {
-                        arrayList.add(Map.of("type", "hidSetInputMode", "params", Map.of("hidInputMode", numValueOf, "uuid", obj3)));
+                        arrayList.add(Map.of("type", "hidSetInputMode", "params", Map.of("hidInputMode", numValueOf, "uuid", HidUuid(obj3))));
                     }
                 }
                 ArrayList arrayList2 = ControlChannel.PEND;
@@ -5002,7 +5038,7 @@ public final class AirPlaySession implements AutoCloseable {
                 if (arrayList3 != null) {
                     for (Object obj4 : arrayList3) {
                         if (obj4 != null) {
-                            arrayList.add(Map.of("type", "hidSetInputMode", "params", Map.of("hidInputMode", numValueOf, "uuid", obj4)));
+                            arrayList.add(Map.of("type", "hidSetInputMode", "params", Map.of("hidInputMode", numValueOf, "uuid", HidUuid(obj4))));
                         }
                     }
                 }

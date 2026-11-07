@@ -180,8 +180,20 @@ public final class ControlChannel {
         return io.carplay.app.prototype.BluetoothAdapterResolver.b(context);
     }
 
-    /* _carplay-ctrl TXT 取值（按现场给定规则）。集中成常量便于复核与微调。 */
-    private static final String TXT_SRCVERS = "27.2";
+    /* _carplay-ctrl TXT 取值（按现场给定规则）。集中成常量便于复核与微调。
+     * [V1.8.24] 规范符合性核查（Apple CarPlay Specification PDF）：
+     *   Table 23-20 (p.425) 定义 _carplay-ctrl._tcp（手机广播）TXT 只有 2 键：
+     *     id      = Apple device 的 Bluetooth MAC，例 "00:11:22:33:44:55"
+     *     srcvers = Apple CarPlay source version，格式必须是 "x.y.z"
+     *   Table 23-22 (p.427) 的 deviceid/features/model/protovers/srcvers/flags 属于
+     *     _airplay._tcp（车机广播），不是手机 ctrl 服务的规范字段。
+     * 本实现保留 10 键是因为 Buick Info3.6 的 libNmeCarPlay.so TXT 键表 @0xa0a3a
+     * 确实含 deviceid/flags/model/protovers/pi/srcvers/id，删键有回归风险；
+     * 固件按 key 取值，多余键不会导致服务被判无效（BrowseCallback 0x53c70 无 TXT 硬门控，
+     * 只读 srcvers @0x52c2c，services/removedServices/ifname 来自 Bonjour info 字典）。
+     * 唯一实质违规是 srcvers 少一段：从 "27.2" 改为 "27.2.0"。
+     * 固件 0x8e7b0 解析为 major*10000+minor*100+patch，两者均为 270200 ⇒ 零行为差异。 */
+    private static final String TXT_SRCVERS = "27.2.0";
     private static final String TXT_OSVERS = "1.0";
     private static final String TXT_PROTOVERS = "1.1";
     private static final String TXT_MODEL = "iPhone15,3";

@@ -4,7 +4,7 @@
 `FillTxt(NsdServiceInfo, String)`；取值集中在同文件的 `TXT_*` 常量。
 本文件是**当前实现的唯一规则表**：改值只改 `TXT_*`，不要在各调用点硬编码。
 
-## 1. 当前键集（V1.7.71 / 308，共 10 键）
+## 1. 当前键集（V1.8.24 / 361，共 10 键）
 
 | 键 | 值 | 来源 / 说明 |
 | --- | --- | --- |
@@ -13,7 +13,7 @@
 | `id` | 同 `deviceid` | 历史已有键，保留避免 ctrl 发现回归 |
 | `model` | `iPhone15,3` | 固定 |
 | `manufacturer` | `Apple Inc.` | 固定 |
-| `srcvers` | `27.2` | 固定 |
+| `srcvers` | **`27.2.0`** | V1.8.24 由 `27.2` 补齐为 x.y.z（规范 Table 23-20 要求）；固件 `0x8e7b0` 解析两者均 270200 |
 | `osvers` | `1.0` | 车机 CarPlay 模块固件版本占位值，不影响连接 |
 | `protovers` | **`1.1`** | AirPlay 2 必填；V1.7.70 为 `1.0`，**V1.7.71 改 `1.1`** |
 | `features` | **`0x445F8A00,0x1C340`** | 64 位能力位域，高低 32 位逗号分隔；V1.7.70 为基础位域 `0x30e44`，**V1.7.71 改为纯无线 CarPlay 位域** |
@@ -21,6 +21,21 @@
 
 > `osvers=1.0`（车机固件占位）与 `protovers=1.1`（AirPlay 协议版本）是两个不同字段，不要合并或互相覆盖。
 > `id` / `flags` 不在现场 8 条规则里，因从 0.8.x 起就在广播中，删掉有 ctrl 发现回归风险，故保留。
+
+### 1.1 规范符合性（V1.8.24 核查，别误判）
+
+| 规范位置 | 服务 | 键 |
+| --- | --- | --- |
+| Table 23-20 (p.425) | **`_carplay-ctrl._tcp`（手机广播，本表）** | `id` = Apple device Bluetooth MAC；`srcvers` = CarPlay source version，格式 `x.y.z` |
+| Table 23-22 (p.427) | `_airplay._tcp`（**车机**广播） | `deviceid` / `features` / `model` / `protovers` / `srcvers` / `flags` |
+
+即本表 10 键里只有 `id` / `srcvers` 属于规范为 `_carplay-ctrl` 定义的字段，
+其余是 `_airplay._tcp` 的键或历史遗留。**不要因为"多了 8 个键"就精简**：
+Buick 固件 TXT 键表 @0xa0a3a 含 `deviceid/flags/model/protovers/pi/srcvers/id`，
+`0x52c2c` 读 `srcvers`；BrowseCallback `0x53c70` 读的
+`removedServices`/`services`/`ifname` 来自 Bonjour info 字典而非 TXT，
+缺失只跳分支，**没有按 TXT 键拒绝服务的硬门控**（见 `troubleshooting.md` 案例 13）。
+V1.7.70 曾因补/删键出过回归。
 
 ## 2. 服务实例名
 
@@ -60,7 +75,8 @@ SETUP 的 `name` / `model` / `deviceID` 同样是**手机**身份（`deviceID`=�
 
 - 固件 TXT 键表 0xa0a3a 起 `deviceid/flags/model/protovers/pi/srcvers/id`；ctrl 客户端区
   0x52b00–0x53060 读 `srcvers`(0x52c2c) / `name`(0x52cd9) / `services`(0x52d18)。
-  固件所有 AirPlay 版本常量是 `320.17.3`，与手机 `srcvers=27.2` 不一致，**尚无证据证明车机会拒绝**。
+  固件所有 AirPlay 版本常量是 `320.17.3`，与手机 `srcvers=27.2.0` 不一致，**尚无证据证明车机会拒绝**；
+  `srcvers` 只补了格式段（x.y.z），解析数值不变。
 - iOS sysdiagnose **没有打印 TXT 内容**（564MB 归档 → 329 万行全量直读，`srcvers`/`protovers`/
   `txtRecord`/`950.7.1`/`320.17.3` 全 0 命中）。dsc 静态串 @0x39d84a4 给出 iOS TXT 键全集，
   其中 `name` 是服务实例名、`services` 不是 TXT 键。⇒ 本表取值来自**现场规则 + 固件键池对照**，

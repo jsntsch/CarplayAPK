@@ -77,6 +77,12 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
      * Callback implementation of the NsdManager.RegistrationListener contract.
      */
     public class a implements NsdManager.RegistrationListener {
+        // [V1.8.24] unregisterService() 是异步的：返回时 mDNS 记录可能仍在。
+        // Q1() 在 StopEarly() 之后立刻重新注册同名服务 ⇒ NsdManager 检测冲突并自动改名
+        // 为 "OPPO_X8U (2)"（历史 9 次）。close() 会等本 latch（带超时）再返回。
+        public final java.util.concurrent.CountDownLatch unregistered =
+                new java.util.concurrent.CountDownLatch(1);
+
         public a() {
         }
 
@@ -90,6 +96,14 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
         public void onServiceRegistered(NsdServiceInfo nsdServiceInfo) {
             CarPlayCtrlAdvertiser carPlayCtrlAdvertiser = CarPlayCtrlAdvertiser.this;
             carPlayCtrlAdvertiser.r("CTRL_SERVICE_LIVE name=" + nsdServiceInfo.getServiceName() + " port=" + nsdServiceInfo.getPort());
+            // [V1.8.24] 规范 p.425：服务实例名必须是用户可见设备名。
+            // 出现 (2) 后缀说明 NsdManager 因同名冲突改名，车机按蓝牙名匹配时会对不上。
+            String expectedName = ControlChannel.ServiceName();
+            String actualName = nsdServiceInfo.getServiceName();
+            if (actualName != null && !expectedName.equals(actualName)) {
+                carPlayCtrlAdvertiser.r("CTRL_SERVICE_NAME_CONFLICT expected=" + expectedName
+                        + " actual=" + actualName + " reason=NSD_AUTO_RENAME");
+            }
             // [V1.8.23] 车机必须先 browse 到本服务、再连入并发 POST /ctrl-int/1/<id>
             // （固件 0xa429f/0xa42b3），才会把会话登记为 CarPlay 并桥接 HMI 触摸。
             // 之前只看到 name="OPPO_X8U (2)"（NsdManager 冲突改名）与 port=0，
@@ -120,10 +134,12 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
 
         @Override 
         public void onServiceUnregistered(NsdServiceInfo nsdServiceInfo) {
+            unregistered.countDown();
         }
 
         @Override 
         public void onUnregistrationFailed(NsdServiceInfo nsdServiceInfo, int i) {
+            unregistered.countDown();
         }
     }
 
@@ -460,6 +476,14 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
                 try {
                     if (this.n) {
                         s();
+                        // [V1.8.24] 等 mDNS 注销回调（或 400ms 超时）再放行，
+                        // 否则 Q1() 紧接着的同名注册会被 NsdManager 自动改名成 "(2)"。
+                        // 这里持有 j 锁，q() 也在 j 上同步，正好把注销→重注册串行化。
+                        try {
+                            ((a) this.q).unregistered.await(400L, java.util.concurrent.TimeUnit.MILLISECONDS);
+                        } catch (InterruptedException interrupted) {
+                            Thread.currentThread().interrupt();
+                        }
                     }
                     Iterator<ServerSocket> it = this.k.iterator();
                     while (it.hasNext()) {

@@ -423,6 +423,93 @@ Apple CarPlay 规范 Table 23-71 把 `appStates`/`resources` 写成顶层键，V
 > 若 ctrl 仍 0 accept：下一步是 iAP2 侧的 CarPlay 启动门（车机 browse 由蓝牙链路触发），
 > 或让服务实例名严格等于蓝牙名（消除 `(2)` 冲突后缀）。
 
+**历史基线（263 个日志文件全量扫描，2026-11-07 17:34）**：
+
+| 判据 | 全局命中 | 判读 |
+| --- | --- | --- |
+| `CTRL_SERVICE_TXT` | 0 / 0 文件 | V1.8.23 新增埋点，历史版本无此日志（**不是事件没发生**） |
+| `V160_CTRL_TCP_ACCEPT` | **2 条 / 1 文件** | `pair-235112/logcat.txt` 00:09:42 两次；但在 `V170_TXT_FILLED`(00:10:36) 前 54 秒，且 `CTRL_IDENTITY_BOUND`/`CTRL_INVITATION_ACCEPTED` 全 0 ⇒ 配对阶段的 TCP 探测，**不是 CarPlay 会话登记**。案例 12 「车机从未连入」应限定为「AirPlay 会话期内从未连入」 |
+| `CARPLAY_INBOUND_REQUEST` | 0 / 0 文件 | V1.8.22 引入；唯一装过该版的会话确实是 0。等价埋点 `INBOUND_REQ`(O0/S0) 也是 0 |
+| `HID_SEND_CMD mode=0` | 0 | 6 条全部 `mode=1`（V1.8.22，落盘两份）；V1.8.23 才改成 0 且未安装 |
+| `HID_REPORT_ARRIVED` | 0 / 0 文件 | 连同 `hidSendReport` / `TOUCH_FORWARDED` 全 0 |
+
+补充：`HID_INPUT_MODE_ACCEPTED status=200` 有 **291 条 / 28 文件**，最早 11-05 16:23，
+全部 `mode=1 awaiting_hid_report=false` ⇒ **车机很早就回 200，但从未推 report**，
+再次印证硬性规则 10。`CTRL_SERVICE_LIVE` 85 条中 76 条 `OPPO_X8U`、9 条 `OPPO_X8U (2)`
+（11-06 16:04 起就有）⇒ **`(2)` 冲突后缀是长期现象，不是 V1.8.22 引入的回归**。
+
+**新疑点**：`HID_SEND_CMD` 的 uuid 依次是 `3`(Integer)、`4`(Integer)、`s:2`(String)，
+而 `HID_TOUCH_DESCRIPTOR dev_uuid=s:3`。规范 Table 23-75 要求 `uuid` 为 string，
+且应与车机 `/info` 的 `hidDevices[].uuid` 一致。类型混杂/值不对应会让车机上层按 uuid
+匹配 HID 设备失败 ⇒ 即使 `hidSetInputMode` 回 200 也不启用触摸。下一版需打印
+`/info` 的原始 `hidDevices[].uuid` 与发送值做逐项比对。
+
+---
+
+## 案例 13：TXT 混表、`(2)` 服务名冲突、HID uuid 类型混杂（三项静态核查）
+
+**背景**：V1.8.23 出包后设备长期离线，先用规范 PDF + 固件 + 源码做静态核查，修三类确定缺陷。
+
+### 13.1 `_carplay-ctrl` TXT 混了两张表
+
+| 规范位置 | 适用服务 | 键 |
+| --- | --- | --- |
+| Table 23-20 (p.425) | **`_carplay-ctrl._tcp`（手机广播）** | `id` = Apple device Bluetooth MAC；`srcvers` = CarPlay source version，**格式 `x.y.z`** |
+| Table 23-22 (p.427) | `_airplay._tcp`（车机广播） | `deviceid` / `features` / `model` / `protovers` / `srcvers` / `flags` |
+
+我们的 10 键里**只有 `id`、`srcvers` 属于 Table 23-20**，其余 8 键
+（`deviceid`/`btaddr`/`model`/`manufacturer`/`features`/`osvers`/`protovers`/`flags`）
+来自另一张表或历史遗留。
+
+**固件是否因此判服务无效？否**：
+- `libNmeCarPlay.so` TXT 键表 @0xa0a3a 确实含 `deviceid/flags/model/protovers/pi/srcvers/id`；
+- `0x52c2c` 读 `srcvers`；BrowseCallback 的 `0x53c70` 读
+  `removedServices`/`services`/`ifname`，但这些来自 Bonjour info 字典而非 TXT，
+  缺失时只是跳过对应分支（`test r12,r12; je`），**没有按 TXT 键拒绝服务的硬门控**。
+
+**唯一实质违规**：`srcvers="27.2"` 少一段。V1.8.24 改 `"27.2.0"`；
+固件 `0x8e7b0` 按 `major*10000+minor*100+patch` 解析，两者都是 270200
+⇒ **纯格式合规，零行为差异**。10 键整体保留（V1.7.70 有删/补键回归史，不冒险精简）。
+
+### 13.2 `OPPO_X8U (2)` 是注销/重注册竞态
+
+链路：`MainActivity.onResume → StartEarly()` 注册一次 → `PairingSession.Q1()` 先
+`StopEarly() → close() → s() → NsdManager.unregisterService()`（**异步**）→
+紧接着 `new CarPlayCtrlAdvertiser(...).q()` 注册**同名**服务。注销回调还没到，
+mDNS 守护进程仍看到旧记录 ⇒ NsdManager 自动改名为 `OPPO_X8U (2)`。
+历史 85 条 `CTRL_SERVICE_LIVE` 中 9 条带 `(2)`（最早 11-06 16:04），是长期竞态，
+不是某版回归。规范 p.425 要求实例名就是用户可见设备名，带 `(2)` 会让按蓝牙名
+匹配的车机对不上。
+
+**修复**：`RegistrationListener` 加 `CountDownLatch unregistered`，
+`onServiceUnregistered` / `onUnregistrationFailed` 都 `countDown()`；
+`close()` 在 `s()` 后 `await(400ms)` 再返回（持 `j` 锁，`q()` 也在 `j` 上同步，
+顺带把注销→重注册串行化）；`onServiceRegistered` 名字不符时打
+`CTRL_SERVICE_NAME_CONFLICT expected=... actual=... reason=NSD_AUTO_RENAME`。
+
+### 13.3 `hidSetInputMode.uuid` 类型混杂
+
+规范 Table 23-75：`uuid` 类型 **string**，值需与车机 `/info` 的
+`hidDevices[].uuid` 对应。源码链路：
+- `x0()`：`obj3 = map2.get("uuid")`（原始对象，实测 Integer 3/4），
+  `strA0 = A0(obj3)`（内部 key，带 `s:` 前缀），`I0.put(strA0, new p(obj3,...))`；
+  `ControlChannel.PendAdd(strA0)` 存的是**内部 key**。
+- `z0()`：前三处取 `I0/J0/K0` 的原始对象，第四处取 `PEND` 的内部 key
+  ⇒ 同一批 plist 里混进 `Integer 3`、`Integer 4`、字符串 `"s:2"`。
+- 历史实证：`HID_SEND_CMD slot=0 uuid=3 / slot=1 uuid=4 / slot=2 uuid=s:2`。
+
+车机上层按 uuid 匹配 HID 设备失败 ⇒ `hidSetInputMode` 即使回 200 也不启用触摸
+（固件 `0x44559` 只转发、不解释值，见案例 11）。
+
+**修复**：新增 `HidUuid(Object)` —— `Number→String`、去掉 `s:`/`n:`/`b:` 内部前缀、
+`byte[]→hex`；`z0()` 四处统一调用。`PEND` 仍存内部 key（`z0()` 里要用它做
+`containsKey/remove` 去重），只在发送时规范化。`x0()` 增加
+`HID_DEVICE_UUID index/raw/class/internal_key/send_as` 逐项诊断日志。
+
+**产物**：V1.8.24 / 361，44s 编译 PASS，dex 锚点 `HID_DEVICE_UUID` /
+`CTRL_SERVICE_NAME_CONFLICT` / `NSD_AUTO_RENAME` / `27.2.0` 全部命中。
+设备离线未安装，待接上后 `adb logcat -G 16M && adb logcat -c` 再复现。
+
 ---
 
 ## 速查决策树 / Decision tree

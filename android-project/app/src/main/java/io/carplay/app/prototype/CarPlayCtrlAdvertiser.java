@@ -560,6 +560,10 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
                 @Override
                 public void b() {
                     ControlChannel.Log("CTRL_EARLY_PEER_CONNECTED");
+                    // [V1.8.25] 车机主动发来 GET /ctrl-int/1/connect 时不再只记日志。
+                    // 固件侧车机是连接发起方（firmware README §四.6），手机必须自动起会话；
+                    // 否则「车机点 CarPlay」永远等不到手机侧的响应。
+                    CarPlayAutoReconnectService.onCtrlInvitation(context);
                 }
             });
             earlyAdvertiser.q();

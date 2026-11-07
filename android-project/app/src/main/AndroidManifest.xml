@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- 开机后拉起常驻自动重连服务；BOOT_COMPLETED 是 Android 12+ 后台启动 FGS 的豁免场景。 -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
@@ -65,6 +67,22 @@
             android:name="io.carplay.app.prototype.PairingPreparationService"
             android:exported="false"
             android:foregroundServiceType="connectedDevice" />
+
+        <!-- 常驻自动重连：蓝牙回连 → 连车机 WiFi → 重连 CarPlay，并后台维持 _carplay-ctrl 广播。 -->
+        <service
+            android:name="io.carplay.app.prototype.CarPlayAutoReconnectService"
+            android:exported="false"
+            android:foregroundServiceType="connectedDevice" />
+
+        <receiver
+            android:name="io.carplay.app.prototype.CarPlayBootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

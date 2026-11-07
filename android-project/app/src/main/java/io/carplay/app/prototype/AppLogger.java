@@ -42,6 +42,27 @@ final class AppLogger {
     private AppLogger() {
     }
 
+    // [V1.8.26] 运行日志开关：关闭后不再写入文件（要求 8）
+    private static volatile boolean recording = true;
+
+    public static void setRecordingEnabled(boolean z) {
+        recording = z;
+    }
+
+    public static boolean isRecordingEnabled() {
+        return recording;
+    }
+
+    /** 删除本机全部历史日志文件（最多 5 个）。 */
+    public static void clear(Context context) {
+        for (int i = 0; i < 5; i++) {
+            File f = c(context, i);
+            if (f.isFile()) {
+                f.delete();
+            }
+        }
+    }
+
     public static synchronized void a(Context context) {
         try {
             f(context);
@@ -167,6 +188,9 @@ final class AppLogger {
     }
 
     public static synchronized void g(Context context, String str) {
+        if (!recording) {
+            return;
+        }
         try {
             String lowerCase = str.toLowerCase(Locale.ROOT);
             if (lowerCase.contains("bodyhex=") || lowerCase.contains("wirehex=") || lowerCase.contains("framehex=") || lowerCase.contains("payloadhex=") || lowerCase.contains("privatekey=") || lowerCase.contains("seed=") || lowerCase.contains("sharedsecret=")) {

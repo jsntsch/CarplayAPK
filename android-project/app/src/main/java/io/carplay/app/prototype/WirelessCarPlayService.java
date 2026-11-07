@@ -583,6 +583,9 @@ public final class WirelessCarPlayService extends Service {
                 try {
                     if (this.d.h1(this.a)) {
                         WirelessCarPlayService.l1 = gVar;
+                        // [V1.8.25] 车机通过 iAP2 下发的热点凭证原本只存在于静态字段 l1，
+                        // 进程一退出就没了。落盘后开机自动重连可据此直接连车机 WiFi。
+                        CarPlayLinkStore.saveWifi(this.d, this.d.A, gVar);
                         this.d.i1("WIFI_AUTHENTICATED_TARGET ssid=" + gVar.b() + " security=" + gVar.b + " passphrase_present=" + (!gVar.c().isEmpty()));
                     }
                 } catch (Throwable th) {
@@ -1945,6 +1948,15 @@ public final class WirelessCarPlayService extends Service {
                 + " name_matches=" + nameMatches + " name_prefixed=" + namePrefixed
                 + " ssid_readable=" + (currentSsid != null)
                 + " k1_null=" + (lVar == null) + " no_internet_ok=true");
+        // [V1.8.25] P2：仅当 iAP2 真实下发并保存过车机热点 SSID 时才做硬校验。
+        // 绝不用蓝牙名当硬门（V1.7.90 教训：BT 名 "myBuick"、SSID "myBuick GS"），
+        // 也绝不在读不到当前 SSID 时误拒。连错网时拒绝复用，让蓝牙 iAP2 重新拿凭证。
+        CarPlayLinkStore.WifiCredentials savedWifi = CarPlayLinkStore.wifi(this);
+        if (savedWifi != null && savedWifi.ssid != null && !savedWifi.ssid.isEmpty()
+                && currentSsid != null && !savedWifi.ssid.equalsIgnoreCase(currentSsid.trim())) {
+            i1("CURRENT_WIFI_REUSE_REJECTED reason=NOT_HEAD_UNIT_HOTSPOT values_logged=false");
+            return null;
+        }
         return wifiNetwork;
     }
 
@@ -3939,7 +3951,12 @@ public final class WirelessCarPlayService extends Service {
     public int onStartCommand(Intent intent, int i2, int i3) {
         String str;
         Network networkFromNetworkHandle = null;
-        String action = intent == null ? W0 : intent.getAction();
+        // [V1.8.25] START_STICKY 重建时 intent 为 null：旧实现把它当成 WIRELESS_STOP，
+        // 于是服务一被系统回收就永久停摆。现在 null intent 视为「用持久化的车机重连」。
+        String action = intent == null ? V0 : intent.getAction();
+        if (action == null) {
+            action = V0;
+        }
         if (W0.equals(action)) {
             e3("Stopped by user");
             return 2;
@@ -3969,8 +3986,10 @@ public final class WirelessCarPlayService extends Service {
             return 2;
         }
         if (this.b0) {
-            i1("Session already running; no automatic second connection");
-            return 2;
+            // [V1.8.25] 幂等而不是拒绝：自动重连服务可能在会话仍在跑时再次发 V0。
+            // 返回 START_STICKY 保持常驻语义，由后台服务自己判断是否需要重建。
+            i1("AUTO_SESSION_ALREADY_RUNNING idempotent=true");
+            return 3;
         }
         EcdsaSignature.a aVarK0 = MainActivity.K0(this);
         if (aVarK0 == null || !aVarK0.a(this)) {
@@ -3988,8 +4007,19 @@ public final class WirelessCarPlayService extends Service {
         this.M0 = intent != null && intent.getBooleanExtra("fill_display", false);
         getSharedPreferences(b1, 0).edit().putBoolean("fill_display", this.K0 && this.M0).apply();
         String stringExtra = intent == null ? null : intent.getStringExtra("selectedBtAddress");
+        if (stringExtra == null) {
+            // [V1.8.25] 自动重连 / START_STICKY 重建时 intent 可能不带地址，
+            // 从持久化里恢复 UI 最后选择的车机，避免直接失败。
+            stringExtra = CarPlayLinkStore.selectedAddress(this);
+            if (stringExtra != null) {
+                i1("AUTO_START_RECEIVER_RESTORED_FROM_PREFS values_logged=false");
+            }
+        }
         this.A = stringExtra;
         if (stringExtra == null || !BluetoothAdapter.checkBluetoothAddress(stringExtra)) {
+            // 旧实现在此早退却没复位 b0/f1，服务会永久卡在「Session already running」。
+            this.b0 = false;
+            f1 = false;
             e3("Choose one paired receiver first");
             return 2;
         }
@@ -4047,6 +4077,8 @@ public final class WirelessCarPlayService extends Service {
             this.j = networkFromNetworkHandle;
             Network network = this.j;
             if (network == null || !g3(network)) {
+                this.b0 = false;
+                f1 = false;
                 e3("Selected current WLAN is unavailable; connect the receiver WLAN and select it again");
                 return 2;
             }
@@ -4060,7 +4092,9 @@ public final class WirelessCarPlayService extends Service {
         editorEdit.putString("connection_route", str).apply();
         W2();
         startPcmCapture();
-        return 2;
+        // [V1.8.25] 会话启动成功后保持 START_STICKY：进程被回收时系统会带 null intent
+        // 重建，上面已把 null intent 处理成「用持久化车机自动重连」。
+        return 3;
     }
 
     /** PCM 采集线程只允许启动一次（服务可能被多次 onStartCommand 拉起）。 */

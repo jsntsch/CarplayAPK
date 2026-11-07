@@ -24,6 +24,8 @@ agent_created: true
 | 触摸无反应 / touch dead | §5 §7 |
 | 看不懂 `Q2()` / `a1()` / `g2()` 等混淆名、按名字改错地方 / obfuscated names | §13 `references/obfuscation-map.md` |
 | 连一会儿就断、重连后哑掉 / drops | §5 §7 |
+| 车机认得上次手机却连不上、必须两边手动点 / pairing & auto-reconnect | `references/pairing-reconnect-compare.md` |
+| 蓝牙连上后自动连车机 WiFi、后台自动重连 / auto reconnect | `references/pairing-reconnect-compare.md` §8 + `troubleshooting.md` 案例 15 |
 
 不适用 / Out of scope：车机端固件修改、有线 USB CarPlay、iOS 侧行为分析。
 Head-unit firmware changes, wired CarPlay and iOS-side analysis are out of scope.

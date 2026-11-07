@@ -87,6 +87,9 @@ public final class ControlChannel {
     public static void MarkCtrlInvitation(String receiverIdentifier) {
         if (receiverIdentifier != null && !receiverIdentifier.isEmpty()) {
             CTRL_RECEIVER_ID = receiverIdentifier;
+            // [V1.8.25] 车机侧用 carplay_devid 记住手机；手机侧同样把
+            // AirPlay-Receiver-Device-ID 落盘，作为"已配对车机"的稳定标识。
+            io.carplay.app.prototype.CarPlayLinkStore.saveReceiverId(APP_CTX, receiverIdentifier);
         }
         CTRL_INVITATION_AT = SystemClock.elapsedRealtime();
         boolean localPresent = LocalBluetoothIdentifier() != null;

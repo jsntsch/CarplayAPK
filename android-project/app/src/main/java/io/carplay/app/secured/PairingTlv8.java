@@ -220,6 +220,12 @@ public final class PairingTlv8 {
                 throw new GeneralSecurityException("Stored accessory identity changed; explicit unpair required");
             }
             this.b.c(bVar);
+            // [V1.8.25] 按车机蓝牙 MAC 记下本次 pair-setup 得到的 identifier，
+            // 供下次 pair-verify 复用诊断（车机若每次下发新 id，日志可直接看出来）。
+            io.carplay.app.prototype.CarPlayLinkStore.saveLastPairingIdentifier(
+                    ControlChannel.APP_CTX,
+                    io.carplay.app.prototype.CarPlayLinkStore.selectedAddress(ControlChannel.APP_CTX),
+                    bVar.a);
         }
         Arrays.fill(dVar.a, (byte) 0);
         Arrays.fill(bArrK, (byte) 0);
@@ -308,6 +314,15 @@ public final class PairingTlv8 {
         if (z) {
             bVarB = this.b.b(strL);
             if (bVarB == null) {
+                // [V1.8.25] 诊断：车机每次给新 pairing identifier 时，按 MAC 缓存
+                // 无法绕过后续签名校验（bVarB.a 必须等于 strL），这里只把差异记下来，
+                // 不伪造身份、不删除既有配对记录。
+                android.content.Context ctx = ControlChannel.APP_CTX;
+                String lastId = io.carplay.app.prototype.CarPlayLinkStore.lastPairingIdentifier(
+                        ctx, io.carplay.app.prototype.CarPlayLinkStore.selectedAddress(ctx));
+                ControlChannel.Log("PAIR_VERIFY_PEER_KEY_LOOKUP stored_identifier_present="
+                        + (lastId != null) + " matches_current=" + (lastId != null && lastId.equals(strL))
+                        + " values_logged=false");
                 throw new GeneralSecurityException("PAIR_RESUME_STORED_PEER_REQUIRED");
             }
         } else {
@@ -400,6 +415,10 @@ public final class PairingTlv8 {
             } catch (Exception e2) {
                 ControlChannel.Log("PAIR_VERIFY_FIRST_FAILED type=" + e2.getClass().getSimpleName()
                         + " detail=" + e2.getMessage() + " fallback=pair_setup");
+                // [V1.8.25] 记录复用失败次数，便于区分「本机身份不稳」与「车机每次换 id」。
+                android.content.Context ctx = ControlChannel.APP_CTX;
+                io.carplay.app.prototype.CarPlayLinkStore.notePairVerifyFallback(
+                        ctx, io.carplay.app.prototype.CarPlayLinkStore.selectedAddress(ctx));
             }
         }
         try {

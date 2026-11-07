@@ -512,6 +512,111 @@ mDNS 守护进程仍看到旧记录 ⇒ NsdManager 自动改名为 `OPPO_X8U (2)
 
 ---
 
+## 案例 14：车机认得上次手机却连不上 —— 两侧「谁发起连接」相反
+
+**背景**：用户问「对比固件与 APK 的 CarPlay 配对、车机启动自动重连流程差异」。静态逆向，
+未装机验证。完整证据与修复优先级见 **`references/pairing-reconnect-compare.md`**。
+
+### 14.1 车机侧（Buick Info3.6，A 级字节码）
+
+- `_CarPlayControlClientEnsureStarted()` @0x52fc0 → `0x5303b` 建 `_carplay-ctrl._tcp` browse；
+  BrowseCallback @0x536e0 的 Add 分支 0x53860 → `ControlClientCallback` @0x53c00 读
+  `removedServices` / `services`。
+- **`AddCarPlayClient()` @0x178d0**：把入参 6 字节格式化成 `%02X:...` MAC，与第二个标识串组成
+  二元组存入 `[obj+0x9e0]` 客户端表（步长 0x30）；event=0 添加 / event=1 删除；
+  末尾调 `fnCarplayServiceUpdate` 回调 `[obj+0x898]`。
+- **`SendConnect()` @0x17e30**：遍历同一张表做双字符串匹配；`0x17f72` 未命中 ⇒ `ebp=0xb`
+  **直接返回、不发 connect**；命中才 `call 0xe400`。
+- `_CarPlayControlClientSendCommand()` @0x54900 构造
+  `GET /ctrl-int/1/connect HTTP/1.1` + `Host` + `User-Agent: AirPlay/320.17.3` +
+  `AirPlay-Receiver-Device-ID: %llu`。
+- 自动恢复：`_BonjourBrowser_ReconfirmDevice` @0x581f2、`_RetryTimerFired` @0x57e03、
+  `_IdleStateKeepAliveStart` @0x4b693、`_IdleStateKeepAliveReceiveBeacon` @0x4c18e。
+
+### 14.2 手机侧（本项目，A 级源码）
+
+- `AndroidManifest.xml` **零 receiver**、无 `RECEIVE_BOOT_COMPLETED`；
+  `onStartCommand` 返回 `START_NOT_STICKY` 且 `:3971` 拒绝自动第二次连接；
+  `MainActivity.F0():353` 是唯一发起点。
+- `_carplay-ctrl` 只在 `MainActivity.onResume():2021` 的 `StartEarly()` 注册；
+  **`StartEarly` 的 `b()` 回调只打 `CTRL_EARLY_PEER_CONNECTED` 日志**（:555-564），
+  车机主动发来的 connect 邀请不会拉起服务。
+- `ControlRequestParser.c()` 能正确接受 `GET /ctrl-int/1/connect`（格式对得上），
+  所以问题在**上游有没有进程/广播**，不在请求解析。
+- 无 `carplay_devid` 类持久化；「已配对」实际是 `approved_leaf_<MAC>` 证书硬门；
+  `PairingTlv8.j()` 的复用键取自车机返回的 identifier，变化即退回 pair-setup。
+
+### 14.3 判定
+
+车机是**连接发起方**（点火恢复客户端表 → browse → GET connect），手机 APK 把自己做成了
+**唯一发起方**（用户点 → 主动连车机）。车机单方面回连时手机没有进程；手机单方面发起时
+车机 `SendConnect` 因表未登记而不发 connect ⇒ **只有两边同时被人工触发才成功**。
+
+历史日志佐证：`CTRL_INVITATION_ACCEPTED` / `CTRL_IDENTITY_BOUND` 全历史 0，
+`V160_CTRL_TCP_ACCEPT` 仅 2 次且早于广播开始 54s。
+
+### 14.4 修复优先级（未实施）
+
+1. P0：加 BOOT / 蓝牙 / 网络 receiver，把 ctrl 广播 + accept 移到常驻服务，`START_STICKY`，
+   去掉 `:3971` 早退。
+2. P0：`StartEarly.b()` 收到邀请时用持久化的 `selected_address` 发 `V0` 自动起会话；
+   `PairingSession.Q1()` 不再注销早广播。
+3. P1：落盘 `AirPlay-Receiver-Device-ID` 作为 devid 等价物；pair-verify 缓存改按车机 MAC 索引。
+4. P2：`Q2()` 校验确为车机热点；放宽 `Iap2Bootstrap` 3 次上限。
+
+> 不要在没搞清 `services` 来自 TXTRecord 还是 Bonjour info 字典之前就补 TXT 键
+> （V1.7.70 一次补 22 键出过回归）。
+
+---
+
+## 案例 15：V1.8.25 蓝牙触发自动连车机 WiFi 并重连 CarPlay（P0/P1/P2 落地）
+
+**背景**：用户要求「修复 P0 P1 P2，连接车机蓝牙后自动调用连接车机 WiFi，并与车机重连 CarPlay」。
+完整实现、平台约束与验证清单见 **`references/pairing-reconnect-compare.md` §8**。
+
+### 15.1 新增/改动
+
+- 新增 4 类：`CarPlayLinkStore`（持久化）、`CarPlayWifiConnector`（`WifiNetworkSpecifier`）、
+  `CarPlayBootReceiver`（BOOT）、`CarPlayAutoReconnectService`（`START_STICKY` 常驻 FGS）。
+- Manifest 加 `RECEIVE_BOOT_COMPLETED` 与两个组件；`MainActivity.onResume` 调 `ensure()`。
+- `CarPlayCtrlAdvertiser.StartEarly.b()` 收到车机 `GET /ctrl-int/1/connect` 时不再只打日志，
+  改调 `onCtrlInvitation()` 自动起会话（对应固件侧由车机发起，见案例 14）。
+- `WirelessCarPlayService.t()` 落盘 iAP2 下发的 WiFi 凭证；`onStartCommand` 支持
+  `null intent` 自动重连、从 prefs 恢复 MAC、`b0` 幂等、成功 `START_STICKY`，
+  并修掉两处早退不复位 `b0/f1` 的状态泄漏。
+- P1：`ControlChannel.MarkCtrlInvitation()` 落盘 receiver id；`PairingTlv8` 加按 MAC 的
+  pairing identifier 记录与 `PAIR_VERIFY_PEER_KEY_LOOKUP` 诊断。
+- P2：`Q2()` 仅在保存过真实 SSID 且不匹配时拒绝复用；`Iap2Bootstrap` 预算 3 → 6 次。
+
+### 15.2 三条自动重连路径
+
+| 路径 | 触发 | 判据 |
+| --- | --- | --- |
+| A | 有 iAP2 保存的热点凭证：蓝牙 ACL → `requestNetwork` | `AUTO_WIFI_REQUEST_SUBMITTED` → `AUTO_WIFI_AVAILABLE` → `AUTO_SESSION_START_REQUESTED` |
+| B | 无凭证但系统已保存车机热点：蓝牙 ACL 后系统回连 WiFi | `AUTO_WIFI_MONITOR_READY source=SYSTEM_SAVED_NETWORK` |
+| C | 车机先发起：browse → `GET /ctrl-int/1/connect` | `AUTO_CTRL_INVITATION_RECEIVED` |
+
+蓝牙事件后 5 分钟窗口内才允许 WiFi 监听触发，避免连家里 WiFi 误启动 CarPlay。
+
+### 15.3 平台坑（minSdk 33 / targetSdk 37）
+
+- Android 12+ 禁止后台启动 FGS，`BOOT_COMPLETED` 是豁免；蓝牙 ACL 广播不可靠静态注册，
+  必须在常驻服务里动态注册 ⇒ 服务需先常驻才能收到后续蓝牙事件。
+- Android 10+ `WifiManager.addNetwork/enableNetwork` 对应用无效，只能 `WifiNetworkSpecifier` +
+  `requestNetwork`；首次可能弹系统同意框，且需要运行时 `NEARBY_WIFI_DEVICES`。
+- API 34+ 用三参 `startForeground(..., CONNECTED_DEVICE)`，API 33 用两参。
+- 编译坑：新类里 `R.drawable.*` 会因 R 在 `io.carplay.app` 命名空间而报「程序包 R 不存在」；
+  沿用工程惯例 `android.R.drawable.stat_notify_sync`。
+
+### 15.4 结论边界
+
+`1.8.25/362` 已编译核验 PASS（dex 锚点 `AUTO_WIFI_MONITOR_READY`），**设备离线未装机**，
+真机行为未验证。Info3.6 历史 `wifi_request=false` ⇒ 可能从未落盘 WiFi 凭证，路径 A 不可用；
+此时只能靠路径 B/C。按 MAC 缓存 pairing identifier **不能**绕过 `pair-verify` 签名校验，
+不要写成「P1 已修好每次重新配对」。
+
+---
+
 ## 速查决策树 / Decision tree
 
 ```

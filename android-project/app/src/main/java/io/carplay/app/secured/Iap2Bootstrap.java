@@ -169,7 +169,9 @@ public final class Iap2Bootstrap {
             long j6 = this.a + 1;
             this.a = j6;
             int i = this.e;
-            if (i >= 3) {
+            // [V1.8.25] P2：3 次预算在 22~50s 断连场景下太短（Recovering 1/3 后直接耗尽）。
+            // 放宽到 6 次，第 4~6 次沿用 8s 退避；30s 稳定窗口仍会复位计数。
+            if (i >= 6) {
                 return new a(j6, 0, 0L);
             }
             int i2 = i + 1;

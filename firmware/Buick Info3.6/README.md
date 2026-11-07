@@ -115,7 +115,51 @@ CarPlay-RE/fw/V167/
 │  libNmeSDK / BaseClasses / Vfs / Image：SDK 基础设施            │
 └──────────────────────────────────────────────────────────────┘
 ```
-
+<svg viewBox="0 0 680 322" width="100%" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>车机与 APK 的 CarPlay 连接发起方向对比</title>
+<desc>车机点火后自动恢复配对表并主动发起 connect，手机 APK 无后台、只在用户点击后主动建会话，两条链方向相反。</desc>
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</marker>
+</defs>
+<text class="th" x="40" y="30" fill="#0C447C">车机侧 · 系统常驻，点火后自动发起</text>
+<g><rect x="40" y="52" width="118" height="56" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+<text class="th" x="99" y="72" text-anchor="middle" dominant-baseline="central" fill="#0C447C">恢复配对表</text>
+<text class="ts" x="99" y="90" text-anchor="middle" dominant-baseline="central" fill="#185FA5">carplay_devid</text></g>
+<path d="M160 80 L190 80" fill="none" stroke="#185FA5" stroke-width="1.5" marker-end="url(#arrow)"/>
+<g><rect x="194" y="52" width="118" height="56" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+<text class="th" x="253" y="72" text-anchor="middle" dominant-baseline="central" fill="#0C447C">发现服务</text>
+<text class="ts" x="253" y="90" text-anchor="middle" dominant-baseline="central" fill="#185FA5">browse ctrl</text></g>
+<path d="M314 80 L344 80" fill="none" stroke="#185FA5" stroke-width="1.5" marker-end="url(#arrow)"/>
+<g><rect x="348" y="52" width="118" height="56" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+<text class="th" x="407" y="72" text-anchor="middle" dominant-baseline="central" fill="#0C447C">表内匹配</text>
+<text class="ts" x="407" y="90" text-anchor="middle" dominant-baseline="central" fill="#185FA5">SendConnect</text></g>
+<path d="M468 80 L498 80" fill="none" stroke="#185FA5" stroke-width="1.5" marker-end="url(#arrow)"/>
+<g><rect x="502" y="52" width="118" height="56" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+<text class="th" x="561" y="72" text-anchor="middle" dominant-baseline="central" fill="#0C447C">发起 connect</text>
+<text class="ts" x="561" y="90" text-anchor="middle" dominant-baseline="central" fill="#185FA5">GET ctrl-int</text></g>
+<path d="M40 138 L620 138" fill="none" stroke="#888780" stroke-width="0.5" stroke-dasharray="4 4"/>
+<text class="ts" x="40" y="132" fill="#5F5E5A">车机发出的 connect 到达时，手机侧没有常驻进程在监听</text>
+<text class="th" x="40" y="166" fill="#791F1F">手机侧 · 本项目 APK，只在用户点击后存在</text>
+<g><rect x="40" y="182" width="118" height="56" rx="8" fill="#FCEBEB" stroke="#A32D2D" stroke-width="0.5"/>
+<text class="th" x="99" y="202" text-anchor="middle" dominant-baseline="central" fill="#791F1F">仅前台广播</text>
+<text class="ts" x="99" y="220" text-anchor="middle" dominant-baseline="central" fill="#A32D2D">onResume</text></g>
+<path d="M160 210 L190 210" fill="none" stroke="#A32D2D" stroke-width="1.5" marker-end="url(#arrow)"/>
+<g><rect x="194" y="182" width="118" height="56" rx="8" fill="#FCEBEB" stroke="#A32D2D" stroke-width="0.5"/>
+<text class="th" x="253" y="202" text-anchor="middle" dominant-baseline="central" fill="#791F1F">邀请仅记日志</text>
+<text class="ts" x="253" y="220" text-anchor="middle" dominant-baseline="central" fill="#A32D2D">b() 回调</text></g>
+<path d="M314 210 L344 210" fill="none" stroke="#A32D2D" stroke-width="1.5" marker-end="url(#arrow)"/>
+<g><rect x="348" y="182" width="118" height="56" rx="8" fill="#FCEBEB" stroke="#A32D2D" stroke-width="0.5"/>
+<text class="th" x="407" y="202" text-anchor="middle" dominant-baseline="central" fill="#791F1F">不启动服务</text>
+<text class="ts" x="407" y="220" text-anchor="middle" dominant-baseline="central" fill="#A32D2D">无后台常驻</text></g>
+<path d="M468 210 L498 210" fill="none" stroke="#A32D2D" stroke-width="1.5" marker-end="url(#arrow)"/>
+<g><rect x="502" y="182" width="118" height="56" rx="8" fill="#FCEBEB" stroke="#A32D2D" stroke-width="0.5"/>
+<text class="th" x="561" y="202" text-anchor="middle" dominant-baseline="central" fill="#791F1F">全靠手动点</text>
+<text class="ts" x="561" y="220" text-anchor="middle" dominant-baseline="central" fill="#A32D2D">F0() 唯一入口</text></g>
+<rect class="box" x="40" y="262" width="580" height="40" rx="8" stroke-width="0.5"/>
+<text class="t" x="60" y="282" dominant-baseline="central">只有两侧同时被人工触发，两条各自独立的链才碰巧对齐</text>
+</svg>
 ## 四、与本项目（无线 CarPlay 触摸回传）直接相关的证据
 
 以下均摘自本目录 `analysis/` 内的字符串导出，可逐条复核。

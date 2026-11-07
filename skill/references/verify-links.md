@@ -7,7 +7,7 @@ later ones meaningless.
 ## 0. 先确认包的身份 / Identify the build first
 
 ```
-APP_BUILD version=1.7.61 code=298 dex=SRC
+APP_BUILD version=1.7.71 code=308 dex=SRC
 ```
 
 `dex=SRC` 表示这是源码构建的包。装的是历史外壳包时这里不会出现。

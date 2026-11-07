@@ -7,7 +7,7 @@
 #
 # 用法 / Usage
 #   bash verify_built_apk.sh [apk 路径]
-#   bash verify_built_apk.sh dist/Carplay-V1.7.61-debug.apk "HID_AMBIGUOUS_CONTACT_ID"
+#   bash verify_built_apk.sh dist/Carplay-V1.7.71-debug.apk "HID_AMBIGUOUS_CONTACT_ID"
 #
 # 第二个参数是可选的「dex 锚点」：本次改动引入的字符串常量或方法名，用来证明产物不是旧的。
 # 注意：javac 未开 -g，局部变量名不会进 dex，不能用变量名当锚点。

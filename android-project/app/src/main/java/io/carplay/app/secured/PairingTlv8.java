@@ -213,6 +213,9 @@ public final class PairingTlv8 {
         c cVar = this.b;
         if (cVar != null) {
             b bVarB = cVar.b(bVar.a);
+            // id_matched=true 表示车机的 pairing identifier 与库里某条记录一致（说明标识稳定，只是没走 verify）；
+            // id_matched=false 表示每次配对车机都给出新的标识（那才是「每次弹配对」的根因）。
+            ControlChannel.Log("PAIR_SETUP_PEER id_matched=" + (bVarB != null) + " new_pairing=true");
             if (bVarB != null && !MessageDigest.isEqual(bVarB.b, bArrK3)) {
                 throw new GeneralSecurityException("Stored accessory identity changed; explicit unpair required");
             }
@@ -385,6 +388,20 @@ public final class PairingTlv8 {
 
     public e h(EventChannel eventChannel, String str, String str2) throws GeneralSecurityException, IOException {
         n(str);
+        // 优先 pair-verify（真机行为）：只要本地存过该车机的配对身份，就直接走 /pair-verify 复用配对。
+        // 原实现无条件先发 /pair-setup，车机每次都当成「新设备」而弹重新配对界面（WWDC 2017 明确：配对只做一次，
+        // 之后进入车内自动重连，不应再要求确认）。pair-verify 失败（无配对 / 身份变更）再回退 pair-setup，
+        // 因此首配流程不受影响。
+        if (this.b != null) {
+            try {
+                e eVarResumed = j(eventChannel, null, true);
+                ControlChannel.Log("PAIR_VERIFY_FIRST_OK resumed_stored_peer=true");
+                return eVarResumed;
+            } catch (Exception e2) {
+                ControlChannel.Log("PAIR_VERIFY_FIRST_FAILED type=" + e2.getClass().getSimpleName()
+                        + " detail=" + e2.getMessage() + " fallback=pair_setup");
+            }
+        }
         try {
             return i(eventChannel, c(eventChannel, str, e(eventChannel, "/pair-setup", m(0, new byte[]{0}, 6, new byte[]{1}), 2)));
         } catch (EventChannel.d e2) {

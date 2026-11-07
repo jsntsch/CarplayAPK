@@ -130,7 +130,11 @@ public final class PairingSession implements AutoCloseable {
     private boolean r;
     private ConnectivityManager.NetworkCallback s;
     private boolean t;
-    private boolean u;
+    // 关闭标志用 volatile，让主线程 isClosed() 无需再抢 i 锁。
+    // c1() 会在 i 锁内做阻塞的 RFCOMM connect / 握手，旧实现让主线程排队等锁直到 ANR。
+    // Volatile so the main-thread isClosed() no longer contends for lock i, which c1() can hold
+    // across a blocking Bluetooth connect and handshake (that used to end in an ANR). 
+    private volatile boolean u;
     private boolean v;
     private boolean w;
     private Iap2Csm.g x;
@@ -1091,87 +1095,99 @@ public final class PairingSession implements AutoCloseable {
         try {
             bluetoothSocketCreateRfcommSocketToServiceRecord = bluetoothDevice.createRfcommSocketToServiceRecord(U);
             try {
+                // 锁内只登记 socket 与超时任务；connect() 和 k1() 握手是阻塞操作，绝不能持锁。
+                // 旧实现让整个 RFCOMM 连接都在 i 锁内，主线程 S0/d1/L1/D1 等回调排队等锁直到 ANR。
+                // Only register state under lock i. connect() and the k1() handshake block for
+                // seconds; holding i across them used to stall main-thread callbacks into an ANR.
+                boolean proceed;
+                w6 w6Var;
                 synchronized (this.i) {
-                    if (!this.u && this.m == null) {
+                    proceed = !this.u && this.m == null;
+                    if (proceed) {
                         this.l = bluetoothSocketCreateRfcommSocketToServiceRecord;
-                        w6 w6Var = new w6(i3);
+                        w6Var = new w6(i3);
                         w6Var.b = this;
                         w6Var.c = bluetoothSocketCreateRfcommSocketToServiceRecord;
                         VarHandle.storeStoreFence();
                         this.h.postDelayed(w6Var, 20000L);
-                        try {
-                            bluetoothSocketCreateRfcommSocketToServiceRecord.connect();
+                    } else {
+                        w6Var = null;
+                        z1(bluetoothSocketCreateRfcommSocketToServiceRecord);
+                    }
+                }
+                if (!proceed) {
+                    return;
+                }
+                try {
+                    bluetoothSocketCreateRfcommSocketToServiceRecord.connect();
+                    try {
+                        this.h.removeCallbacks(w6Var);
+                        if (E0(bluetoothSocketCreateRfcommSocketToServiceRecord)) {
+                            S1("RFCOMM_SELECTED_PEER_CONNECTED");
+                            k1(bluetoothSocketCreateRfcommSocketToServiceRecord);
+                            return;
+                        }
+                        return;
+                    } catch (Exception e3) {
+                        e2 = e3;
+                        i3 = 1;
+                        z1(bluetoothSocketCreateRfcommSocketToServiceRecord);
+                        synchronized (this.i) {
                             try {
-                                this.h.removeCallbacks(w6Var);
-                                if (E0(bluetoothSocketCreateRfcommSocketToServiceRecord)) {
-                                    S1("RFCOMM_SELECTED_PEER_CONNECTED");
-                                    k1(bluetoothSocketCreateRfcommSocketToServiceRecord);
+                                if (this.l == bluetoothSocketCreateRfcommSocketToServiceRecord) {
+                                    this.l = null;
+                                }
+                                if (!this.u && this.m == null) {
+                                    if (z) {
+                                        str = "CONNECT";
+                                    } else {
+                                        str = "CREATE";
+                                    }
+                                    S1("RFCOMM_CONNECT_DIAGNOSTIC attempt=" + i2 + " stage=" + str + " elapsed_ms=" + (SystemClock.elapsedRealtime() - jElapsedRealtime) + " error_code=" + M1(e2) + " service_cache=" + B0(bluetoothDevice));
+                                    if (!z && i3 == 0 && i2 < 3 && H1(e2) && K1(bluetoothDevice, atomicInteger, i2 + 1)) {
+                                        S1(ProtoMessageBase.e("RFCOMM_CONNECT_UNAVAILABLE: ", J1(e2)));
+                                        return;
+                                    }
+                                    if (!z && i3 == 0 && i2 == 3 && H1(e2) && B1(bluetoothDevice, atomicInteger)) {
+                                        return;
+                                    }
+                                    I0("connect", e2, atomicInteger);
                                     return;
                                 }
                                 return;
-                            } catch (Exception e3) {
-                                e2 = e3;
-                                i3 = 1;
-                                z1(bluetoothSocketCreateRfcommSocketToServiceRecord);
-                                synchronized (this.i) {
-                                    try {
-                                        if (this.l == bluetoothSocketCreateRfcommSocketToServiceRecord) {
-                                            this.l = null;
-                                        }
-                                        if (!this.u && this.m == null) {
-                                            if (z) {
-                                                str = "CONNECT";
-                                            } else {
-                                                str = "CREATE";
-                                            }
-                                            S1("RFCOMM_CONNECT_DIAGNOSTIC attempt=" + i2 + " stage=" + str + " elapsed_ms=" + (SystemClock.elapsedRealtime() - jElapsedRealtime) + " error_code=" + M1(e2) + " service_cache=" + B0(bluetoothDevice));
-                                            if (!z && i3 == 0 && i2 < 3 && H1(e2) && K1(bluetoothDevice, atomicInteger, i2 + 1)) {
-                                                S1(ProtoMessageBase.e("RFCOMM_CONNECT_UNAVAILABLE: ", J1(e2)));
-                                                return;
-                                            }
-                                            if (!z && i3 == 0 && i2 == 3 && H1(e2) && B1(bluetoothDevice, atomicInteger)) {
-                                                return;
-                                            }
-                                            I0("connect", e2, atomicInteger);
-                                            return;
-                                        }
-                                        return;
-                                    } catch (Throwable th2) {
-                                        throw th2;
-                                    }
-                                }
-                            }
-                        } catch (Throwable th3) {
-                            try {
-                                this.h.removeCallbacks(w6Var);
-                                throw th3;
-                            } catch (Exception e4) {
-                                e2 = e4;
-                                z1(bluetoothSocketCreateRfcommSocketToServiceRecord);
-                                synchronized (this.i) {
-                                    if (this.l == bluetoothSocketCreateRfcommSocketToServiceRecord) {
-                                        this.l = null;
-                                    }
-                                    if (!this.u) {
-                                        if (z) {
-                                            str = "CONNECT";
-                                        } else {
-                                            str = "CREATE";
-                                        }
-                                        S1("RFCOMM_CONNECT_DIAGNOSTIC attempt=" + i2 + " stage=" + str + " elapsed_ms=" + (SystemClock.elapsedRealtime() - jElapsedRealtime) + " error_code=" + M1(e2) + " service_cache=" + B0(bluetoothDevice));
-                                        if (!z) {
-                                        }
-                                        if (!z) {
-                                        }
-                                        I0("connect", e2, atomicInteger);
-                                        return;
-                                    }
-                                    return;
-                                }
+                            } catch (Throwable th2) {
+                                throw th2;
                             }
                         }
                     }
-                    z1(bluetoothSocketCreateRfcommSocketToServiceRecord);
+                } catch (Throwable th3) {
+                    try {
+                        this.h.removeCallbacks(w6Var);
+                        throw th3;
+                    } catch (Exception e4) {
+                        e2 = e4;
+                        z1(bluetoothSocketCreateRfcommSocketToServiceRecord);
+                        synchronized (this.i) {
+                            if (this.l == bluetoothSocketCreateRfcommSocketToServiceRecord) {
+                                this.l = null;
+                            }
+                            if (!this.u) {
+                                if (z) {
+                                    str = "CONNECT";
+                                } else {
+                                    str = "CREATE";
+                                }
+                                S1("RFCOMM_CONNECT_DIAGNOSTIC attempt=" + i2 + " stage=" + str + " elapsed_ms=" + (SystemClock.elapsedRealtime() - jElapsedRealtime) + " error_code=" + M1(e2) + " service_cache=" + B0(bluetoothDevice));
+                                if (!z) {
+                                }
+                                if (!z) {
+                                }
+                                I0("connect", e2, atomicInteger);
+                                return;
+                            }
+                            return;
+                        }
+                    }
                 }
             } catch (Exception e5) {
                 e2 = e5;
@@ -1639,6 +1655,8 @@ public final class PairingSession implements AutoCloseable {
         j stats = new j();
         String startupInput = "NOT_AT_DEADLINE";
         MfiCertificateVerifier verifier = null;
+        // 每轮引导重新判定，避免上一轮车机的能力结论泄漏到本次。
+        MfiCertificateVerifier.PEER_WIFI_CREDENTIAL_CHANNEL_ABSENT = false;
         boolean wifiHandoff = false;
         try {
             InputStream inputStream = bluetoothSocket.getInputStream();
@@ -1661,6 +1679,12 @@ public final class PairingSession implements AutoCloseable {
             this.j.execute(reader);
             long deadline = SystemClock.elapsedRealtime() + 45000L;
             while (!isClosed()) {
+                // 车机已明确不具备任何 WiFi 凭证下发通道（0x5702/0x5703/0x4301 全无）时，
+                // 继续等「凭证到达」没有意义：把剩余等待压到 20s，快速交给用户手动接入车机热点。
+                if (MfiCertificateVerifier.PEER_WIFI_CREDENTIAL_CHANNEL_ABSENT
+                        && deadline - SystemClock.elapsedRealtime() > 20000L) {
+                    deadline = SystemClock.elapsedRealtime() + 20000L;
+                }
                 if (!verifier.o() && !verifier.k0()
                         && SystemClock.elapsedRealtime() > deadline) {
                     boolean backlog = stats.a(queue);
@@ -1669,6 +1693,11 @@ public final class PairingSession implements AutoCloseable {
                             : (assembling ? "INCOMPLETE_ASSEMBLY" : "NO_PENDING_INPUT");
                     startupInput = reason;
                     S1("IAP2_START_DEADLINE input=" + reason + "; " + stats.b(queue.size()));
+                    if (MfiCertificateVerifier.PEER_WIFI_CREDENTIAL_CHANNEL_ABSENT) {
+                        S1("IAP2_START_DEADLINE_ACTION reason=PEER_CANNOT_DELIVER_WIFI_CREDENTIALS"
+                                + " action=CONNECT_RECEIVER_HOTSPOT_MANUALLY"
+                                + " iap2_retry_useless=true waited_ms_budget=20000");
+                    }
                     MfiCertificateVerifier.e detection = backlog ? null : verifier.h0();
                     if (detection != null && !isClosed()) {
                         this.b.q(bluetoothSocket.getRemoteDevice().getAddress(), detection);
@@ -1793,6 +1822,8 @@ public final class PairingSession implements AutoCloseable {
 
     
     public void Q1() {
+        // 会话广播接管前先关掉「启动即广播」的实例，否则同名服务重复注册会失败。
+        CarPlayCtrlAdvertiser.StopEarly();
         synchronized (this.i) {
             try {
                 if (!this.u && this.v && s1(this.A, null)) {
@@ -2098,11 +2129,7 @@ public final class PairingSession implements AutoCloseable {
 
     
     public boolean isClosed() {
-        boolean z;
-        synchronized (this.i) {
-            z = this.u;
-        }
-        return z;
+        return this.u;
     }
 
     

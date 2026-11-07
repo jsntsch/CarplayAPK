@@ -9,6 +9,13 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+    <!-- 音频通道：CarPlay 要把手机侧播放的声音送到车机（不是麦克风环境声）。
+         公开 API 唯一可行路径是 AudioPlaybackCapture + MediaProjection 内录。 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- Android 14+ 要求录音发生在 microphone 类型的前台服务中，否则 AudioRecord 静默返回 0 帧。 -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <!-- 内录需要在 mediaProjection 类型的前台服务中持有授权，否则 getMediaProjection 被系统拒绝。 -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
     <uses-permission
         android:name="android.permission.NEARBY_WIFI_DEVICES"
         android:usesPermissionFlags="neverForLocation" />
@@ -52,7 +59,7 @@
         <service
             android:name="io.carplay.app.prototype.WirelessCarPlayService"
             android:exported="false"
-            android:foregroundServiceType="connectedDevice" />
+            android:foregroundServiceType="connectedDevice|microphone|mediaProjection" />
 
         <service
             android:name="io.carplay.app.prototype.PairingPreparationService"

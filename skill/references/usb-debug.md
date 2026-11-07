@@ -18,10 +18,10 @@ adb shell getprop ro.product.model           # 机型
 ## 2. 安装与版本核对 / Install and identify
 
 ```bash
-adb install -r android-project/dist/Carplay-V1.7.61-debug.apk
+adb install -r android-project/dist/Carplay-V1.7.71-debug.apk
 
 adb shell dumpsys package io.carplay.app | grep -E "versionName|versionCode|debuggable"
-# 期望：versionName=1.7.61  versionCode=298  flags=[ DEBUGGABLE … ]
+# 期望：versionName=1.7.71  versionCode=308  flags=[ DEBUGGABLE … ]
 ```
 
 覆盖安装失败时的两类原因：

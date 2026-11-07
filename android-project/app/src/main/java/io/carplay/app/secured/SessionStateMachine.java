@@ -646,8 +646,28 @@ public final class SessionStateMachine {
         return "screen_entity=" + i + " screen_permanent=" + i2 + " screen_borrows=" + i3 + " screen_take=" + i4 + " screen_borrow=" + i5 + " screen_unborrow=" + i6 + " audio_declared=" + z + " audio_entity=" + bVar.a + " audio_permanent=" + bVar.b + " audio_borrows=" + bVar.c + " audio_take=" + bVar.d + " audio_borrow=" + bVar.e + " audio_unborrow=" + bVar.f;
     }
 
+    // [OBF-MAP] buildModesChangedPayload | 职责: 构造出站 modesChanged（顶层 type + resources）。
+    // 判读: 与 q(Map)（处理入站 changeModes）不是一回事；V1.8.13 只声明 resourceID=1 仍 422。
     public synchronized Map<String, Object> Q() {
-        return Map.of("type", "modesChanged", "params", G(this.d, this.e));
+        // 【V1.8.20 纠正】Apple CarPlay 规范 Table 23-71 把 appStates / resources 写成请求体顶层键，
+        // 但 Buick Info3.6 的 Cinemo SDK 固件（libNmeCarPlay.so）实际按 {type, params} 解析：
+        //   0x421cf 取 "type"、0x421f3 取 "params"；0x4441b test r13,r13（params）→ 0x4441e
+        //   je 0x4464a 返回错误 → 0x4223d jne → 0x422b5 mov ebp,0x1a6（HTTP 422，且跳过响应体）。
+        //   0x447d0 从 params 里取 "appStates"(0x4480c) 与 "resources"(0x44991)，
+        //   再逐项读 appStateID/entity/speechMode 与 resourceID/entity。
+        // V1.7.86 依据规范改成顶层键后，params 恒为空 ⇒ modesChanged 从此恒 422 ⇒ 屏幕所有权
+        // 无法转移 ⇒ 按规范 §23.3.5.1.3 车机不得发 HID 用法 ⇒ 触摸无反应（历史 12 份抓包全中）。
+        // 11-05 源码备份里 hidSetInputMode / iAPSendMessage 本来就是 {type, params}，属回归。
+        // resources 每项只需 resourceID + entity（1=Controller 2=Accessory）。
+        ArrayList<Map<String, Object>> arrayList = new ArrayList<>();
+        arrayList.add(Map.of("resourceID", Integer.valueOf(1), "entity", Integer.valueOf(this.d.a == 2 ? 2 : 1)));
+        // 只声明屏幕（resourceID=1）的归属。
+        // 规范 Table 23-71 把 resources 定义为「要变更的所有权」；把已经归手机的 audio 资源
+        // （resourceID=2）一起列上属于无变化的重复声明，Info3.6 实测会对整条命令回 422，
+        // 连带屏幕所有权也无法转移 ⇒ 车机认为屏幕仍归自己，按 §23.3.5.1.3 永远不发 HID report。
+        // 音频发送已由 audioPcmBypass 独立放行，不依赖这里的资源声明。
+        return Map.of("type", "modesChanged", "params",
+                Map.of("resources", List.copyOf(arrayList)));
     }
 
     public synchronized boolean T() {

@@ -188,7 +188,13 @@ public final class PcmQueue implements AutoCloseable {
         return jAddExact;
     }
 
+    // [OBF-MAP] dequeueBlocking | 职责: 发送线程唯一取包口；V1.8.11 起 200ms 超时，避免 wait() 永久阻塞。
     public synchronized a p() {
+        // 带超时的取包：原来无超时的 wait() 在异常时序下会永久阻塞，
+        // 表现为发送线程只跑一轮就再无日志（sent_packets_total=0、queued 满 12000、
+        // dropped_frames 每秒 +48k）。200ms 足够覆盖 250ms 缓冲的一半，超时返回 null
+        // 由调用方重试，不会丢音频也不会卡死。
+        long deadline = System.nanoTime() + 200000000L;
         while (true) {
             int i = this.g;
             if (i != 0 && (!this.d || i >= this.c)) {
@@ -197,8 +203,12 @@ public final class PcmQueue implements AutoCloseable {
             if (this.j) {
                 break;
             }
+            long leftNanos = deadline - System.nanoTime();
+            if (leftNanos <= 0) {
+                return null;
+            }
             try {
-                wait();
+                wait(Math.max(1L, leftNanos / 1000000L));
             } catch (InterruptedException unused) {
                 Thread.currentThread().interrupt();
                 return null;

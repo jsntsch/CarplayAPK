@@ -15,8 +15,6 @@
 
 package io.carplay.app.prototype;
 
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import io.carplay.app.secured.ProtoMessageBase;
 import java.util.Objects;
@@ -90,25 +88,9 @@ public final class BluetoothAdapterResolver {
 
     
     public static a a(Context context, String str) {
-        String strA = null;
+        // 只使用用户手动填写的本机地址，并与所选车机地址比对；不读取系统蓝牙适配器。
+        // Manual local address only; never query the system Bluetooth adapter.
         String strA2 = io.carplay.app.secured.n.a(str);
-        try {
-            if (context.checkSelfPermission("android.permission.BLUETOOTH_CONNECT") != 0) {
-                strA = null;
-            } else {
-                BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(BluetoothManager.class);
-                BluetoothAdapter adapter = bluetoothManager == null ? null : bluetoothManager.getAdapter();
-                if (adapter != null) {
-                    strA = io.carplay.app.secured.n.a(adapter.getAddress());
-                } else {
-                    strA = null;
-                }
-            }
-        } catch (RuntimeException unused) {
-        }
-        if (strA != null && !strA.equals(strA2)) {
-            return new a(strA, "PUBLIC_ADAPTER");
-        }
         String strB = b(context);
         return (strB == null || strB.equals(strA2)) ? new a(null, "UNAVAILABLE") : new a(strB, "USER_ENTERED");
     }

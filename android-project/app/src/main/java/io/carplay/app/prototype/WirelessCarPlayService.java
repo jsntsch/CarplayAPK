@@ -34,6 +34,8 @@ import android.graphics.drawable.Icon;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -1081,6 +1083,8 @@ public final class WirelessCarPlayService extends Service {
         }
 
         @Override 
+        // [OBF-MAP] onNativePcmFrame | 职责: DisplaySession 的 PCM 回调，内部走 K2()（原生源/通用管线）。
+        // 踩坑(V1.8.1): 误当音频注入入口，PCM 送进去报 AVC start code 错误；正确入口是 J2() -> t1()。
         public void h(byte[] bArr, long j) throws IOException {
             if (WirelessCarPlayService.this.t.get()) {
                 SyntheticRefs.c("wireless session cancelled");
@@ -1602,6 +1606,8 @@ public final class WirelessCarPlayService extends Service {
     }
 
     
+    // [OBF-MAP] injectPcmByChannel | 职责: 带通道的 PCM 注入，经 AirPlaySession.t1() 进 AAC -> RTP 音频管线。
+    // 判读: 与 h() 只差一个字母但管线不同；11-05 源码备份 1659 行用的是本方法。
     public void J2(CarLifeFrame.a aVar, byte[] bArr, long j2) throws IOException {
         AirPlaySession airPlaySessionF1;
         g gVar;
@@ -1865,25 +1871,81 @@ public final class WirelessCarPlayService extends Service {
         }
     }
 
+    // [OBF-MAP] reuseCurrentWifiIfMatches | 职责: 判定当前 WiFi 能否复用，避免退回蓝牙 iAP2。
+    // 踩坑(V1.7.93): 冷启动补丁原写在 k1==null 的 return 之后，永远执行不到 ⇒ 连着车机热点仍判「无 WiFi」。索引: skill/references/obfuscation-map.md §2.2
     private Network Q2() {
         l lVar = k1;
-        if (lVar == null || !lVar.h().equals(this.A)) {
-            return null;
-        }
-        String string = getSharedPreferences(c1, 0).getString(r2(this.A), null);
-        if (string != null && lVar.g().equalsIgnoreCase(string) && WifiNetworkMonitor.A(this, lVar.i())) {
-            return lVar.i().i();
-        }
-        synchronized (j1) {
-            try {
-                if (k1 == lVar) {
-                    k1 = null;
+        // —— 冷启动补丁可达性修正（V1.7.93）——
+        // V1.7.90~92 把「k1 == null 直接 return null」放在最前面，于是下面整段 SSID 冷启动
+        // 判定在冷启动时**永远执行不到**：k1 只在「已有 AirPlay 会话」时由 M2() 填充，
+        // 进程刚起来必为 null。后果是手机明明连在车机热点上也判「没有可用 WiFi」，
+        // 退回蓝牙 iAP2；而 Info3.6 热点无互联网（isUsable=false）、iAP2 又不支持下发凭证
+        // （wifi_request=false / sends_5703=false / modern_start=false），
+        // 最终表现为「车机识别到手机但无法建立连接」。
+        // 现在把 k1 快路径收进 if 内，k1 为空时继续走下面的 SSID 冷启动判定。
+        if (lVar != null && lVar.h().equals(this.A)) {
+            String string = getSharedPreferences(c1, 0).getString(r2(this.A), null);
+            if (string != null && lVar.g().equalsIgnoreCase(string) && WifiNetworkMonitor.A(this, lVar.i())) {
+                return lVar.i().i();
+            }
+            synchronized (j1) {
+                try {
+                    if (k1 == lVar) {
+                        k1 = null;
+                    }
+                } catch (Throwable th) {
+                    throw th;
                 }
-            } catch (Throwable th) {
-                throw th;
             }
         }
-        return null;
+        // —— 冷启动补丁（V1.7.90）——
+        // k1 只在「已有 AirPlay 会话」时由 M2() 填充，进程刚起来必为 null。于是即使手机已经连在
+        // 车机热点上，也会被误判成「没有可用 WiFi」而退回蓝牙 iAP2；而车机热点本来就没有互联网
+        // （系统会把它标成 NO_INTERNET_PERMANENT / isUsable=false），iAP2 又拿不到 WiFi 凭证
+        // （Info3.6：0x5702/0x5703/0x4301 全不支持），最终表现为「车机识别到手机但无法建立连接」。
+        //
+        // 注意：k1.g() 存的是证书 pin（M2 的第 4 参 certPin），不是 SSID；
+        // r2(this.A) 那个 prefs key 存的也是证书哈希，不能拿来当 SSID 用。
+        // 因此这里改用「唯一 WiFi 网络 + 车机蓝牙名对照」，完全不看互联网能力。
+        String currentSsid = null;
+        try {
+            WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WifiManager.class);
+            WifiInfo wifiInfo = wifiManager == null ? null : wifiManager.getConnectionInfo();
+            currentSsid = wifiInfo == null ? null : wifiInfo.getSSID();
+        } catch (RuntimeException unused) {
+            currentSsid = null;
+        }
+        if (currentSsid != null && currentSsid.length() >= 2
+                && currentSsid.startsWith("\"") && currentSsid.endsWith("\"")) {
+            currentSsid = currentSsid.substring(1, currentSsid.length() - 1);
+        }
+        if (currentSsid != null && (currentSsid.trim().isEmpty() || currentSsid.equals("<unknown ssid>"))) {
+            currentSsid = null;
+        }
+        Network wifiNetwork = WifiNetworkMonitor.B(this);
+        if (wifiNetwork == null || !WifiNetworkMonitor.C(this, wifiNetwork)) {
+            i1("CURRENT_WIFI_REUSE_SKIPPED reason=WIFI_NETWORK_UNAVAILABLE ssid=" + currentSsid + " k1_null=" + (lVar == null));
+            return null;
+        }
+        // 车机蓝牙名与热点 SSID 往往**不完全相同**（Info3.6 实测：BT 名 "myBuick"、SSID "myBuick GS"）。
+        // 因此名字只作诊断标记，绝不当硬门 —— 否则明明连着车机热点也会被误拒，
+        // 又退回蓝牙 iAP2，回到「等不到凭证 ⇒ 无法建立连接」的老路。
+        // 真正的正确性由后续 AirPlay 会话保证：连错 WiFi 时 _airplay._tcp 解析不到会直接失败。
+        String peerName = null;
+        try {
+            BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            peerName = bluetoothAdapter == null ? null : bluetoothAdapter.getRemoteDevice(this.A).getName();
+        } catch (RuntimeException unused) {
+            peerName = null;
+        }
+        boolean nameMatches = currentSsid != null && peerName != null && currentSsid.equalsIgnoreCase(peerName);
+        boolean namePrefixed = currentSsid != null && peerName != null && !peerName.isEmpty()
+                && currentSsid.toLowerCase(java.util.Locale.ROOT).startsWith(peerName.toLowerCase(java.util.Locale.ROOT));
+        i1("CURRENT_WIFI_REUSE_BY_SSID ssid=" + currentSsid + " peer_name=" + peerName
+                + " name_matches=" + nameMatches + " name_prefixed=" + namePrefixed
+                + " ssid_readable=" + (currentSsid != null)
+                + " k1_null=" + (lVar == null) + " no_internet_ok=true");
+        return wifiNetwork;
     }
 
     
@@ -2490,28 +2552,31 @@ public final class WirelessCarPlayService extends Service {
         boolean applied = false;
         boolean nativeSourceRetained = false;
         try {
-            synchronized (this.s) {
-                if (isSelectedGeometryValid(kVar)) {
-                    h plan = i2(kVar.g());
-                    synchronized (this.I0) {
-                        synchronized (this.s) {
-                            if (isSelectedGeometryValid(kVar)) {
-                                this.f0 = plan.h().j();
-                                this.g0 = plan.h().h();
-                                this.h0 = plan.h().g();
-                                this.L0 = plan.g();
-                                nativeSourceRetained = this.c0;
-                                getSharedPreferences(b1, 0).edit()
-                                        .putInt("receiver_width", kVar.g().j())
-                                        .putInt("receiver_height", kVar.g().h())
-                                        .putInt("receiver_fps", kVar.g().g())
-                                        .putInt("requested_width", this.f0)
-                                        .putInt("requested_height", this.g0)
-                                        .putInt("requested_fps", this.h0)
-                                        .apply();
-                                this.C0 = kVar;
-                                applied = true;
-                            }
+            // 锁顺序必须与视频帧路径一致：先 I0 再 s。
+            // 原来是「先 s 再 I0」，与 R2/x1/l1 的「先 I0 再 s」形成 ABBA 死锁：
+            // 主线程 onStartCommand 卡在 u2() 等 s，最终 ANR 被系统杀掉（表现为连接时闪退）。
+            // Lock order must match the video-frame path: I0 first, then s. The old s→I0 order
+            // deadlocked against R2/x1/l1 (I0→s), triggering the ANR on connect.
+            synchronized (this.I0) {
+                synchronized (this.s) {
+                    if (isSelectedGeometryValid(kVar)) {
+                        h plan = i2(kVar.g());
+                        if (isSelectedGeometryValid(kVar)) {
+                            this.f0 = plan.h().j();
+                            this.g0 = plan.h().h();
+                            this.h0 = plan.h().g();
+                            this.L0 = plan.g();
+                            nativeSourceRetained = this.c0;
+                            getSharedPreferences(b1, 0).edit()
+                                    .putInt("receiver_width", kVar.g().j())
+                                    .putInt("receiver_height", kVar.g().h())
+                                    .putInt("receiver_fps", kVar.g().g())
+                                    .putInt("requested_width", this.f0)
+                                    .putInt("requested_height", this.g0)
+                                    .putInt("requested_fps", this.h0)
+                                    .apply();
+                            this.C0 = kVar;
+                            applied = true;
                         }
                         if (applied) {
                             i1("VIDEO_SELECTED_GEOMETRY target=" + kVar.g().j() + "x" + kVar.g().h()
@@ -3189,15 +3254,9 @@ public final class WirelessCarPlayService extends Service {
                 throw new IOException("IAP2_PHONE_IDENTIFICATION_CANCELLED");
             }
             if (this.a == null) {
-                String strD = null;
-                try {
-                    BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(BluetoothManager.class);
-                    BluetoothAdapter adapter = bluetoothManager == null ? null : bluetoothManager.getAdapter();
-                    if (adapter != null) {
-                        strD = DeviceMetadataStore.d(adapter.getName());
-                    }
-                } catch (RuntimeException unused) {
-                }
+                // iAP2 手机身份名称只取用户手动填写的蓝牙名；不读取系统蓝牙适配器名称。
+                // Use only the manually entered Bluetooth name as the iAP2 phone identity.
+                String strD = DeviceMetadataStore.d(io.carplay.app.secured.ControlChannel.ManualName());
                 DeviceMetadataStore.b bVar = DeviceMetadataStore.b.BLUETOOTH_ADAPTER;
                 if (strD == null) {
                     bVar = DeviceMetadataStore.b.ANDROID_MODEL;
@@ -3222,6 +3281,8 @@ public final class WirelessCarPlayService extends Service {
         return enumMap;
     }
 
+    // [OBF-MAP] prefsKeyForPeer | 职责: 生成按车机区分的偏好键（approved_leaf_<MAC>）。
+    // 踩坑(V1.7.91): 曾误判为 SSID 读取并据此写补丁，实为证书 pin 键；该补丁已撤销。
     public static String r2(String str) {
         return ProtoMessageBase.e("approved_leaf_", str.toUpperCase(Locale.ROOT).replace(':', '_'));
     }
@@ -3568,6 +3629,11 @@ public final class WirelessCarPlayService extends Service {
         if (!g1(j2)) {
             return;
         }
+        // 音频采集挂在真正的连接主流程上（V1.8.2）。
+        // 之前只挂在 onStartCommand 尾部，实测会话是由 Activity bind 后直接走到这里建立的
+        // （14:59:56 仅有一次 APP_BUILD，而其后的会话仍正常建立），
+        // 导致 startPcmCapture() 从未被执行，AUDIO_CAPTURE 日志一条都没有。
+        startPcmCapture();
         AirPlaySession i0Var2 = null;
         StagedPeer k6Var = null;
         String stage = "RESOLVE_ENDPOINT";
@@ -3928,7 +3994,29 @@ public final class WirelessCarPlayService extends Service {
             return 2;
         }
         ((NotificationManager) getSystemService(NotificationManager.class)).createNotificationChannel(new NotificationChannel(d1, "Car+ wireless session", 2));
-        startForeground(e1, n2("正在准备连接接收端"), 16);
+        // 16=connectedDevice，128=microphone。Android 14+ 只有在 microphone 类型的前台服务里
+        // 才能拿到真实 PCM，否则 AudioRecord.read() 静默返回 0（表现为 converted_frames 恒 0）。
+        // 若系统拒绝该类型（后台启动等），降级回 connectedDevice 保证投屏不受影响。
+        // 16=connectedDevice，128=microphone，32=mediaProjection。
+        // Android 14+ 只有在 mediaProjection 类型的前台服务里才能 getMediaProjection（内录），
+        // 且该类型必须在用户已授权后才声明，否则 startForeground 会被系统拒绝。
+        int foregroundType = 16 | 128;
+        if (MediaProjectionHolder.ready()) {
+            foregroundType |= 32;
+        }
+        try {
+            startForeground(e1, n2("正在准备连接接收端"), foregroundType);
+        } catch (Throwable micForegroundRejected) {
+            io.carplay.app.secured.ControlChannel.Log("FOREGROUND_MIC_TYPE_REJECTED msg="
+                    + micForegroundRejected.getMessage());
+            try {
+                startForeground(e1, n2("正在准备连接接收端"), 16 | 128);
+            } catch (Throwable micOnlyRejected) {
+                io.carplay.app.secured.ControlChannel.Log("FOREGROUND_MIC_ONLY_REJECTED msg="
+                        + micOnlyRejected.getMessage());
+                startForeground(e1, n2("正在准备连接接收端"), 16);
+            }
+        }
         M1();
         a3("CHECKING", "Wireless session started; continuous until user stop/source exit/unrecoverable error; phone USB firmware interface unimplemented and unverified");
         try {
@@ -3971,7 +4059,155 @@ public final class WirelessCarPlayService extends Service {
         }
         editorEdit.putString("connection_route", str).apply();
         W2();
+        startPcmCapture();
         return 2;
+    }
+
+    /** PCM 采集线程只允许启动一次（服务可能被多次 onStartCommand 拉起）。 */
+    private static final java.util.concurrent.atomic.AtomicBoolean PCM_CAPTURE_STARTED =
+            new java.util.concurrent.atomic.AtomicBoolean();
+
+    /**
+     * 启动 PCM 采集并送入现有音频发送链路（V1.7.99）。
+     *
+     * 背景：音频发送链路本身是完整的（K2 → w4.e → AAC 编码 → RTP），缺的只是 PCM 源 ——
+     * Manifest 此前从未声明 RECORD_AUDIO，MicCapture 也**没有任何调用方**，
+     * 因此 AUDIO_FLOW 恒为 converted_frames=0 / sent_packets_total=0。
+     *
+     * 当前先接麦克风源，用于验证「PCM → 编码 → 车机出声」整条链路是否通；
+     * CarPlay 语义上应传手机媒体音频，需要 MediaProjection + AudioPlaybackCapture 授权，
+     * 待本条链路验证通过后再替换音源。
+     */
+    private void startPcmCapture() {
+        // 无条件入口日志走 logcat（i1 走应用内环形日志，早期调用可能被丢弃），
+        // 用于判定该方法到底有没有被执行。
+        io.carplay.app.secured.ControlChannel.Log("AUDIO_CAPTURE_ENTER started=" + PCM_CAPTURE_STARTED.get()
+                + " perm=" + checkSelfPermission(android.Manifest.permission.RECORD_AUDIO));
+        if (PCM_CAPTURE_STARTED.get()) {
+            return;
+        }
+        if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            // 不置位 PCM_CAPTURE_STARTED：用户授权后再次点「连接」即可真正启动采集。
+            i1("AUDIO_CAPTURE_SKIPPED reason=NO_RECORD_AUDIO_PERMISSION");
+            return;
+        }
+        if (!PCM_CAPTURE_STARTED.compareAndSet(false, true)) {
+            return;
+        }
+        Thread captureThread = new Thread(() -> {
+            android.media.AudioRecord record = null;
+            try {
+                // 采样率必须跟随车机在 /info 的 audioFormats 首选值：实测 AUDIO_FLOW 显示
+                // source_rate=44100，若按 48k 采集会被重采样，时间戳与包长都会错位。
+                int rate = 44100;
+                int channelMask = android.media.AudioFormat.CHANNEL_IN_STEREO;
+                int encoding = android.media.AudioFormat.ENCODING_PCM_16BIT;
+                int minBuffer = android.media.AudioRecord.getMinBufferSize(rate, channelMask, encoding);
+                android.media.AudioRecord.Builder builder = new android.media.AudioRecord.Builder()
+                        .setAudioFormat(new android.media.AudioFormat.Builder()
+                                .setEncoding(encoding)
+                                .setSampleRate(rate)
+                                .setChannelMask(channelMask)
+                                .build())
+                        .setBufferSizeInBytes(Math.max(minBuffer * 2, 16384));
+                // 音源优先级：
+                //   1) AudioPlaybackCapture —— 手机内正在播放的声音（Car+ / 音乐 App），需 MediaProjection 授权；
+                //   2) 麦克风兜底 —— 未授权时仍可验证 PCM→AAC→RTP 链路。
+                // 对照 OcarPlay 0.8.53：它的 PCM 由 Car+ 宿主 native 层直接注入（APK 无 native 库、
+                // 无 AudioRecord/MediaProjection、manifest 无 RECORD_AUDIO、无 socket/binder），
+                // 属宿主进程内调用，独立 APK 无法复用该通路；AudioPlaybackCapture 是公开 API 的等价能力。
+                String source = "MIC";
+                android.media.projection.MediaProjection projection = null;
+                try {
+                    if (MediaProjectionHolder.ready()) {
+                        projection = MediaProjectionHolder.obtain(this);
+                    }
+                } catch (Throwable obtainFailure) {
+                    io.carplay.app.secured.ControlChannel.Log("AUDIO_PROJECTION_OBTAIN_FAILED msg=" + obtainFailure.getMessage());
+                }
+                if (projection != null) {
+                    try {
+                        projection.registerCallback(new android.media.projection.MediaProjection.Callback() {
+                            @Override
+                            public void onStop() {
+                                io.carplay.app.secured.ControlChannel.Log("AUDIO_PROJECTION_STOPPED_BY_SYSTEM");
+                                MediaProjectionHolder.clear();
+                            }
+                        }, new android.os.Handler(android.os.Looper.getMainLooper()));
+                        android.media.AudioPlaybackCaptureConfiguration captureConfig =
+                                new android.media.AudioPlaybackCaptureConfiguration.Builder(projection)
+                                        .addMatchingUsage(android.media.AudioAttributes.USAGE_MEDIA)
+                                        .addMatchingUsage(android.media.AudioAttributes.USAGE_GAME)
+                                        .addMatchingUsage(android.media.AudioAttributes.USAGE_UNKNOWN)
+                                        .build();
+                        builder.setAudioPlaybackCaptureConfig(captureConfig);
+                        source = "PLAYBACK_CAPTURE";
+                    } catch (Throwable captureFailure) {
+                        io.carplay.app.secured.ControlChannel.Log("AUDIO_PLAYBACK_CAPTURE_FAILED msg=" + captureFailure.getMessage());
+                        source = "MIC";
+                    }
+                }
+                if ("MIC".equals(source)) {
+                    builder.setAudioSource(android.media.MediaRecorder.AudioSource.MIC);
+                }
+                record = builder.build();
+                if (record.getState() != android.media.AudioRecord.STATE_INITIALIZED) {
+                    io.carplay.app.secured.ControlChannel.Log("AUDIO_CAPTURE_FAILED reason=NOT_INITIALIZED source=" + source);
+                    return;
+                }
+                record.startRecording();
+                io.carplay.app.secured.ControlChannel.Log("AUDIO_CAPTURE_STARTED source=" + source
+                        + " rate=" + rate + " channels=2 projection=" + (projection != null));
+                byte[] buffer = new byte[1920];
+                long frames = 0L;
+                long emptyReads = 0L;
+                long lastReport = 0L;
+                while (!this.t.get()) {
+                    if (F1() == null) {
+                        Thread.sleep(200L);
+                        continue;
+                    }
+                    int read = record.read(buffer, 0, buffer.length);
+                    long nowMs = SystemClock.elapsedRealtime();
+                    if (nowMs - lastReport > 2000L) {
+                        lastReport = nowMs;
+                        AirPlaySession probe = F1();
+                        io.carplay.app.secured.ControlChannel.Log("AUDIO_CAPTURE_READ last=" + read
+                                + " frames=" + frames + " empty_reads=" + emptyReads
+                                + " output_ready=" + (probe != null && probe.F0(CarLifeFrame.a.MEDIA)));
+                    }
+                    if (read > 0) {
+                        byte[] pcm = java.util.Arrays.copyOf(buffer, read);
+                        // 必须走 AirPlaySession.t1() 这条音频发送路径（PCM → AAC 编码 → RTP）。
+                        // 早前误用 K2()（原生源入口，实际是视频/通用管线），
+                        // 报 "unexpected bytes before AVC start code" —— 那是 H.264 解析错误。
+                        AirPlaySession audioSession = F1();
+                        if (audioSession != null) {
+                            try {
+                                audioSession.t1(CarLifeFrame.a.MEDIA, pcm, frames);
+                                frames += read / 4;
+                            } catch (IOException sendFailure) {
+                                io.carplay.app.secured.ControlChannel.Log("AUDIO_CAPTURE_SEND_FAILED msg=" + sendFailure.getMessage());
+                            }
+                        }
+                    }
+                }
+            } catch (Throwable failure) {
+                io.carplay.app.secured.ControlChannel.Log("AUDIO_CAPTURE_ERROR msg=" + failure.getMessage());
+            } finally {
+                if (record != null) {
+                    try {
+                        record.stop();
+                    } catch (Throwable ignored) {
+                        // 已停止时 stop() 会抛 IllegalStateException，忽略。
+                    }
+                    record.release();
+                }
+                io.carplay.app.secured.ControlChannel.Log("AUDIO_CAPTURE_STOPPED");
+            }
+        }, "CarPlus-pcm");
+        captureThread.setDaemon(true);
+        captureThread.start();
     }
 
     /**

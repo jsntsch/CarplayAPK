@@ -35,14 +35,13 @@ google-services.json
 *.hprof
 
 # ---------------------------------------------------------------
-# android-project/ 是真正的 Android 工程；apk/ 与 firmware/ 是研究素材。
+# android-project/ 是真正的 Android 工程；apk/ 与 firmware/ 是本机研究素材。
 # dist/ 与 build/ 下的 APK 属于构建产物，继续忽略（上面的 *.apk 规则即为此）。
-# 参考 APK（apk/、firmware/）需要入库，故对这两棵子树恢复 *.apk。
-# android-project/ is the real Android project; apk/ and firmware/ are reference material.
-# Build outputs under dist/ and build/ stay ignored; reference APKs are restored below.
+# apk/ 含第三方 OEM APK（最大 79MB）、仓库 zip 快照与完整解压源码副本，
+# 约 185MB 且涉及第三方二进制的版权合规，默认整体不入库。
+# 如需单独入库某个基准包，用 git add -f <path>。
 # ---------------------------------------------------------------
-!apk/**/*.apk
-!firmware/**/*.apk
+apk/
 
 # 绝不提交：配对私钥 / 设备身份
 *identity*.json
@@ -53,3 +52,10 @@ __pycache__/
 *.pyc
 .DS_Store
 Thumbs.db
+
+# 抓包日志：单份 logcat 可达 170MB，整个目录 2.7GB，绝不入库
+logs/
+
+# WorkBuddy 本地工作数据：含 164MB iOS sysdiagnose 转储、源码备份、会话记忆，
+# 属于本机工具数据，不随代码推送
+.workbuddy/

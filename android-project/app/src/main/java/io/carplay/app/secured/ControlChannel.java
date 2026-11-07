@@ -62,6 +62,40 @@ public final class ControlChannel {
     public static volatile boolean PENDING = false;
     public static volatile int TRIES = 0;
     public static volatile boolean CTRLOK = false;
+    /** 车机经 _carplay-ctrl 下发 connect 时携带的 AirPlay-Receiver-Device-ID（不写日志）。 */
+    public static volatile String CTRL_RECEIVER_ID;
+    /** 最近一次车机 connect 的时间（elapsedRealtime）。 */
+    public static volatile long CTRL_INVITATION_AT;
+    /** 身份链闭合：本机蓝牙标识与车机 receiver id 都就位；判据落在对端行为上。 */
+    public static volatile boolean CTRL_IDENTITY_BOUND;
+
+    /**
+     * 本机蓝牙标识：与 _carplay-ctrl 的 TXT id/deviceid、iAP2 CarPlay availability 同源。
+     * DeviceMac() 取系统/手动地址，再用 n.a() 统一校验为合法单播 MAC。
+     * Local Bluetooth identifier shared by mDNS TXT and iAP2 availability.
+     */
+    public static String LocalBluetoothIdentifier() {
+        return n.a(DeviceMac());
+    }
+
+
+    /**
+     * 登记车机下发的 connect 身份。Info3.6 的 CarPlayControlClient 只有完成这一步才把会话
+     * 认作 CarPlay 会话并开放 HID 触摸回传（固件 CarPlayController/ActivateService → SendHIDReport）。
+     * Records the head-unit identity carried by GET /ctrl-int/1/connect.
+     */
+    public static void MarkCtrlInvitation(String receiverIdentifier) {
+        if (receiverIdentifier != null && !receiverIdentifier.isEmpty()) {
+            CTRL_RECEIVER_ID = receiverIdentifier;
+        }
+        CTRL_INVITATION_AT = SystemClock.elapsedRealtime();
+        boolean localPresent = LocalBluetoothIdentifier() != null;
+        boolean remotePresent = CTRL_RECEIVER_ID != null;
+        CTRL_IDENTITY_BOUND = localPresent && remotePresent;
+        Log("V167_CTRL_IDENTITY_BOUND local_identifier_present=" + localPresent
+                + " receiver_identifier_present=" + remotePresent
+                + " values_logged=false");
+    }
 
     public static void AwaitInvitation() {
         if (Looper.myLooper() != Looper.getMainLooper()) {
@@ -97,24 +131,10 @@ public final class ControlChannel {
     }
 
     public static String BluetoothId(String str) {
-        BluetoothAdapter defaultAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (defaultAdapter != null) {
-            try {
-                String address = defaultAdapter.getAddress();
-                if (address != null) {
-                    String strTrim = address.trim();
-                    if ("02:00:00:00:00:00".equalsIgnoreCase(strTrim)) {
-                        Log("V160_TXT_ID=FALLBACK_DUMMY_MAC");
-                        return str;
-                    }
-                    String strA = n.a(strTrim);
-                    if (strA != null && strA.length() != 0) {
-                        Log("V160_TXT_ID=BT");
-                        return strA;
-                    }
-                }
-            } catch (RuntimeException unused) {
-            }
+        String manual = LocalBluetoothIdentifier();
+        if (manual != null) {
+            Log("V160_TXT_ID=USER_ENTERED");
+            return manual;
         }
         Log("V160_TXT_ID=FALLBACK_NO_ADDRESS");
         return str;
@@ -145,49 +165,33 @@ public final class ControlChannel {
     }
 
     public static String CtrlServiceName() {
-        BluetoothAdapter defaultAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (defaultAdapter != null) {
-            try {
-                String name = defaultAdapter.getName();
-                if (name != null) {
-                    String strTrim = name.trim();
-                    if (strTrim.length() != 0) {
-                        return !strTrim.startsWith("iPhone") ? "iPhone_".concat(strTrim) : strTrim;
-                    }
-                }
-            } catch (RuntimeException unused) {
-            }
-        }
-        return "CarPlayAPK";
+        // 死代码保留兼容：只读手动名，不加 iPhone_ 前缀（车机认的是手机蓝牙名本身）。
+        String manual = ManualName();
+        return manual.length() != 0 ? manual : "CarPlayAPK";
     }
 
     public static String DeviceMac() {
-        String strB;
+        // 只取用户手动填写的本机蓝牙地址；不再读取系统蓝牙适配器（Android 6.0+ 也拿不到真实值）。
+        // Manual entry only; never query the system Bluetooth adapter.
         Context context = APP_CTX;
-        if (context != null && (strB = io.carplay.app.prototype.BluetoothAdapterResolver.b(context)) != null && strB.length() != 0) {
-            return strB;
-        }
-        BluetoothAdapter defaultAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (defaultAdapter == null) {
+        if (context == null) {
             return null;
         }
-        try {
-            String address = defaultAdapter.getAddress();
-            if (address == null) {
-                return null;
-            }
-            String strTrim = address.trim();
-            if ("02:00:00:00:00:00".equalsIgnoreCase(strTrim)) {
-                return null;
-            }
-            return n.a(strTrim);
-        } catch (RuntimeException unused) {
-            return null;
-        }
+        return io.carplay.app.prototype.BluetoothAdapterResolver.b(context);
     }
 
+    /* _carplay-ctrl TXT 取值（按现场给定规则）。集中成常量便于复核与微调。 */
+    private static final String TXT_SRCVERS = "27.2";
+    private static final String TXT_OSVERS = "1.0";
+    private static final String TXT_PROTOVERS = "1.1";
+    private static final String TXT_MODEL = "iPhone15,3";
+    private static final String TXT_MANUFACTURER = "Apple Inc.";
+    private static final String TXT_FEATURES = "0x445F8A00,0x1C340";
+    private static final String TXT_FLAGS = "0x4";
+
     public static void FillTxt(NsdServiceInfo nsdServiceInfo, String str) {
-        String strDeviceMac = DeviceMac();
+        // deviceid / btaddr 直接使用手机设置里填写的本机蓝牙 MAC；无手动值时保留配对快照兜底。
+        String strDeviceMac = LocalBluetoothIdentifier();
         String str2 = strDeviceMac != null ? strDeviceMac : str;
         if (str2 == null || str2.length() == 0) {
             return;
@@ -195,11 +199,19 @@ public final class ControlChannel {
         try {
             nsdServiceInfo.setAttribute("id", str2);
             nsdServiceInfo.setAttribute("deviceid", str2);
-            nsdServiceInfo.setAttribute("srcvers", "950.7.1");
-            nsdServiceInfo.setAttribute("protovers", "1.0");
-            nsdServiceInfo.setAttribute("flags", "0x4");
-            nsdServiceInfo.setAttribute("model", Build.MODEL);
-            Log("V170_TXT_FILLED id_len=" + str2.length() + " keys=id,deviceid,srcvers,protovers,flags,model");
+            nsdServiceInfo.setAttribute("btaddr", str2);
+            nsdServiceInfo.setAttribute("model", TXT_MODEL);
+            nsdServiceInfo.setAttribute("manufacturer", TXT_MANUFACTURER);
+            nsdServiceInfo.setAttribute("srcvers", TXT_SRCVERS);
+            nsdServiceInfo.setAttribute("features", TXT_FEATURES);
+            nsdServiceInfo.setAttribute("osvers", TXT_OSVERS);
+            nsdServiceInfo.setAttribute("protovers", TXT_PROTOVERS);
+            // id / flags 是历史已有键，保留以避免现有 ctrl 发现行为回归。
+            nsdServiceInfo.setAttribute("flags", TXT_FLAGS);
+            Log("V170_TXT_FILLED n=10 keys=id,deviceid,btaddr,model,manufacturer,srcvers,features,osvers,protovers,flags"
+                    + " srcvers=" + TXT_SRCVERS + " features=" + TXT_FEATURES + " protovers=" + TXT_PROTOVERS
+                    + " identity_source=" + (strDeviceMac != null ? "LOCAL_BLUETOOTH" : "PAIRING_SNAPSHOT")
+                    + " identity_matches_iap2=" + (strDeviceMac != null) + " values_logged=false");
         } catch (Throwable th) {
             Log("V170_TXT_FILL_FAILED");
         }
@@ -254,6 +266,8 @@ public final class ControlChannel {
         Log("V160_CTRL_INVITATION_ACCEPTED");
     }
 
+    // [OBF-MAP] onCtrlTcpAccepted | 职责: 记录车机回连 ctrl，打 V160_CTRL_TCP_ACCEPT。
+    // 踩坑(V1.8.19): 日志字面量是 V160_CTRL_TCP_ACCEPT，源码里没有 CTRL_TCP_ACCEPT；用短名 grep 会误判「从未连接」。
     public static void MarkTcpAccept() {
         CTRL_TCP = true;
         Log("V160_CTRL_TCP_ACCEPT at=" + SystemClock.elapsedRealtime());
@@ -304,27 +318,12 @@ public final class ControlChannel {
         String strTrim = str2.trim();
         context.getSharedPreferences("carplayapk-local-transport", 0).edit().putString("bluetooth_name", strTrim).commit();
         Log("V172_NAME_SAVED len=" + strTrim.length());
-        return strTrim.length() == 0 ? "已清除蓝牙名称，重新连接后将使用系统蓝牙名广播。" : "已保存蓝牙名称，重新连接后生效。";
+        return strTrim.length() == 0 ? "已清除蓝牙名称，重新连接后将使用默认名称广播。" : "已保存蓝牙名称，重新连接后生效。";
     }
 
     public static String ServiceName() {
+        // 只使用用户手动填写的蓝牙名称；未填写时用固定兜底名，不读取系统蓝牙名。
         String strManualName = ManualName();
-        if (strManualName.length() != 0) {
-            return strManualName;
-        }
-        BluetoothAdapter defaultAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (defaultAdapter != null) {
-            try {
-                String name = defaultAdapter.getName();
-                if (name != null) {
-                    String strTrim = name.trim();
-                    if (strTrim.length() != 0) {
-                        return strTrim;
-                    }
-                }
-            } catch (RuntimeException unused) {
-            }
-        }
-        return "CarPlayAPK";
+        return strManualName.length() != 0 ? strManualName : "CarPlayAPK";
     }
 }

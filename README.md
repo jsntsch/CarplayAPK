@@ -45,15 +45,24 @@ a Buick / SAIC-GM INFO3.6 head unit, plus head-unit reference material and a
 ```bash
 cd android-project
 
-# 调试包 → dist/Carplay-V1.7.61-debug.apk（debuggable = true）
-gradlew.bat exportApk            # macOS / Linux: ./gradlew exportApk
+# 默认构建：不带参数执行 gradlew 只编 debug（根 build.gradle.kts 的 defaultTasks）
+gradlew.bat                      # macOS / Linux: ./gradlew
+# 等价于 → dist/Carplay-V1.7.71-debug.apk（debuggable = true）
+gradlew.bat exportApk
 
-# Release 包 → dist/Carplay-V1.7.61-release.apk（debuggable = false）
+# 以下两项必须显式调用，默认构建不会触碰
+# Release APK → dist/Carplay-V1.7.71-release.apk（debuggable = false）
 gradlew.bat exportRelease
+# 发布用 AAB → dist/Carplay-V1.7.71-release.aab（不能 adb 安装）
+gradlew.bat exportAab
 
 # 仅编译校验（最快）
 gradlew.bat compileDebugJavaWithJavac
 ```
+
+> 构建策略：唯一默认产物是 debug；R8 全程关闭（`isMinifyEnabled = false`），
+> `gradle.properties` 里 `android.builtInKotlin = false` 避免 Kotlin 运行时被打进 dex。
+> Build policy: debug-only by default, no R8, and built-in Kotlin disabled.
 
 首次构建会从腾讯云镜像拉取 Gradle 分发包；若内网限制，改
 `gradle/wrapper/gradle-wrapper.properties` 的 `distributionUrl` 即可。
@@ -109,14 +118,15 @@ android-project/app/src/main/java/           273 个源文件 / 60.0k 行
 版本号只有一处真源 / single source of truth —— `app/build.gradle.kts`：
 
 ```kotlin
-val appVersionName = "1.7.61"   // → Carplay-V1.7.61-debug.apk / -release.apk
-val appVersionCode = 298       // 每次发版 +1 / bump on every release
+val appVersionName = "1.7.71"   // → Carplay-V1.7.71-debug.apk / -release.apk / -release.aab
+val appVersionCode = 308       // 每次发版 +1 / bump on every release
 ```
 
 | 产物 / Artifact | 说明 / Notes |
 | --- | --- |
-| `dist/Carplay-V1.7.61-debug.apk` | debug 变体，`debuggable = true`，可 `run-as` 读日志 |
-| `dist/Carplay-V1.7.61-release.apk` | release 变体，`debuggable = false`，同样用 debug 证书签发 |
+| `dist/Carplay-V1.7.71-debug.apk` | **默认产物**，debug 变体，`debuggable = true`，可 `run-as` 读日志 |
+| `dist/Carplay-V1.7.71-release.apk` | 显式 `exportRelease` 才产出，`debuggable = false`，同样用 debug 证书签发 |
+| `dist/Carplay-V1.7.71-release.aab` | 显式 `exportAab` 才产出，包内 dex 压缩，交 Play 后按设备切分分发 |
 
 > **两个变体的调试开关是分开的**：`-debug` 开调试，供现场用
 > `adb shell run-as io.carplay.app cat files/connection-log-*.txt` 取日志；
@@ -146,7 +156,7 @@ The build pins `options.encoding = "UTF-8"` so the Chinese comments cannot break
 ## 3. 真机调试 / On-device debugging
 
 ```bash
-adb install -r android-project/dist/Carplay-V1.7.61-debug.apk
+adb install -r android-project/dist/Carplay-V1.7.71-debug.apk
 adb shell am start -n io.carplay.app/.prototype.MainActivity
 
 # 应用内日志（不进 logcat，必须用 run-as 读）
@@ -157,7 +167,7 @@ adb shell run-as io.carplay.app cat files/connection-log-0.txt
 
 | 日志 / Log line | 含义 / Meaning |
 | --- | --- |
-| `APP_BUILD version=1.7.61 code=298 dex=SRC` | 装的是源码构建的包，不是旧外壳 / built from source |
+| `APP_BUILD version=1.7.71 code=308 dex=SRC` | 装的是源码构建的包，不是旧外壳 / built from source |
 | `SESSION START` → `TX CMD 0x18001` → `RX CMD 0x10004` | 建链与首轮握手 / link up and first handshake |
 | `HID_CAPABILITIES devices=4 touch=1` | 触摸描述符被接受（`touch=0` 表示被拒）/ touch descriptor accepted |
 | `HID_TOUCH_RANGE ... descriptor_driven=true` | 坐标映射已按描述符建立 / coordinate mapping ready |

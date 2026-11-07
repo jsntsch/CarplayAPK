@@ -68,6 +68,12 @@ final class Iap2WirelessSetup implements AutoCloseable {
             this.d = iap2WirelessSetup;
         }
 
+        @Override
+        public String l() {
+            // 无线建链同样要向车机提供本机蓝牙标识，否则 ctrl 服务无法与 iAP2 会话配对。
+            return ControlChannel.LocalBluetoothIdentifier();
+        }
+
         @Override 
         public void b(Iap2Csm.a aVar) throws IOException {
             throw new IOException("IP iAP must not replay wireless setup");

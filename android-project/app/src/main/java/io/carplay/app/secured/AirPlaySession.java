@@ -15,6 +15,7 @@
 
 package io.carplay.app.secured;
 
+import android.os.Build;
 import android.os.SystemClock;
 import android.util.Log;
 import java.io.IOException;
@@ -84,6 +85,14 @@ public final class AirPlaySession implements AutoCloseable {
     private volatile boolean D;
     private long D0;
     private volatile boolean E;
+    /**
+     * 车机明确拒绝了 modesChanged（Info3.6 回 422 且响应体为空）时置位。
+     *
+     * 音频主模式的确认（AUDIO_MAIN_MODES_CONFIRMED）依赖该命令，拒绝后永远等不到，
+     * 于是 d.p 恒为 true、PCM 在 t1() 里被整包丢弃，表现为 pcmBytes=0 / converted_frames=0。
+     * 音频 socket 与视频同链路且已建立，故在该场景下放行 PCM。
+     */
+    private volatile boolean audioPcmBypass;
     private long E0;
     private volatile long F0;
     private volatile long G0;
@@ -116,6 +125,11 @@ public final class AirPlaySession implements AutoCloseable {
     private boolean X;
     private long X0;
     private final ScheduledExecutorService Y;
+    // [OBF-MAP] hidSendExecutor | 职责: hidSetInputMode 专用单线程执行器，不与其他常驻循环抢线程。
+    // 判读: V1.8.21 修复。共享 Y 只有 4 个线程，却被 N0()（事件读循环）、r2()（timing UDP 收包循环）、
+    // u2()（视频发送循环）长期占住，再加上 G1() 的 50ms 任务，openHidGate() 提交的 h0 任务
+    // 只打印 ">>> EXECUTE" 却始终排队 ⇒ 实测 7 次提交、0 条 HID_CMD_REQ / HID_INPUT_MODE_SENT。
+    private final java.util.concurrent.ScheduledThreadPoolExecutor hidSendExecutor;
     private volatile int Y0;
     private final ScheduledExecutorService Z;
     private volatile int Z0;
@@ -245,6 +259,7 @@ public final class AirPlaySession implements AutoCloseable {
 
         @Override 
         public synchronized void a(byte[] bArr) throws IOException {
+            this.c.n.a("IAP2_POST_RESPONSE_OWNER_INVOKED len=" + (bArr == null ? -1 : bArr.length));
             this.c.q0();
             EventChannel eventChannel = this.c.a0;
             if (this.a || bArr == null || bArr.length < 1 || bArr.length > 4096 || !this.c.D || eventChannel == null || !eventChannel.n()) {
@@ -543,6 +558,8 @@ public final class AirPlaySession implements AutoCloseable {
         this.V = Collections.EMPTY_LIST;
         this.W = map;
         this.Y = Executors.newScheduledThreadPool(4, new n0(0));
+        this.hidSendExecutor = new java.util.concurrent.ScheduledThreadPoolExecutor(1, new n0(0));
+        this.hidSendExecutor.setRemoveOnCancelPolicy(true);
         this.Z = Executors.newScheduledThreadPool(8, new n0(1));
         this.q0 = new Object();
         this.y0 = System.currentTimeMillis();
@@ -649,6 +666,8 @@ public final class AirPlaySession implements AutoCloseable {
         return 0;
     }
 
+    // [OBF-MAP] newSessionId | 职责: 生成随机 RTSP 会话 ID（注意不是「已保存的会话 ID」）。
+    // 踩坑(V1.8.15): 每次调用都是新值，拼 /<sessionID>/command 时与 SETUP 用的不是同一个。
     private static long E1() {
         long j2 = ByteBuffer.wrap(DerCodec.q(8)).getLong() & Long.MAX_VALUE;
         if (j2 == 0) {
@@ -757,6 +776,12 @@ public final class AirPlaySession implements AutoCloseable {
         ControlChannel.ACCEPTED = true;
         ControlChannel.CTRLOK = true;
         ControlChannel.EVFAIL = 0;
+        // V1.7.65 曾去掉下一行，想让 hidInputMode 扫掠持续到真正收到 report，实测证伪并引入回归：
+        // 每 6 秒重发 4 个并发 POST /command 会打堵控制通道（19 条 UNCONFIRMED reason=TIMEOUT_OR_IO、
+        // 0 条 ACCEPTED），且 0~5 全模式都收不到 hidSendReport。恢复原语义：status=200 即停扫掠。
+        // 触摸链路的真正卡点在车机侧上报开关 / 视图区域声明，不是 inputMode 取值。
+        // Restored: a 200 status stops the sweep. Sweeping through all modes produced no HID report
+        // and flooded the control channel; the touch issue is not an inputMode value problem.
         ControlChannel.HID_MODE_REPORTED = true;
         if (ControlChannel.LOGGED) {
             return;
@@ -786,12 +811,16 @@ public final class AirPlaySession implements AutoCloseable {
             }
             ControlChannel.TRIES = i2 + 1;
             int i3 = ControlChannel.MODE + 1;
-            if (i3 > 5) {
+            // 规范 Table 23-76 只定义 5 个输入模式：0 Default / 1 Character / 2 Scrolling /
+            // 3 ScrollingWithCharacters / 4 DialPad。历史抓包 HID_GATE_OPEN mode=5 devices=2 出现 66 次，
+            // 属无效枚举值（车机从未对它回 200），扫掠范围收敛到 0..4。
+            if (i3 > 4) {
                 i3 = 0;
             }
             ControlChannel.MODE = i3;
             ControlChannel.LASTAT = jUptimeMillis;
             j("HID_SWEEP mode=" + ControlChannel.MODE);
+            this.n.a("HID_SWEEP mode=" + ControlChannel.MODE + " awaiting_hid_report=true");
             Set<String> set = this.J;
             synchronized (set) {
                 set.clear();
@@ -838,19 +867,32 @@ public final class AirPlaySession implements AutoCloseable {
     
     public  void I0(List<Map<String, Object>> commands, EventChannel control, long generation) {
         int slot = 0;
+        // V1.8.21 诊断：此前本方法所有早退分支都没有留痕，导致「>>> EXECUTE 有 7 次、
+        // HID_CMD_REQ 有 0 条」无法区分是线程池排队还是循环内提前 return。逐门打点。
+        j("HID_SEND_ENTER size=" + commands.size() + " generation=" + generation + " pool=HID_DEDICATED");
+        this.n.a("HID_SEND_ENTER size=" + commands.size() + " generation=" + generation);
         try {
             for (; slot < commands.size(); slot++) {
                 if (!d0(control)) {
+                    String abort = "HID_SEND_ABORT slot=" + slot + " reason=CHANNEL_NOT_READY encrypted="
+                            + (control == null ? "null" : control.n()) + " same_a0=" + (this.a0 == control);
+                    j(abort);
+                    this.n.a(abort);
                     return;
                 }
                 synchronized (this.H) {
                     if (this.I != generation) {
+                        String abort = "HID_SEND_ABORT slot=" + slot + " reason=GENERATION now="
+                                + this.I + " expected=" + generation;
+                        j(abort);
+                        this.n.a(abort);
                         return;
                     }
                 }
                 Map<String, Object> command = commands.get(slot);
                 Object paramsValue = command.get("params");
                 if (!(paramsValue instanceof Map)) {
+                    j("HID_SEND_SKIP slot=" + slot + " reason=PARAMS_NOT_MAP");
                     continue;
                 }
                 Map<?, ?> params = (Map<?, ?>) paramsValue;
@@ -858,6 +900,7 @@ public final class AirPlaySession implements AutoCloseable {
                 String deviceKey = (uuid instanceof byte[] ? "b:" : uuid instanceof Number ? "n:" : "s:")
                         + uuid;
                 if (this.J.contains(deviceKey)) {
+                    j("HID_SEND_SKIP slot=" + slot + " reason=DUPLICATE key=" + deviceKey);
                     continue;
                 }
                 if (this.J.size() >= MAX_HID_INPUT_MODE_DEVICES) {
@@ -865,13 +908,24 @@ public final class AirPlaySession implements AutoCloseable {
                     return;
                 }
                 this.J.add(deviceKey);
+                // [V1.8.22] 规范 Table 23-76：0=Default（点击/平移），1=Character（字符手势）。
+                // 车机 /info 声明 primaryInputDevice=1 触摸屏；首次真正发出的却是 mode=1，
+                // 且 HidOK() 在 200 后把 awaiting_hid_report 置 false，扫掠不再回到 0。
+                // 打全 mode/uuid 供下一轮判定是否需要固定为 Default。
+                this.n.a("HID_SEND_CMD slot=" + slot + " type=" + command.get("type")
+                        + " mode=" + params.get("hidInputMode") + " uuid=" + uuid);
                 byte[] body = BinaryPlist.f(command);
                 j("CarPlayHID HID_CMD_REQ len=" + body.length + " body=" + new String(body));
                 j("CarPlayHID HID_SEND len=" + body.length);
                 this.n.a("CarPlayHID HID_SEND len=" + body.length);
                 EventChannel carrier = HidChannel(control);
+                // V1.8.21：queued /command 与 R1() 的同步 /command 对齐，补会话标识头。
+                // HidChannel() 当前恒返回 control（carrier == control 分支），l() 保留为兼容分支。
+                java.util.LinkedHashMap<String, String> hidHeaders = new java.util.LinkedHashMap<>();
+                hidHeaders.put("X-Apple-Session-ID", SessionIdFromBase());
+                j("HID_SEND_SESSION_HEADER id=" + SessionIdFromBase());
                 CompletableFuture<EventChannel.b> pending = carrier == control
-                        ? control.g("POST", "/command", l1, body)
+                        ? control.g("POST", "/command", l1, body, hidHeaders)
                         : control.l("POST", "/command", l1, body);
                 String sentLog = "HID_INPUT_MODE_SENT slot=" + slot
                         + (carrier == control ? " carrier=CONTROL" : " carrier=EVENT");
@@ -925,7 +979,7 @@ public final class AirPlaySession implements AutoCloseable {
                     }
                 }
                 HidOK();
-                this.n.a("HID_INPUT_MODE_ACCEPTED slot=" + i2 + " status=" + bVar.h() + " carrier=CONTROL report_received=false");
+                this.n.a("HID_INPUT_MODE_ACCEPTED slot=" + i2 + " status=" + bVar.h() + " carrier=CONTROL mode=" + ControlChannel.MODE + " awaiting_hid_report=" + (!ControlChannel.HID_MODE_REPORTED));
             } catch (IOException unused) {
                 HidFail();
                 this.n.a("HID_INPUT_MODE_UNCONFIRMED slot=" + i2 + " status=" + bVar.h() + " carrier=CONTROL reason=RESPONSE");
@@ -1240,6 +1294,18 @@ public final class AirPlaySession implements AutoCloseable {
     public static  void R0(Map map) {
     }
 
+    /** 从 this.e（rtsp://host:port/&lt;sessionID&gt;）取出 SETUP 实际使用的会话 ID。 */
+    private String SessionIdFromBase() {
+        String base = this.e;
+        if (base == null) {
+            return "";
+        }
+        int slash = base.lastIndexOf('/');
+        return slash >= 0 && slash + 1 < base.length() ? base.substring(slash + 1) : "";
+    }
+
+    // [OBF-MAP] sendRtspRequest | 职责: 所有 RTSP 请求的统一发送入口。
+    // 判读: /setup、/command、/feedback、RECORD、stream SETUP 全走这里；排查 422/400 先看本方法。
     private Object R1(String str, String str2, Map<String, Object> map) throws IOException {
         q0();
         EventChannel eventChannel = this.a0;
@@ -1247,13 +1313,69 @@ public final class AirPlaySession implements AutoCloseable {
             SyntheticRefs.c("control not ready");
             return null;
         }
+        // 注：曾尝试把 /command 挂到 /<sessionID>/command（V1.8.15）仍 422，
+        // 因为 E1() 每次都生成新的随机 ID，与 SETUP 用的不是同一个。
+        // 真正的差异是：/feedback 靠 dataPort 关联会话，裸路径即可；
+        // /command 必须用 X-Apple-Session-ID 请求头标明会话（见下方发送处）。
         f4.a aVarD = (str.equals("POST") && str2.equals("/feedback") && eventChannel.n()) ? this.C.d(System.nanoTime()) : null;
-        EventChannel.b bVarV = eventChannel.v(str, str2, map != null ? l1 : null, map == null ? new byte[0] : BinaryPlist.f(map));
+        byte[] requestBody = map == null ? new byte[0] : BinaryPlist.f(map);
+        // 诊断（V1.7.94）：/command 是唯一需要 binary plist 体的端点。车机对它回 422 时，
+        // 必须能同时看到「发了什么 type/键」「plist 多长」「加密开关」这三项，才能区分
+        // 是内容语义问题还是编码/加密问题。
+        if (map != null) {
+            ControlChannel.Log("CONTROL_COMMAND_SEND path=" + str2
+                    + " type=" + map.get("type")
+                    + " keys=" + map.keySet()
+                    + " plistLen=" + requestBody.length
+                    + " hex=" + ControlChannel.Hex(requestBody, Math.min(requestBody.length, 96))
+                    + " encrypted=" + eventChannel.n());
+        }
+        EventChannel.b bVarV;
+        if ("/command".equals(str2)) {
+            // /feedback 靠 dataPort 关联到会话，所以裸路径就能成功；
+            // /command 没有 dataPort，必须用请求头指明会话归属，否则车机无法把命令
+            // 对应到某个会话，一律回 422（实测连最简单的 setNightMode 也 422）。
+            java.util.LinkedHashMap<String, String> cmdHeaders = new java.util.LinkedHashMap<>();
+            cmdHeaders.put("X-Apple-Session-ID", SessionIdFromBase());
+            ControlChannel.Log("CONTROL_COMMAND_SESSION_HEADER id=" + SessionIdFromBase());
+            bVarV = eventChannel.w(str, str2, l1, requestBody, cmdHeaders);
+        } else {
+            bVarV = eventChannel.v(str, str2, map != null ? l1 : null, requestBody);
+        }
         bVarV.g();
         if (!this.o.get() && this.a0 == eventChannel && eventChannel.n() && this.C.c(aVarD)) {
             this.n.a("RECOVERY_MEDIA_AUDIO_RELEASED fresh_idr=true later_peer_feedback=true");
         }
         return bVarV.c().length == 0 ? Collections.EMPTY_MAP : BinaryPlist.e(bVarV.c());
+    }
+
+    /**
+     * 用 JSON 编码重发同一个 /command 请求。
+     *
+     * 仅用于 A/B 判定：确认车机侧 /command 是否接受 binary plist。响应无论能否解析，
+     * 只要 HTTP 200 就视为被接受 —— 该命令本身只是状态通知，不需要读回参数。
+     */
+    private Object R1Json(Map<String, Object> map) throws IOException {
+        q0();
+        EventChannel eventChannel = this.a0;
+        if (eventChannel == null) {
+            SyntheticRefs.c("control not ready");
+            return null;
+        }
+        byte[] requestBody = JsonCodec.f(map);
+        ControlChannel.Log("CONTROL_JSON_SEND path=/command type=" + map.get("type")
+                + " bytes=" + requestBody.length
+                + " encrypted=" + eventChannel.n());
+        EventChannel.b bVarV = eventChannel.v("POST", "/command", "application/json", requestBody);
+        bVarV.g();
+        if (bVarV.c().length == 0) {
+            return Collections.EMPTY_MAP;
+        }
+        try {
+            return BinaryPlist.e(bVarV.c());
+        } catch (Throwable notPlist) {
+            return Collections.EMPTY_MAP;
+        }
     }
 
     
@@ -1440,15 +1562,18 @@ public final class AirPlaySession implements AutoCloseable {
             }
             if (!commands.isEmpty() && this.i1.compareAndSet(false, true)) {
                 try {
-                    ScheduledExecutorService executor = this.Y;
+                    // V1.8.21：改用 HID 专用单线程，避免共享 Y 被三条常驻循环占满后任务永远排队。
+                    java.util.concurrent.ScheduledThreadPoolExecutor executor = this.hidSendExecutor;
                     h0 task = new h0(0);
                     task.c = this;
                     task.d = commands;
                     task.e = control;
                     task.b = generation;
                     VarHandle.storeStoreFence();
-                    j("CarPlayHID HID_GATE: >>> EXECUTE send hidSetInputMode count=" + commands.size());
-                    this.n.a("CarPlayHID HID_GATE: >>> EXECUTE send hidSetInputMode count=" + commands.size());
+                    String gateLog = "CarPlayHID HID_GATE: >>> EXECUTE send hidSetInputMode count="
+                            + commands.size() + " pool=HID_DEDICATED queued=" + executor.getQueue().size();
+                    j(gateLog);
+                    this.n.a(gateLog);
                     executor.execute(task);
                     return;
                 } catch (RejectedExecutionException unused) {
@@ -1725,18 +1850,56 @@ public final class AirPlaySession implements AutoCloseable {
 
     
     
+    // [OBF-MAP] audioSendLoop | 职责: 音频发送线程 CarPlus-audio-send。
+    // 踩坑(V1.8.8~12): d.g==100(所有权待确认) 时共有三道同类判断会丢包，必须一起放行；
+    //   内层整块被跳过时 accepted/rejected 都不计数，包凭空消失。索引: skill/references/obfuscation-map.md §2.4
     public void a1(CarLifeFrame.a aVar, d dVar) {
         if (dVar.o != null) {
             Y(aVar, dVar);
             return;
         }
         String str = "WAIT_MODES";
+        long lastSendDiag = 0L;
+        long sendDiagAccepted = 0L;
+        long sendDiagRejected = 0L;
         while (G0() && !dVar.i.isClosed()) {
             try {
-                if (dVar.g != 100 || (this.B.get() == null && !this.C.b())) {
+                // 发送端诊断：车机拒绝 modesChanged 后，这里能直接看出卡在哪道门
+                // （g=资源所有权 100 表示 pending；B=待确认模式；queued=队列积压）。
+                long nowDiag = System.nanoTime();
+                if (nowDiag - lastSendDiag > 2000000000L) {
+                    lastSendDiag = nowDiag;
+                    this.n.a("AUDIO_SEND_DIAG g=" + dVar.g
+                            + " bypass=" + this.audioPcmBypass
+                            + " pendingMode=" + (this.B.get() == null ? "null" : "set")
+                            + " owned=" + this.C.b()
+                            + " queued=" + dVar.m.l()
+                            + " codec=" + (dVar.o == null ? "PCM16" : "AAC")
+                            + " accepted=" + sendDiagAccepted
+                            + " rejected=" + sendDiagRejected
+                            + " sentFrames=" + (dVar.z - dVar.K)
+                            + " packets=" + dVar.A
+                            + " gateEntered=" + (this.audioPcmBypass || dVar.g != 100 || (this.B.get() == null && !this.C.b())));
+                }
+                // audioPcmBypass：车机拒绝 modesChanged（Info3.6 实测 422）后，音频资源所有权
+                // 永远停在 g==100，这个门会让发送循环每 10ms 空转一次、一个包都不消费
+                // （实测 sent_packets_total=0、queued_frames=12000 满、dropped_frames 每秒 +48k）。
+                // /info 已声明资源可 Take（takeConstraint=100 Anytime），故明确被拒时放行。
+                if (this.audioPcmBypass || dVar.g != 100 || (this.B.get() == null && !this.C.b())) {
                     PcmQueue.a aVarP = dVar.m.p();
                     if (aVarP == null) {
-                        return;
+                        // 取包超时或线程中断：非中断时继续等下一轮，不能退出整个发送线程。
+                        if (Thread.currentThread().isInterrupted()) {
+                            return;
+                        }
+                        continue;
+                    }
+                    // 头几次取包打点，用于区分「取不到包」和「取到包但未发送」。
+                    if (sendDiagAccepted + sendDiagRejected < 3L) {
+                        this.n.a("AUDIO_SEND_TAKE frames=" + aVarP.c()
+                                + " seq=" + aVarP.b()
+                                + " epoch=" + aVarP.e()
+                                + " g=" + dVar.g);
                     }
                     str = "PACE";
                     long jB = dVar.n.b(System.nanoTime(), aVarP.c(), aVarP.e());
@@ -1749,7 +1912,10 @@ public final class AirPlaySession implements AutoCloseable {
                                         try {
                                             str = "OWNERSHIP";
                                             if (G0() && !dVar.i.isClosed()) {
-                                                if (dVar.g != 100 || (this.B.get() == null && !this.C.b())) {
+                                                // 第三道同类门（前两处在取包侧）：g=100 且模式待确认时，
+                                                // 整块会被跳过，既不计 accepted 也不计 rejected —— 现象就是
+                                                // 包被取走却凭空消失、sent_packets_total 恒 0。
+                                                if (this.audioPcmBypass || dVar.g != 100 || (this.B.get() == null && !this.C.b())) {
                                                     f fVar = this.z.get();
                                                     if (dVar.g == 100) {
                                                         o2(dVar, fVar);
@@ -1761,9 +1927,11 @@ public final class AirPlaySession implements AutoCloseable {
                                                         dVar.s = 0L;
                                                     }
                                                     if (!dVar.m.g(aVarP)) {
+                                                        sendDiagRejected++;
                                                         dVar.k.e(Math.addExact(aVarP.e(), aVarP.c()));
                                                         dVar.n.c();
-                                                    } else if (dVar.g != 100 || fVar.g()) {
+                                                    } else if (this.audioPcmBypass || dVar.g != 100 || fVar.g()) {
+                                                        sendDiagAccepted++;
                                                         dVar.D = Math.max(dVar.D, Math.max(0L, System.nanoTime() - jB));
                                                         dVar.k.e(aVarP.e());
                                                         byte[] bArrD = aVarP.d();
@@ -1933,7 +2101,14 @@ public final class AirPlaySession implements AutoCloseable {
             return;
         }
         try {
-            i1Var.e(System.nanoTime() / 1000000);
+            if (i1Var.e(System.nanoTime() / 1000000)) {
+                // 每 5 秒真正发出一个 UDP 保活包时留痕，用于确认车机看门狗是否被喂。
+                // Trace each real 5 s keep-alive datagram to verify the head-unit watchdog is fed.
+                long jSent = i1Var.c();
+                if (jSent <= 3 || jSent % 12 == 0) {
+                    this.n.a("CARPLAY_UDP_KEEPALIVE_SENT count=" + jSent);
+                }
+            }
         } catch (RuntimeException unused) {
             long jC = i1Var.c();
             if (jC <= 3 || jC % 100 == 0) {
@@ -2499,6 +2674,12 @@ public final class AirPlaySession implements AutoCloseable {
     
     private byte[] s1(io.carplay.app.secured.EventChannel.b request, String origin) throws IOException {
         long startNanos = System.nanoTime();
+        // [V1.8.22] 入站诊断：历史所有抓包 CARPLAY_COMMAND_RECEIVED / HID_REPORT_ARRIVED 都是 0，
+        // 无法区分「车机在 eventPort 上根本没发 /command」与「手机没读/没分发」。
+        // 规范 §23.3.7：车机命令走 Accessory control channel（EVTCP :5001），
+        // 这条日志能直接证明该通道上是否有任何入站流量。
+        this.n.a("CARPLAY_INBOUND_REQUEST origin=" + origin + " uri=" + request.f()
+                + " len=" + request.c().length);
         if (!request.f().endsWith("/command")) {
             return null;
         }
@@ -2514,14 +2695,22 @@ public final class AirPlaySession implements AutoCloseable {
             return handleHidReport(envelope, startNanos);
         }
         if ("forceKeyFrame".equals(type)) {
-            
-            
-            return this.n.i() ? new byte[0] : null;
+            boolean encReady = this.n.i();
+            // Always ACK (HTTP 200) so the head unit does not tear down the session waiting for a keyframe.
+            this.n.a("CARPLAY_FORCE_KEYFRAME enc_ready=" + encReady + " ack=200");
+            return new byte[0];
+        }
+        // Activation / session-control commands the head unit may send during CarPlay startup:
+        // acknowledge and log the full envelope so the next on-device diagnosis can see the car's vocabulary.
+        if ("setCarPlayState".equals(type) || "startSession".equals(type) || "setUpStreams".equals(type)
+                || "requestUI".equals(type) || "setUIContext".equals(type) || "updateViewArea".equals(type)) {
+            this.n.a("CARPLAY_COMMAND_RECEIVED type=" + type + " keys=" + envelope.keySet() + " params=" + envelope.get("params"));
+            return new byte[0];
         }
         long unhandled = this.unhandledCommandCount + 1;
         this.unhandledCommandCount = unhandled;
-        if (unhandled <= 4 || unhandled % 100 == 0) {
-            this.n.a("CARPLAY_COMMAND_UNHANDLED type=" + type + " count=" + unhandled);
+        if (unhandled <= 8 || unhandled % 50 == 0) {
+            this.n.a("CARPLAY_COMMAND_UNHANDLED type=" + type + " count=" + unhandled + " keys=" + envelope.keySet());
         }
         return null;
     }
@@ -2531,6 +2720,7 @@ public final class AirPlaySession implements AutoCloseable {
         if (!ControlChannel.HID_MODE_REPORTED) {
             ControlChannel.HID_MODE_REPORTED = true;
             j("HID_REPORT_RECEIVED -> sweep stop");
+            this.n.a("HID_REPORT_ARRIVED mode=" + ControlChannel.MODE + " sweep_stopped=true");
         }
         synchronized (this.U0) {
             if (this.o.get()) {
@@ -2853,6 +3043,10 @@ public final class AirPlaySession implements AutoCloseable {
     }
 
     private void v0(String str, Throwable th) {
+        // 记录底层 socket 异常原文：车机主动断事件通道时，只看异常类名无法区分 reset / abort / timeout。
+        // Log the raw socket error so a car-initiated event-channel close can be told apart from a
+        // read timeout; the class name alone is not enough.
+        this.n.a("SESSION_FAILURE detail=" + str + " message=" + String.valueOf(th.getMessage()));
         w0(str, Iap2Bootstrap.l(th));
     }
 
@@ -3178,7 +3372,8 @@ public final class AirPlaySession implements AutoCloseable {
                         this.K0.clear();
                         Object obj = map.get("hidDevices");
                         if (!(obj instanceof List)) {
-                            this.n.a("HID_CAPABILITIES devices=0 touch=0");
+                            this.n.a("HID_CAPABILITIES devices=0 touch=0 main_uuid="
+                                    + (this.o0 == null ? "none" : this.o0.i()) + " reason=NO_HID_DEVICES");
                             return;
                         }
                         List list2 = (List) obj;
@@ -3237,6 +3432,21 @@ public final class AirPlaySession implements AutoCloseable {
                                             sb.append(z);
                                             sb.append(" uuid_kind=");
                                             sb.append(str);
+                                            // 诊断：打印「车机给该 HID 设备绑定的 displayUUID」与「我们选中的主显示 UUID」，
+                                            // 并给出是否一致。两者不一致时车机认为 Apple device 不持有该屏幕，
+                                            // 依规范 §23.3.5.1.3 永不发送 HID（触摸）报告。
+                                            String strDevUuid = strA0 == null ? "none" : strA0;
+                                            String strDispUuid = obj4 == null ? "none" : io.carplay.app.secured.ProtoFieldAccessor.d(obj4);
+                                            if (strDispUuid == null) {
+                                                strDispUuid = "unparsable(" + obj4.getClass().getSimpleName() + ")";
+                                            }
+                                            String strMainUuid = this.o0 == null ? "none" : this.o0.i();
+                                            boolean zMainMatch = obj4 != null && this.o0 != null
+                                                    && io.carplay.app.secured.ProtoFieldAccessor.c(obj4, strMainUuid);
+                                            sb.append(" dev_uuid=").append(strDevUuid);
+                                            sb.append(" display_uuid=").append(strDispUuid);
+                                            sb.append(" main_uuid=").append(strMainUuid);
+                                            sb.append(" display_match_main=").append(zMainMatch);
                                             this.n.a(sb.toString());
                                         }
                                     } catch (IOException unused) {
@@ -3280,7 +3490,9 @@ public final class AirPlaySession implements AutoCloseable {
                             list2 = list;
                         }
                         List list3 = list2;
-                        this.n.a("HID_CAPABILITIES devices=" + list3.size() + " touch=" + this.I0.size());
+                        this.n.a("HID_CAPABILITIES devices=" + list3.size() + " touch=" + this.I0.size()
+                                + " back=" + this.J0.size() + " consumer=" + this.K0.size()
+                                + " main_uuid=" + (this.o0 == null ? "none" : this.o0.i()));
                     } catch (Throwable th) {
                         throw th;
                     }
@@ -3574,6 +3786,9 @@ public final class AirPlaySession implements AutoCloseable {
             return false;
         }
         if (dVar.p) {
+            if (this.audioPcmBypass) {
+                return true;
+            }
             return this.B.get() == null && !this.C.b() && this.t.J();
         }
         return true;
@@ -3609,6 +3824,19 @@ public final class AirPlaySession implements AutoCloseable {
         this.V = List.copyOf(arrayList);
         boolean z = false;
         this.o0 = (k) arrayList.get(0);
+        // 诊断：把 /info 里所有 display 的 UUID 打出来，并标明我们选中的主显示。
+        // 车机 hidDevices[i].displayUUID 必须与我们声明的主显示 UUID 一致，否则车机不认屏幕归属，
+        // 依 Apple CarPlay 规范 §23.3.5.1.3「Apple device 不持有屏幕时 Accessory 不得发送 HID」永不发触摸。
+        StringBuilder sbDisp = new StringBuilder("CARPLAY_DISPLAY_UUIDS count=");
+        sbDisp.append(arrayList.size()).append(" main=").append(this.o0.i())
+                .append(" main_stream=").append(this.o0.j())
+                .append(" main_rate=").append(this.o0.g());
+        for (int di = 0; di < arrayList.size(); di++) {
+            k dk = (k) arrayList.get(di);
+            sbDisp.append(" [").append(di).append("]uuid=").append(dk.i())
+                    .append(",type=").append(dk.j());
+        }
+        this.n.a(sbDisp.toString());
         x0(map);
         this.n.a(this.S.O());
         this.n.a(p1VarF.m());
@@ -3836,6 +4064,7 @@ public final class AirPlaySession implements AutoCloseable {
                 L1();
             }
             this.Y.shutdownNow();
+            this.hidSendExecutor.shutdownNow();
             this.K.clear();
             synchronized (this) {
                 try {
@@ -3899,6 +4128,9 @@ public final class AirPlaySession implements AutoCloseable {
     }
 
     
+    // [OBF-MAP] notifyModesChanged | 职责: POST /command type=modesChanged。
+    // 踩坑(V1.7.95): 车机 422 后原样抛异常，使 i0() 中其后的 RECORD 与 H1()(HID) 永不执行
+    //   ⇒ 历史 12 份抓包 videoUnits=0 / TOUCH_FORWARDED=0；此处必须容忍 422。
     public void g2() throws IOException {
         Map<String, Object> mapQ;
         c cVar;
@@ -3913,7 +4145,52 @@ public final class AirPlaySession implements AutoCloseable {
             mapQ = this.t.Q();
             cVar = this.B.get();
         }
-        Map<String, Object> mapG1 = g1(R1("POST", "/command", mapQ));
+        // 探针：用固件白名单内、无副作用的 updateFeedback 判断 /command 端点是否可用。
+        // 【V1.8.20 纠正】此前用 setNightMode 作探针，但它是车机→手机方向的命令、根本不在
+        // 0x443d0 入站白名单（白名单只有 modesChanged/requestUI/updateFeedback/
+        // hidSetInputMode/iAPSendMessage），必然 422；据此得出的「端点级整体拒绝」结论是错的。
+        try {
+            java.util.LinkedHashMap<String, Object> probeMap = new java.util.LinkedHashMap<>();
+            probeMap.put("type", "updateFeedback");
+            probeMap.put("params", Map.of());
+            EventChannel.b probeResp = this.a0.v("POST", "/command", l1, BinaryPlist.f(probeMap));
+            probeResp.g();
+            this.n.a("COMMAND_PROBE updateFeedback ACCEPTED endpoint_usable=true");
+        } catch (Throwable probeFailure) {
+            this.n.a("COMMAND_PROBE updateFeedback REJECTED msg=" + probeFailure.getMessage());
+        }
+        // V1.8.20 起请求体为 {type, params:{resources}}（以 Cinemo 固件为准，规范写顶层）。
+        // 此行用于下次抓包直接核对实际发出的结构。
+        this.n.a("CARPLAY_SCREEN_MODES_PAYLOAD keys=" + mapQ.keySet() + " body=" + mapQ);
+        Map<String, Object> mapG1;
+        try {
+            mapG1 = g1(R1("POST", "/command", mapQ));
+        } catch (IOException modeFailure) {
+            // 实测（Info3.6 / V1.7.94~97）：车机对 modesChanged 回 422 且响应体为空；
+            // 而同一个加密通道上的 /setup（同样是 binary plist）却能成功 ⇒ 加密没问题，
+            // 差异只剩「/command 端的编码/语义」。这里先用 JSON 重发同一份内容做 A/B：
+            // 若 JSON 被接受即证明车机侧 /command 不收 bplist。
+            this.n.a("CARPLAY_SCREEN_MODES_BPLIST_REJECTED msg=" + modeFailure.getMessage() + " retry=json");
+            try {
+                g1(R1Json(mapQ));
+                this.n.a("CARPLAY_SCREEN_MODES_JSON_ACCEPTED payload=" + mapQ);
+                return;
+            } catch (Throwable jsonFailure) {
+                // 两种编码都被拒时仍不阻断：/info 的 modes 已声明 resourceID=1 可 Take
+                // （takeConstraint=100 Anytime），主屏本就属于手机。若在此抛异常，
+                // 调用方的 RECORD 与 H1()(HID 启动) 永不执行，表现为 videoUnits=0、触摸恒 0。
+                this.n.a("CARPLAY_SCREEN_MODES_REJECTED_TOLERATED bplist=" + modeFailure.getMessage()
+                        + " json=" + jsonFailure.getMessage()
+                        + " continue_record_and_hid=true");
+                // 车机拒绝 modesChanged ⇒ 音频主模式确认不会再来。置位后由 F0()/t1() 放行 PCM，
+                // 否则采集到的音频会在发送端被静默丢弃（pcmBytes 恒 0）。
+                if (!this.audioPcmBypass) {
+                    this.audioPcmBypass = true;
+                    ControlChannel.Log("AUDIO_PCM_GATE_BYPASSED reason=PEER_REJECTED_MODES_CHANGED");
+                }
+                return;
+            }
+        }
         Object obj = mapG1.get("status");
         if (obj != null && ((!(obj instanceof Byte) && !(obj instanceof Short) && !(obj instanceof Integer) && !(obj instanceof Long)) || ((Number) obj).longValue() != 0)) {
             SyntheticRefs.c("SCREEN_MODES_APPLICATION_REJECTED");
@@ -3995,10 +4272,84 @@ public final class AirPlaySession implements AutoCloseable {
                 if (this.t.K()) {
                     l2();
                 }
-                R1("RECORD", this.e, Collections.EMPTY_MAP);
+                // RECORD 不能阻塞主流程。
+                // Info3.6 实测（V1.7.95）：RECORD 发出后车机**不回响应**，同步 R1() 会一直
+                // 阻塞到 RTSP socket EOF（14:32:15.066 → 14:32:28.073，整整 13s）。
+                // 这 13s 里 l0/E/H1()（HID 启动）以及后续 keepalive 调度全部卡住：
+                // keepalive 只发到 count=3 就断，车机侧表现正是「画面出来几秒后中断」。
+                // 改为后台线程发送、无响应可容忍，主流程立即继续。
+                try {
+                    if (this.a0 != null) {
+                        Thread recordThread = new Thread(() -> {
+                            try {
+                                R1("RECORD", this.e, Collections.EMPTY_MAP);
+                                this.n.a("CARPLAY_RECORD_ACKNOWLEDGED");
+                            } catch (Throwable recordFailure) {
+                                this.n.a("CARPLAY_RECORD_NO_RESPONSE_TOLERATED msg=" + recordFailure.getMessage());
+                            }
+                        }, "CarPlus-record");
+                        recordThread.setDaemon(true);
+                        recordThread.start();
+                    }
+                } catch (Throwable ignored) {
+                    // 后台发送失败不影响主流程，媒体通道已单独建立。
+                }
                 this.l0 = true;
                 this.E = true;
                 H1();
+                // 音频占位路由（V1.7.97）。
+                // 车机侧（Info3.6）在 RECORD 被 ACK 之后约 10s 就会关闭 RTSP 会话，
+                // 实测稳定在 13s（14:39:16 连上 → 14:39:30 ENDED），且 pcmBytes 恒为 0：
+                // 音频流从未协商，而 RECORD 的语义是「开始播放全部流」。
+                // Android 侧拿不到系统音频（仅授予 NEARBY_WIFI_DEVICES/POST_NOTIFICATIONS，
+                // 无 RECORD_AUDIO、无 MediaProjection），native 采集不会上报音频格式，
+                // 因此这里主动建立一条 MEDIA 路由，先让会话不因「缺流」而被车机 teardown。
+                try {
+                    p1(CarLifeFrame.a.MEDIA, 48000, 2, 16);
+                    this.n.a("CARPLAY_AUDIO_PLACEHOLDER_OPENED channel=MEDIA 48000/2/16");
+                } catch (Throwable audioPlaceholder) {
+                    this.n.a("CARPLAY_AUDIO_PLACEHOLDER_FAILED msg=" + audioPlaceholder.getMessage());
+                }
+                // 标准 /feedback 周期上报（V1.7.98）。
+                // AirPlay mirroring 要求发送端周期性 POST /feedback 报告各流进度；
+                // 本工程此前只在 R1() 里预留了 /feedback 的时序判定（aVarD），却从未真正发送
+                // —— 全仓 grep 只有条件判断与 case 标签，没有一处调用。
+                // Info3.6 实测：RECORD 被 ACK 之后**恒定 10.5s** teardown
+                // （14:43:44.978 ACK → 14:43:55.502 ENDED；14:43:57.063 → 14:44:07.584 同样 10.5s），
+                // 与「连续数个周期收不到 feedback 即判对端失效」的看门狗行为吻合。
+                try {
+                    final long feedbackT0 = SystemClock.elapsedRealtime();
+                    Thread feedbackThread = new Thread(() -> {
+                        while (!this.o.get() && this.a0 != null) {
+                            try {
+                                Socket dataSocket = this.c0;
+                                if (dataSocket != null && !dataSocket.isClosed()) {
+                                    LinkedHashMap<String, Object> stream = new LinkedHashMap<>();
+                                    stream.put("type", Integer.valueOf(110));
+                                    stream.put("dataPort", Integer.valueOf(dataSocket.getPort()));
+                                    stream.put("progress", Long.valueOf(SystemClock.elapsedRealtime() - feedbackT0));
+                                    LinkedHashMap<String, Object> body = new LinkedHashMap<>();
+                                    body.put("streams", List.of(stream));
+                                    R1("POST", "/feedback", body);
+                                    ControlChannel.Log("CONTROL_FEEDBACK_SENT progress_ms="
+                                            + (SystemClock.elapsedRealtime() - feedbackT0));
+                                }
+                            } catch (Throwable feedbackFailure) {
+                                ControlChannel.Log("CONTROL_FEEDBACK_FAILED msg=" + feedbackFailure.getMessage());
+                            }
+                            try {
+                                Thread.sleep(2000L);
+                            } catch (InterruptedException interrupted) {
+                                Thread.currentThread().interrupt();
+                                return;
+                            }
+                        }
+                    }, "CarPlus-feedback");
+                    feedbackThread.setDaemon(true);
+                    feedbackThread.start();
+                } catch (Throwable ignored) {
+                    // feedback 只用于维持会话，启动失败不影响媒体通道。
+                }
                 ScheduledExecutorService scheduledExecutorService = this.Y;
                 b0 b0Var = new b0(3);
                 b0Var.b = this;
@@ -4351,18 +4702,32 @@ public final class AirPlaySession implements AutoCloseable {
         this.n.a("MFI_FRESH_PROOF_VERIFIED_PINNED_APPLE_CA_UNVERIFIED=" + (!aVarB.a()));
         this.n.a("CARPLAY_INITIAL_SETUP");
         LinkedHashMap linkedHashMap = new LinkedHashMap();
-        linkedHashMap.put("name", "Car+ Rootless");
-        linkedHashMap.put("model", "Android Car+ sender");
+        // SETUP 身份改用真实手机标识：蓝牙名称 / 机型 / 本机蓝牙 MAC。
+        // deviceID 参与配对缓存，无合法 MAC 时保持原配对 ID 兜底，避免会话无法建立。
+        // Advertise the real phone identity instead of hard-coded placeholders.
+        linkedHashMap.put("name", ControlChannel.ServiceName());
+        linkedHashMap.put("model", Build.MODEL);
         String strE = this.i;
         if (strE == null) {
             strE = this.k.e();
         }
-        linkedHashMap.put("deviceID", strE);
+        String localBt = ControlChannel.LocalBluetoothIdentifier();
+        String deviceId = localBt != null ? localBt : strE;
+        String identitySource = localBt != null ? "LOCAL_BLUETOOTH" : (this.i == null ? "PAIRING_ID_COMPAT_FALLBACK" : "BLUETOOTH_SNAPSHOT");
+        linkedHashMap.put("deviceID", deviceId);
         n nVar = this.n;
-        nVar.a("CARPLAY_SETUP_DEVICE_ID value=" + strE + " len=" + String.valueOf(strE).length());
+        nVar.a("CARPLAY_SETUP_DEVICE_ID source=" + identitySource + " len=" + String.valueOf(deviceId).length() + " values_logged=false");
         nVar.a("CARPLAY_SETUP_TRANSPORT_ID source=" + (this.i == null ? "PAIRING_ID_COMPAT_FALLBACK" : "BLUETOOTH_SNAPSHOT") + " values_logged=false");
+        nVar.a("CARPLAY_SETUP_IDENTITY name_source=" + (ControlChannel.ManualName().isEmpty() ? "SYSTEM_BLUETOOTH_NAME" : "USER_BLUETOOTH_NAME")
+                + " model_source=BUILD_MODEL device_id_source=" + identitySource + " values_logged=false");
         linkedHashMap.put("sessionUUID", UUID.randomUUID().toString());
-        linkedHashMap.put("sourceVersion", "CarPlus-0.6");
+        // [V1.8.22] sourceVersion 必须是 CarPlay source version 数字串（规范 Table 23-37: "x.y"，
+        // 例 "101.7"）。旧值 "CarPlus-0.6" 首字符非数字：Buick Info3.6 的 libNmeCarPlay.so
+        // 在 0x42e6c 取该键、调 0x8e7b0 解析为 major*10000+minor*100+patch 并存入 [obj+0x130]，
+        // 结果是 0；0x512e7 的 `test eax,eax; je 0x51469` 随即跳过整段逻辑。
+        // 取 320.17 与车机 /info 的 sourceVersion=320.17.3 同代，避免被判为不支持的旧设备。
+        linkedHashMap.put("sourceVersion", "320.17");
+        this.n.a("CARPLAY_SETUP_SOURCE_VERSION value=320.17 spec=x.y firmware_parsed=3201700");
         linkedHashMap.put("osBuildVersion", "21A329");
         this.n.a("AUDIO_WIRE_PROFILE profile=MODERN_RTP aad_bytes=8 compatibility_build_declared=true actual_android_build=false");
         linkedHashMap.put("timingPort", Integer.valueOf(i2));
@@ -4394,7 +4759,35 @@ public final class AirPlaySession implements AutoCloseable {
         this.n.a("CARPLAY_INFO_AFTER_AUTHENTICATED_SETUP");
         S(g1(R1("GET", "/info", null)));
         q0();
-        
+
+        // ---- Best-effort activation / UI-context nudge (NON-BLOCKING, diagnostic only) ----
+        // iPhone native follows AuthenticationSucceeded -> AuthorizationSucceeded -> EndpointActivated
+        // over the iAP2 channel. Here we (a) log the car's declared modes/displays/statusFlags and
+        // (b) proactively declare our UI context so the head unit has a reason to register the session.
+        try {
+            if (this.j != null) {
+                this.j.u();
+                this.n.a("CARPLAY_IAP2_OUTPUT_THREAD_STARTED");
+            }
+            Map<?, ?> infoMap = this.W;
+            if (infoMap != null) {
+                this.n.a("CARPLAY_INFO_MODES value=" + infoMap.get("modes"));
+                this.n.a("CARPLAY_INFO_DISPLAYS value=" + infoMap.get("displays"));
+                this.n.a("CARPLAY_INFO_STATUS_FLAGS value=" + infoMap.get("statusFlags"));
+                this.n.a("CARPLAY_INFO_BT_IDS value=" + infoMap.get("bluetoothIDs"));
+            }
+            LinkedHashMap<String, Object> uiCtx = new LinkedHashMap<>();
+            // setUIContext 不在 Cinemo 固件入站白名单（0x443d0），发出必 422。
+            // 改用白名单内的 requestUI，参数按固件约定放进 params.url（常量 0xb1623）。
+            uiCtx.put("type", "requestUI");
+            uiCtx.put("params", Map.of("url", ""));
+            Map<String, Object> uiResp = g1(R1("POST", "/command", uiCtx));
+            this.n.a("CARPLAY_SET_UI_CONTEXT resp=" + uiResp);
+        } catch (Throwable th) {
+            this.n.a("CARPLAY_ACTIVATION_NUDGE_FAILED " + th.getClass().getSimpleName() + ": " + th.getMessage());
+        }
+        q0();
+
         this.D = true;
         return mapG1;
     }
@@ -4410,14 +4803,14 @@ public final class AirPlaySession implements AutoCloseable {
                 synchronized (dVar) {
                     if (G0() && !dVar.i.isClosed()) {
                         o1(dVar, bArr);
-                        if (!dVar.p || (this.B.get() == null && !this.C.b())) {
+                        if (this.audioPcmBypass || !dVar.p || (this.B.get() == null && !this.C.b())) {
                             try {
                                 synchronized (dVar) {
                                     if (G0() && !dVar.i.isClosed()) {
                                         if (dVar.p) {
                                             f fVar = this.z.get();
                                             o2(dVar, fVar);
-                                            if (!fVar.g()) {
+                                            if (!fVar.g() && !this.audioPcmBypass) {
                                                 return;
                                             }
                                         }
@@ -4563,7 +4956,14 @@ public final class AirPlaySession implements AutoCloseable {
 
     public List<Map<String, Object>> z0() throws IOException {
         List<Map<String, Object>> listCopyOf;
-        Integer numValueOf = Integer.valueOf(ControlChannel.MODE);
+        // [V1.8.23] payload 固定 hidInputMode=0 (Default)。
+        // 规范 Table 23-76：0=Default（点击/平移），1=Character（字符手势），车机 /info 声明
+        // primaryInputDevice=1 触摸屏；V1.8.21/22 首次真正发出的却是 MODE=1，因为 gate 在
+        // devices=0 时 SKIP，等 6s 后 sweep 已把 MODE 递增到 1。HidOK() 收到 200 又停止扫掠，
+        // 于是永远不会再用 Default 试一次。固件 0x44559 只把该命令转发给上层回调，
+        // 回 200 不代表 HMI 已启用触摸 ⇒ 历史「全模式扫掠仍 0 report」的证伪前提已失效。
+        // MODE 仍保留 0..4 扫掠用于驱动 gate 重发，但发送的 payload 始终是规范默认值。
+        Integer numValueOf = Integer.valueOf(0);
         synchronized (this.U0) {
             try {
                 ArrayList arrayList = new ArrayList();
@@ -4766,6 +5166,10 @@ public final class AirPlaySession implements AutoCloseable {
      * Closeable resource holding a channel or buffer that must be released.
      */
     public static final class d implements AutoCloseable {
+
+        // [OBF-MAP] AudioChannelState | 音频通道的全单字母字段状态对象，最易误判。
+        // 字段: g=resourceOwnership(100=待确认) p=audioMainModePending m=pcmQueue n=audioPacer
+        //       l=pcmConverter o=aacEncoder i=DatagramSocket；索引: skill/references/obfuscation-map.md §2.4
         long A;
         long B;
         long C;

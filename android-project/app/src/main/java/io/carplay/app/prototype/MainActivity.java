@@ -94,6 +94,9 @@ public final class MainActivity extends Activity {
     private static final int g0 = 44;
     private static final int h0 = 45;
     private static final int i0 = 46;
+    // 系统内录（MediaProjection）授权请求码。音源要的是手机里播放的音乐（含 Car+），
+    // 麦克风只能录到环境声，因此连接前先申请一次内录授权。
+    private static final int MEDIA_PROJECTION_REQUEST_CODE = 47;
     private static final String j0 = "android.permission.BLUETOOTH_ADVERTISE";
     private static final String m0 = "carplayapk-consent";
     private static final String n0 = "2026-10-20-v1";
@@ -128,6 +131,8 @@ public final class MainActivity extends Activity {
     private boolean h;
     private String j;
     private String l;
+    // 等待内录授权期间暂存的连接目标，授权回调回来后继续发起连接。
+    private String pendingConnectTarget;
     private Button m;
     private Button n;
     private Button o;
@@ -1075,8 +1080,10 @@ public final class MainActivity extends Activity {
             return;
         }
         ArrayList arrayList = new ArrayList();
-        String[] strArr = {b0, c0};
-        for (int i = 0; i < 2; i++) {
+        // RECORD_AUDIO：音频通道需要 PCM 源（当前接麦克风验证链路，后续换系统内录）。
+        // 不放进权限列表的话，startPcmCapture() 会因 granted=false 直接跳过，车机永远无声。
+        String[] strArr = {b0, c0, "android.permission.RECORD_AUDIO"};
+        for (int i = 0; i < 3; i++) {
             String str = strArr[i];
             if (checkSelfPermission(str) != 0) {
                 arrayList.add(str);
@@ -1098,6 +1105,35 @@ public final class MainActivity extends Activity {
         this.j = i2();
         requestPermissions((String[]) arrayList.toArray(new String[0]), f0);
     }
+
+    /**
+     * 连接前先申请系统内录授权。
+     *
+     * 音源必须是「手机里正在播放的声音」（Car+ / 音乐 App），麦克风只能录到环境声。
+     * 对照 OcarPlay 0.8.53：其 APK 无 native 库、无 AudioRecord、无 MediaProjection，
+     * manifest 也没有 RECORD_AUDIO，PCM 由 ColorOS 宿主 native 层直接喂入（日志
+     * "Actual native PCM entered wireless sender"）。该通路只对宿主内应用开放，
+     * 第三方应用只能用公开 API 的等价方案：AudioPlaybackCapture + MediaProjection。
+     */
+    private void a4(String str) {
+        if (android.os.Build.VERSION.SDK_INT >= 29 && !MediaProjectionHolder.ready()) {
+            try {
+                android.media.projection.MediaProjectionManager manager =
+                        (android.media.projection.MediaProjectionManager)
+                                getSystemService(android.content.Context.MEDIA_PROJECTION_SERVICE);
+                if (manager != null) {
+                    this.pendingConnectTarget = str;
+                    startActivityForResult(manager.createScreenCaptureIntent(), MEDIA_PROJECTION_REQUEST_CODE);
+                    o2("请在弹窗中选择「立即开始」，让车机播放手机内的声音；拒绝则回退麦克风。");
+                    return;
+                }
+            } catch (Throwable failure) {
+                AppLogger.g(this, "MEDIA_PROJECTION_REQUEST_FAILED msg=" + failure.getMessage());
+            }
+        }
+        v2(str);
+    }
+
     public void f2() {
         if (!S0()) {
             P0();
@@ -1671,6 +1707,24 @@ public final class MainActivity extends Activity {
     @Override 
     public void onActivityResult(int i, int i2, Intent intent) {
         super.onActivityResult(i, i2, intent);
+        if (i == MEDIA_PROJECTION_REQUEST_CODE) {
+            // 无论授权与否都要继续连接：授权成功走 AudioPlaybackCapture（手机媒体音频），
+            // 拒绝则回退麦克风，投屏本身不受影响。
+            String target = this.pendingConnectTarget;
+            this.pendingConnectTarget = null;
+            if (i2 == -1 && intent != null) {
+                MediaProjectionHolder.set(i2, intent);
+                AppLogger.g(this, "MEDIA_PROJECTION_GRANTED audio_source=playback_capture");
+                o2("已获得内录授权，音频将传输手机内播放的声音。");
+            } else {
+                AppLogger.g(this, "MEDIA_PROJECTION_DENIED audio_source=mic_fallback");
+                o2("未授权内录，音频将回退为麦克风；如需音乐请在下次连接时允许。");
+            }
+            if (target != null) {
+                v2(target);
+            }
+            return;
+        }
         if (i == i0) {
             AppLogger.g(this, "PHONE_DISCOVERY_VISIBILITY allowed=" + (i2 > 0) + " radio_confirmed=false");
             if (i2 > 0) {
@@ -1954,7 +2008,8 @@ public final class MainActivity extends Activity {
             } else if (!z || str == null) {
                 o2("权限已就绪，请选择车机后连接。");
             } else {
-                v2(str);
+                // 音源需要手机媒体音频（Car+ / 音乐 App），先取 MediaProjection 授权再连。
+                a4(str);
             }
         }
     }
@@ -1962,6 +2017,10 @@ public final class MainActivity extends Activity {
     @Override 
     public void onResume() {
         super.onResume();
+        // App 一到前台就广播 _carplay-ctrl，让车机从自己那一侧发起时也能发现本机。
+        CarPlayCtrlAdvertiser.StartEarly(this);
+        // 同时浏览车机侧的服务类型，用于判断车机走的是 _carplay / _carplay-ctrl / _airplay 哪条通道。
+        CarPlayCtrlAdvertiser.Probe(this);
         this.d = true;
         if (S0()) {
             E0();

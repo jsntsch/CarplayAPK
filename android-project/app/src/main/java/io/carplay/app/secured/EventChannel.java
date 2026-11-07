@@ -133,6 +133,19 @@ public final class EventChannel implements Closeable {
             if (h() == 200) {
                 return;
             }
+            // 诊断（V1.7.94）：非 200 时把响应体打出来。车机对 /command 的拒绝原因
+            // （缺键 / 值非法 / 时序不允许）通常写在 body 里，此前直接丢弃导致只能看到裸状态码。
+            try {
+                byte[] responseBody = this.c;
+                String bodyText = responseBody == null || responseBody.length == 0
+                        ? "EMPTY"
+                        : ControlChannel.Hex(responseBody, Math.min(responseBody.length, 160));
+                ControlChannel.Log("CONTROL_RESP_STATUS status=" + h() + " op=" + this.d
+                        + " bodyLen=" + (responseBody == null ? 0 : responseBody.length)
+                        + " bodyHex=" + bodyText);
+            } catch (Throwable ignored) {
+                // 诊断失败绝不影响正常异常路径。
+            }
             throw new d(this.d, EventChannel.normalizeStatus(h()), 0);
         }
 
@@ -672,6 +685,15 @@ public final class EventChannel implements Closeable {
     }
 
     public synchronized CompletableFuture<b> g(String str, String str2, String str3, byte[] bArr) throws IOException {
+        return g(str, str2, str3, bArr, null);
+    }
+
+    // [OBF-MAP] queueCommandWithHeaders | 职责: 与 g() 相同，但允许附加 RTSP 请求头。
+    // 判读: V1.8.21 之前，R1() 的同步 /command 走 w() 并带 X-Apple-Session-ID，
+    // 而 AirPlaySession.I0() 的异步 /command 走本文件的 g()，请求头里只有 CSeq/Content-Type，
+    // 没有任何会话标识 ⇒ 同一端点两套语义。hidSetInputMode 因此无法被车机归属到当前会话。
+    // 调用方传入的 headers 先写入，CSeq 后写入以免被覆盖。
+    public synchronized CompletableFuture<b> g(String str, String str2, String str3, byte[] bArr, Map<String, String> extraHeaders) throws IOException {
         CompletableFuture<b> completableFuture;
         try {
             k();
@@ -692,6 +714,9 @@ public final class EventChannel implements Closeable {
             int cseq = nextCSeq();
             completableFuture = new CompletableFuture<>();
             LinkedHashMap linkedHashMap = new LinkedHashMap();
+            if (extraHeaders != null) {
+                linkedHashMap.putAll(extraHeaders);
+            }
             linkedHashMap.put("CSeq", Integer.toString(cseq));
             if (str3 != null) {
                 linkedHashMap.put("Content-Type", str3);

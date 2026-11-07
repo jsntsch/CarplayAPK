@@ -523,13 +523,18 @@ public final class Iap2Csm {
         return false;
     }
 
+    // [OBF-MAP] parseTlvMap(A) | 职责: TLV 解析实现之一，与 v() 是两份独立代码。
+    // 踩坑(V1.7.78): 重复 TLV 曾抛异常导致 EA 恒空；只改本方法无效，0x1D01 走的是 v()。
     public static byte[] q(List<e> list, int i) throws IOException {
         byte[] bArr = null;
         for (e eVar : list) {
             if (eVar.a == i) {
                 if (bArr != null) {
-                    SyntheticRefs.c(ProtoMessageBase.d("Duplicate iAP2 field ", i));
-                    return null;
+                    // Info3.6 在 0x1D01 中会重复同一个 param（实测 param 10，补齐身份字段后触发）。
+                    // 真实 iPhone 容忍重复字段并取首个；这里不再抛 IOException 终止整条引导。
+                    // Tolerate duplicate TLVs: keep the first value instead of aborting the bootstrap.
+                    ControlChannel.Log(ProtoMessageBase.d("IAP2_TLV_DUPLICATE_FIELD_KEEP_FIRST ", i) + " first_bytes=" + bArr.length + " dup_bytes=" + eVar.b.length);
+                    continue;
                 }
                 bArr = eVar.b;
             }
@@ -606,13 +611,17 @@ public final class Iap2Csm {
         return null;
     }
 
+    // [OBF-MAP] parseTlvMap(B) | 职责: 0x1D01 识别消息实际走的 TLV 解析实现。
+    // 判读: 修重复 TLV 必须与 q() 两处同步（V1.7.77 只改 q() 曾白做一轮）。
     public static byte[] v(List<e> list, int i) throws IOException {
         byte[] bArr = null;
         for (e eVar : list) {
             if (eVar.a == i) {
                 if (bArr != null) {
-                    SyntheticRefs.c(ProtoMessageBase.d("Duplicate iAP2 field ", i));
-                    return null;
+                    // Info3.6 的 0x1D01 会重复同一 param（实测 param 10 语言列表），真实 iPhone 取首个。
+                    // 这里保留首值继续，不抛异常终止整条无线引导。Tolerate duplicate TLVs (first-wins).
+                    ControlChannel.Log(ProtoMessageBase.d("IAP2_TLV_DUPLICATE_FIELD_KEEP_FIRST ", i) + " getter=v first_bytes=" + bArr.length + " dup_bytes=" + eVar.b.length);
+                    continue;
                 }
                 bArr = eVar.b;
             }
@@ -647,12 +656,36 @@ public final class Iap2Csm {
             SyntheticRefs.c("Not CarPlayStartSession");
             return null;
         }
+        // 诊断：记录 0x4301 顶层字段 ID，复现时可确认车机实际编码布局（嵌套 vs 扁平）
+        StringBuilder sbFields = new StringBuilder("CARPLAY_START_WIFI_TOPLEVEL_FIELDS");
+        for (e eVar : cVar.b) {
+            sbFields.append(' ').append(eVar.a);
+        }
+        ControlChannel.Log(sbFields.toString());
+
         byte[] bArrQ = q(cVar.b, 1);
         List<e> listR = bArrQ == null ? Collections.EMPTY_LIST : r(bArrQ);
         int i3 = 0;
         byte[] bArrQ2 = q(listR, 0);
         byte[] bArrQ3 = q(listR, 1);
         byte[] bArrQ4 = q(listR, 4);
+
+        // 诊断：嵌套布局（SSID/Passphrase/Security 编码在 field1 内）是否齐备。
+        // 社区抓包文档描述部分车机把 SSID/Passphrase/Security 作为顶层 field 1/2/3 直接编码。
+        ControlChannel.Log("CARPLAY_START_WIFI_LAYOUT nested_ssid=" + (bArrQ2 != null) + " nested_pass=" + (bArrQ3 != null) + " nested_sec=" + (bArrQ4 != null));
+
+        // 兜底：嵌套布局不完整时，尝试顶层扁平布局（field1=SSID, field2=Passphrase, field3=Security）
+        if (bArrQ2 == null || bArrQ3 == null || bArrQ4 == null) {
+            byte[] fSsid = q(cVar.b, 1);
+            byte[] fPass = q(cVar.b, 2);
+            byte[] fSec = q(cVar.b, 3);
+            if (fSsid != null && fPass != null && fSec != null) {
+                bArrQ2 = fSsid;
+                bArrQ3 = fPass;
+                bArrQ4 = fSec;
+                ControlChannel.Log("CARPLAY_START_WIFI_LAYOUT flat");
+            }
+        }
         if (bArrQ2 == null && bArrQ3 == null) {
             if (bArrQ4 != null && (bArrQ4.length != 1 || gVar == null || g.e(bArrQ4[0] & 255) != g.e(gVar.b))) {
                 SyntheticRefs.c("CARPLAY_START_WIFI_SECURITY");
@@ -704,8 +737,12 @@ public final class Iap2Csm {
             i = (int) jC;
         }
         byte[] bArrQ6 = q(cVar.b, 3);
-        String strZ = bArrQ6 == null ? "" : z(bArrQ6);
-        if (bArrQ6 != null && (strZ.isBlank() || strZ.length() > 128)) {
+        String strZRaw = bArrQ6 == null ? null : z(bArrQ6);
+        if (bArrQ6 != null && strZRaw == null) {
+            ControlChannel.Log("CARPLAY_START_IDENTIFIER_INVALID_TREATED_EMPTY");
+        }
+        String strZ = strZRaw == null ? "" : strZRaw;
+        if (!strZ.isEmpty() && strZ.length() > 128) {
             SyntheticRefs.c("Accessory identifier size");
             return null;
         }

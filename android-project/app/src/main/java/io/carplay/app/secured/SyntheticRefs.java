@@ -31,6 +31,8 @@ public final  class SyntheticRefs implements EventChannelConnector.b, AirPlaySes
         throw new IllegalArgumentException(str);
     }
 
+    // [OBF-MAP] throwIo | 职责: 抛 IOException 的占位控制流；本类没有任何日志函数。
+    // 踩坑(V1.7.75): 曾被误当日志写进 bEaPayload()，异常被 catch 吞掉 ⇒ EA 列表恒空。索引: skill/references/obfuscation-map.md §2.6
     public static  void c(String str) throws IOException {
         throw new IOException(str);
     }

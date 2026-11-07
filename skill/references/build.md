@@ -23,13 +23,18 @@ android-project/
 └── dist/                      导出产物 / exported artifacts
 ```
 
-## 2. 三个构建任务 / Three build tasks
+## 2. 四个构建任务 / Four build tasks
 
 | 任务 / Task | 作用 / Purpose | 产物 / Output |
 | --- | --- | --- |
 | `compileDebugJavaWithJavac` | 只编译，最快发现语法/编码问题 | 无 APK / no APK |
-| `exportApk` | `assembleDebug` + 按版本号改名导出 | `dist/Carplay-V<ver>-debug.apk` |
-| `exportRelease` | `assembleRelease` + 导出 | `dist/Carplay-V<ver>-release.apk` |
+| `exportApk`（默认 / default） | `assembleDebug` + 按版本号改名导出 | `dist/Carplay-V<ver>-debug.apk` |
+| `exportRelease` | 显式调用，`assembleRelease` + 导出 | `dist/Carplay-V<ver>-release.apk` |
+| `exportAab` | 显式调用，`bundleRelease` + 导出 | `dist/Carplay-V<ver>-release.aab` |
+
+不带参数执行 `gradlew` 只会跑 `exportApk`（根 `build.gradle.kts` 设了
+`defaultTasks(":app:exportApk")`），不会顺带编 release / AAB。
+With no task argument only the debug APK is built; release and AAB are opt-in.
 
 导出任务的定义（`app/build.gradle.kts`）：
 
@@ -39,9 +44,56 @@ tasks.register<Copy>("exportApk") {
     from(layout.buildDirectory.dir("outputs/apk/debug"))
     include("*.apk")
     into(rootProject.layout.projectDirectory.dir("dist"))
-    rename { "Carplay-V$appVersionName.apk" }
+    // 必须用两参数 rename（配置期求值的普通字符串）
+    rename(".*\\.apk", "Carplay-V$appVersionName-debug.apk")
+}
+
+tasks.register<Copy>("exportAab") {
+    dependsOn("bundleRelease")
+    from(layout.buildDirectory.dir("outputs/bundle/release"))
+    include("*.aab")
+    into(rootProject.layout.projectDirectory.dir("dist"))
+    rename(".*\\.aab", "Carplay-V$appVersionName-release.aab")
 }
 ```
+
+> **配置缓存坑（V1.7.75 修复）**：不要写 `rename { "Carplay-V$appVersionName-debug.apk" }`。
+> 这个 lambda 会捕获 Kotlin DSL 脚本对象；配置缓存条目复用时反序列化失败，报
+> `Cannot invoke "Build_gradle.getAppVersionName()" because "this.this$0" is null`，
+> 表现为 `assembleDebug` 成功但 `exportApk` 失败、`dist/` 里没有 APK。
+> 用 `rename(regex, targetName)` 这种**配置期求值**的字符串重载即可。
+>
+> **Configuration-cache trap (fixed in V1.7.75)**: a `rename { ... }` lambda captures the script
+> object and cannot be deserialized when the configuration-cache entry is reused, so
+> `assembleDebug` passes but `exportApk` fails with `this.this$0 is null`. Use the two-arg
+> `rename(regex, name)` overload with an eagerly evaluated string.
+
+## 2.1 快速构建 / Fast builds
+
+默认命令每次都会做依赖元数据检查，国内网络下 `google()/mavenCentral()` 可能长时间卡住；
+再叠加 Gradle 守护进程被系统回收（`gradlew --status` 全是 STOPPED），单次构建可被拖到 9 分钟以上。
+实测把下面两个开关加上后，`clean` 全量构建 **52 秒**、增量出包 **22 秒**：
+
+```bash
+# 推荐：离线 + 单次进程（不依赖守护进程存活）
+gradlew.bat exportApk --offline --console=plain --no-daemon
+
+# 只改了几行 Java、想最快确认语法
+gradlew.bat compileDebugJavaWithJavac --offline --console=plain --no-daemon
+```
+
+| 开关 / Flag | 作用 / Effect |
+| --- | --- |
+| `--offline` | 跳过所有仓库网络检查，只用本地依赖缓存（AGP 已缓存时必开） |
+| `--no-daemon` | 守护进程常被环境回收，冷启动反而不如单进程稳定；也避免残留锁 |
+| `--console=plain` | 输出可重定向到日志，便于后台跑与排错 |
+
+* **不要**手工 `rm -rf app/build`：被占用时会 `Permission denied`。用 `gradlew clean`
+  （内置重试）或 `gradlew clean exportApk`。
+* 构建日志建议重定向到文件（如 `logs/build-<ver>.log`），后台跑、完成后再看，
+  避免长时间无输出被误判为卡死。
+* `clean` 只删 `app/build`；`.gradle`（配置缓存）与 `~/.gradle`（依赖缓存）应保留，
+  删掉会让下一次构建退化为冷启动 + 重新配置。
 
 版本号是 `val` 常量，`rename {}` 在配置期就取到值，所以**改完版本号必须重新执行任务**（不是改名文件）。
 The version constant is read at configuration time, so change it and re-run the task — do not just
@@ -66,6 +118,12 @@ mojibake in comments.
 
 * **无第三方依赖**：Bouncy Castle 子集（`org.bouncycastle.*`）随源码一起编译，不需要额外 AAR。
   No third-party dependencies; the Bouncy Castle subset compiles from source.
+* **`android.builtInKotlin=false`**：AGP 9 内置 Kotlin 会往 runtime classpath 塞 `kotlin-stdlib`，
+  即使工程一行 Kotlin 都没有。纯 Java 工程关掉后 dex 从 2.94 MB 降到 0.88 MB；删掉这一行包会反弹。
+  AGP 9's built-in Kotlin injects `kotlin-stdlib` even for pure-Java projects; disabling it shrinks
+  the dex from 2.94 MB to 0.88 MB.
+* **不使用 R8**：两个变体 `isMinifyEnabled = false`。反射与协议常量依赖原始类名，混淆/裁剪会破坏连接。
+  No R8 in either variant; obfuscation breaks reflection and protocol constants.
 * Gradle 分发包走腾讯云镜像：`gradle/wrapper/gradle-wrapper.properties` 的 `distributionUrl`。
   内网环境把它换成可达地址即可。
   The wrapper pulls from the Tencent mirror; repoint `distributionUrl` if blocked.
@@ -79,11 +137,12 @@ AAPT2="$ANDROID_HOME/build-tools/36.0.0/aapt2.exe"
 APKSIGNER="$ANDROID_HOME/build-tools/36.0.0/apksigner.bat"
 DEXDUMP="$ANDROID_HOME/build-tools/36.0.0/dexdump.exe"
 
-"$AAPT2" dump badging dist/Carplay-V1.7.61-debug.apk | head -3
-"$APKSIGNER" verify --print-certs dist/Carplay-V1.7.61-debug.apk
+"$AAPT2" dump badging dist/Carplay-V1.7.71-debug.apk | head -3
+"$APKSIGNER" verify --print-certs dist/Carplay-V1.7.71-debug.apk
+"$JAVA_HOME/bin/jarsigner" -verify dist/Carplay-V1.7.71-release.aab   # AAB 用 jarsigner 验签
 
 # 确认本次改动真的进了 dex（用改动引入的新方法名/新常量做锚点）
-unzip -o -q dist/Carplay-V1.7.61-debug.apk classes.dex -d /tmp/v && \
+unzip -o -q dist/Carplay-V1.7.71-debug.apk classes.dex -d /tmp/v && \
   "$DEXDUMP" -d /tmp/v/classes.dex | grep -c "add-int/lit8"
 ```
 

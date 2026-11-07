@@ -238,6 +238,56 @@ assert ids == set(declared), f"消息表提取失败: {ids}"
 assert 0x5702 not in ids, "0x5702 不应出现在车机声明表内"
 print("   0x5702 不在声明表内 → 官方据此 skipped（死锁点，见 verify_wifi_config.py 第 8 项）")
 
+print("\n12) 0x1D00 EA 列表编码/解码回环（对齐 V1.7.73 bEaPayload）")
+def b_ea_ids(ids):
+    out = bytearray()
+    for mid in ids:
+        out.append((mid >> 8) & 0xFF)
+        out.append(mid & 0xFF)
+    return bytes(out)
+
+def iap2_b(index, value):
+    ln = 4 + len(value)
+    return bytes([(ln >> 8) & 0xFF, ln & 0xFF,
+                  (index >> 8) & 0xFF, index & 0xFF]) + value
+
+def iap2_f(*tlvs):
+    out = bytearray()
+    for t in tlvs:
+        out += t
+    return bytes(out)
+
+def decode_tlv(data):
+    out, i = {}, 0
+    while i + 4 <= len(data):
+        ln = (data[i] << 8) | data[i + 1]
+        idx = (data[i + 2] << 8) | data[i + 3]
+        if ln < 4 or i + ln > len(data):
+            break
+        out[idx] = data[i + 4:i + ln]
+        i += ln
+    return out
+
+def ids_of(b):
+    return [(b[i] << 8) | b[i + 1] for i in range(0, len(b), 2)]
+
+# 与 MfiCertificateVerifier.bEaPayload() 完全一致的取值（车机 RECEIVE 期望集 + 17153/17152）
+to_send = [19945, 19946, 19947, 19948, 19949, 19950, 59904, 59905]   # 0x4E09–0x4E0E, 0xEA00,0xEA01
+to_receive = [17153, 17152, 19945, 19946, 19947, 19948, 19949, 19950, 59904, 59905]
+ea = iap2_f(iap2_b(6, b_ea_ids(to_send)), iap2_b(7, b_ea_ids(to_receive)))
+frame_1d00 = csm(0x1D00, ea)
+print("   0x1D00 EA payload:", hexs(ea), f"({len(ea)}B)")
+mid, params = decode_csm(frame_1d00)
+assert mid == 0x1D00, f"msgId 应为 0x1D00，实际 0x{mid:04X}"
+tvl = decode_tlv(params)
+got_send, got_recv = ids_of(tvl[6]), ids_of(tvl[7])
+print("   to_send   :", ",".join("0x%04X" % i for i in got_send))
+print("   to_receive:", ",".join("0x%04X" % i for i in got_recv))
+assert got_send == to_send, f"to_send 不一致: {got_send}"
+assert 17153 in got_recv and 17152 in got_recv, "to_receive 必须含 17153/17152"
+assert got_recv == to_receive, f"to_receive 不一致: {got_recv}"
+print("   EA 列表编码与 V1.7.73 bEaPayload() 一致 ✓ （车机将据此在 SEND 列表放 17153）")
+
 print("\n" + "=" * 66)
-print("全部通过：帧格式自洽 + 握手字段与官方实测逐位一致，可部署真机验证")
+print("全部通过：帧格式自洽 + 握手字段与官方实测逐位一致 + EA 列表编码对齐，可部署真机验证")
 

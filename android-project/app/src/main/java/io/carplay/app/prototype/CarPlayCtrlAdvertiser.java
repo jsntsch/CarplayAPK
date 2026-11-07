@@ -90,6 +90,23 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
         public void onServiceRegistered(NsdServiceInfo nsdServiceInfo) {
             CarPlayCtrlAdvertiser carPlayCtrlAdvertiser = CarPlayCtrlAdvertiser.this;
             carPlayCtrlAdvertiser.r("CTRL_SERVICE_LIVE name=" + nsdServiceInfo.getServiceName() + " port=" + nsdServiceInfo.getPort());
+            // [V1.8.23] 车机必须先 browse 到本服务、再连入并发 POST /ctrl-int/1/<id>
+            // （固件 0xa429f/0xa42b3），才会把会话登记为 CarPlay 并桥接 HMI 触摸。
+            // 之前只看到 name="OPPO_X8U (2)"（NsdManager 冲突改名）与 port=0，
+            // 且 TXT 只进 logcat、握手期常被冲掉 ⇒ 把实际广播内容落进应用日志。
+            try {
+                java.util.Map<String, byte[]> attrs = nsdServiceInfo.getAttributes();
+                StringBuilder sb = new StringBuilder("CTRL_SERVICE_TXT name=" + nsdServiceInfo.getServiceName()
+                        + " type=" + nsdServiceInfo.getServiceType() + " n=" + attrs.size());
+                for (java.util.Map.Entry<String, byte[]> e : attrs.entrySet()) {
+                    byte[] v = e.getValue();
+                    sb.append(" | ").append(e.getKey()).append('=')
+                      .append(v == null ? "null" : new String(v, java.nio.charset.StandardCharsets.UTF_8));
+                }
+                carPlayCtrlAdvertiser.r(sb.toString());
+            } catch (Throwable ignored) {
+                carPlayCtrlAdvertiser.r("CTRL_SERVICE_TXT_UNAVAILABLE");
+            }
             CarPlayCtrlAdvertiser.u(carPlayCtrlAdvertiser, nsdServiceInfo);
             CarPlayCtrlAdvertiser.v(carPlayCtrlAdvertiser, nsdServiceInfo);
             boolean z = carPlayCtrlAdvertiser.i.get();
@@ -204,12 +221,18 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
 
     
     
+    // [OBF-MAP] ctrlAcceptLoop | 职责: ctrl ServerSocket 的 accept 循环，串行读请求写响应。
+    // 判读: V1.8.19 实测 IPv4/IPv6 均能触发 V160_CTRL_TCP_ACCEPT；setSoTimeout 由 1500ms 放宽到 5000ms。
     public void l(ServerSocket serverSocket) {
         int i;
         while (!this.i.get()) {
             try {
                 Socket socketAccept = serverSocket.accept();
                 ControlChannel.MarkTcpAccept();
+                // 记录对端地址：此前只计数，无法区分「车机从未连接」与「连了但不是车机」。
+                ControlChannel.Log("V160_CTRL_PEER peer=" + socketAccept.getInetAddress()
+                        + " remote_port=" + socketAccept.getPort()
+                        + " local_port=" + socketAccept.getLocalPort());
                 synchronized (this.j) {
                     try {
                         if (this.i.get()) {
@@ -230,7 +253,7 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
                         }
                         try {
                             try {
-                                socketAccept.setSoTimeout(1500);
+                                socketAccept.setSoTimeout(5000);
                                 if (o(socketAccept.getInetAddress())) {
                                     try {
                                         ControlRequestParser.a aVarD = ControlRequestParser.d(socketAccept.getInputStream());
@@ -247,7 +270,13 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
                                             if (aVarD.g() && (i = this.p) < 8) {
                                                 int i3 = i + 1;
                                                 this.p = i3;
-                                                r("CTRL_INVITATION_ACCEPTED count=" + i3 + " receiver_identifier_present=" + aVarD.h() + " trusted=false");
+                                                String receiverIdentifier = aVarD.j();
+                                                ControlChannel.MarkCtrlInvitation(receiverIdentifier);
+                                                r("CTRL_INVITATION_ACCEPTED count=" + i3
+                                                        + " receiver_identifier_present=" + aVarD.h()
+                                                        + " receiver_bound=" + (receiverIdentifier != null)
+                                                        + " identity_chain_closed=" + ControlChannel.CTRL_IDENTITY_BOUND
+                                                        + " trusted=false");
                                                 this.g.b();
                                             }
                                         }
@@ -451,6 +480,157 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
 
     public boolean n(Network network, LinkProperties linkProperties) {
         return !this.i.get() && this.b.equals(network) && this.e.equals(m(linkProperties)) && this.d.equals(linkProperties.getInterfaceName()) && new HashSet(this.c).equals(new HashSet(linkProperties.getLinkAddresses()));
+    }
+
+    /** 启动即广播的实例：不依赖连接流程，App 一打开车机就能发现本机。 */
+    private static CarPlayCtrlAdvertiser earlyAdvertiser;
+
+    /**
+     * App 启动即广播 `_carplay-ctrl`。
+     *
+     * 原实现只在用户点「连接车机」后由 `PairingSession.Q1()` 注册，
+     * 车机若从自己那一侧先发起（车机点 CarPlay），此时手机上还没有这条记录，只能发现空结果。
+     * 提前注册后，车机的 mDNS 查询在任何时刻都能命中。
+     */
+    public static synchronized void StartEarly(Context context) {
+        if (earlyAdvertiser != null) {
+            return;
+        }
+        try {
+            android.net.ConnectivityManager cm = (android.net.ConnectivityManager)
+                    context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (cm == null) {
+                return;
+            }
+            android.net.Network wifi = null;
+            LinkProperties lp = null;
+            for (android.net.Network candidate : cm.getAllNetworks()) {
+                android.net.NetworkCapabilities caps = cm.getNetworkCapabilities(candidate);
+                if (caps == null || !caps.hasTransport(android.net.NetworkCapabilities.TRANSPORT_WIFI)) {
+                    continue;
+                }
+                LinkProperties candidateLp = cm.getLinkProperties(candidate);
+                if (candidateLp != null && m(candidateLp) != null) {
+                    wifi = candidate;
+                    lp = candidateLp;
+                    break;
+                }
+            }
+            if (wifi == null || lp == null) {
+                ControlChannel.Log("CTRL_EARLY_SKIPPED reason=NO_WIFI_NETWORK");
+                return;
+            }
+            // 第 4 个参数是本机身份 MAC（构造里由 n.a() 校验 MAC 格式），不是服务名；
+            // 服务名另由 setServiceName(ControlChannel.ServiceName()) 设置。
+            String identity = ControlChannel.DeviceMac();
+            if (identity == null) {
+                ControlChannel.Log("CTRL_EARLY_SKIPPED reason=NO_LOCAL_IDENTITY");
+                return;
+            }
+            earlyAdvertiser = new CarPlayCtrlAdvertiser(context, wifi, lp, identity, new b() {
+                @Override
+                public void a(String str) {
+                    ControlChannel.Log("CTRL_EARLY " + str);
+                }
+
+                @Override
+                public void b() {
+                    ControlChannel.Log("CTRL_EARLY_PEER_CONNECTED");
+                }
+            });
+            earlyAdvertiser.q();
+            ControlChannel.Log("CTRL_EARLY_STARTED identity=" + identity + " iface=" + lp.getInterfaceName()
+                    + " service_name=" + ControlChannel.ServiceName());
+        } catch (Throwable failure) {
+            ControlChannel.Log("CTRL_EARLY_FAILED msg=" + failure.getMessage());
+        }
+    }
+
+    private static volatile boolean probeStarted = false;
+
+    /**
+     * 诊断：浏览局域网内与 CarPlay 相关的服务类型，确认车机侧究竟广播了什么。
+     * 车机若不回连本机 ctrl，必须先分清「车机没广播」与「车机广播了但走的是另一条通道」，
+     * 否则后续任何字段调整都没有判据。
+     */
+    public static void Probe(Context context) {
+        if (probeStarted) {
+            return;
+        }
+        NsdManager nsd = (NsdManager) context.getSystemService(Context.NSD_SERVICE);
+        if (nsd == null) {
+            ControlChannel.Log("CTRL_PROBE_SKIPPED reason=NO_NSD");
+            return;
+        }
+        probeStarted = true;
+        String[] types = {"_carplay._tcp", "_carplay-ctrl._tcp", "_airplay._tcp"};
+        for (String type : types) {
+            final String fType = type;
+            NsdManager.DiscoveryListener listener = new NsdManager.DiscoveryListener() {
+                @Override
+                public void onStartDiscoveryFailed(String s, int i) {
+                    ControlChannel.Log("CTRL_PROBE_START_FAILED type=" + fType + " err=" + i);
+                }
+
+                @Override
+                public void onStopDiscoveryFailed(String s, int i) {
+                }
+
+                @Override
+                public void onDiscoveryStarted(String s) {
+                    ControlChannel.Log("CTRL_PROBE_STARTED type=" + fType);
+                }
+
+                @Override
+                public void onDiscoveryStopped(String s) {
+                }
+
+                @Override
+                public void onServiceFound(NsdServiceInfo info) {
+                    ControlChannel.Log("CTRL_PROBE_FOUND type=" + fType + " name=" + info.getServiceName());
+                    try {
+                        nsd.resolveService(info, new NsdManager.ResolveListener() {
+                            @Override
+                            public void onResolveFailed(NsdServiceInfo si, int err) {
+                                ControlChannel.Log("CTRL_PROBE_RESOLVE_FAILED name=" + si.getServiceName() + " err=" + err);
+                            }
+
+                            @Override
+                            public void onServiceResolved(NsdServiceInfo si) {
+                                ControlChannel.Log("CTRL_PROBE_RESOLVED name=" + si.getServiceName()
+                                        + " type=" + si.getServiceType()
+                                        + " host=" + si.getHost()
+                                        + " port=" + si.getPort());
+                            }
+                        });
+                    } catch (Throwable t) {
+                        ControlChannel.Log("CTRL_PROBE_RESOLVE_THROW msg=" + t.getMessage());
+                    }
+                }
+
+                @Override
+                public void onServiceLost(NsdServiceInfo info) {
+                }
+            };
+            try {
+                nsd.discoverServices(type, NsdManager.PROTOCOL_DNS_SD, listener);
+            } catch (Throwable t) {
+                ControlChannel.Log("CTRL_PROBE_REGISTER_THROW type=" + fType + " msg=" + t.getMessage());
+            }
+        }
+    }
+
+    /** 会话流程接管前关掉早期广播，避免同名服务重复注册（NsdManager 会直接注册失败）。 */
+    public static synchronized void StopEarly() {
+        if (earlyAdvertiser != null) {
+            try {
+                earlyAdvertiser.close();
+            } catch (Throwable ignored) {
+                // close 失败不影响后续会话广播。
+            }
+            earlyAdvertiser = null;
+            ControlChannel.Log("CTRL_EARLY_STOPPED");
+        }
     }
 
     public void q() {

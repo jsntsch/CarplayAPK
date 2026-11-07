@@ -1,6 +1,6 @@
 # CarPlayAPK（io.carplay.app）— Android Studio 工程
 
-**标准 Gradle / Android Studio 工程**，可以直接打开、编译、调试、出包。功能与已验证的 `Carplay-V1.7.61` 一致（含触摸与音频修复）。
+**标准 Gradle / Android Studio 工程**，可以直接打开、编译、调试、出包。功能与已验证的 `Carplay-V1.7.71` 一致（含触摸与音频修复）。
 
 ## 环境要求
 
@@ -19,13 +19,18 @@ SDK 路径写在 `local.properties`（已被 .gitignore 忽略，换机器需自
 
 ```bash
 # Windows
-gradlew.bat assembleDebug
-gradlew.bat exportApk        # 产物：dist/Carplay-V1.7.61-debug.apk   （debuggable = true）
-gradlew.bat exportRelease    # 产物：dist/Carplay-V1.7.61-release.apk （debuggable = false）
+gradlew.bat                  # 默认：只编 debug 并导出（= exportApk）
+gradlew.bat exportApk        # 产物：dist/Carplay-V1.7.71-debug.apk   （debuggable = true）
+gradlew.bat exportRelease    # 显式调用：dist/Carplay-V1.7.71-release.apk（debuggable = false）
+gradlew.bat exportAab        # 显式调用：dist/Carplay-V1.7.71-release.aab（发布用，不能 adb 安装）
 
 # macOS / Linux
-./gradlew assembleDebug
+./gradlew
 ```
+
+> 不带参数时只构建 debug（`build.gradle.kts` 的 `defaultTasks(":app:exportApk")`），
+> 不会顺带跑 release / bundle / R8。
+> With no task argument only debug is built; release and AAB are opt-in.
 
 也可以直接用 Android Studio 打开本目录（`android-project`），Build → Make Project。
 
@@ -38,7 +43,7 @@ android-project/
 ├── gradle.properties            # 构建参数
 ├── gradle/wrapper/              # Gradle 9.4.1 wrapper
 ├── local.properties             # 本机 SDK 路径（不入库）
-├── dist/                        # 导出的 APK
+├── dist/                        # 导出的 APK / AAB
 └── app/
     ├── build.gradle.kts         # 版本号、SDK、签名、导出任务
     ├── proguard-rules.pro
@@ -53,17 +58,18 @@ android-project/
 只改 `app/build.gradle.kts` 顶部两个常量：
 
 ```kotlin
-val appVersionName = "1.7.61"
-val appVersionCode = 298
+val appVersionName = "1.7.71"
+val appVersionCode = 308
 ```
 
-导出的文件名会自动跟随 versionName：`Carplay-V1.7.NN-debug.apk` / `Carplay-V1.7.NN-release.apk`。
+导出的文件名会自动跟随 versionName：`Carplay-V1.7.NN-debug.apk` / `Carplay-V1.7.NN-release.apk` /
+`Carplay-V1.7.NN-release.aab`。
 
 |           | `android-project/`（本工程）                                |
 | --------- | ------------------------------------------------------------- |
 | 用途      | 日常开发、调试、正式出包                                      |
 | 资源/清单 | 完整（`src/main/res` + `AndroidManifest.xml`）            |
-| 构建      | `gradlew exportApk` / `gradlew exportRelease`                |
+| 构建      | `gradlew exportApk` / `exportRelease` / `exportAab`           |
 | 源码      | `app/src/main/java`（**已删除 R.java**，由 AGP 生成） |
 
 ## 构建配置说明
@@ -73,13 +79,21 @@ val appVersionCode = 298
   读日志时请装 `-debug` 包；`-release` 包无法 `run-as`。
 - **签名**：debug 与 release 均使用本机 `~/.android/debug.keystore`，可与历史包直接覆盖安装
   （`adb install -r`）。对外分发请替换为自有 keystore。
+- **默认只编 debug**：根 `build.gradle.kts` 的 `defaultTasks(":app:exportApk")`；release / AAB
+  只在显式调用 `exportRelease` / `exportAab` 时构建。
+- **不使用 R8**：两个变体都是 `isMinifyEnabled = false`（release 也不开 `shrinkResources`）。
+  反射与协议常量依赖原始类名，混淆/裁剪会破坏连接。
+- **关闭内置 Kotlin**：`gradle.properties` 的 `android.builtInKotlin=false`。工程没有 Kotlin 源码，
+  不关会把 `kotlin-stdlib` 打进 dex（实测 +2.06 MB、1080 个类、占 dex 70%）。
+- **AAB 用同一把调试证书签**：可传内部测试轨道；正式上架需换 Play 上传密钥，
+  且 `.aab` 不能 `adb install`（装机用 APK）。
 - **Gradle 分发走腾讯云镜像**：`gradle/wrapper/gradle-wrapper.properties` 里已配置，
   官方源在国内常超时。
 
 ## 现场排障
 
 ```bash
-adb install -r dist/Carplay-V1.7.61-debug.apk      # 排障用 debug 包，可 run-as 读日志
+adb install -r dist/Carplay-V1.7.71-debug.apk      # 排障用 debug 包，可 run-as 读日志
 adb shell am start -n io.carplay.app/.prototype.MainActivity
 adb shell run-as io.carplay.app cat files/connection-log-0.txt | tail -50
 ```

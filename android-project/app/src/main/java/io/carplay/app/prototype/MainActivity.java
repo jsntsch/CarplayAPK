@@ -1728,8 +1728,9 @@ public final class MainActivity extends Activity
         o2(which == 1 ? "画面适配：拉伸铺满" : "画面适配：等比显示");
     }
 
-    @Override
-    public void setTheme(int which) {
+    // 注意：不可命名为 setTheme —— 会与 Activity.setTheme(int) 冲突并被框架在启动期误调，
+    // 其内部 recreate() 会触发 Activity 无限重建（闪屏）。改用 applyTheme 仅实现 ScreenActions 接口。
+    public void applyTheme(int which) {
         Ui.c(getApplicationContext(), which);
         recreate();
     }

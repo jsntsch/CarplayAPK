@@ -12,7 +12,7 @@ public interface ScreenActions {
     }
     /** 设置页动作 */
     interface Settings {
-        void setTheme(int which);       // 0=跟随系统 1=亮色 2=暗色
+        void applyTheme(int which);     // 0=跟随系统 1=亮色 2=暗色（避免与 Activity.setTheme 冲突）
         void bluetoothPair();           // 蓝牙配对 (j2)
         void localBtIdentity();         // 本地蓝牙标识 (n2)
         void selectCar();               // 选择已配对车机

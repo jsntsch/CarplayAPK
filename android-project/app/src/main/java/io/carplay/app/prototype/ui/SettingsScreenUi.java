@@ -49,7 +49,7 @@ public final class SettingsScreenUi extends ScrollView {
                         currentTheme(), new OnSelect() {
                             @Override
                             public void onSelected(int index) {
-                                actions.setTheme(index);
+                                actions.applyTheme(index);
                             }
                         });
             }

@@ -35,6 +35,7 @@ import android.os.Looper;
 import android.os.SystemClock;
 import android.text.InputFilter;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -70,6 +71,12 @@ import io.carplay.app.secured.ProtoMessageBase;
 import io.carplay.app.secured.w3;
 import io.carplay.app.secured.y3;
 import io.carplay.app.secured.z3;
+import io.carplay.app.prototype.ui.AboutScreenUi;
+import io.carplay.app.prototype.ui.HomeScreenUi;
+import io.carplay.app.prototype.ui.Pager;
+import io.carplay.app.prototype.ui.ScreenActions;
+import io.carplay.app.prototype.ui.SettingsScreenUi;
+import io.carplay.app.prototype.ui.Ui;
 import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -83,7 +90,8 @@ import java.util.stream.Stream;
  *
  * Main screen: permission requests, service start/stop, status display and user actions.
  */
-public final class MainActivity extends Activity {
+public final class MainActivity extends Activity
+        implements ScreenActions.Home, ScreenActions.Settings, ScreenActions.About {
     private static final String Z = "com.oplus.ocar";
     private static final String a0 = "com.oplus.ocar.CarlifeActivity";
     private static final String b0 = "android.permission.BLUETOOTH_CONNECT";
@@ -102,28 +110,15 @@ public final class MainActivity extends Activity {
     private static final String n0 = "2026-10-20-v1";
     
     private static String lastComponentSupport;
-    private View[] A;
-    private Button[] B;
-    private RadioButton C;
-    private RadioButton D;
-    private boolean E;
-    private Button I;
-    private Button J;
-    private Button K;
-    private Button L;
-    private Button M;
-    private Button N;
-    private Button O;
-    private Button P;
-    private CompoundButton Q;
+    // 对话框字段（与三屏无关，保留）
     private AlertDialog R;
     private AlertDialog S;
     private AlertDialog T;
     private AlertDialog V;
     private TextView W;
     private TextView X;
+    // 引擎状态字段
     private boolean a;
-    private Button b;
     private boolean d;
     private boolean e;
     private boolean f;
@@ -131,41 +126,25 @@ public final class MainActivity extends Activity {
     private boolean h;
     private String j;
     private String l;
+    private boolean E;
     // 等待内录授权期间暂存的连接目标，授权回调回来后继续发起连接。
     private String pendingConnectTarget;
-    private Button m;
-    private Button n;
-    private Button o;
     private long p;
-    private TextView s;
-    private TextView t;
-    private TextView u;
-    private TextView w;
-    private TextView x;
-    private LinearLayout y;
-    private LinearLayout z;
     private final Handler c = new Handler(Looper.getMainLooper());
     private String k = "";
     private int q = -1;
     private List<PairingSession.l> r = Collections.EMPTY_LIST;
-    private int F = -1;
-    private int[] G = new int[3];
-    // [V1.8.26] UI 重构新增字段
-    private View[] stepDots;
-    private TextView[] stepLabels;
-    private TextView resolutionText;
-    private Button startButton;
-    private CompoundButton logSwitch;
-    private CompoundButton debugSwitch;
-    private CompoundButton autoConnectSwitch;
     private boolean logEnabled = true;
     private boolean debugMode = false;
     private boolean autoConnect = false;
     private boolean autoTriggered = false;
-    private static final String[] STEP_TITLES = {
-            "开启蓝牙与 WLAN", "配对车机蓝牙", "连接车机 Wi-Fi", "启动 CarPlay 会话",
-            "证书认证", "投屏协商", "连接完成"
-    };
+    // 新版三屏 + 横向翻页容器（移植自参考 APK 的布局）
+    private HomeScreenUi homeScreen;
+    private SettingsScreenUi settingsScreen;
+    private AboutScreenUi aboutScreen;
+    private Pager pager;
+    private Button[] tabButtons;
+    private int currentPage = 0;
     private final Runnable Y = new a();
 
     /**
@@ -416,23 +395,13 @@ public final class MainActivity extends Activity {
     }
 
     private void H0() {
-        TextView textView;
         CarLifeBridge.d dVarF = CarLifeBridge.f(this);
         this.e = dVarF.g();
-        
         String support = dVarF.h();
         if (!support.equals(lastComponentSupport)) {
             lastComponentSupport = support;
             AppLogger.g(this, support);
         }
-        TextView textView2 = this.x;
-        if (textView2 != null) {
-            textView2.setText(dVarF.o());
-        }
-        if (this.e || (textView = this.t) == null) {
-            return;
-        }
-        textView.setText(dVarF.o());
     }
     public  void I1(SharedPreferences sharedPreferences, String str, String str2, DialogInterface dialogInterface, int i) {
         boolean zCommit;
@@ -604,7 +573,7 @@ public final class MainActivity extends Activity {
     }
 
     private void T1() {
-        if (this.m == null || !S0()) {
+        if (!S0()) {
             return;
         }
         String strI2 = i2();
@@ -773,271 +742,104 @@ public final class MainActivity extends Activity {
     
     
     public void a2() {
-        String strD;
-        boolean z;
-        String strD2;
-        Object obj = null;
-        String str = null;
-        String str2 = null;
-        int i;
-        boolean z2;
-        boolean z3;
-        int i2;
-        int i3;
-        int i4;
-        String str3;
-        int i5;
-        String str4;
-        int i6;
-        String str5;
-        SharedPreferences sharedPreferences = getSharedPreferences(WirelessCarPlayService.b1, 0);
+        SharedPreferences sp = getSharedPreferences(WirelessCarPlayService.b1, 0);
         boolean zL1 = WirelessCarPlayService.L1();
-        String string = zL1 ? sharedPreferences.getString("state", "CHECKING") : "STOPPED";
-        this.w.setText(StatusText.a(sharedPreferences.getString("reason", ""), zL1));
-        String strB = StatusText.b(string, zL1, sharedPreferences.getString("reason", ""));
-        if (zL1 && string.equals("WIFI") && !sharedPreferences.getString("connection_route", "bluetooth").equals("bluetooth")) {
-            strB = sharedPreferences.getString("connection_route", "").equals("retained_wifi") ? "正在复用这台车仍然连接的 WLAN\n保持当前网络，正在重新发现并完整认证车机" : "正在当前车机 WLAN 查找投屏服务\n保持当前网络，后续仍需完整认证";
+        String state = zL1 ? sp.getString("state", "CHECKING") : "STOPPED";
+        String reason = zL1 ? sp.getString("reason", "") : "";
+        boolean zS0 = S0();
+        boolean zE = PairingPreparationService.e();
+
+        StringBuilder detail = new StringBuilder();
+        detail.append(zL1 ? StatusText.b(state, zL1, reason) : "本机尚未连接，点下方按钮开始。");
+        if (zL1 && state.equals("WIFI") && !sp.getString("connection_route", "bluetooth").equals("bluetooth")) {
+            detail.append("\n").append(sp.getString("connection_route", "").equals("retained_wifi")
+                    ? "正在复用这台车仍然连接的 WLAN\n保持当前网络，正在重新发现并完整认证车机"
+                    : "正在当前车机 WLAN 查找投屏服务\n保持当前网络，后续仍需完整认证");
         }
         if (zL1) {
-            String strC = StatusText.c(sharedPreferences.getString("native_foreground_state", ""));
-            if (!strC.isEmpty()) {
-                strB = strB + "\n" + strC;
-            }
+            String nativeFg = StatusText.c(sp.getString("native_foreground_state", ""));
+            if (!nativeFg.isEmpty()) detail.append("\n").append(nativeFg);
         }
         if (!this.e && !zL1) {
-            strB = "当前手机组件暂不支持\n请打开使用教程查看兼容说明";
+            detail.append("\n").append("当前手机组件暂不支持\n请打开使用教程查看兼容说明");
         }
-        int i7 = sharedPreferences.getInt("native_width", 0);
-        int i8 = sharedPreferences.getInt("native_height", 0);
-        int i9 = sharedPreferences.getInt("receiver_width", 0);
-        int i10 = sharedPreferences.getInt("receiver_height", 0);
-        if (i7 > 0 && i8 > 0) {
-            strB = strB + "\n" + (zL1 ? "画面尺寸" : "上次画面尺寸") + "：" + i7 + " × " + i8;
+        int nw = sp.getInt("native_width", 0), nh = sp.getInt("native_height", 0);
+        int rw = sp.getInt("receiver_width", 0), rh = sp.getInt("receiver_height", 0);
+        if (nw > 0 && nh > 0) {
+            detail.append("\n").append((zL1 ? "画面尺寸" : "上次画面尺寸")).append("：").append(nw).append(" × ").append(nh);
         }
-        if (i7 <= 0 || i8 <= 0 || !sharedPreferences.getBoolean("native_exact_geometry_requested", false)) {
-            zL1 = zL1;
+        if (!(nw <= 0 || nh <= 0 || !sp.getBoolean("native_exact_geometry_requested", false))) {
+            int sw = sp.getInt("source_requested_width", 0);
+            int sh = sp.getInt("source_requested_height", 0);
+            detail.append("\n").append((nw == sw && nh == sh) ? "原生 Car+ 已返回目标画布尺寸"
+                    : "原生 Car+ 返回的尺寸与请求不同：" + sw + " × " + sh);
+        }
+        String fit = sp.getString("fit_mode", "");
+        if (fit.equals("fitted")) {
+            detail.append("\n").append((zL1 ? "自动适配输出" : "上次适配输出")).append("：")
+                    .append(sp.getInt("output_width", 0)).append(" × ").append(sp.getInt("output_height", 0))
+                    .append(sp.getBoolean("fill_display", false) ? "（拉伸铺满）" : "（等比显示）");
+        } else if (fit.equals("starting")) {
+            detail.append("\n正在准备画面自动适配…");
+        }
+
+        String title;
+        int stateColor;
+        if (zL1) {
+            title = StatusText.d(state, true);
+            stateColor = 2;
+        } else if (!this.e) {
+            title = "当前手机组件暂不可用";
+            stateColor = 3;
+        } else if (!zS0) {
+            title = "请先阅读使用说明";
+            stateColor = 0;
         } else {
-            int i11 = sharedPreferences.getInt("source_requested_width", 0);
-            int i12 = sharedPreferences.getInt("source_requested_height", 0);
-            if (i7 == i11 && i8 == i12) {
-                str5 = "原生 Car+ 已返回目标画布尺寸";
-            } else {
-                str5 = "原生 Car+ 返回的尺寸与请求不同：" + i11 + " × " + i12;
-            }
-            strB = strB + "\n" + str5;
+            title = "准备连接你的爱车";
+            stateColor = 0;
         }
-        // [V1.8.26] 已移除：投屏分辨率提示 / 互联通道音频提示 / 帧率不足提示（要求 10）
-        String string2 = sharedPreferences.getString("fit_mode", "");
-        if (string2.equals("fitted")) {
-            strB = strB + "\n" + (zL1 ? "自动适配输出" : "上次适配输出") + "：" + sharedPreferences.getInt("output_width", 0) + " × " + sharedPreferences.getInt("output_height", 0) + (sharedPreferences.getBoolean("fill_display", false) ? "（拉伸铺满）" : "（等比显示）");
-        }
-        if (string2.equals("starting")) {
-            strB = strB + "\n正在准备画面自动适配…";
-        }
-        if (!strB.contentEquals(this.s.getText())) {
-            this.s.setText(strB);
-            renderStepsAndResolution(sharedPreferences, zL1, string);
-        }
-        TextView textView = this.u;
-        if (this.e || zL1) {
-            strD = zL1 ? StatusText.d(string, true) : "准备连接你的爱车";
+
+        String info;
+        if (!this.e && !zL1) {
+            info = "当前手机组件暂不支持，请打开使用教程查看兼容说明。";
+        } else if (!zS0 && !zL1) {
+            info = "请先阅读并同意使用说明。";
+        } else if (zL1 && state.equals("FORWARDING_NATIVE")) {
+            info = "短暂中断会自动尝试恢复，日志持续保存在本机。";
         } else {
-            strD = "当前手机组件暂不可用";
+            info = "";
         }
-        textView.setText(strD);
-        this.u.setTextColor(zL1 ? -14328088 : -15258551);
-        boolean zE = PairingPreparationService.e();
-        if (!zL1 && zE) {
-            this.s.setText(PairingPreparationService.f() ? "识别准备就绪\n请从车机搜索/配对手机，然后刷新列表、选择车机连接。准备最多两分钟。" : "正在准备蓝牙识别信息…");
-        }
-        boolean zS0 = S0();
-        this.b.setEnabled(zS0 && !zL1 && !zE && this.e);
-        Button button = this.I;
-        z = zL1;
-        strD2 = StatusText.d(string, z);
-        button.setText(strD2);
-        this.I.setEnabled(zS0 && !z && this.e);
-        this.n.setEnabled(zS0 && !z && this.e);
-        this.C.setEnabled((!zS0 || z) ? false : true);
-        this.D.setEnabled((!zS0 || z) ? false : true);
-        this.N.setEnabled(z);
-        this.O.setEnabled(z);
-        Button button2 = this.P;
-        if (z) {
-            str = "audio_state";
-            str2 = "";
-            obj = "needs_user";
-            if (sharedPreferences.getString(str, str2).equals(obj)) {
-                i = 0;
-            } else {
-                i = 8;
-            }
-            button2.setVisibility(i);
-            Button button3 = this.P;
-            if (!z && S0() && sharedPreferences.getString(str, str2).equals(obj)) {
-                z2 = true;
-            } else {
-                z2 = false;
-            }
-            button3.setEnabled(z2);
-            Button button4 = this.J;
-            if (!z || zE) {
-                z3 = true;
-            } else {
-                z3 = false;
-            }
-            button4.setEnabled(z3);
-            boolean z4 = !z;
-            this.m.setEnabled(z4);
-            this.L.setEnabled(z4);
-            this.M.setEnabled(z4);
-            Button button5 = this.J;
-            if (!z || zE) {
-                i2 = 0;
-            } else {
-                i2 = 8;
-            }
-            button5.setVisibility(i2);
-            Button button6 = this.N;
-            if (z) {
-                i3 = 0;
-            } else {
-                i3 = 8;
-            }
-            button6.setVisibility(i3);
-            Button button7 = this.O;
-            if (z) {
-                i4 = 0;
-            } else {
-                i4 = 8;
-            }
-            button7.setVisibility(i4);
-            this.Q.setEnabled(z4);
-            Button button8 = this.o;
-            if (R0(i2())) {
-                str3 = "画面比例：拉伸铺满";
-            } else {
-                str3 = "画面比例：保持比例";
-            }
-            button8.setText(str3);
-            this.o.setEnabled(z && zS0 && this.Q.isChecked() && i2() != null);
-            Button button9 = this.K;
-            if (WirelessCarPlayService.s1()) {
-                i5 = 0;
-            } else {
-                i5 = 8;
-            }
-            button9.setVisibility(i5);
-            if (string.equals(this.k)) {
-            }
-            this.k = string;
-            if (!z) {
-                if (string.equals("FORWARDING_NATIVE")) {
-                    this.t.setText("短暂中断会自动尝试恢复，日志持续保存在本机。");
-                    this.t.setVisibility(0);
-                    return;
-                }
-                return;
-            }
-            TextView textView2 = this.t;
-            if (this.e) {
-                str4 = str2;
-            } else {
-                str4 = "请展开连接详情，查看组件兼容说明。";
-            }
-            textView2.setText(str4);
-            TextView textView3 = this.t;
-            if (this.e) {
-                i6 = 8;
-            } else {
-                i6 = 0;
-            }
-            textView3.setVisibility(i6);
-        }
-        i = 8;
-        button2.setVisibility(i);
-        renderStepsAndResolution(sharedPreferences, zL1, string);
-        Button button10 = this.P;
-        if (!z) {
-            z2 = false;
+
+        String btnText;
+        boolean btnEnabled;
+        if (zL1) {
+            btnText = "断开连接";
+            btnEnabled = true;
+        } else if (zE) {
+            btnText = "停止等待";
+            btnEnabled = true;
+        } else if (!zS0 || !this.e) {
+            btnText = "开始连接";
+            btnEnabled = false;
         } else {
-            z2 = false;
+            btnText = "开始连接";
+            btnEnabled = true;
         }
-        button10.setEnabled(z2);
-        Button button11 = this.J;
-        if (z) {
-            z3 = true;
-        } else {
-            z3 = true;
+
+        if (homeScreen != null) {
+            homeScreen.setConnectionStatus(title, detail.toString(), stateColor, btnText, btnEnabled);
+            homeScreen.setAutoConnect(this.autoConnect);
         }
-        button11.setEnabled(z3);
-        boolean z5 = !z;
-        this.m.setEnabled(z5);
-        this.L.setEnabled(z5);
-        this.M.setEnabled(z5);
-        Button button12 = this.J;
-        if (z) {
-            i2 = 0;
-        } else {
-            i2 = 0;
+        renderStepsAndResolution(sp, zL1, state);
+        if (homeScreen != null) {
+            homeScreen.showInfo(zE && !zL1
+                    ? (PairingPreparationService.f() ? "识别准备就绪\n请从车机搜索/配对手机，然后刷新列表、选择车机连接。准备最多两分钟。"
+                        : "正在准备蓝牙识别信息…")
+                    : info);
         }
-        button12.setVisibility(i2);
-        Button button13 = this.N;
-        if (z) {
-            i3 = 0;
-        } else {
-            i3 = 8;
-        }
-        button13.setVisibility(i3);
-        Button button14 = this.O;
-        if (z) {
-            i4 = 0;
-        } else {
-            i4 = 8;
-        }
-        button14.setVisibility(i4);
-        this.Q.setEnabled(z5);
-        Button button15 = this.o;
-        if (R0(i2())) {
-            str3 = "画面比例：拉伸铺满";
-        } else {
-            str3 = "画面比例：保持比例";
-        }
-        button15.setText(str3);
-        this.o.setEnabled(z && zS0 && this.Q.isChecked() && i2() != null);
-        Button button16 = this.K;
-        if (WirelessCarPlayService.s1()) {
-            i5 = 0;
-        } else {
-            i5 = 8;
-        }
-        button16.setVisibility(i5);
-        if (string.equals(this.k)) {
-            this.k = string;
-            if (!z) {
-                if (string.equals("FORWARDING_NATIVE")) {
-                    this.t.setText("短暂中断会自动尝试恢复，日志持续保存在本机。");
-                    this.t.setVisibility(0);
-                    return;
-                }
-                return;
-            }
-            TextView textView4 = this.t;
-            if (this.e) {
-                str4 = str2;
-            } else {
-                str4 = "请展开连接详情，查看组件兼容说明。";
-            }
-            textView4.setText(str4);
-            TextView textView5 = this.t;
-            if (this.e) {
-                i6 = 8;
-            } else {
-                i6 = 0;
-            }
-            textView5.setVisibility(i6);
-        }
+        this.k = state;
     }
+
     public void b2() {
         if (this.W == null || this.X == null) {
             return;
@@ -1053,8 +855,7 @@ public final class MainActivity extends Activity {
         this.X.setText(WirelessCarPlayService.K1() ? "已接入车机 WLAN。接下来继续车机认证与投屏协商；若后续连接失败，请查看连接状态或导出日志，无需反复更改 WLAN 设置。" : "已取得车机网络配置，正在自动尝试接入。请保持 WLAN 开启，仅在系统提示时允许连接或授权；无需自行查找或创建热点。");
     }
     private void c2() {
-        this.I.setVisibility(this.E ? 8 : 0);
-        this.n.setVisibility(this.E ? 0 : 8);
+        // 旧的 RadioGroup 连接模式选择已移除，选择车机改由设置页「选择车机」处理。
     }
 
     
@@ -1306,8 +1107,7 @@ public final class MainActivity extends Activity {
 
     
     public  void m1(RadioGroup radioGroup, int i) {
-        this.E = i == this.D.getId();
-        c2();
+        // 旧的 RadioGroup 连接模式选择已移除。
     }
 
     
@@ -1409,9 +1209,10 @@ public final class MainActivity extends Activity {
 
     
     public void o2(String str) {
-        this.t.setText(str);
-        this.t.setVisibility(str.isEmpty() ? 8 : 0);
-        AppLogger.g(this, "USER_NOTICE ".concat(str));
+        if (str != null && !str.isEmpty()) {
+            Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
+        }
+        AppLogger.g(this, "USER_NOTICE ".concat(str == null ? "" : str));
     }
 
     
@@ -1517,23 +1318,17 @@ public final class MainActivity extends Activity {
     
     
     public void i1(int i) {
-        int i2 = this.F;
-        if (i2 >= 0) {
-            this.G[i2] = this.A[i2].getScrollY();
-        }
-        this.F = Math.max(0, Math.min(2, i));
-        int i3 = 0;
-        while (true) {
-            View[] viewArr = this.A;
-            if (i3 >= viewArr.length) {
-                int i4 = this.F;
-                ((b) viewArr[i4]).a(this.G[i4]);
-                return;
-            } else {
-                viewArr[i3].setVisibility(i3 == this.F ? 0 : 8);
-                UiFactory.I(this.B[i3], i3 == this.F);
-                i3++;
-            }
+        currentPage = Math.max(0, Math.min(2, i));
+        if (pager != null) pager.setCurrentItem(currentPage);
+        updateTabHighlight();
+    }
+
+    private void updateTabHighlight() {
+        if (tabButtons == null) return;
+        for (int i = 0; i < tabButtons.length; i++) {
+            boolean sel = i == currentPage;
+            tabButtons[i].setTextColor(sel ? Ui.f1241i : Ui.f1244l);
+            tabButtons[i].setTypeface(sel ? Ui.B : Ui.C);
         }
     }
 
@@ -1710,8 +1505,7 @@ public final class MainActivity extends Activity {
         } else {
             strX1 = X1(this.q);
         }
-        this.m.setText(strX1);
-        this.m.setContentDescription("选择车机，" + strX1);
+        if (settingsScreen != null) settingsScreen.setSelectedCar(strX1);
     }
 
     @Override 
@@ -1754,281 +1548,79 @@ public final class MainActivity extends Activity {
         this.debugMode = dbgPrefs.getBoolean("debug_mode", false);
         this.autoConnect = dbgPrefs.getBoolean("auto_connect_launch", false);
         AppLogger.setRecordingEnabled(this.logEnabled);
-        int i = 1;
-        int i2 = 0;
+
         this.g = bundle != null && bundle.getBoolean("continue_source_intent", false);
         this.a = bundle != null && bundle.getBoolean("pairing_visibility_pending", false);
         this.l = bundle == null ? null : bundle.getString("identity_connect_address");
         this.p = bundle != null ? bundle.getLong("current_wifi_handle", 0L) : 0L;
         this.E = bundle != null && bundle.getBoolean("home_manual_route", false);
-        int[] intArray = bundle != null ? bundle.getIntArray("workspace_scroll_y") : null;
-        if (intArray != null && intArray.length == 3) {
-            this.G = (int[]) intArray.clone();
-        }
-        LinearLayout linearLayoutH = UiFactory.H(this);
-        o3 o3Var = new o3(i);
-        o3Var.b = this;
-        VarHandle.storeStoreFence();
-        o3 o3Var2 = new o3(11);
-        o3Var2.b = this;
-        VarHandle.storeStoreFence();
-        UiFactory.F(linearLayoutH, o3Var, o3Var2);
-        LinearLayout linearLayoutG = UiFactory.G(this);
-        LinearLayout linearLayoutG2 = UiFactory.G(this);
-        LinearLayout linearLayoutG3 = UiFactory.G(this);
-        FrameLayout frameLayout = new FrameLayout(this);
-        linearLayoutH.addView(frameLayout, new LinearLayout.LayoutParams(-1, 0, 1.0f));
-        this.A = new View[3];
-        LinearLayout[] linearLayoutArr = {linearLayoutG, linearLayoutG2, linearLayoutG3};
-        for (int i3 = 0; i3 < 3; i3++) {
-            b bVar = new b(this);
-            bVar.setFillViewport(true);
-            bVar.addView(linearLayoutArr[i3]);
-            frameLayout.addView(bVar, new FrameLayout.LayoutParams(-1, -1));
-            this.A[i3] = bVar;
-        }
-        LinearLayout linearLayoutJ = UiFactory.j(linearLayoutG);
-        LinearLayout linearLayout = new LinearLayout(this);
-        linearLayout.setOrientation(0);
-        linearLayout.setBaselineAligned(false);
-        linearLayout.setGravity(16);
-        linearLayoutJ.addView(linearLayout, new LinearLayout.LayoutParams(-1, -2));
-        TextView textViewM = UiFactory.m(linearLayout, "准备连接你的爱车", "car");
-        this.u = textViewM;
-        textViewM.setLayoutParams(new LinearLayout.LayoutParams(0, -2, 1.0f));
-        this.u.setPadding(0, 0, O0(8), 0);
-        TextView textViewX2 = x2(linearLayoutJ, "", 13);
-        this.t = textViewX2;
-        textViewX2.setTextColor(-10193265);
-        this.t.setPadding(0, O0(4), 0, O0(8));
-        this.t.setVisibility(8);
-        o3 o3Var3 = new o3(17);
-        o3Var3.b = this;
-        VarHandle.storeStoreFence();
-        this.P = G0(linearLayoutJ, "恢复车机声音", o3Var3);
-        LinearLayout linearLayoutZ = UiFactory.z(linearLayoutJ);
-        o3 o3Var4 = new o3(18);
-        o3Var4.b = this;
-        VarHandle.storeStoreFence();
-        this.N = G0(linearLayoutZ, "返回车机", o3Var4);
-        o3 o3Var5 = new o3(19);
-        o3Var5.b = this;
-        VarHandle.storeStoreFence();
-        this.O = G0(linearLayoutZ, "返回投屏", o3Var5);
-        // [V1.8.26] 首页：7 段连接步骤 + 投屏分辨率 + 开始连接
-        buildHomeExtras(linearLayoutG);
-        LinearLayout linearLayoutJ2 = UiFactory.j(linearLayoutG);
-        UiFactory.m(linearLayoutJ2, "车机与连接方式", "bluetooth");
-        o3 o3Var6 = new o3(20);
-        o3Var6.b = this;
-        VarHandle.storeStoreFence();
-        Button buttonG0 = G0(linearLayoutJ2, "选择已配对的车机", o3Var6);
-        this.m = buttonG0;
-        buttonG0.setGravity(8388627);
-        RadioGroup radioGroup = new RadioGroup(this);
-        radioGroup.setOrientation(1);
-        linearLayoutJ2.addView(radioGroup);
-        this.C = UiFactory.y(this, "自动连接 · 推荐");
-        this.D = UiFactory.y(this, "当前车机 WLAN");
-        this.C.setId(View.generateViewId());
-        this.D.setId(View.generateViewId());
-        radioGroup.addView(this.C);
-        radioGroup.addView(this.D);
-        radioGroup.check((this.E ? this.D : this.C).getId());
-        int i4 = 12;
-        x2(linearLayoutJ2, "自动：开启蓝牙与 WLAN。\n手动：先连这台车的蓝牙和 CarPlay WLAN。", 12).setTextColor(-10193265);
-        o3 o3Var7 = new o3(21);
-        o3Var7.b = this;
-        VarHandle.storeStoreFence();
-        Button buttonG1 = G0(linearLayoutJ2, "连接车机", o3Var7);
-        this.I = buttonG1;
-        UiFactory.i(buttonG1, true);
-        o3 o3Var8 = new o3(22);
-        o3Var8.b = this;
-        VarHandle.storeStoreFence();
-        Button buttonG2 = G0(linearLayoutJ2, "使用当前车机 WLAN 连接", o3Var8);
-        this.n = buttonG2;
-        UiFactory.i(buttonG2, true);
-        z3 z3Var = new z3();
-        z3Var.a = this;
-        VarHandle.storeStoreFence();
-        radioGroup.setOnCheckedChangeListener(z3Var);
-        c2();
-        TextView textViewX3 = x2(linearLayoutJ2, "", 12);
-        this.w = textViewX3;
-        textViewX3.setTextColor(-10193265);
-        this.w.setPadding(0, O0(12), 0, 0);
-        o3 o3Var9 = new o3(2);
-        o3Var9.b = this;
-        VarHandle.storeStoreFence();
-        this.K = G0(linearLayoutJ2, "继续打开 Car+", o3Var9);
-        o3 o3Var10 = new o3(3);
-        o3Var10.b = this;
-        VarHandle.storeStoreFence();
-        this.J = G0(linearLayoutJ2, "断开连接", o3Var10);
-        o3 o3Var11 = new o3(4);
-        o3Var11.b = this;
-        VarHandle.storeStoreFence();
-        G0(linearLayoutG, "查看连接详情", o3Var11);
-        TextView textViewX4 = x2(linearLayoutG, "日志自动保存在本机；切换页面不会中断连接。", 11);
-        textViewX4.setTextColor(-10193265);
-        int i5 = 10;
-        textViewX4.setPadding(0, O0(10), 0, 0);
-        UiFactory.A(linearLayoutG2, "连接工具", "调整设置或查看本次连接详情");
-        LinearLayout linearLayoutJ3 = UiFactory.j(linearLayoutG2);
-        this.z = linearLayoutJ3;
-        UiFactory.m(linearLayoutJ3, "连接详情", "log");
-        TextView textViewX5 = x2(this.z, "", 13);
-        this.s = textViewX5;
-        textViewX5.setTextIsSelectable(true);
-        TextView textViewX6 = x2(this.z, "", 12);
-        this.x = textViewX6;
-        textViewX6.setTextColor(-10193265);
-        LinearLayout linearLayoutJ4 = UiFactory.j(linearLayoutG2);
-        this.y = linearLayoutJ4;
-        UiFactory.m(linearLayoutJ4, "车机与画面", "car");
-        LinearLayout linearLayoutZ2 = UiFactory.z(this.y);
-        o3 o3Var12 = new o3(5);
-        o3Var12.b = this;
-        VarHandle.storeStoreFence();
-        this.M = G0(linearLayoutZ2, "蓝牙配对", o3Var12);
-        o3 o3Var13 = new o3(6);
-        o3Var13.b = this;
-        VarHandle.storeStoreFence();
-        this.L = G0(linearLayoutZ2, "刷新列表", o3Var13);
-        LinearLayout linearLayout2 = this.y;
-        o3 o3Var14 = new o3(7);
-        o3Var14.b = this;
-        VarHandle.storeStoreFence();
-        G0(linearLayout2, "本机蓝牙标识", o3Var14);
-        LinearLayout linearLayout3 = this.y;
-        if (linearLayout3 != null) {
-            BluetoothDialogRunnable bluetoothDialogRunnable = new BluetoothDialogRunnable();
-            bluetoothDialogRunnable.a = this;
-            VarHandle.storeStoreFence();
-            G0(linearLayout3, "蓝牙名称", bluetoothDialogRunnable);
-        }
-        CompoundButton compoundButtonE = UiFactory.E(this, "画面自动适配", getSharedPreferences("wireless-ui", 0).getBoolean("auto_fit", true));
-        this.Q = compoundButtonE;
-        w3 w3Var = new w3();
-        w3Var.a = this;
-        VarHandle.storeStoreFence();
-        compoundButtonE.setOnCheckedChangeListener(w3Var);
-        this.y.addView(this.Q);
-        LinearLayout linearLayout4 = this.y;
-        o3 o3Var15 = new o3(8);
-        o3Var15.b = this;
-        VarHandle.storeStoreFence();
-        this.o = G0(linearLayout4, "画面比例：保持比例", o3Var15);
-        LinearLayout linearLayoutZ3 = UiFactory.z(this.y);
-        o3 o3Var16 = new o3(9);
-        o3Var16.b = this;
-        VarHandle.storeStoreFence();
-        this.b = G0(linearLayoutZ3, "车机识别修复", o3Var16);
-        o3 o3Var17 = new o3(i5);
-        o3Var17.b = this;
-        VarHandle.storeStoreFence();
-        G0(linearLayoutZ3, "WLAN 帮助", o3Var17);
-        // [V1.8.26] 设置页新增：连接/蓝牙配对/本地蓝牙标识（重命名）+ 自动连接 + 调试 + 教程
-        UiFactory.A(linearLayoutG2, "连接与识别", "投屏、蓝牙配对与本地标识");
-        LinearLayout linearLayoutConn2 = UiFactory.j(linearLayoutG2);
-        G0(linearLayoutConn2, "连接（投屏）", new View.OnClickListener() {
-            @Override public void onClick(View v) { startConnectFromHome(); }
-        });
-        G0(linearLayoutConn2, "蓝牙配对（解码方式）", new View.OnClickListener() {
-            @Override public void onClick(View v) { j2(); }
-        });
-        G0(linearLayoutConn2, "本地蓝牙标识（画中画）", new View.OnClickListener() {
-            @Override public void onClick(View v) { n2(); }
-        });
-        this.autoConnectSwitch = UiFactory.E(this, "自动连接（启动后自动连接车机）", this.autoConnect);
-        this.autoConnectSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override public void onCheckedChanged(CompoundButton cbx, boolean z) {
-                MainActivity.this.autoConnect = z;
-                getSharedPreferences("carplayapk-debug", 0).edit().putBoolean("auto_connect_launch", z).apply();
-                o2(z ? "已开启自动连接，下次启动应用会自动连接车机。" : "已关闭自动连接。");
+
+        // 应用主题（跟随系统）
+        Ui.c(getApplicationContext(), 0);
+
+        // 三屏（移植自参考 APK 的 HomeScreen / SettingsScreen / AboutScreen 布局）
+        homeScreen = new HomeScreenUi(this, this);
+        settingsScreen = new SettingsScreenUi(this, this);
+        aboutScreen = new AboutScreenUi(this, this);
+
+        // 横向翻页容器
+        pager = new Pager(this);
+        pager.addView(homeScreen, new ViewGroup.LayoutParams(-1, -1));
+        pager.addView(settingsScreen, new ViewGroup.LayoutParams(-1, -1));
+        pager.addView(aboutScreen, new ViewGroup.LayoutParams(-1, -1));
+        pager.setOnPageChangeListener(new Pager.OnPageChangeListener() {
+            @Override
+            public void onPageSelected(int index) {
+                currentPage = index;
+                updateTabHighlight();
             }
         });
-        linearLayoutConn2.addView(this.autoConnectSwitch);
-        UiFactory.A(linearLayoutG2, "调试", "运行日志与开发选项");
-        LinearLayout linearLayoutDbg = UiFactory.j(linearLayoutG2);
-        this.logSwitch = UiFactory.E(this, "运行日志（保存连接记录）", this.logEnabled);
-        this.logSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override public void onCheckedChanged(CompoundButton cbx, boolean z) {
-                MainActivity.this.logEnabled = z;
-                AppLogger.setRecordingEnabled(z);
-                getSharedPreferences("carplayapk-debug", 0).edit().putBoolean("log_enabled", z).apply();
-                o2(z ? "已开启运行日志，将记录连接过程。" : "已关闭运行日志，不再记录（已保存的文件仍保留）。");
-            }
-        });
-        linearLayoutDbg.addView(this.logSwitch);
-        G0(linearLayoutDbg, "运行日志", new View.OnClickListener() {
-            @Override public void onClick(View v) { a1(); }
-        });
-        G0(linearLayoutDbg, "清除日志", new View.OnClickListener() {
-            @Override public void onClick(View v) { clearLogs(); }
-        });
-        this.debugSwitch = UiFactory.E(this, "调试模式（USB 调试辅助）", this.debugMode);
-        this.debugSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override public void onCheckedChanged(CompoundButton cbx, boolean z) {
-                MainActivity.this.debugMode = z;
-                getSharedPreferences("carplayapk-debug", 0).edit().putBoolean("debug_mode", z).apply();
-                o2(z ? "已开启调试模式。" : "已关闭调试模式。");
-            }
-        });
-        linearLayoutDbg.addView(this.debugSwitch);
-        UiFactory.A(linearLayoutG2, "帮助", "使用教程与说明");
-        LinearLayout linearLayoutHelp2 = UiFactory.j(linearLayoutG2);
-        G0(linearLayoutHelp2, "使用教程", new View.OnClickListener() {
-            @Override public void onClick(View v) { d1(); }
-        });
-        G0(linearLayoutHelp2, "免责声明", new View.OnClickListener() {
-            @Override public void onClick(View v) { k2(); }
-        });
-        UiFactory.A(linearLayoutG3, "关于 CarPlayAPK", "版本与开源仓库");
-        LinearLayout linearLayoutAbout = UiFactory.j(linearLayoutG3);
-        UiFactory.m(linearLayoutAbout, "CarPlayAPK", "car");
-        x2(linearLayoutAbout, "版本：" + A2(this), 14).setTextColor(-10193265);
-        x2(linearLayoutAbout, "OPPO Car+ 转 CarPlay · 无线投屏工具", 12).setTextColor(-10193265);
-        UiFactory.A(linearLayoutG3, "关注与开源", "项目仓库");
-        LinearLayout linearLayoutGit = UiFactory.j(linearLayoutG3);
-        G0(linearLayoutGit, "GitHub 仓库", new View.OnClickListener() {
-            @Override public void onClick(View v) { openGit(); }
-        });
-        UiFactory.A(linearLayoutG3, "帮助", "使用教程与说明");
-        LinearLayout linearLayoutHelp = UiFactory.j(linearLayoutG3);
-        G0(linearLayoutHelp, "使用教程", new View.OnClickListener() {
-            @Override public void onClick(View v) { d1(); }
-        });
-        G0(linearLayoutHelp, "免责声明", new View.OnClickListener() {
-            @Override public void onClick(View v) { k2(); }
-        });
-        // [要求 12] 删除关于页面下方所有说明文字 —— 不再添加长文本
-        LinearLayout linearLayout5 = new LinearLayout(this);
-        linearLayout5.setOrientation(0);
-        linearLayout5.setBaselineAligned(false);
-        linearLayout5.setBackgroundColor(-1);
-        linearLayoutH.addView(linearLayout5, new LinearLayout.LayoutParams(-1, -2));
-        this.B = new Button[3];
-        String[] strArr = {"首页", "设置", "关于"};
-        for (int i6 = 0; i6 < 3; i6++) {
-            Button[] buttonArr = this.B;
-            String str = strArr[i6];
-            y3 y3Var = new y3();
-            y3Var.a = this;
-            y3Var.b = i6;
-            VarHandle.storeStoreFence();
-            buttonArr[i6] = G0(linearLayout5, str, y3Var);
+
+        // 顶部标签栏
+        LinearLayout tabBar = new LinearLayout(this);
+        tabBar.setOrientation(LinearLayout.HORIZONTAL);
+        tabBar.setBackgroundColor(Ui.f1234b);
+        int tabH = Ui.h(this, 52.0f);
+        tabBar.setPadding(Ui.h(this, 12.0f), 0, Ui.h(this, 12.0f), 0);
+        String[] tabs = {"主页", "设置", "关于"};
+        tabButtons = new Button[3];
+        for (int i = 0; i < 3; i++) {
+            final int idx = i;
+            Button tb = new Button(this);
+            tb.setText(tabs[i]);
+            tb.setAllCaps(false);
+            tb.setBackground(null);
+            tb.setMinHeight(0);
+            tb.setMinimumHeight(0);
+            tb.setTextSize(15.0f);
+            tb.setTypeface(i == 0 ? Ui.B : Ui.C);
+            tb.setTextColor(i == 0 ? Ui.f1241i : Ui.f1244l);
+            tb.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    i1(idx);
+                }
+            });
+            LinearLayout.LayoutParams tlp = new LinearLayout.LayoutParams(0, tabH, 1.0f);
+            tlp.gravity = 16;
+            tabBar.addView(tb, tlp);
+            tabButtons[i] = tb;
         }
-        setContentView(linearLayoutH);
-        i1(bundle != null ? bundle.getInt("workspace_page", 0) : 0);
-        UiFactory.w(this);
+
+        LinearLayout root = new LinearLayout(this);
+        root.setOrientation(LinearLayout.VERTICAL);
+        root.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
+        root.addView(tabBar, new LinearLayout.LayoutParams(-1, -2));
+        root.addView(pager, new LinearLayout.LayoutParams(-1, 0, 1.0f));
+        setContentView(root);
+        Ui.k(root);
+
         H0();
         if (S0()) {
             T1();
         }
         a2();
-        // [V1.8.26] 启动后自动连接：已开启且记住车机，延迟触发一次
+        // [UI 重构] 启动后自动连接：已开启且记住车机，延迟触发一次
         if (S0() && this.autoConnect && i2() != null && !WirelessCarPlayService.L1() && !this.autoTriggered) {
             this.autoTriggered = true;
             this.c.postDelayed(new Runnable() {
@@ -2038,46 +1630,6 @@ public final class MainActivity extends Activity {
         AppLogger.g(this, ProtoMessageBase.e("USER_UI_OPEN version=", A2(this)));
     }
 
-    // ===== [V1.8.26] UI 重构新增方法 =====
-
-    /**
-     * 首页扩展：7 段连接步骤条 + 投屏分辨率 + 开始连接（要求 2/4）。
-     */
-    private void buildHomeExtras(LinearLayout page) {
-        LinearLayout stepCard = UiFactory.j(page);
-        UiFactory.m(stepCard, "CarPlay 连接步骤", "settings");
-        this.stepDots = new View[7];
-        this.stepLabels = new TextView[7];
-        for (int i = 0; i < 7; i++) {
-            LinearLayout row = new LinearLayout(this);
-            row.setOrientation(0);
-            row.setGravity(16);
-            row.setPadding(0, O0(5), 0, O0(5));
-            View dot = new View(this);
-            int ds = O0(13);
-            LinearLayout.LayoutParams dpl = new LinearLayout.LayoutParams(ds, ds);
-            dpl.setMarginEnd(O0(12));
-            dot.setLayoutParams(dpl);
-            dot.setBackground(UiFactory.B(this, -2300431, 7));
-            row.addView(dot);
-            TextView label = UiFactory.C(row, (i + 1) + ". " + STEP_TITLES[i], 14, false);
-            label.setTextColor(-10193265);
-            this.stepDots[i] = dot;
-            this.stepLabels[i] = label;
-            stepCard.addView(row);
-        }
-        this.resolutionText = x2(stepCard, "", 12);
-        this.resolutionText.setTextColor(-10193265);
-        this.startButton = G0(page, "开始连接", new View.OnClickListener() {
-            @Override public void onClick(View v) { startConnectFromHome(); }
-        });
-        UiFactory.i(this.startButton, true);
-        x2(page, "打开“设置 → 调试 → 自动连接”，应用启动后会自动监听车机并连接。", 12).setTextColor(-10193265);
-    }
-
-    /**
-     * 开始连接：触发 CarPlay 会话（要求 2）。无车机时引导选择。
-     */
     public void startConnectFromHome() {
         if (!S0()) { P0(); return; }
         if (WirelessCarPlayService.L1()) { o2("连接已在进行中。"); return; }
@@ -2094,16 +1646,13 @@ public final class MainActivity extends Activity {
      * 渲染 7 段步骤高亮 + 投屏分辨率（要求 2/4）。
      */
     private void renderStepsAndResolution(SharedPreferences sp, boolean connected, String state) {
-        if (this.resolutionText == null || this.stepDots == null || this.stepLabels == null) {
-            return;
-        }
-        int i7 = sp.getInt("native_width", 0);
-        int i8 = sp.getInt("native_height", 0);
-        if (i7 > 0 && i8 > 0) {
-            this.resolutionText.setText("投屏分辨率：" + i7 + " × " + i8);
-            this.resolutionText.setVisibility(0);
-        } else {
-            this.resolutionText.setVisibility(8);
+        int nw = sp.getInt("native_width", 0);
+        int nh = sp.getInt("native_height", 0);
+        int rw = sp.getInt("receiver_width", 0);
+        int rh = sp.getInt("receiver_height", 0);
+        if (homeScreen != null) {
+            homeScreen.setResolution(nw > 0 && nh > 0 ? (nw + " × " + nh) : "—",
+                                    rw > 0 && rh > 0 ? (rw + " × " + rh) : "—");
         }
         int cur = 1;
         if (connected) {
@@ -2125,13 +1674,7 @@ public final class MainActivity extends Activity {
         } else {
             cur = 1;
         }
-        for (int i = 0; i < 7; i++) {
-            boolean done = i < cur - 1;
-            boolean active = i == cur - 1;
-            int color = active ? -14328088 : (done ? -3947581 : -2300431);
-            this.stepDots[i].setBackground(UiFactory.B(this, color, 7));
-            this.stepLabels[i].setTextColor(active ? -14328088 : -10193265);
-        }
+        if (homeScreen != null) homeScreen.setStep(cur);
     }
 
     private void clearLogs() {
@@ -2140,7 +1683,108 @@ public final class MainActivity extends Activity {
         AppLogger.g(this, "USER_LOG_CLEARED");
     }
 
-    private void openGit() {
+    // ===== ScreenActions 接口实现 =====
+
+    @Override
+    public void connect() {
+        if (WirelessCarPlayService.L1()) {
+            startService(new Intent(this, WirelessCarPlayService.class).setAction(WirelessCarPlayService.W0));
+            o2("正在断开连接…");
+        } else {
+            startConnectFromHome();
+        }
+    }
+
+    @Override
+    public void setAutoConnect(boolean on) {
+        this.autoConnect = on;
+        getSharedPreferences("carplayapk-debug", 0).edit().putBoolean("auto_connect_launch", on).apply();
+        if (homeScreen != null) homeScreen.setAutoConnect(on);
+        o2(on ? "已开启自动连接，下次启动应用会自动连接车机。" : "已关闭自动连接。");
+    }
+
+    @Override
+    public void pickResolution() {
+        SharedPreferences sp = getSharedPreferences(WirelessCarPlayService.b1, 0);
+        int nw = sp.getInt("native_width", 0), nh = sp.getInt("native_height", 0);
+        int rw = sp.getInt("receiver_width", 0), rh = sp.getInt("receiver_height", 0);
+        String msg = "投屏画面：" + (nw > 0 ? nw + " × " + nh : "—") + "\n手机屏幕：" + (rw > 0 ? rw + " × " + rh : "—");
+        new AlertDialog.Builder(this).setTitle("投屏分辨率").setMessage(msg)
+                .setPositiveButton("知道了", (DialogInterface.OnClickListener) null).show();
+    }
+
+    @Override
+    public void setOrientation(int which) {
+        try {
+            setRequestedOrientation(which == 1 ? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT : ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            o2(which == 1 ? "已切换为竖屏" : "已切换为横屏");
+        } catch (Throwable ignored) {
+        }
+    }
+
+    @Override
+    public void setFitMode(int which) {
+        getSharedPreferences("wireless-ui", 0).edit().putInt("fit", which == 1 ? 1 : 0).apply();
+        o2(which == 1 ? "画面适配：拉伸铺满" : "画面适配：等比显示");
+    }
+
+    @Override
+    public void setTheme(int which) {
+        Ui.c(getApplicationContext(), which);
+        recreate();
+    }
+
+    @Override
+    public void selectCar() {
+        if (!S0()) { P0(); return; }
+        T1();
+        if (this.r.isEmpty()) {
+            o2("还没有已配对的车机，请先点「蓝牙配对」。");
+            j2();
+            return;
+        }
+        String[] items = new String[this.r.size()];
+        for (int i = 0; i < this.r.size(); i++) items[i] = X1(i);
+        int checked = (this.q >= 0 && this.q < this.r.size()) ? this.q : 0;
+        new AlertDialog.Builder(this).setTitle("选择车机").setSingleChoiceItems(items, checked,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        MainActivity.this.q = which;
+                        String addr = MainActivity.this.r.get(which).b;
+                        getSharedPreferences("wireless-ui", 0).edit().putString("selected_address", addr).apply();
+                        dialog.dismiss();
+                        z2();
+                        a2();
+                        o2("已选择：" + X1(which));
+                    }
+                }).setNegativeButton("取消", (DialogInterface.OnClickListener) null).show();
+    }
+
+    @Override
+    public void setDebugMode(boolean on) {
+        this.debugMode = on;
+        getSharedPreferences("carplayapk-debug", 0).edit().putBoolean("debug_mode", on).apply();
+        if (settingsScreen != null) settingsScreen.setDebugMode(on);
+        o2(on ? "已开启调试模式。" : "已关闭调试模式。");
+    }
+
+    @Override
+    public void openTutorial() { d1(); }
+
+    @Override
+    public void openDeclaration() { k2(); }
+
+    @Override
+    public void bluetoothPair() { j2(); }
+
+    @Override
+    public void localBtIdentity() { n2(); }
+
+    @Override
+    public void openLog() { a1(); }
+
+    public void openGit() {
         try {
             startActivity(new Intent("android.intent.action.VIEW", android.net.Uri.parse("https://github.com/jsntsch/CarplayAPK")));
         } catch (RuntimeException unused) {
@@ -2234,19 +1878,14 @@ public final class MainActivity extends Activity {
         }
     }
 
-    @Override 
+    @Override
     public void onSaveInstanceState(Bundle bundle) {
         bundle.putBoolean("continue_source_intent", this.g);
         bundle.putBoolean("pairing_visibility_pending", this.a);
         bundle.putString("identity_connect_address", this.l);
         bundle.putLong("current_wifi_handle", this.p);
         bundle.putBoolean("home_manual_route", this.E);
-        bundle.putInt("workspace_page", this.F);
-        int i = this.F;
-        if (i >= 0) {
-            this.G[i] = this.A[i].getScrollY();
-        }
-        bundle.putIntArray("workspace_scroll_y", (int[]) this.G.clone());
+        bundle.putInt("workspace_page", currentPage);
         super.onSaveInstanceState(bundle);
     }
 }

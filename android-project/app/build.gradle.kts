@@ -3,8 +3,8 @@ plugins {
 }
 
 /** 版本号：产物名为 Carplay-V<versionName>-debug.apk / Carplay-V<versionName>-release.apk */
-val appVersionName = "1.8.26"
-val appVersionCode = 363
+val appVersionName = "1.8.27"
+val appVersionCode = 364
 
 android {
     namespace = "io.carplay.app"

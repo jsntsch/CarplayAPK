@@ -660,7 +660,14 @@ public final class SessionStateMachine {
         // 11-05 源码备份里 hidSetInputMode / iAPSendMessage 本来就是 {type, params}，属回归。
         // resources 每项只需 resourceID + entity（1=Controller 2=Accessory）。
         ArrayList<Map<String, Object>> arrayList = new ArrayList<>();
-        arrayList.add(Map.of("resourceID", Integer.valueOf(1), "entity", Integer.valueOf(this.d.a == 2 ? 2 : 1)));
+        // [V1.8.29 P1-3] 规范 §23.3.5.1.3：Apple device（Controller）不持有屏幕时，
+        // accessory 不得发送 HID 用途。旧值 entity=(this.d.a==2?2:1) 会在车机 /info 声明
+        // 屏幕归自己时把 ownership 主动让给车机(entity=2)，等于自锁 HID。
+        // 这里显式声明 Controller 持有屏幕（entity=1），与固件 0x447d0 从 params.resources
+        // 逐项读取 entity 的实现一致；总开关 session_seq_v2=false 时恢复旧语义。
+        int screenEntity = io.carplay.app.secured.ControlChannel.SeqV2Enabled()
+                ? 1 : (this.d.a == 2 ? 2 : 1);
+        arrayList.add(Map.of("resourceID", Integer.valueOf(1), "entity", Integer.valueOf(screenEntity)));
         // 只声明屏幕（resourceID=1）的归属。
         // 规范 Table 23-71 把 resources 定义为「要变更的所有权」；把已经归手机的 audio 资源
         // （resourceID=2）一起列上属于无变化的重复声明，Info3.6 实测会对整条命令回 422，

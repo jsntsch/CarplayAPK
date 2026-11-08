@@ -195,12 +195,15 @@ public final class LogActivity extends Activity {
         LinearLayout linearLayoutZ = UiFactory.z(linearLayoutX);
         Button button3 = new Button(this);
         this.c = button3;
-        button3.setText("刷新日志");
-        Button button4 = this.c;
-        i3 i3Var2 = new i3(1);
-        i3Var2.b = this;
-        VarHandle.storeStoreFence();
-        button4.setOnClickListener(i3Var2);
+        button3.setText("删除日志");
+        button3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AppLogger.clear(LogActivity.this);
+                p("已删除所有历史日志。");
+                o();
+            }
+        });
         linearLayoutZ.addView(this.c);
         UiFactory.i(this.c, false);
         Button button5 = new Button(this);

@@ -123,6 +123,77 @@ final class CarPlayWifiConnector {
         }
     }
 
+    /**
+     * 仅按 SSID 连接「已保存」的网络（如车机所连的路由器）。
+     * 与 {@link #connect} 不同：此处不提供密码、不标隐藏，由系统复用已保存凭据完成接入。
+     * 用于方案 B：当 CarPlayLinkStore.wifi() 为 null（无车机热点凭据）但用户已在 UI 手动选定
+     * 车机所在的 WLAN 时，先把手机接入该网络，使 mDNS 发现能找到车机。
+     */
+    static boolean connectToKnownNetwork(final Context context, final String ssid, final Callback callback) {
+        if (context == null || ssid == null || ssid.isEmpty() || callback == null) {
+            return false;
+        }
+        if (context.checkSelfPermission("android.permission.NEARBY_WIFI_DEVICES") != 0) {
+            ControlChannel.Log("AUTO_WIFI_PERMISSION_MISSING name=NEARBY_WIFI_DEVICES route=MANUAL");
+            AppLogger.g(context, "AUTO_WIFI_PERMISSION_MISSING name=NEARBY_WIFI_DEVICES route=MANUAL");
+            callback.onUnavailable("NEARBY_WIFI_DEVICES_NOT_GRANTED");
+            return false;
+        }
+        try {
+            WifiNetworkSpecifier.Builder builder = new WifiNetworkSpecifier.Builder()
+                    .setSsid(ssid);
+            NetworkRequest request = new NetworkRequest.Builder()
+                    .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+                    .removeCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                    .setNetworkSpecifier(builder.build())
+                    .build();
+            final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(ConnectivityManager.class);
+            if (cm == null) {
+                callback.onUnavailable("CONNECTIVITY_MANAGER_UNAVAILABLE");
+                return false;
+            }
+            release(context);
+            final ConnectivityManager.NetworkCallback cb = new ConnectivityManager.NetworkCallback() {
+                @Override
+                public void onAvailable(Network network) {
+                    readyNetwork = network;
+                    readySince = SystemClock.elapsedRealtime();
+                    ControlChannel.Log("AUTO_WIFI_MANUAL_AVAILABLE ssid_logged=false");
+                    AppLogger.g(context, "AUTO_WIFI_MANUAL_AVAILABLE ssid_logged=false");
+                    callback.onReady(network);
+                }
+
+                @Override
+                public void onUnavailable() {
+                    readyNetwork = null;
+                    ControlChannel.Log("AUTO_WIFI_MANUAL_UNAVAILABLE ssid_logged=false");
+                    AppLogger.g(context, "AUTO_WIFI_MANUAL_UNAVAILABLE ssid_logged=false");
+                    callback.onUnavailable("REQUEST_UNAVAILABLE");
+                }
+
+                @Override
+                public void onLost(Network network) {
+                    readyNetwork = null;
+                    ControlChannel.Log("AUTO_WIFI_MANUAL_LOST");
+                    AppLogger.g(context, "AUTO_WIFI_MANUAL_LOST");
+                }
+            };
+            synchronized (LOCK) {
+                activeCallback = cb;
+            }
+            cm.requestNetwork(request, cb, 45000);
+            ControlChannel.Log("AUTO_WIFI_MANUAL_REQUEST_SUBMITTED ssid_logged=false");
+            AppLogger.g(context, "AUTO_WIFI_MANUAL_REQUEST_SUBMITTED ssid_logged=false");
+            CarPlayLinkStore.noteWifiAttempt(context, SystemClock.elapsedRealtime());
+            return true;
+        } catch (RuntimeException e) {
+            ControlChannel.Log("AUTO_WIFI_MANUAL_REQUEST_FAILED type=" + e.getClass().getSimpleName());
+            AppLogger.g(context, "AUTO_WIFI_MANUAL_REQUEST_FAILED type=" + e.getClass().getSimpleName());
+            callback.onUnavailable(e.getClass().getSimpleName());
+            return false;
+        }
+    }
+
     static void release(Context context) {
         ConnectivityManager.NetworkCallback cb;
         synchronized (LOCK) {

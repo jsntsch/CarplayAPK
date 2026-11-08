@@ -72,33 +72,6 @@ public final class Ui {
         else dark = context != null && (context.getResources().getConfiguration().uiMode & 48) == 32;
         f1233a = dark;
         if (dark) {
-            f1234b = -920844;
-            f1235c = -920844;
-            f1236d = -1;
-            f1237e = -1;
-            f1238f = -1644566;
-            f1241i = -16750849;
-            f1242j = -1;
-            f1243k = -16053492;
-            f1244l = -8816003;
-            f1245m = -4604994;
-            f1246o = -2542806;
-            f1247p = -5036516;
-            f1248r = -2524672;
-            f1249s = -3617;
-            f1250t = -920844;
-            f1251u = -920844;
-            f1252v = -16053492;
-            f1253w = -8816003;
-            f1254x = -16736235;
-            f1255y = -2524672;
-            f1256z = -2542806;
-            f1257A = -4604994;
-            E = 520093696;
-            F = 520120063;
-            f1239g = -2499876;
-            f1240h = -1578774;
-        } else {
             f1234b = -16777216;
             f1235c = -16777216;
             f1236d = -14935012;
@@ -125,6 +98,33 @@ public final class Ui {
             F = 520120063;
             f1239g = -12961222;
             f1240h = -13750738;
+        } else {
+            f1234b = -920844;
+            f1235c = -920844;
+            f1236d = -1;
+            f1237e = -1;
+            f1238f = -1644566;
+            f1241i = -16750849;
+            f1242j = -1;
+            f1243k = -16053492;
+            f1244l = -8816003;
+            f1245m = -4604994;
+            f1246o = -2542806;
+            f1247p = -5036516;
+            f1248r = -2524672;
+            f1249s = -3617;
+            f1250t = -920844;
+            f1251u = -920844;
+            f1252v = -16053492;
+            f1253w = -8816003;
+            f1254x = -16736235;
+            f1255y = -2524672;
+            f1256z = -2542806;
+            f1257A = -4604994;
+            E = 520093696;
+            F = 520120063;
+            f1239g = -2499876;
+            f1240h = -1578774;
         }
     }
 
@@ -152,11 +152,11 @@ public final class Ui {
         return Math.min(Math.max(Dp.px(activity, 200.0f), w - Dp.px(activity, 36.0f)), (Dp.px(activity, 14.0f) * 2) + Dp.px(activity, 400));
     }
 
-    /** 卡片内分隔线。 */
+    /** 卡片内分隔线（中性灰，随主题明暗自适应）。 */
     public static void g(LinearLayout parent, Context context) {
         A.e("c", context);
         View v = new View(context);
-        v.setBackgroundColor(f1246o);
+        v.setBackgroundColor(f1233a ? 0x33FFFFFF : 0x24000000);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, Math.max(1, Dp.px(context, 0.7f)));
         lp.leftMargin = Dp.px(context, 18.0f);
         parent.addView(v, lp);
@@ -348,6 +348,11 @@ public final class Ui {
 
     /** 开关行：标签 + M3Switch。 */
     public static UiHolder q(Context context, String label, boolean checked, OnToggle onToggle) {
+        return q(context, label, null, checked, onToggle);
+    }
+
+    /** [V1.8.35] 开关行：标签 + 副标题 + M3Switch（设置 → 连接 使用）。 */
+    public static UiHolder q(Context context, String label, String sub, boolean checked, OnToggle onToggle) {
         A.e("c", context);
         UiHolder h = new UiHolder();
         LinearLayout ll = new LinearLayout(context);
@@ -361,6 +366,14 @@ public final class Ui {
         LinearLayout textCol = new LinearLayout(context);
         textCol.setOrientation(LinearLayout.VERTICAL);
         textCol.addView(j(context, label, 16.0f, f1252v, true));
+        if (sub != null && sub.length() != 0) {
+            TextView subTv = j(context, sub, 13.0f, f1253w, false);
+            h.subText = subTv;
+            subTv.setLineSpacing(Dp.px(context, 2.0f), 1.0f);
+            LinearLayout.LayoutParams slp = new LinearLayout.LayoutParams(-2, -2);
+            slp.topMargin = Dp.px(context, 2.0f);
+            textCol.addView(subTv, slp);
+        }
         ll.addView(textCol, new LinearLayout.LayoutParams(0, -2, 1.0f));
         M3Switch sw = new M3Switch(context);
         sw.setChecked(checked, false);

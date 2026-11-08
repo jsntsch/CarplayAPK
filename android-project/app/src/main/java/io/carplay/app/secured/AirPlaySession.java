@@ -174,6 +174,8 @@ public final class AirPlaySession implements AutoCloseable {
     private volatile boolean l0;
     private final String m;
     private byte[] m0;
+    /** [V1.8.29 P1-1] RECORD 之后按 SETUP 响应 dataPort 建立的音频流 TCP 连接。 */
+    private final List<Socket> v2StreamSockets = Collections.synchronizedList(new ArrayList<Socket>());
     private final n n;
     private VideoCipher.AvcNalCipher n0;
     private k o0;
@@ -674,6 +676,27 @@ public final class AirPlaySession implements AutoCloseable {
             return 1L;
         }
         return j2;
+    }
+
+    /**
+     * [V1.8.29 P0-2] 规范 PDF p.50（§23.3.2.1 末段）逐字定义：
+     *   ekey = Bytes 0-15 of SHA-512("AirPlayStreamKey" + streamConnectionID + sessionkey(master))
+     *   eiv  = Bytes 0-15 of SHA-512("AirPlayStreamIV"  + streamConnectionID + sessionkey(master))
+     * master 取 pair-verify 导出的共享密钥 this.m0；streamConnectionID 编码为 8 字节大端
+     * （规范未逐字规定字节序，属需真机 A/B 的推导项）。初始 SETUP 只配控制流时传 0。
+     */
+    private static byte[] V2StreamKey(byte[] master, String label, long streamConnectionId) {
+        try {
+            java.security.MessageDigest md = java.security.MessageDigest.getInstance("SHA-512");
+            md.update(label.getBytes(java.nio.charset.StandardCharsets.US_ASCII));
+            md.update(ByteBuffer.allocate(8).order(ByteOrder.BIG_ENDIAN).putLong(streamConnectionId).array());
+            if (master != null) {
+                md.update(master);
+            }
+            return Arrays.copyOf(md.digest(), 16);
+        } catch (Throwable ignored) {
+            return new byte[16];
+        }
     }
 
     
@@ -1330,17 +1353,31 @@ public final class AirPlaySession implements AutoCloseable {
                     + " hex=" + ControlChannel.Hex(requestBody, Math.min(requestBody.length, 96))
                     + " encrypted=" + eventChannel.n());
         }
+        // [V1.8.29 P0-1] RECORD 在 Info3.6 上不回响应：把读超时从 15s 降到 1.5s，
+        // 并允许超时不关闭控制通道。否则 w() 会占着 eventChannel 监视器到 EOF（实测 13s），
+        // 让 RECORD 之后的流 SETUP / feedback / keepalive 全部排不上队。
+        boolean recordV2 = "RECORD".equals(str) && ControlChannel.SeqV2Enabled();
+        if (recordV2) {
+            eventChannel.setRequestTimeoutOverride(1500, true);
+            ControlChannel.V2Log("RECORD_SEND_SHORT_TIMEOUT ms=1500 tolerate_no_response=true");
+        }
         EventChannel.b bVarV;
-        if ("/command".equals(str2)) {
-            // /feedback 靠 dataPort 关联到会话，所以裸路径就能成功；
-            // /command 没有 dataPort，必须用请求头指明会话归属，否则车机无法把命令
-            // 对应到某个会话，一律回 422（实测连最简单的 setNightMode 也 422）。
-            java.util.LinkedHashMap<String, String> cmdHeaders = new java.util.LinkedHashMap<>();
-            cmdHeaders.put("X-Apple-Session-ID", SessionIdFromBase());
-            ControlChannel.Log("CONTROL_COMMAND_SESSION_HEADER id=" + SessionIdFromBase());
-            bVarV = eventChannel.w(str, str2, l1, requestBody, cmdHeaders);
-        } else {
-            bVarV = eventChannel.v(str, str2, map != null ? l1 : null, requestBody);
+        try {
+            if ("/command".equals(str2)) {
+                // /feedback 靠 dataPort 关联到会话，所以裸路径就能成功；
+                // /command 没有 dataPort，必须用请求头指明会话归属，否则车机无法把命令
+                // 对应到某个会话，一律回 422（实测连最简单的 setNightMode 也 422）。
+                java.util.LinkedHashMap<String, String> cmdHeaders = new java.util.LinkedHashMap<>();
+                cmdHeaders.put("X-Apple-Session-ID", SessionIdFromBase());
+                ControlChannel.Log("CONTROL_COMMAND_SESSION_HEADER id=" + SessionIdFromBase());
+                bVarV = eventChannel.w(str, str2, l1, requestBody, cmdHeaders);
+            } else {
+                bVarV = eventChannel.v(str, str2, map != null ? l1 : null, requestBody);
+            }
+        } finally {
+            if (recordV2) {
+                eventChannel.setRequestTimeoutOverride(-1, false);
+            }
         }
         bVarV.g();
         if (!this.o.get() && this.a0 == eventChannel && eventChannel.n() && this.C.c(aVarD)) {
@@ -1437,6 +1474,53 @@ public final class AirPlaySession implements AutoCloseable {
             return J1("IAP_INVALID_DATA");
         } catch (IOException unused) {
             return J1("IAP_INVALID_PARAMS");
+        }
+    }
+
+    /**
+     * [V1.8.34 P1-2] 主动建立 network iAP2 会话：与 T() 的入站被动建链逻辑完全一致，
+     * 仅把触发时机改为「会话认证完成后手机主动发起」。供 P1-2 调试开关调用。
+     * 任何失败仅记日志、不抛异常，避免影响已验证的视频链路。
+     */
+    private boolean P1_2_tryBuildNetworkIap2(EventChannel eventChannel) {
+        if (this.j != null) {
+            return true;
+        }
+        if (this.D || this.o.get() || eventChannel == null || !eventChannel.n()
+                || this.m == null || !this.m.matches("[a-fA-F0-9]{64}") || this.r0 != null) {
+            ControlChannel.Iap2Diag("P12_BUILD_SKIPPED D=" + this.D + " closed=" + this.o.get()
+                    + " ch_ok=" + (eventChannel != null && eventChannel.n())
+                    + " m_present=" + (this.m != null) + " r0_present=" + (this.r0 != null));
+            return false;
+        }
+        try {
+            String str2 = this.m;
+            j0 j0Var = new j0(0);
+            j0Var.b = this;
+            VarHandle.storeStoreFence();
+            n nVar = this.n;
+            Objects.requireNonNull(nVar);
+            k0 k0Var = new k0();
+            k0Var.b = nVar;
+            VarHandle.storeStoreFence();
+            DeviceMetadataStore i5Var = this.f1;
+            n nVar2 = this.n;
+            Objects.requireNonNull(nVar2);
+            l0 l0Var = new l0(0);
+            l0Var.b = nVar2;
+            VarHandle.storeStoreFence();
+            m0 m0Var = new m0();
+            m0Var.a = this;
+            m0Var.b = eventChannel;
+            VarHandle.storeStoreFence();
+            this.j = Iap2WirelessSetup.n(str2, j0Var, k0Var, i5Var, l0Var, m0Var);
+            this.n.a("P12_NETWORK_IAP_ROUTE_BUILT transport=CONTROL_POST proactive=true");
+            ControlChannel.Iap2Diag("P12_NETWORK_IAP_ROUTE_BUILT proactive=true");
+            return true;
+        } catch (Throwable th) {
+            this.n.a("P12_NETWORK_IAP_BUILD_FAILED " + th.getClass().getSimpleName() + ": " + th.getMessage());
+            ControlChannel.Iap2Diag("P12_BUILD_FAILED " + th.getClass().getSimpleName() + ": " + th.getMessage());
+            return false;
         }
     }
 
@@ -2321,6 +2405,105 @@ public final class AirPlaySession implements AutoCloseable {
     
     
     
+    /**
+     * [V1.8.29 P0-1 / P1-1] 规范 PDF p.49 step 7：会话建立（RECORD）之后再 SETUP
+     * audio/screen 流；p.64 Table 23-45 的 StreamID = 110 Screen / 100 MainAudio /
+     * 101 AltAudio / 102 MainHighAudio。固件 0x483b0 的 startSession 成功路径会置
+     * [obj+0x466]=1，此后 _GeneralAudioSetup @0x46687 才真正启流、反向命令门 0x45100
+     * 才允许发送（含 hidSendReport）。本方法由 RECORD 结束后的独立线程调用，失败不影响主链路。
+     */
+    private void V2PostRecordStreamSetup() {
+        if (this.a0 == null || this.o.get()) {
+            ControlChannel.V2Log("POST_RECORD_STREAM_SETUP_SKIPPED reason=SESSION_CLOSED");
+            return;
+        }
+        long sid = E1();
+        int[] types = {110, 100, 101, 102};
+        ArrayList<Map<String, Object>> streams = new ArrayList<>();
+        for (int type : types) {
+            LinkedHashMap<String, Object> stream = new LinkedHashMap<>();
+            stream.put("type", Integer.valueOf(type));
+            stream.put("streamConnectionID", Long.valueOf(sid));
+            stream.put("latencyMs", Integer.valueOf(100));
+            if (type == 110 && this.o0 != null) {
+                stream.put("uuid", this.o0.i());
+            }
+            streams.add(stream);
+        }
+        LinkedHashMap<String, Object> body = new LinkedHashMap<>();
+        body.put("streams", streams);
+        ControlChannel.V2Log("POST_RECORD_STREAM_SETUP_SEND types=110,100,101,102 count=4");
+        this.n.a("V2_POST_RECORD_STREAM_SETUP_SEND types=110,100,101,102");
+        try {
+            Map<String, Object> response = g1(R1("SETUP", this.e, body));
+            ControlChannel.V2Log("POST_RECORD_STREAM_SETUP_OK resp_keys=" + response.keySet());
+            this.n.a("V2_POST_RECORD_STREAM_SETUP_OK resp_keys=" + response.keySet());
+            Object declared = response.get("streams");
+            if (!(declared instanceof List)) {
+                ControlChannel.V2Log("POST_RECORD_STREAM_SETUP_NO_STREAMS_IN_RESP keys=" + response.keySet());
+                return;
+            }
+            for (Object entry : (List<?>) declared) {
+                Map<String, Object> stream = g1(entry);
+                Object typeObj = stream.get("type");
+                Object portObj = stream.get("dataPort");
+                int type = typeObj instanceof Number ? ((Number) typeObj).intValue() : -1;
+                int port = portObj instanceof Number ? ((Number) portObj).intValue() : 0;
+                if (type < 0 || port <= 0 || port > 65535) {
+                    continue;
+                }
+                ControlChannel.V2Log("STREAM_DATA_PORT type=" + type + " port=" + port);
+                if (type == 110) {
+                    continue; // 屏幕流已由 l2() 建好，重复建会覆盖 this.d0 主 socket
+                }
+                // 规范 p.48 step 5：Apple device 为每个 TCP 流主动发起连接。
+                // 直接用 new Socket() 而不是 k0()/L0()，避免 L0() 覆盖 this.d0。
+                Socket audio = new Socket();
+                try {
+                    audio.connect(new InetSocketAddress(this.c, port), 3000);
+                    audio.setTcpNoDelay(true);
+                    audio.setKeepAlive(true);
+                    this.v2StreamSockets.add(audio);
+                    ControlChannel.V2Log("AUDIO_STREAM_CONNECTED type=" + type + " port=" + port);
+                    this.n.a("V2_AUDIO_STREAM_CONNECTED type=" + type + " port=" + port);
+                } catch (Throwable connectFailure) {
+                    g0(audio);
+                    ControlChannel.V2Log("AUDIO_STREAM_CONNECT_FAILED type=" + type
+                            + " msg=" + connectFailure.getMessage());
+                }
+            }
+        } catch (Throwable setupFailure) {
+            ControlChannel.V2Log("POST_RECORD_STREAM_SETUP_FAILED msg=" + setupFailure.getMessage()
+                    + " fallback=per_stream");
+            this.n.a("V2_POST_RECORD_STREAM_SETUP_FAILED msg=" + setupFailure.getMessage());
+            V2PerStreamSetupFallback(sid, types);
+        }
+    }
+
+    /** [V1.8.29 P0-1] 多流 SETUP 被拒时逐流重发，至少保住 screen 与 MainAudio。 */
+    private void V2PerStreamSetupFallback(long sid, int[] types) {
+        for (int type : types) {
+            if (this.o.get() || this.a0 == null) {
+                return;
+            }
+            LinkedHashMap<String, Object> stream = new LinkedHashMap<>();
+            stream.put("type", Integer.valueOf(type));
+            stream.put("streamConnectionID", Long.valueOf(sid));
+            stream.put("latencyMs", Integer.valueOf(100));
+            if (type == 110 && this.o0 != null) {
+                stream.put("uuid", this.o0.i());
+            }
+            try {
+                Map<String, Object> response = g1(R1("SETUP", this.e, Map.of("streams", List.of(stream))));
+                ControlChannel.V2Log("STREAM_SETUP_SINGLE_OK type=" + type + " keys=" + response.keySet());
+                this.n.a("V2_STREAM_SETUP_SINGLE_OK type=" + type);
+            } catch (Throwable singleFailure) {
+                ControlChannel.V2Log("STREAM_SETUP_SINGLE_FAILED type=" + type
+                        + " msg=" + singleFailure.getMessage());
+            }
+        }
+    }
+
     private void l2() throws EventChannel.d, IOException {
         synchronized (this.G) {
             q0();
@@ -4045,6 +4228,13 @@ public final class AirPlaySession implements AutoCloseable {
             }
             g0(this.d0);
             g0(this.c0);
+            // [V1.8.29 P1-1] 关闭 RECORD 之后按 dataPort 建立的音频流 TCP 连接。
+            synchronized (this.v2StreamSockets) {
+                for (Socket audio : this.v2StreamSockets) {
+                    g0(audio);
+                }
+                this.v2StreamSockets.clear();
+            }
             if (this.e0 != null) {
                 this.e0.close();
             }
@@ -4279,27 +4469,51 @@ public final class AirPlaySession implements AutoCloseable {
                 if (this.t.K()) {
                     l2();
                 }
-                // RECORD 不能阻塞主流程。
-                // Info3.6 实测（V1.7.95）：RECORD 发出后车机**不回响应**，同步 R1() 会一直
-                // 阻塞到 RTSP socket EOF（14:32:15.066 → 14:32:28.073，整整 13s）。
-                // 这 13s 里 l0/E/H1()（HID 启动）以及后续 keepalive 调度全部卡住：
-                // keepalive 只发到 count=3 就断，车机侧表现正是「画面出来几秒后中断」。
-                // 改为后台线程发送、无响应可容忍，主流程立即继续。
+                // [V1.8.29 P0-1] 规范 PDF p.49 生命周期 step 6 RECORD → step 7「会话建立后再
+                // SETUP audio/screen 流」。固件 _GeneralAudioSetup @0x46687 在 [obj+0x466]==0
+                // （startSession 未完成）时只记日志不启流 ⇒ RECORD 之前发的 SETUP 全部无效。
+                // RECORD 仍由后台线程发送、不阻塞主流程；用 latch 把「RECORD 请求结束」作为
+                // 后续多流 SETUP 的起点。R1() 对 RECORD 用 1.5s 短读超时且不关通道，
+                // 因此这里最多等 ~1.5s，而不是旧实现的 13s EOF。
+                final java.util.concurrent.CountDownLatch recordFinished = new java.util.concurrent.CountDownLatch(1);
                 try {
                     if (this.a0 != null) {
                         Thread recordThread = new Thread(() -> {
                             try {
                                 R1("RECORD", this.e, Collections.EMPTY_MAP);
                                 this.n.a("CARPLAY_RECORD_ACKNOWLEDGED");
+                                ControlChannel.V2Log("RECORD_ACKNOWLEDGED");
                             } catch (Throwable recordFailure) {
                                 this.n.a("CARPLAY_RECORD_NO_RESPONSE_TOLERATED msg=" + recordFailure.getMessage());
+                                ControlChannel.V2Log("RECORD_NO_RESPONSE_TOLERATED msg=" + recordFailure.getMessage());
+                            } finally {
+                                recordFinished.countDown();
                             }
                         }, "CarPlus-record");
                         recordThread.setDaemon(true);
                         recordThread.start();
+                    } else {
+                        recordFinished.countDown();
                     }
                 } catch (Throwable ignored) {
                     // 后台发送失败不影响主流程，媒体通道已单独建立。
+                    recordFinished.countDown();
+                }
+                if (ControlChannel.SeqV2Enabled()) {
+                    Thread streamSetupThread = new Thread(() -> {
+                        try {
+                            if (!recordFinished.await(3L, TimeUnit.SECONDS)) {
+                                ControlChannel.V2Log("POST_RECORD_STREAM_SETUP_SKIPPED reason=RECORD_DEADLINE");
+                                return;
+                            }
+                            Thread.sleep(150L);
+                            V2PostRecordStreamSetup();
+                        } catch (Throwable streamFailure) {
+                            ControlChannel.V2Log("POST_RECORD_STREAM_SETUP_ABORTED msg=" + streamFailure.getMessage());
+                        }
+                    }, "CarPlus-stream-setup-v2");
+                    streamSetupThread.setDaemon(true);
+                    streamSetupThread.start();
                 }
                 this.l0 = true;
                 this.E = true;
@@ -4756,16 +4970,90 @@ public final class AirPlaySession implements AutoCloseable {
         arrayList.add("vehicleStateProtocol");
         arrayList.add("videoPlayback");
         linkedHashMap.put("features", arrayList);
+        // ==================== [V1.8.29] 会话序列 V2 ====================
+        // 总开关：carplayapk-debug.xml / session_seq_v2（默认 true）。置 false 可不出包回退。
+        final boolean seqV2 = ControlChannel.SeqV2Enabled();
+        if (seqV2) {
+            // [P1-2] 手机对外身份同源：Table 23-36 的 macAddress 必须与 deviceID / TXT deviceid /
+            // _carplay-ctrl 服务实例名指向同一台设备，供固件 SendConnect() @0x17e30 的双串匹配。
+            // 这里直接复用 deviceId（deviceID 同源），不另取 WiFi MAC，避免三处标识漂移。
+            linkedHashMap.put("macAddress", deviceId);
+            // [P0-2] Table 23-36 标为必填(Y)的四个键，V1.8.28 全缺：eiv/ekey/et/macAddress。
+            // et=0x10 来自 Table 23-24「MFi-SAP-encrypted AES key」；ekey/eiv 各 16 字节 data。
+            // 注意：规范还要求 ekey 用 master key 再加密一层，本版先按 p.50 的 SHA-512 原始派生
+            // 填入（可 A/B 的最小实现），若车机回 4xx 会走下方 SETUP_V2_REJECTED 自动回退。
+            try {
+                linkedHashMap.put("ekey", V2StreamKey(this.m0, "AirPlayStreamKey", 0L));
+                linkedHashMap.put("eiv", V2StreamKey(this.m0, "AirPlayStreamIV", 0L));
+                linkedHashMap.put("et", Integer.valueOf(16));
+                ControlChannel.V2Log("SETUP_ENCRYPTION_KEYS ekey_len=16 eiv_len=16 et=0x10"
+                        + " master=" + (this.m0 == null ? "null" : "present") + " sid=0");
+            } catch (Throwable keyFailure) {
+                ControlChannel.V2Log("SETUP_ENCRYPTION_KEYS_FAILED msg=" + keyFailure.getClass().getSimpleName());
+            }
+            ControlChannel.V2Log("SETUP_IDENTITY_UNIFIED deviceID=macAddress name=ServiceName values_logged=false");
+        }
         zzLog("CARPLAY_SETUP_KEYS", linkedHashMap);
-        Map<String, Object> mapG1 = g1(R1("SETUP", this.e, linkedHashMap));
+        Map<String, Object> mapG1;
+        try {
+            mapG1 = g1(R1("SETUP", this.e, linkedHashMap));
+        } catch (IOException | RuntimeException setupV2Failure) {
+            // 只有明确的 HTTP 非 200（EventChannel.d）才重试；超时 / IO 错误重发 SETUP
+            // 会在车机侧创建第二个会话，风险更大，直接上抛。
+            if (!seqV2 || !(setupV2Failure instanceof EventChannel.d)) {
+                throw setupV2Failure;
+            }
+            // 车机若不接受新增的加密键，去掉 V2 键重发一次，保证本版不会让 SETUP 整体失败。
+            ControlChannel.V2Log("SETUP_V2_REJECTED reason=" + setupV2Failure.getClass().getSimpleName()
+                    + " msg=" + setupV2Failure.getMessage() + " fallback=legacy_keys");
+            linkedHashMap.remove("ekey");
+            linkedHashMap.remove("eiv");
+            linkedHashMap.remove("et");
+            mapG1 = g1(R1("SETUP", this.e, linkedHashMap));
+        }
         this.T = mapG1;
         zzLog("CARPLAY_SETUP_RESP_KEYS", mapG1);
         q0();
         lVar.e(mapG1);
         q0();
         this.n.a("CARPLAY_INFO_AFTER_AUTHENTICATED_SETUP");
-        S(g1(R1("GET", "/info", null)));
+        // [V1.8.29 P0-3] 规范 §23.3.2.2 (PDF p.50)：GET /info 带 binary plist **请求体**，
+        // Apple device 可在其中提供任意手机信息。V1.8.28 传 null（空 body），车机拿不到
+        // 手机侧信息用于会话登记。这里只放最小信息、**不填 qualifier**，避免裁剪车机响应。
+        // 车机若拒绝带 body 的 GET，自动回退到空 body，保证不回归。
+        Object infoResponse;
+        if (seqV2) {
+            LinkedHashMap<String, Object> infoRequest = new LinkedHashMap<>();
+            infoRequest.put("model", Build.MODEL);
+            infoRequest.put("name", ControlChannel.ServiceName());
+            infoRequest.put("sourceVersion", "320.17");
+            try {
+                infoResponse = R1("GET", "/info", infoRequest);
+                ControlChannel.V2Log("INFO_REQUEST_PLIST keys=" + infoRequest.keySet()
+                        + " qualifier=omitted reason=avoid_response_trimming");
+            } catch (IOException | RuntimeException infoV2Failure) {
+                ControlChannel.V2Log("INFO_REQUEST_PLIST_REJECTED msg=" + infoV2Failure.getMessage()
+                        + " fallback=empty_body");
+                infoResponse = R1("GET", "/info", null);
+            }
+        } else {
+            infoResponse = R1("GET", "/info", null);
+        }
+        S(g1(infoResponse));
         q0();
+
+        // [V1.8.34 P1-2] 主动发起 iAP2-over-WiFi：手机是 iAP2 host，应在会话建立后主动向车机
+        // 发送 iAP2 识别（而非等车机先发）。否则两端互相等待形成死锁，车机 iap_channel 永远
+        // false，车机→手机的反向 iAP2 HID 触摸通道无法建立。默认关，置 p1_2_proactive_iap2=true
+        // 开启做 A/B；建链逻辑与 T() 入站路径完全一致。建好后由下方 best-effort 块的 this.j.u() 启动握手。
+        if (ControlChannel.P1_2ProactiveIap2Enabled() && this.j == null) {
+            ControlChannel.Iap2Diag("P12_PROACTIVE_TRIGGERED j==null");
+            if (P1_2_tryBuildNetworkIap2(this.a0)) {
+                ControlChannel.Iap2Diag("P12_PROACTIVE_BUILT will_start_output_thread");
+            } else {
+                ControlChannel.Iap2Diag("P12_PROACTIVE_BUILD_SKIPPED");
+            }
+        }
 
         // ---- Best-effort activation / UI-context nudge (NON-BLOCKING, diagnostic only) ----
         // iPhone native follows AuthenticationSucceeded -> AuthorizationSucceeded -> EndpointActivated

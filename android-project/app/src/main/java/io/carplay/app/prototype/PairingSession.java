@@ -761,6 +761,7 @@ public final class PairingSession implements AutoCloseable {
                 if (bluetoothSocketAccept.getRemoteDevice().getAddress().equals(bluetoothDevice.getAddress())) {
                     if (E0(bluetoothSocketAccept)) {
                         S1("RFCOMM_SELECTED_PEER_ACCEPTED");
+                        io.carplay.app.secured.ControlChannel.Iap2Diag("RFCOMM_SELECTED_PEER_ACCEPTED peer=" + bluetoothSocketAccept.getRemoteDevice().getAddress());
                         k1(bluetoothSocketAccept);
                         return;
                     }
@@ -1124,6 +1125,7 @@ public final class PairingSession implements AutoCloseable {
                         this.h.removeCallbacks(w6Var);
                         if (E0(bluetoothSocketCreateRfcommSocketToServiceRecord)) {
                             S1("RFCOMM_SELECTED_PEER_CONNECTED");
+                            io.carplay.app.secured.ControlChannel.Iap2Diag("RFCOMM_SELECTED_PEER_CONNECTED peer=" + bluetoothSocketCreateRfcommSocketToServiceRecord.getRemoteDevice().getAddress());
                             k1(bluetoothSocketCreateRfcommSocketToServiceRecord);
                             return;
                         }
@@ -1651,6 +1653,7 @@ public final class PairingSession implements AutoCloseable {
 
     
     private void I1(BluetoothSocket bluetoothSocket) {
+        io.carplay.app.secured.ControlChannel.Iap2Diag("I1_HANDSHAKE_START peer=" + (bluetoothSocket != null && bluetoothSocket.getRemoteDevice() != null ? bluetoothSocket.getRemoteDevice().getAddress() : "null"));
         ArrayBlockingQueue<m> queue = new ArrayBlockingQueue<>(16);
         j stats = new j();
         String startupInput = "NOT_AT_DEADLINE";
@@ -2379,6 +2382,7 @@ public final class PairingSession implements AutoCloseable {
                 throw new IllegalStateException("Bootstrap instance already used");
             }
         }
+        io.carplay.app.secured.ControlChannel.Iap2Diag("P1_START target_bt=" + str + " has_discovery=" + (h5Var != null));
         if (this.a.checkSelfPermission("android.permission.BLUETOOTH_CONNECT") != 0) {
             T1("BLUETOOTH_CONNECT_PERMISSION_REQUIRED");
             return;

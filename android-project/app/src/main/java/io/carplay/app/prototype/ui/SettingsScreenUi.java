@@ -7,19 +7,18 @@ import android.widget.ScrollView;
 
 /**
  * 设置页（移植自参考 APK 的 SettingsScreen 布局）。
- * 结构：标题 → 外 观(主题) → 连 接(蓝牙配对 / 本地蓝牙标识)
- *      → 调 试(调试模式 / 运行日志) → 教 程(使用教程 / 免责声明)。
+ * 结构：标题 → 外 观(主题) → 连 接(蓝牙配对 / 手机蓝牙标识)
+ *      → 调 试(调试模式 / 运行日志)。
+ * 注：「选择车机」已移到 主页 → 车 机 → 蓝牙，此处不再重复提供。
  */
 public final class SettingsScreenUi extends ScrollView {
 
     private final UiHolder themeRow;
-    private final UiHolder carRow;
     private final UiHolder btPairRow;
     private final UiHolder localBtRow;
+    private final UiHolder proactiveIap2Row;
     private final UiHolder debugRow;
     private final UiHolder logRow;
-    private final UiHolder tutorialRow;
-    private final UiHolder declarationRow;
 
     public SettingsScreenUi(Context context, ScreenActions.Settings actions) {
         super(context);
@@ -36,7 +35,7 @@ public final class SettingsScreenUi extends ScrollView {
         root.setPadding(padX, Ui.h(context, 8.0f), padX, Ui.h(context, 88.0f));
         addView(root, new LinearLayout.LayoutParams(-1, -2));
 
-        root.addView(Ui.l(context, "设置", "外观 · 连接 · 调试 · 教程"));
+        root.addView(Ui.l(context, "设置", "外观 · 连接 · 调试"));
 
         // 外 观
         Ui.p(root, context, "外 观");
@@ -59,32 +58,34 @@ public final class SettingsScreenUi extends ScrollView {
         appearanceLp.topMargin = Ui.h(context, 2.0f);
         root.addView(appearance, appearanceLp);
 
-        // 连 接
+        // 连 接（「选择车机」已移至 主页 → 车 机 → 蓝牙）
         Ui.p(root, context, "连 接");
         LinearLayout conn = Ui.e(context);
-        carRow = Ui.o(context, "选择车机", "已记住的车机将自动连接", "未选择", true, null, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                actions.selectCar();
-            }
-        });
         btPairRow = Ui.o(context, "蓝牙配对", "搜索并选择车机蓝牙", "未配对", true, null, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 actions.bluetoothPair();
             }
         });
-        localBtRow = Ui.o(context, "本地蓝牙标识", "手机蓝牙地址 / 名称", "未设置", true, null, new View.OnClickListener() {
+        localBtRow = Ui.o(context, "手机蓝牙标识", "手机蓝牙名称与地址", "未设置", true, null, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 actions.localBtIdentity();
             }
         });
-        conn.addView(carRow.view);
-        Ui.g(conn, context);
         conn.addView(btPairRow.view);
         Ui.g(conn, context);
         conn.addView(localBtRow.view);
+        Ui.g(conn, context);
+        // [V1.8.35] P1-2：会话认证后由手机主动建立 iAP2-over-WiFi（修复车机→手机触摸通道）。
+        proactiveIap2Row = Ui.q(context, "主动发起 iAP2-over-WiFi",
+                "会话建立后由手机主动建立 iAP2 通道（修复触摸）", false, new OnToggle() {
+                    @Override
+                    public void onChanged(boolean checked) {
+                        actions.setProactiveIap2(checked);
+                    }
+                });
+        conn.addView(proactiveIap2Row.view);
         LinearLayout.LayoutParams connLp = new LinearLayout.LayoutParams(-1, -2);
         connLp.topMargin = Ui.h(context, 2.0f);
         root.addView(conn, connLp);
@@ -110,28 +111,6 @@ public final class SettingsScreenUi extends ScrollView {
         LinearLayout.LayoutParams debugLp = new LinearLayout.LayoutParams(-1, -2);
         debugLp.topMargin = Ui.h(context, 2.0f);
         root.addView(debug, debugLp);
-
-        // 教 程
-        Ui.p(root, context, "教 程");
-        LinearLayout help = Ui.e(context);
-        tutorialRow = Ui.o(context, "使用教程", null, null, true, null, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                actions.openTutorial();
-            }
-        });
-        declarationRow = Ui.o(context, "免责声明", null, null, true, null, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                actions.openDeclaration();
-            }
-        });
-        help.addView(tutorialRow.view);
-        Ui.g(help, context);
-        help.addView(declarationRow.view);
-        LinearLayout.LayoutParams helpLp = new LinearLayout.LayoutParams(-1, -2);
-        helpLp.topMargin = Ui.h(context, 2.0f);
-        root.addView(help, helpLp);
     }
 
     private int currentTheme() {
@@ -151,15 +130,20 @@ public final class SettingsScreenUi extends ScrollView {
         if (btPairRow.valueText != null) btPairRow.valueText.setText(text);
     }
 
-    public void setSelectedCar(String text) {
-        if (carRow.valueText != null) carRow.valueText.setText(text);
-    }
-
-    public void setLocalBt(String text) {
-        if (localBtRow.valueText != null) localBtRow.valueText.setText(text);
+    public void setLocalBt(String text, boolean highlight) {
+        if (localBtRow.valueText != null) {
+            localBtRow.valueText.setText(text);
+            // [V1.8.34] 未设置（name/address 任一为空）时高亮为红色提醒用户补全。
+            localBtRow.valueText.setTextColor(highlight ? 0xFFE53935 : Ui.f1253w);
+        }
     }
 
     public void setDebugMode(boolean on) {
         if (debugRow.switchView != null) debugRow.switchView.setChecked(on, true);
+    }
+
+    /** [V1.8.35] 主动发起 iAP2-over-WiFi（P1-2）开关状态。 */
+    public void setProactiveIap2(boolean on) {
+        if (proactiveIap2Row.switchView != null) proactiveIap2Row.switchView.setChecked(on, true);
     }
 }

@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -71,6 +72,16 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
     private int p;
     private final NsdManager.RegistrationListener q;
 
+    // [V1.8.31] 全局注册仲裁：_carplay-ctrl 有 StartEarly() / PairingSession.Q1() /
+    // WifiNetworkMonitor 三条独立注册路径，StopEarly() 只能关掉 early 实例。
+    // 两个实例同时 registerService 同名服务时 NsdManager 会自动改名成 "XXX (2)"，
+    // 车机 SendConnect() @0x17e30 按蓝牙名做双串匹配就会失败。
+    // 此处用同一把静态锁串行化全部注册/注销，保证任意时刻只有一个活跃注册。
+    private static final Object REG_LOCK = new Object();
+    private static CarPlayCtrlAdvertiser activeAdvertiser;
+    private static int advertiserSeq;
+    private final int instanceId;
+
     /**
      * 回调实现：实现 NsdManager.RegistrationListener 定义的契约。
      *
@@ -96,6 +107,12 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
         public void onServiceRegistered(NsdServiceInfo nsdServiceInfo) {
             CarPlayCtrlAdvertiser carPlayCtrlAdvertiser = CarPlayCtrlAdvertiser.this;
             carPlayCtrlAdvertiser.r("CTRL_SERVICE_LIVE name=" + nsdServiceInfo.getServiceName() + " port=" + nsdServiceInfo.getPort());
+            // [V1.8.31] 把注册实例编号与全局仲裁状态一起落到 logcat，便于判定 "(2)" 来源。
+            ControlChannel.Log("CTRL_REG_LIVE instance=" + CarPlayCtrlAdvertiser.this.instanceId
+                    + " expected=" + ControlChannel.ServiceName()
+                    + " actual=" + nsdServiceInfo.getServiceName()
+                    + " port=" + nsdServiceInfo.getPort()
+                    + " active_is_this=" + (activeAdvertiser == CarPlayCtrlAdvertiser.this));
             // [V1.8.24] 规范 p.425：服务实例名必须是用户可见设备名。
             // 出现 (2) 后缀说明 NsdManager 因同名冲突改名，车机按蓝牙名匹配时会对不上。
             String expectedName = ControlChannel.ServiceName();
@@ -213,6 +230,11 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
         this.k = new ArrayList();
         this.l = new HashSet();
         this.q = new a();
+        int id;
+        synchronized (REG_LOCK) {
+            id = ++advertiserSeq;
+        }
+        this.instanceId = id;
         NsdManager nsdManager = (NsdManager) context.getSystemService(NsdManager.class);
         Objects.requireNonNull(nsdManager);
         this.a = nsdManager;
@@ -471,33 +493,47 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
 
     @Override 
     public void close() {
-        if (this.i.compareAndSet(false, true)) {
-            synchronized (this.j) {
-                try {
-                    if (this.n) {
-                        s();
-                        // [V1.8.24] 等 mDNS 注销回调（或 400ms 超时）再放行，
-                        // 否则 Q1() 紧接着的同名注册会被 NsdManager 自动改名成 "(2)"。
-                        // 这里持有 j 锁，q() 也在 j 上同步，正好把注销→重注册串行化。
-                        try {
-                            ((a) this.q).unregistered.await(400L, java.util.concurrent.TimeUnit.MILLISECONDS);
-                        } catch (InterruptedException interrupted) {
-                            Thread.currentThread().interrupt();
+        // [V1.8.31] 与 q() 共用 REG_LOCK：注销→重注册必须严格串行，
+        // 且所有调用方（StopEarly / PairingSession / accept loop / 冲突关闭）自动受益。
+        synchronized (REG_LOCK) {
+            if (this.i.compareAndSet(false, true)) {
+                synchronized (this.j) {
+                    try {
+                        if (this.n) {
+                            s();
+                            // 等 mDNS 注销回调（或超时）再放行，否则紧接着的同名注册
+                            // 会被 NsdManager 自动改名成 "(2)"。
+                            long waitMs = ControlChannel.SeqV2Enabled() ? 1500L : 400L;
+                            boolean unregisteredInTime = false;
+                            try {
+                                unregisteredInTime = ((a) this.q).unregistered.await(waitMs,
+                                        java.util.concurrent.TimeUnit.MILLISECONDS);
+                            } catch (InterruptedException interrupted) {
+                                Thread.currentThread().interrupt();
+                            }
+                            ControlChannel.V2Log("CTRL_UNREGISTER_WAIT ms=" + waitMs
+                                    + " confirmed=" + unregisteredInTime);
+                            ControlChannel.Log("CTRL_REG_UNREGISTER_WAIT instance=" + instanceId
+                                    + " ms=" + waitMs + " confirmed=" + unregisteredInTime
+                                    + " active_was_this=" + (activeAdvertiser == this));
                         }
+                        Iterator<ServerSocket> it = this.k.iterator();
+                        while (it.hasNext()) {
+                            p(it.next());
+                        }
+                        this.k.clear();
+                        Iterator<Socket> it2 = this.l.iterator();
+                        while (it2.hasNext()) {
+                            p(it2.next());
+                        }
+                        this.l.clear();
+                    } catch (Throwable th) {
+                        throw th;
                     }
-                    Iterator<ServerSocket> it = this.k.iterator();
-                    while (it.hasNext()) {
-                        p(it.next());
-                    }
-                    this.k.clear();
-                    Iterator<Socket> it2 = this.l.iterator();
-                    while (it2.hasNext()) {
-                        p(it2.next());
-                    }
-                    this.l.clear();
-                } catch (Throwable th) {
-                    throw th;
                 }
+            }
+            if (activeAdvertiser == this) {
+                activeAdvertiser = null;
             }
         }
     }
@@ -662,62 +698,102 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
     }
 
     public void q() {
-        synchronized (this.j) {
-            try {
-                if (!this.m && !this.i.get()) {
-                    this.m = true;
-                    ControlChannel.ResetInvite();
-                    try {
-                        ArrayList arrayList = new ArrayList();
-                        arrayList.add(this.e);
-                        for (LinkAddress linkAddress : this.c) {
-                            if (t(linkAddress.getAddress()) && !arrayList.contains(linkAddress.getAddress())) {
-                                arrayList.add(linkAddress.getAddress());
+        // [V1.8.31] 全局串行：注册/注销共用 REG_LOCK，杜绝 StartEarly / PairingSession /
+        // WifiNetworkMonitor 三条路径同名并发注册导致的 "(2)" 自动改名。
+        synchronized (REG_LOCK) {
+            synchronized (this.j) {
+                try {
+                    if (!this.m && !this.i.get()) {
+                        this.m = true;
+                        ControlChannel.ResetInvite();
+                        try {
+                            ArrayList arrayList = new ArrayList();
+                            arrayList.add(this.e);
+                            for (LinkAddress linkAddress : this.c) {
+                                if (t(linkAddress.getAddress()) && !arrayList.contains(linkAddress.getAddress())) {
+                                    arrayList.add(linkAddress.getAddress());
+                                }
                             }
-                        }
-                        if (arrayList.size() > 8) {
-                            throw new IOException("CTRL_LOCAL_ADDRESS_LIMIT");
-                        }
-                        int size = arrayList.size();
-                        int i = 0;
-                        int localPort = 0;
-                        int i2 = 0;
-                        while (i2 < size) {
-                            Object obj = arrayList.get(i2);
-                            i2++;
-                            ServerSocket serverSocketA = this.h.a((InetAddress) obj, localPort);
-                            this.k.add(serverSocketA);
-                            if (localPort == 0) {
-                                localPort = serverSocketA.getLocalPort();
+                            if (arrayList.size() > 8) {
+                                throw new IOException("CTRL_LOCAL_ADDRESS_LIMIT");
                             }
-                        }
-                        NsdServiceInfo nsdServiceInfo = new NsdServiceInfo();
-                        nsdServiceInfo.setServiceName(ControlChannel.ServiceName());
-                        nsdServiceInfo.setServiceType("_carplay-ctrl._tcp");
-                        nsdServiceInfo.setPort(localPort);
-                        r("CTRL_ANNOUNCE name=" + nsdServiceInfo.getServiceName() + " port=" + localPort + " svc=" + ControlChannel.ServiceName() + " manual=" + ControlChannel.ManualName());
-                        nsdServiceInfo.setNetwork(this.b);
-                        ControlChannel.FillTxt(nsdServiceInfo, this.f);
-                        this.n = true;
-                        this.a.registerService(nsdServiceInfo, 1, this.q);
-                        if (!this.i.get()) {
-                            for (ServerSocket serverSocket : this.k) {
-                                ReleaseCheckTask gVar = new ReleaseCheckTask(i);
-                                gVar.b = this;
-                                gVar.c = serverSocket;
-                                VarHandle.storeStoreFence();
-                                Thread thread = new Thread(gVar, "CarPlayAPK-ctrl-invitation");
-                                thread.setDaemon(true);
-                                thread.start();
+                            int size = arrayList.size();
+                            int i = 0;
+                            int localPort = 0;
+                            int i2 = 0;
+                            while (i2 < size) {
+                                Object obj = arrayList.get(i2);
+                                i2++;
+                                ServerSocket serverSocketA = this.h.a((InetAddress) obj, localPort);
+                                this.k.add(serverSocketA);
+                                if (localPort == 0) {
+                                    localPort = serverSocketA.getLocalPort();
+                                }
                             }
+                            NsdServiceInfo nsdServiceInfo = new NsdServiceInfo();
+                            nsdServiceInfo.setServiceName(ControlChannel.ServiceName());
+                            nsdServiceInfo.setServiceType("_carplay-ctrl._tcp");
+                            nsdServiceInfo.setPort(localPort);
+                            r("CTRL_ANNOUNCE name=" + nsdServiceInfo.getServiceName() + " port=" + localPort + " svc=" + ControlChannel.ServiceName() + " manual=" + ControlChannel.ManualName());
+                            // [V1.8.31] 注册前先关闭其它仍活跃的实例。StopEarly() 只管 early；
+                            // PairingSession.Q1() 与 WifiNetworkMonitor 的实例会与它并发注册同名服务，
+                            // NsdManager 于是自动改名成 "XXX (2)"，车机按蓝牙名匹配失败。
+                            CarPlayCtrlAdvertiser prev = activeAdvertiser;
+                            if (prev != null && prev != this && !prev.i.get()) {
+                                ControlChannel.Log("CTRL_REG_CONFLICT_CLOSE new=" + instanceId
+                                        + " prev=" + prev.instanceId + " name=" + ControlChannel.ServiceName());
+                                r("CTRL_REG_CONFLICT_CLOSE new=" + instanceId + " prev=" + prev.instanceId);
+                                prev.close();
+                            }
+                            activeAdvertiser = this;
+                            ControlChannel.Log("CTRL_REG_BEGIN instance=" + instanceId
+                                    + " name=" + nsdServiceInfo.getServiceName()
+                                    + " port=" + localPort + " manual=" + ControlChannel.ManualName());
+                            nsdServiceInfo.setNetwork(this.b);
+                            ControlChannel.FillTxt(nsdServiceInfo, this.f);
+                            this.n = true;
+                            this.a.registerService(nsdServiceInfo, 1, this.q);
+                            if (ControlChannel.CtrlWaitInvitationEnabled()) {
+                                // [V1.8.32 P0-2] 本地 TXT 自证：车机 mDNS 解析得到的内容即此处所设。
+                                Map<String, byte[]> attrs = nsdServiceInfo.getAttributes();
+                                StringBuilder sb = new StringBuilder("CTRL_RESOLVE_TXT name=" + nsdServiceInfo.getServiceName());
+                                if (attrs != null) {
+                                    for (Map.Entry<String, byte[]> e : attrs.entrySet()) {
+                                        sb.append(" ").append(e.getKey()).append("=");
+                                        try {
+                                            sb.append(new String(e.getValue(), java.nio.charset.StandardCharsets.UTF_8));
+                                        } catch (Throwable ignored) {
+                                            sb.append("?");
+                                        }
+                                    }
+                                }
+                                r(sb.toString());
+                                // [V1.8.32 P0-3] 实例名与系统蓝牙名比对，确认固件 SendConnect 双串匹配能命中。
+                                String sysName = ControlChannel.SystemBluetoothName();
+                                String manual = ControlChannel.ManualName();
+                                boolean match = sysName != null && sysName.equals(manual);
+                                r("CTRL_IDENTITY_MATCH sys_name=" + sysName + " manual=" + manual
+                                        + " name_match=" + match + " deviceid=" + ControlChannel.LocalBluetoothIdentifier());
+                            }
+                            if (!this.i.get()) {
+                                for (ServerSocket serverSocket : this.k) {
+                                    ReleaseCheckTask gVar = new ReleaseCheckTask(i);
+                                    gVar.b = this;
+                                    gVar.c = serverSocket;
+                                    VarHandle.storeStoreFence();
+                                    Thread thread = new Thread(gVar, "CarPlayAPK-ctrl-invitation");
+                                    thread.setDaemon(true);
+                                    thread.start();
+                                }
+                            }
+                        } catch (IOException | RuntimeException e) {
+                            r("CTRL_SERVICE_UNAVAILABLE type=" + e.getClass().getSimpleName() + " original_path_retained=true");
+                            close();
                         }
-                    } catch (IOException | RuntimeException e) {
-                        r("CTRL_SERVICE_UNAVAILABLE type=" + e.getClass().getSimpleName() + " original_path_retained=true");
-                        close();
                     }
+                } catch (Throwable th) {
+                    throw th;
                 }
-            } catch (Throwable th) {
-                throw th;
             }
         }
     }

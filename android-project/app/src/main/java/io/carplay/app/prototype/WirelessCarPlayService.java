@@ -273,6 +273,7 @@ public final class WirelessCarPlayService extends Service {
                     if (this.d.h1(this.a)) {
                         if (str.startsWith("IAP2_PEER_CAPABILITIES ")) {
                             this.d.b = -1L;
+                            io.carplay.app.secured.ControlChannel.Iap2Diag("RCVD_IAP2_PEER_CAPABILITIES " + str);
                         }
                         if (str.startsWith("IAP2_PHONE_IDENTIFICATION snapshot_shared=true ")) {
                             this.d.b = this.a;
@@ -282,12 +283,15 @@ public final class WirelessCarPlayService extends Service {
                             WirelessCarPlayService.h1 = true;
                         }
                         if (!this.d.c0 && str.contains("RFCOMM_LISTENING")) {
+                            io.carplay.app.secured.ControlChannel.Iap2Diag("RCVD_RFCOMM_LISTENING");
                             this.d.a3("BLUETOOTH", "Waiting for selected receiver Bluetooth connection");
                         }
                         if (!this.d.c0 && str.equals("IAP2_AUTHENTICATED_WAITING_CARPLAY_START")) {
+                            io.carplay.app.secured.ControlChannel.Iap2Diag("RCVD_IAP2_AUTHENTICATED_WAITING_CARPLAY_START");
                             this.d.a3("WAITING_ACCESSORY_START", "Accessory proof verified; waiting for CarPlay start parameters");
                         }
                         if (!this.d.c0 && str.startsWith("IAP2_DETECT_RESTART attempt=")) {
+                            io.carplay.app.secured.ControlChannel.Iap2Diag("RCVD_IAP2_DETECT_RESTART " + str);
                             this.d.a3("PAIRING", "Receiver restarted iAP2 detection; replacing the bootstrap link with fresh authentication");
                         }
                         if (!this.d.c0 && str.equals("RFCOMM_PHONE_DISCOVERY_FALLBACK_READY")) {
@@ -4182,7 +4186,19 @@ public final class WirelessCarPlayService extends Service {
                     }
                 }
                 if ("MIC".equals(source)) {
-                    builder.setAudioSource(android.media.MediaRecorder.AudioSource.MIC);
+                    // [V1.8.30] 用户实测：车机会播出「手机麦克风采集的环境声」。
+                    // MIC 只是 V1.7.99 为验证「PCM → AAC → RTP」链路而加的临时兜底，
+                    // CarPlay 语义上 MEDIA 流应是手机媒体音频（MediaProjection +
+                    // AudioPlaybackCapture），不是麦克风。真机日志：
+                    //   AUDIO_CAPTURE_STARTED source=MIC rate=44100 channels=2 projection=false
+                    //   AUDIO_CAPTURE_READ last=1920 ... output_ready=true
+                    // 采集到的 PCM 经 AirPlaySession.t1(MEDIA, ...) 发出，车机当主音频播放。
+                    // 没有投影授权时直接不采集；复位标志，用户后续授权 MediaProjection 仍可重试。
+                    io.carplay.app.secured.ControlChannel.Log(
+                            "AUDIO_CAPTURE_SKIPPED reason=MIC_SOURCE_DISABLED projection=false");
+                    i1("AUDIO_CAPTURE_SKIPPED reason=MIC_SOURCE_DISABLED");
+                    PCM_CAPTURE_STARTED.set(false);
+                    return;
                 }
                 record = builder.build();
                 if (record.getState() != android.media.AudioRecord.STATE_INITIALIZED) {

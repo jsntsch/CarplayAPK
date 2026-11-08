@@ -33,6 +33,8 @@ public final class CarPlayLinkStore {
     private static final String KEY_LAST_PAIR_PREFIX = "last_pairing_identifier_";
     private static final String KEY_PAIR_FALLBACKS = "pair_verify_fallback_count";
     private static final String KEY_LAST_WIFI_ATTEMPT = "last_wifi_attempt_at";
+    // 方案 B：用户在主页「车机→WLAN」手动选定的车机所在 WLAN（保存在 wireless-ui）。
+    private static final String KEY_MANUAL_WLAN_SSID = "manual_wlan_ssid";
 
     private CarPlayLinkStore() {
     }
@@ -110,6 +112,20 @@ public final class CarPlayLinkStore {
             return selected;
         }
         return p(context).getString(KEY_BT_MAC, null);
+    }
+
+    /**
+     * 方案 B：读取用户手动选定的车机 WLAN（SSID）。
+     * 用于 CarPlayLinkStore.wifi() 为 null（iAP2 从未下发车机热点凭证，如车机接路由器）时，
+     * 让自动重连服务也能把手机接入车机所在网络后再发起 CarPlay 会话。
+     */
+    public static String manualWlanSsid(Context context) {
+        if (context == null) {
+            return null;
+        }
+        String ssid = context.getApplicationContext()
+                .getSharedPreferences(UI_PREFS, 0).getString(KEY_MANUAL_WLAN_SSID, null);
+        return (ssid == null || ssid.trim().isEmpty()) ? null : ssid.trim();
     }
 
     public static boolean enabled(Context context) {

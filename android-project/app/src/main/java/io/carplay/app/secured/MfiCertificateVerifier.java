@@ -591,6 +591,7 @@ public final class MfiCertificateVerifier {
         }
         y();
         if (this.l.contains(19982)) {
+            io.carplay.app.secured.ControlChannel.Iap2Diag("PEER_ADVERTISED_19982=true (car supports transport_notification)");
             // 【官方规范依据，2026-11-06 核实 carplay.pdf §23.2.7.2】
             //   "For CarPlay over wireless, the iAP2 client must support ... RequestAccessoryWiFiConfigurationInformation
             //    and AccessoryWiFiConfigurationInformation. The iAP2 client over Bluetooth is used **only to provide
@@ -768,6 +769,7 @@ public final class MfiCertificateVerifier {
                 c0("IAP2_PEER_START_DEPENDENCIES receives_4E0B=" + this.l.contains(19979) + " sends_5703=" + this.m.contains(22275));
             }
             this.a.h("IAP2_PEER_CAPABILITIES modern_start=" + this.m.contains(17153) + " modern_available=" + this.l.contains(17152) + " wifi_request=" + this.l.contains(22274) + " wireless_update=" + this.l.contains(19981) + " transport_notification=" + this.l.contains(19982));
+            io.carplay.app.secured.ControlChannel.Iap2Diag("PEER_CAPS modern_start=" + this.m.contains(17153) + " modern_available=" + this.l.contains(17152) + " wifi_request=" + this.l.contains(22274) + " transport_notification(19982)=" + this.l.contains(19982) + " bt_component=" + t(cVar, 17));
             this.a.h("IAP2_PEER_TRANSPORT_COMPONENTS bluetooth=" + t(cVar, 17) + " wireless_carplay=" + t(cVar, 24) + " usb_device=" + t(cVar, 15) + " usb_host=" + t(cVar, 16));
             // Info3.6 实测：车机既不接收 0x5702、也不发送 0x5703、也不支持 0x4301，
             // 三条同时成立 ⇒ 蓝牙 iAP2 在本机拿不到任何 WiFi 凭证，只能靠手动接入车机热点。
@@ -790,6 +792,8 @@ public final class MfiCertificateVerifier {
                 x(43520, new byte[0]);
             }
             this.a.h("IAP2_IDENTIFIED");
+            io.carplay.app.secured.ControlChannel.Iap2Diag("IDENTIFIED peer_advertised_19982=" + this.l.contains(19982)
+                    + " peer_advertised_wifi_request=" + this.l.contains(22274) + " ea_drop_19982=" + io.carplay.app.secured.ControlChannel.Iap2EaDrop19982());
             return;
         }
         if (i2 == 43526) {
@@ -990,6 +994,7 @@ public final class MfiCertificateVerifier {
         this.w0++;
         c cVar = this.a;
         cVar.h("IAP2_DETECT_RESTART attempt=1 max=1 fresh_proof_required=true deadline_extended=false retired_tx=" + j0(this.y == null ? -2 : this.A) + " retired_availability_reannouncements=" + this.u0);
+        io.carplay.app.secured.ControlChannel.Iap2Diag("DETECT_RESTART retired_tx=" + j0(this.y == null ? -2 : this.A) + " ea_drop_19982=" + io.carplay.app.secured.ControlChannel.Iap2EaDrop19982());
         this.y = null;
         this.F = false;
         this.A = -1;
@@ -1259,6 +1264,8 @@ public final class MfiCertificateVerifier {
                 str = "UNCHANGED";
             }
             cVar.h("IAP2_CARPLAY_AVAILABILITY_PLAN modern_only=" + zR + " local_bluetooth_identifier_present=" + z + " placeholder_sent=false identifier_wire_case=" + str);
+            io.carplay.app.secured.ControlChannel.Iap2Diag("CARPLAY_AVAILABILITY_PLAN local_bt_id_present=" + z
+                    + " R(modern_only)=" + zR + " identifier_case=" + str + " local_bt_id=" + (this.r0 != null ? this.r0 : "null"));
         }
         byte[] bArrB = Iap2Csm.B(0, new byte[]{1});
         if (this.q0 && R()) {
@@ -1289,8 +1296,16 @@ public final class MfiCertificateVerifier {
             //   导致车机认为 0x4E0E（传输通道 ID）未被协商 → 不 ACK 并 IAP2_PEER_RESTARTED。
             //   0x5702 = 22274（手机请求 AP 信息）、0x5703 = 22275（车机下发 AP 信息，旧协议无线 CarPlay 必需）。
             //   0xEA00/0xEA01 = 59904/59905（外部配件协议会话起停）。
-            int[] toSend = {19977, 19978, 19979, 19980, 19981, 19982, 22274, 59904, 59905};
-            int[] toReceive = {17153, 17152, 22275, 19977, 19978, 19979, 19980, 19981, 19982, 59904, 59905};
+            int[] toSendRaw = {19977, 19978, 19979, 19980, 19981, 19982, 22274, 59904, 59905};
+            int[] toReceiveRaw = {17153, 17152, 22275, 19977, 19978, 19979, 19980, 19981, 19982, 59904, 59905};
+            // [V1.8.33] P1-1 EA 变体：去掉 19982（transport_notification），验证 V1.7.67 旧疑点
+            // （19982 触发车机 IAP2_PEER_RESTARTED 重启引导、使 +0x9e0 列表永远为空）。
+            // 默认 false == V1.8.32 行为；置 true 仅在此次构造生效，不改其它路径。
+            boolean eaDrop = io.carplay.app.secured.ControlChannel.Iap2EaDrop19982();
+            int[] toSend = eaDrop ? bEaDrop(toSendRaw, 19982) : toSendRaw;
+            int[] toReceive = eaDrop ? bEaDrop(toReceiveRaw, 19982) : toReceiveRaw;
+            io.carplay.app.secured.ControlChannel.Iap2Diag("EA_PAYLOAD_BUILD ea_drop_19982=" + eaDrop
+                    + " to_send_len=" + toSend.length + " to_receive_len=" + toReceive.length);
             // 社区抓包/文档（CSDN iAP2 Accessory Identification）显示：StartIdentification 除消息收发列表外，
             // 还应携带设备身份参数 0=Name、1=Model、2=Manufacturer、3=Serial、4=Firmware、5=Hardware、8=Language。
             // 只发 6/7 会让对端无法把本机当成一台已知 CarPlay 设备；补齐后可对照车机 0x1D01 的响应变化。
@@ -1357,6 +1372,24 @@ public final class MfiCertificateVerifier {
             bArr[(i << 1) + 1] = (byte) iArr[i];
         }
         return bArr;
+    }
+
+    /** [V1.8.33] P1-1 辅助：从能力列表剔除指定消息 ID（仅用于 EA 变体测试，不影响其它路径）。 */
+    private static int[] bEaDrop(int[] iArr, int id) {
+        int c = 0;
+        for (int v : iArr) {
+            if (v != id) {
+                c++;
+            }
+        }
+        int[] out = new int[c];
+        int k = 0;
+        for (int v : iArr) {
+            if (v != id) {
+                out[k++] = v;
+            }
+        }
+        return out;
     }
 
     public boolean A() {

@@ -20,13 +20,21 @@ import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.BroadcastReceiver;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothManager;
+import android.bluetooth.BluetoothProfile;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.GradientDrawable;
 import android.net.ConnectivityManager;
+import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiManager;
 import android.net.Network;
 import android.os.Build;
 import android.os.Bundle;
@@ -134,7 +142,9 @@ public final class MainActivity extends Activity
     private String k = "";
     private int q = -1;
     private List<PairingSession.l> r = Collections.EMPTY_LIST;
-    private boolean logEnabled = true;
+    // 方案 B：用户在主页「车机→WLAN」手动选定的车机所在 WLAN（SSID），
+    // 当 CarPlayLinkStore.wifi() 为 null（无车机热点凭据）时作为连接兜底。
+    private String selectedWlanSsid;
     private boolean debugMode = false;
     private boolean autoConnect = false;
     private boolean autoTriggered = false;
@@ -145,6 +155,7 @@ public final class MainActivity extends Activity
     private Pager pager;
     private Button[] tabButtons;
     private int currentPage = 0;
+    private android.content.BroadcastReceiver btWlanReceiver;
     private final Runnable Y = new a();
 
     /**
@@ -831,6 +842,7 @@ public final class MainActivity extends Activity
             homeScreen.setAutoConnect(this.autoConnect);
         }
         renderStepsAndResolution(sp, zL1, state);
+        refreshBtWlanStatus();
         if (homeScreen != null) {
             homeScreen.showInfo(zE && !zL1
                     ? (PairingPreparationService.f() ? "识别准备就绪\n请从车机搜索/配对手机，然后刷新列表、选择车机连接。准备最多两分钟。"
@@ -838,6 +850,114 @@ public final class MainActivity extends Activity
                     : info);
         }
         this.k = state;
+    }
+
+    /** 刷新首页「车机」区的蓝牙 / WLAN 连接状态行与已选车机蓝牙 / WLAN。 */
+    private void refreshBtWlanStatus() {
+        if (homeScreen == null) return;
+        homeScreen.setBtStatus(getBtStatusText());
+        homeScreen.setWlanStatus(getWlanStatusText());
+        homeScreen.setHubBt(getHubBtName());
+        homeScreen.setHubWlan(this.selectedWlanSsid);
+        updateBtPairStatus();
+    }
+
+    /** 当前已选车机蓝牙的展示名（配对列表优先，回退到蓝牙设备名 + MAC 末段）。 */
+    private String getHubBtName() {
+        if (this.q >= 0 && this.q < this.r.size()) return X1(this.q);
+        String sel = i2();
+        if (sel == null || sel.isEmpty()) return null;
+        try {
+            BluetoothManager bm = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+            BluetoothAdapter adapter = bm != null ? bm.getAdapter() : null;
+            if (adapter != null) {
+                BluetoothDevice d = adapter.getRemoteDevice(sel);
+                if (d != null) {
+                    String n = d.getName();
+                    if (n != null && !n.isEmpty()) {
+                        return n + " · " + sel.substring(Math.max(0, sel.length() - 5));
+                    }
+                }
+            }
+        } catch (RuntimeException ignored) {
+        }
+        return sel;
+    }
+
+    /** 读取当前已连接 WiFi 的 SSID（去掉引号、不可读值归 null）。 */
+    private String getCurrentSsid() {
+        try {
+            WifiManager wm = (WifiManager) getApplicationContext().getSystemService(WifiManager.class);
+            if (wm == null) return null;
+            android.net.wifi.WifiInfo info = wm.getConnectionInfo();
+            if (info == null) return null;
+            String s = info.getSSID();
+            if (s == null) return null;
+            if (s.length() >= 2 && s.startsWith("\"") && s.endsWith("\"")) {
+                s = s.substring(1, s.length() - 1);
+            }
+            if (s.trim().isEmpty() || s.equals("<unknown ssid>")) return null;
+            return s;
+        } catch (RuntimeException unused) {
+            return null;
+        }
+    }
+
+    /**
+     * 方案 B 兜底：当没有车机热点凭据（CarPlayLinkStore.wifi()==null）但用户已在 UI 选定车机 WLAN 时，
+     * 先把手机接入该网络，再继续连接流程。已在该网络则直接继续；接入失败也继续（让用户手动连后重试）。
+     */
+    private void ensureManualWlan(final Runnable proceed) {
+        if (proceed == null) return;
+        boolean hasSaved = CarPlayLinkStore.wifi(this) != null;
+        String manual = this.selectedWlanSsid;
+        AppLogger.g(this, "MANUAL_EVAL has_saved_creds=" + hasSaved + " manual_ssid=" + (manual == null ? "null" : manual));
+        if (hasSaved) { proceed.run(); return; }
+        if (manual == null || manual.isEmpty()) { proceed.run(); return; }
+        String cur = getCurrentSsid();
+        if (manual.equalsIgnoreCase(cur)) { proceed.run(); return; } // 已在目标网络
+        o2("正在接入所选车机 WLAN：" + manual);
+        AppLogger.g(this, "AUTO_WIFI_MANUAL_ENSURE target=" + manual + " current=" + (cur == null ? "null" : cur));
+        boolean ok = CarPlayWifiConnector.connectToKnownNetwork(this, manual, new CarPlayWifiConnector.Callback() {
+            @Override
+            public void onReady(android.net.Network network) {
+                AppLogger.g(MainActivity.this, "AUTO_WIFI_MANUAL_READY target=" + manual);
+                proceed.run();
+            }
+
+            @Override
+            public void onUnavailable(String reason) {
+                o2("无法自动接入 " + manual + "（" + reason + "），请手动连接后重试；仍将继续尝试。");
+                proceed.run();
+            }
+        });
+        if (!ok) proceed.run();
+    }
+
+    private String getBtStatusText() {
+        BluetoothManager bm = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        if (bm == null) return "不可用";
+        BluetoothAdapter adapter = bm.getAdapter();
+        if (adapter == null || !adapter.isEnabled()) return "未开启";
+        try {
+            int headset = adapter.getProfileConnectionState(BluetoothProfile.HEADSET);
+            int a2dp = adapter.getProfileConnectionState(BluetoothProfile.A2DP);
+            if (headset == BluetoothProfile.STATE_CONNECTED || a2dp == BluetoothProfile.STATE_CONNECTED) {
+                return "已连接";
+            }
+        } catch (Throwable ignored) {
+        }
+        return "已开启";
+    }
+
+    private String getWlanStatusText() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (cm == null) return "不可用";
+        android.net.Network net = cm.getActiveNetwork();
+        if (net == null) return "未连接";
+        android.net.NetworkCapabilities caps = cm.getNetworkCapabilities(net);
+        if (caps != null && caps.hasTransport(android.net.NetworkCapabilities.TRANSPORT_WIFI)) return "已连接";
+        return "未连接";
     }
 
     public void b2() {
@@ -874,9 +994,27 @@ public final class MainActivity extends Activity
     }
     private void e2() {
         if (!S0()) {
+            AppLogger.g(this, "E2_GATE s0=false rev=" + getSharedPreferences(m0, 0).getString("accepted_revision", ""));
             P0();
             return;
         }
+        // 连接已在进行中时不重复发起网络请求（保留原门控）。
+        if (WirelessCarPlayService.L1()) {
+            AppLogger.g(this, "E2_GATE already_connecting=true");
+            return;
+        }
+        // 方案 B：网络准备（接入手动选定的车机 WLAN）是纯网络动作、无 UI 副作用，
+        // 必须放在 Activity 前台门控 this.d 之前——自动连接冷启动时 onResume 可能晚于触发，
+        // 否则「打开应用自动连接」永远走不到这一步。真正的连接仍由 e2Internal 的 d 门控保护。
+        ensureManualWlan(new Runnable() {
+            @Override
+            public void run() {
+                e2Internal();
+            }
+        });
+    }
+
+    private void e2Internal() {
         if (!this.d || WirelessCarPlayService.L1()) {
             return;
         }
@@ -1015,11 +1153,18 @@ public final class MainActivity extends Activity
 
     
     public String i2() {
-        int i = this.q;
-        if (i < 0 || i >= this.r.size()) {
-            return null;
+        // 方案 B：以用户在 UI 选定的车机蓝牙为准（来自「已配对蓝牙」选择或设置页「选择车机」）。
+        // 不再强依赖 this.r/this.q（CarPlay 已配对列表）—— Honor V10 + diplay 这类仅普通蓝牙配对、
+        // 尚未建立 CarPlay 配对记录的车机，也应能被选为连接目标。
+        String sel = getSharedPreferences("wireless-ui", 0).getString("selected_address", null);
+        if (sel != null && !sel.isEmpty()) {
+            return sel;
         }
-        return this.r.get(this.q).b;
+        int i = this.q;
+        if (i >= 0 && i < this.r.size()) {
+            return this.r.get(i).b;
+        }
+        return null;
     }
 
     
@@ -1148,58 +1293,105 @@ public final class MainActivity extends Activity
         if (this.T != null) {
             return;
         }
-        if (WirelessCarPlayService.L1()) {
-            o2("请先断开连接，再修改本机蓝牙标识；配对和日志会保留。");
-            return;
-        }
-        String str = this.l;
         LinearLayout linearLayout = new LinearLayout(this);
         linearLayout.setOrientation(1);
         linearLayout.setPadding(O0(20), O0(18), O0(20), O0(16));
-        UiFactory.m(linearLayout, "本机蓝牙标识", "bluetooth");
-        x2(linearLayout, str == null ? "此处保存这部手机的真实蓝牙地址。已保存的地址会保留，覆盖升级无需重新填写。" : "系统没有提供可用的手机蓝牙地址，部分车机启动时会用到这个标识。请从手机设置查看后填写；点“暂不填写”也可继续连接。", 14);
-        EditText editText = new EditText(this);
-        editText.setSingleLine(true);
-        editText.setTextSize(16.0f);
-        editText.setHint("手机蓝牙地址（六组冒号分隔）");
-        editText.setInputType(528385);
-        editText.setSaveEnabled(false);
-        editText.setAutofillHints(null);
-        editText.setImportantForAutofill(2);
-        editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(17)});
-        editText.setText(io.carplay.app.prototype.BluetoothAdapterResolver.b(this));
-        editText.setPadding(O0(12), O0(12), O0(12), O0(12));
-        GradientDrawable gradientDrawableB = UiFactory.B(this, -854534, 12);
-        gradientDrawableB.setStroke(O0(1), -2300431);
-        editText.setBackground(gradientDrawableB);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(-1, -2);
-        layoutParams.topMargin = O0(14);
-        layoutParams.bottomMargin = O0(12);
-        linearLayout.addView(editText, layoutParams);
-        o3 o3Var = new o3(0);
-        o3Var.b = this;
-        VarHandle.storeStoreFence();
-        G0(linearLayout, "打开手机设置查看", o3Var);
-        x2(linearLayout, "怎么查手机蓝牙地址\n1. 先打开手机蓝牙。\n2. 打开手机设置 → 关于本机 / 关于手机 → 状态信息 → 蓝牙地址。不同系统也可能叫“状态”或“所有参数与信息”。\n3. 找不到时，在手机设置中搜索“蓝牙地址”或“状态信息”；如显示不可用，开启蓝牙后重新查看。\n4. 将显示的真实值复制或填入上方，共六组字符，用英文冒号分隔。\n\n必须是这部手机的蓝牙地址，不能填车机地址或 WLAN 地址，也不要填写系统占位地址。找不到时不要猜。", 14);
-        x2(linearLayout, "仅保存在本机，日志不记录地址。只补充匹配能力的启动通知，不更换现有 CarPlay 密钥或配对。清除后恢复自动获取。", 12);
+        UiFactory.m(linearLayout, "手机蓝牙标识", "bluetooth");
+        x2(linearLayout, "填写这部手机的蓝牙名称与地址，部分车机启动时会用到；仅保存在本机，日志不记录。", 14);
+
+        // 蓝牙名称
+        EditText nameEdit = new EditText(this);
+        nameEdit.setSingleLine(true);
+        nameEdit.setTextSize(16.0f);
+        nameEdit.setHint("蓝牙名称（如 iPhone、OPPO X8 等）");
+        nameEdit.setInputType(1);
+        nameEdit.setSaveEnabled(false);
+        nameEdit.setAutofillHints(null);
+        nameEdit.setImportantForAutofill(2);
+        nameEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(64)});
+        nameEdit.setText(getSharedPreferences("carplayapk-local-transport", 0).getString("phone_bluetooth_name", ""));
+        nameEdit.setPadding(O0(12), O0(12), O0(12), O0(12));
+        GradientDrawable nameBg = UiFactory.B(this, -854534, 12);
+        nameBg.setStroke(O0(1), -2300431);
+        nameEdit.setBackground(nameBg);
+        LinearLayout.LayoutParams nameLp = new LinearLayout.LayoutParams(-1, -2);
+        nameLp.topMargin = O0(14);
+        nameLp.bottomMargin = O0(10);
+        linearLayout.addView(nameEdit, nameLp);
+
+        // 蓝牙地址
+        EditText addrEdit = new EditText(this);
+        addrEdit.setSingleLine(true);
+        addrEdit.setTextSize(16.0f);
+        addrEdit.setHint("蓝牙地址（六组冒号分隔，如 AA:BB:CC:DD:EE:FF）");
+        addrEdit.setInputType(528385);
+        addrEdit.setSaveEnabled(false);
+        addrEdit.setAutofillHints(null);
+        addrEdit.setImportantForAutofill(2);
+        addrEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(17)});
+        addrEdit.setText(io.carplay.app.prototype.BluetoothAdapterResolver.b(this));
+        addrEdit.setPadding(O0(12), O0(12), O0(12), O0(12));
+        GradientDrawable addrBg = UiFactory.B(this, -854534, 12);
+        addrBg.setStroke(O0(1), -2300431);
+        addrEdit.setBackground(addrBg);
+        LinearLayout.LayoutParams addrLp = new LinearLayout.LayoutParams(-1, -2);
+        addrLp.topMargin = O0(4);
+        addrLp.bottomMargin = O0(12);
+        linearLayout.addView(addrEdit, addrLp);
+
+        x2(linearLayout, "蓝牙地址可在手机设置 → 关于本机 / 状态信息 → 蓝牙地址 查看（六组字符，英文冒号分隔）。", 13);
+        G0(linearLayout, "打开手机设置查看", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                V1("android.settings.BLUETOOTH_SETTINGS");
+            }
+        });
+
         ScrollView scrollView = new ScrollView(this);
         scrollView.addView(linearLayout);
-        AlertDialog alertDialogCreate = new AlertDialog.Builder(this).setView(scrollView).setPositiveButton(str == null ? "保存" : "保存并连接", (DialogInterface.OnClickListener) null).setNegativeButton(str == null ? "取消" : "暂不填写", (DialogInterface.OnClickListener) null).setNeutralButton(str == null ? "清除手动地址" : "取消连接", (DialogInterface.OnClickListener) null).create();
-        this.T = alertDialogCreate;
-        p3 p3Var = new p3();
-        p3Var.a = this;
-        p3Var.b = alertDialogCreate;
-        p3Var.c = editText;
-        p3Var.d = str;
-        VarHandle.storeStoreFence();
-        alertDialogCreate.setOnShowListener(p3Var);
-        q3 q3Var = new q3();
-        q3Var.a = this;
-        q3Var.b = editText;
-        q3Var.c = alertDialogCreate;
-        VarHandle.storeStoreFence();
-        alertDialogCreate.setOnDismissListener(q3Var);
-        alertDialogCreate.show();
+        final AlertDialog alertDialog = new AlertDialog.Builder(this).setView(scrollView)
+                .setPositiveButton("保存", null)
+                .setNegativeButton("取消", null).create();
+        this.T = alertDialog;
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface d) {
+                Button saveBtn = alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                saveBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String name = nameEdit.getText().toString().trim();
+                        String addr = io.carplay.app.secured.n.a(addrEdit.getText().toString().trim());
+                        if (addr == null) {
+                            addrEdit.setError("请输入有效的蓝牙地址；不接受占位或广播地址。");
+                            return;
+                        }
+                        if (addr.equalsIgnoreCase(i2())) {
+                            addrEdit.setError("这是所选车机的地址，请填写手机本机地址。");
+                            return;
+                        }
+                        SharedPreferences.Editor ed = getSharedPreferences("carplayapk-local-transport", 0).edit();
+                        ed.putString("phone_bluetooth_address", addr);
+                        ed.putString("phone_bluetooth_name", name);
+                        if (!ed.commit()) {
+                            addrEdit.setError("保存未完成，请重试。");
+                            return;
+                        }
+                        AppLogger.g(MainActivity.this, "USER_LOCAL_BLUETOOTH_IDENTIFIER_SET present=true value_logged=false");
+                        o2("已保存手机蓝牙标识。");
+                        refreshLocalBtStatus();
+                        alertDialog.dismiss();
+                    }
+                });
+            }
+        });
+        alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface d) {
+                MainActivity.this.T = null;
+            }
+        });
+        alertDialog.show();
     }
 
     
@@ -1419,18 +1611,17 @@ public final class MainActivity extends Activity
             o2("请先选择一台已配对的车机。");
             return;
         }
-        Stream<PairingSession.l> stream = this.r.stream();
+        // 方案 B：信任用户在 UI 手动选定的车机蓝牙；不再因「不在 CarPlay 已配对列表」而硬拦。
         m3 m3Var = new m3(0);
         m3Var.b = str;
-        VarHandle.storeStoreFence();
-        if (stream.noneMatch(m3Var)) {
-            o2("所选车机不在配对列表中，请重新配对并刷新。");
-        } else {
-            if (isDestroyed() || !this.d || WirelessCarPlayService.L1() || Y1(str)) {
-                return;
-            }
-            S1(str);
+        boolean inList = this.r.stream().anyMatch(m3Var);
+        if (!inList) {
+            AppLogger.g(this, "CAR_SELECT_NOT_IN_PAIRED_LIST trusting_manual_selection=true mac_present=" + (str != null));
         }
+        if (isDestroyed() || !this.d || WirelessCarPlayService.L1() || Y1(str)) {
+            return;
+        }
+        S1(str);
     }
 
     
@@ -1498,14 +1689,34 @@ public final class MainActivity extends Activity
     }
 
     private void z2() {
-        String strX1;
-        int i = this.q;
-        if (i < 0 || i >= this.r.size()) {
-            strX1 = this.r.isEmpty() ? "请先蓝牙配对，再刷新列表" : "请选择已配对的车机";
-        } else {
-            strX1 = X1(this.q);
+        // 「选择车机」行已从设置页移除，这里只需刷新蓝牙配对状态。
+        updateBtPairStatus();
+    }
+
+    /**
+     * 刷新设置页「蓝牙配对」状态，反映选中车机的真实系统配对状态。
+     * 旧实现把该行写死为“未配对”且 setBtPair() 从未被调用；此处改为直接比对系统已配对设备列表。
+     */
+    private void updateBtPairStatus() {
+        if (settingsScreen == null) return;
+        String selected = i2();
+        if (selected == null || selected.isEmpty()) {
+            selected = getSharedPreferences("wireless-ui", 0).getString("selected_address", null);
         }
-        if (settingsScreen != null) settingsScreen.setSelectedCar(strX1);
+        BluetoothManager bm = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        BluetoothAdapter adapter = bm != null ? bm.getAdapter() : null;
+        if (selected == null || selected.isEmpty()) {
+            boolean anyBonded = adapter != null && adapter.getBondedDevices() != null && !adapter.getBondedDevices().isEmpty();
+            settingsScreen.setBtPair(anyBonded ? "未选择" : "未配对");
+            return;
+        }
+        boolean bonded = false;
+        if (adapter != null && adapter.getBondedDevices() != null) {
+            for (BluetoothDevice d : adapter.getBondedDevices()) {
+                if (selected.equalsIgnoreCase(d.getAddress())) { bonded = true; break; }
+            }
+        }
+        settingsScreen.setBtPair(bonded ? "已配对" : "未配对");
     }
 
     @Override 
@@ -1544,10 +1755,10 @@ public final class MainActivity extends Activity
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         SharedPreferences dbgPrefs = getSharedPreferences("carplayapk-debug", 0);
-        this.logEnabled = dbgPrefs.getBoolean("log_enabled", true);
         this.debugMode = dbgPrefs.getBoolean("debug_mode", false);
         this.autoConnect = dbgPrefs.getBoolean("auto_connect_launch", false);
-        AppLogger.setRecordingEnabled(this.logEnabled);
+        // [V1.8.34] 调试模式兼作「运行日志记录」总开关：关闭则不写日志文件，开启才记录。
+        AppLogger.setRecordingEnabled(this.debugMode);
 
         this.g = bundle != null && bundle.getBoolean("continue_source_intent", false);
         this.a = bundle != null && bundle.getBoolean("pairing_visibility_pending", false);
@@ -1555,13 +1766,23 @@ public final class MainActivity extends Activity
         this.p = bundle != null ? bundle.getLong("current_wifi_handle", 0L) : 0L;
         this.E = bundle != null && bundle.getBoolean("home_manual_route", false);
 
-        // 应用主题（跟随系统）
-        Ui.c(getApplicationContext(), 0);
+        // 应用主题（读取持久化偏好，默认跟随系统）
+        int themeMode = getSharedPreferences("carplayapk-ui", 0).getInt("theme_mode", 0);
+        Ui.c(getApplicationContext(), themeMode);
+        applyStatusBarAppearance();
+
+        // 方案 B：读取手动选定的车机 WLAN（SSID）
+        this.selectedWlanSsid = getSharedPreferences("wireless-ui", 0).getString("manual_wlan_ssid", null);
 
         // 三屏（移植自参考 APK 的 HomeScreen / SettingsScreen / AboutScreen 布局）
         homeScreen = new HomeScreenUi(this, this);
         settingsScreen = new SettingsScreenUi(this, this);
         aboutScreen = new AboutScreenUi(this, this);
+        settingsScreen.setTheme(themeMode);
+        // [V1.8.35] 初始化「主动发起 iAP2-over-WiFi」（P1-2）开关状态（持久化于 carplayapk-debug）。
+        settingsScreen.setProactiveIap2(ControlChannel.P1_2ProactiveIap2Enabled());
+        // [V1.8.34] 初始化蓝牙标识状态显示（未设置则高亮）。
+        refreshLocalBtStatus();
 
         // 横向翻页容器
         pager = new Pager(this);
@@ -1610,8 +1831,12 @@ public final class MainActivity extends Activity
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
         root.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
-        root.addView(tabBar, new LinearLayout.LayoutParams(-1, -2));
+        root.setPadding(0, 0, 0, 0);
         root.addView(pager, new LinearLayout.LayoutParams(-1, 0, 1.0f));
+        View tabDivider = new View(this);
+        tabDivider.setBackgroundColor(Ui.f1233a ? 0x33FFFFFF : 0x24000000);
+        root.addView(tabDivider, new LinearLayout.LayoutParams(-1, Math.max(1, Ui.h(this, 0.7f))));
+        root.addView(tabBar, new LinearLayout.LayoutParams(-1, -2));
         setContentView(root);
         Ui.k(root);
 
@@ -1619,6 +1844,20 @@ public final class MainActivity extends Activity
         if (S0()) {
             T1();
         }
+        // 蓝牙 / WLAN 状态实时刷新（连接状态变化时刷新首页状态行）
+        this.btWlanReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                a2();
+            }
+        };
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        filter.addAction("android.net.wifi.WIFI_STATE_CHANGED");
+        filter.addAction("android.net.wifi.STATE_CHANGE");
+        filter.addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED);
+        filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+        registerReceiver(this.btWlanReceiver, filter);
         a2();
         // [UI 重构] 启动后自动连接：已开启且记住车机，延迟触发一次
         if (S0() && this.autoConnect && i2() != null && !WirelessCarPlayService.L1() && !this.autoTriggered) {
@@ -1631,6 +1870,7 @@ public final class MainActivity extends Activity
     }
 
     public void startConnectFromHome() {
+        AppLogger.g(this, "START_CONNECT_FROM_HOME l1=" + WirelessCarPlayService.L1() + " selected=" + (i2() != null));
         if (!S0()) { P0(); return; }
         if (WirelessCarPlayService.L1()) { o2("连接已在进行中。"); return; }
         if (i2() == null) {
@@ -1651,8 +1891,7 @@ public final class MainActivity extends Activity
         int rw = sp.getInt("receiver_width", 0);
         int rh = sp.getInt("receiver_height", 0);
         if (homeScreen != null) {
-            homeScreen.setResolution(nw > 0 && nh > 0 ? (nw + " × " + nh) : "—",
-                                    rw > 0 && rh > 0 ? (rw + " × " + rh) : "—");
+            homeScreen.setResolution(rw > 0 && rh > 0 ? (rw + " × " + rh) : "—");
         }
         int cur = 1;
         if (connected) {
@@ -1706,68 +1945,266 @@ public final class MainActivity extends Activity
     @Override
     public void pickResolution() {
         SharedPreferences sp = getSharedPreferences(WirelessCarPlayService.b1, 0);
-        int nw = sp.getInt("native_width", 0), nh = sp.getInt("native_height", 0);
         int rw = sp.getInt("receiver_width", 0), rh = sp.getInt("receiver_height", 0);
-        String msg = "投屏画面：" + (nw > 0 ? nw + " × " + nh : "—") + "\n手机屏幕：" + (rw > 0 ? rw + " × " + rh : "—");
+        String msg = "投屏画面（车机分辨率）：" + (rw > 0 && rh > 0 ? rw + " × " + rh : "未连接，暂无车机分辨率");
         new AlertDialog.Builder(this).setTitle("投屏分辨率").setMessage(msg)
                 .setPositiveButton("知道了", (DialogInterface.OnClickListener) null).show();
     }
 
     @Override
-    public void setOrientation(int which) {
-        try {
-            setRequestedOrientation(which == 1 ? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT : ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            o2(which == 1 ? "已切换为竖屏" : "已切换为横屏");
-        } catch (Throwable ignored) {
+    public void selectHeadUnitBt() {
+        if (!S0()) { P0(); return; }
+        // 方案 B：这里必须列举【系统已配对蓝牙】(BluetoothAdapter.getBondedDevices())，
+        // 而不是 this.r（CarPlay 已配对列表）。diplay 这类模拟车机往往只在系统层 BONDED、
+        // 从未建立 CarPlay 配对记录，若只列 this.r 用户根本选不到它。
+        // i2()/v2() 已放宽为信任手动选择，与此处的选取范围保持一致。
+        final java.util.List<String> labels = new java.util.ArrayList<>();
+        final java.util.List<String> addrs = new java.util.ArrayList<>();
+        if (checkSelfPermission(b0) == 0) {
+            try {
+                BluetoothManager bm = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+                BluetoothAdapter adapter = bm != null ? bm.getAdapter() : null;
+                if (adapter != null) {
+                    for (BluetoothDevice d : adapter.getBondedDevices()) {
+                        String mac = d.getAddress();
+                        if (mac == null || containsIgnoreCase(addrs, mac)) continue;
+                        String name = d.getName();
+                        labels.add((name == null || name.isEmpty() ? "未知设备" : name)
+                                + " · " + mac.substring(Math.max(0, mac.length() - 5)));
+                        addrs.add(mac);
+                    }
+                }
+            } catch (RuntimeException ignored) {
+            }
         }
+        // 补充 CarPlay 已配对列表里、但系统配对表中已不存在的历史设备，避免选择项丢失。
+        T1();
+        for (int i = 0; i < this.r.size(); i++) {
+            String mac = this.r.get(i).b;
+            if (mac != null && !containsIgnoreCase(addrs, mac)) {
+                labels.add(X1(i));
+                addrs.add(mac);
+            }
+        }
+        if (addrs.isEmpty()) {
+            o2("没有已配对的蓝牙设备，请先在设置→蓝牙配对中配好车机。");
+            return;
+        }
+        final String[] items = labels.toArray(new String[0]);
+        final String[] macs = addrs.toArray(new String[0]);
+        String cur = i2();
+        int checked = 0;
+        for (int i = 0; i < macs.length; i++) {
+            if (cur != null && cur.equalsIgnoreCase(macs[i])) { checked = i; break; }
+        }
+        new AlertDialog.Builder(this).setTitle("选择车机蓝牙（已配对）").setSingleChoiceItems(items, checked,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String addr = macs[which];
+                        getSharedPreferences("wireless-ui", 0).edit().putString("selected_address", addr).apply();
+                        // 若该设备也存在于 CarPlay 已配对列表，同步 q，保证设置页「选择车机」显示一致。
+                        for (int i = 0; i < MainActivity.this.r.size(); i++) {
+                            if (addr.equalsIgnoreCase(MainActivity.this.r.get(i).b)) {
+                                MainActivity.this.q = i;
+                                break;
+                            }
+                        }
+                        dialog.dismiss();
+                        refreshBtWlanStatus();
+                        z2();
+                        o2("已选择车机蓝牙：" + items[which]);
+                    }
+                }).setNegativeButton("取消", (DialogInterface.OnClickListener) null).show();
+    }
+
+    private static boolean containsIgnoreCase(java.util.List<String> list, String value) {
+        for (String s : list) {
+            if (s != null && s.equalsIgnoreCase(value)) return true;
+        }
+        return false;
     }
 
     @Override
-    public void setFitMode(int which) {
-        getSharedPreferences("wireless-ui", 0).edit().putInt("fit", which == 1 ? 1 : 0).apply();
-        o2(which == 1 ? "画面适配：拉伸铺满" : "画面适配：等比显示");
+    public void selectSavedWlan() {
+        if (!S0()) { P0(); return; }
+
+        final java.util.List<String> ssids = new java.util.ArrayList<>();
+
+        // 1) 当前已连接的 WLAN（WifiInfo.getSSID 可读，且 diplay 接路由器时通常正是它）。
+        String current = getCurrentSsid();
+        if (current != null && !current.isEmpty()) {
+            ssids.add(current);
+        }
+
+        // 2) 已保存网络列表：Android 10(API 29)+ 对第三方应用返回空（仅设备所有者/系统应用可见），
+        //    这里尽力读取，读不到也不影响下面「手动输入」兜底。
+        int configured = 0;
+        try {
+            WifiManager wm = (WifiManager) getApplicationContext().getSystemService(WifiManager.class);
+            if (wm != null) {
+                java.util.List<WifiConfiguration> cfgs = wm.getConfiguredNetworks();
+                if (cfgs != null) {
+                    configured = cfgs.size();
+                    for (WifiConfiguration cfg : cfgs) {
+                        if (cfg == null || cfg.SSID == null) continue;
+                        String s = cfg.SSID;
+                        if (s.length() >= 2 && s.startsWith("\"") && s.endsWith("\"")) {
+                            s = s.substring(1, s.length() - 1);
+                        }
+                        if (s.isEmpty() || s.equals("<unknown ssid>")) continue;
+                        if (!containsIgnoreCase(ssids, s)) ssids.add(s);
+                    }
+                }
+            }
+        } catch (RuntimeException unused) {
+            // 权限/隐私限制，忽略（仍可手动输入）。
+        }
+
+        // 3) 上次手动选定的 SSID（系统可能已遗忘，仍保留为可选项）。
+        if (this.selectedWlanSsid != null && !this.selectedWlanSsid.isEmpty()
+                && !containsIgnoreCase(ssids, this.selectedWlanSsid)) {
+            ssids.add(this.selectedWlanSsid);
+        }
+
+        AppLogger.g(this, "WLAN_PICKER configured=" + configured + " candidates=" + ssids.size()
+                + " current_readable=" + (current != null));
+
+        // 4) 固定追加两个兜底项，即使系统完全不给列表也永远有可选动作，
+        //    不会再出现「没有读取到保存的 WLAN」这种死路。
+        final int manualIndex = ssids.size();
+        final int settingsIndex = ssids.size() + 1;
+        final String[] values = ssids.toArray(new String[0]);
+        String[] items = new String[values.length + 2];
+        for (int i = 0; i < values.length; i++) {
+            items[i] = values[i] + (current != null && values[i].equalsIgnoreCase(current) ? "（当前连接）" : "");
+        }
+        items[manualIndex] = "手动输入 SSID…";
+        items[settingsIndex] = "打开系统 WLAN 设置…";
+
+        int checked = -1;
+        for (int i = 0; i < values.length; i++) {
+            if (this.selectedWlanSsid != null && values[i].equalsIgnoreCase(this.selectedWlanSsid)) {
+                checked = i;
+                break;
+            }
+        }
+
+        new AlertDialog.Builder(this).setTitle("选择车机所在 WLAN")
+                .setSingleChoiceItems(items, checked, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        if (which == manualIndex) {
+                            promptManualSsid();
+                        } else if (which == settingsIndex) {
+                            // 系统里能看到完整「已保存网络」列表；连好后返回本页，「当前连接」即会出现。
+                            V1("android.settings.WIFI_SETTINGS");
+                        } else if (which >= 0 && which < values.length) {
+                            saveManualWlan(values[which]);
+                        }
+                    }
+                })
+                .setNegativeButton("取消", (DialogInterface.OnClickListener) null).show();
+    }
+
+    /** 保存手动选定的车机 WLAN（SSID）并刷新主页显示。 */
+    private void saveManualWlan(String ssid) {
+        if (ssid == null) return;
+        String s = ssid.trim();
+        if (s.isEmpty()) {
+            o2("SSID 不能为空。");
+            return;
+        }
+        this.selectedWlanSsid = s;
+        getSharedPreferences("wireless-ui", 0).edit().putString("manual_wlan_ssid", s).apply();
+        refreshBtWlanStatus();
+        AppLogger.g(this, "WLAN_MANUAL_SELECTED ssid_logged=false");
+        o2("已选择车机 WLAN：" + s + "（连接时若未接入将自动连上）");
+    }
+
+    /** 系统不给已保存列表时的兜底：手动输入车机所连路由器的 SSID。 */
+    private void promptManualSsid() {
+        final EditText edit = new EditText(this);
+        edit.setSingleLine(true);
+        edit.setInputType(1);
+        edit.setHint("车机所连路由器的 SSID");
+        edit.setText(this.selectedWlanSsid == null ? "" : this.selectedWlanSsid);
+        edit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(64)});
+        LinearLayout box = new LinearLayout(this);
+        box.setOrientation(LinearLayout.VERTICAL);
+        int pad = O0(20);
+        box.setPadding(pad, O0(8), pad, O0(8));
+        box.addView(edit, new LinearLayout.LayoutParams(-1, -2));
+        new AlertDialog.Builder(this).setTitle("手动输入 WLAN")
+                .setMessage("系统未提供已保存网络列表（Android 10+ 限制）。\n请填写车机（diplay）所连接路由器的 SSID；手机需与车机处于同一网络。")
+                .setView(box)
+                .setPositiveButton("保存", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface d, int which) {
+                        saveManualWlan(edit.getText().toString());
+                    }
+                })
+                .setNegativeButton("取消", (DialogInterface.OnClickListener) null).show();
+    }
+
+    @Override
+    public void setHubBt(String name) {
+        if (homeScreen != null) homeScreen.setHubBt(name);
+    }
+
+    @Override
+    public void setHubWlan(String ssid) {
+        if (homeScreen != null) homeScreen.setHubWlan(ssid);
+    }
+
+    @Override
+    public void setBtStatus(String status) {
+        if (homeScreen != null) homeScreen.setBtStatus(status);
+    }
+
+    @Override
+    public void setWlanStatus(String status) {
+        if (homeScreen != null) homeScreen.setWlanStatus(status);
     }
 
     // 注意：不可命名为 setTheme —— 会与 Activity.setTheme(int) 冲突并被框架在启动期误调，
     // 其内部 recreate() 会触发 Activity 无限重建（闪屏）。改用 applyTheme 仅实现 ScreenActions 接口。
     public void applyTheme(int which) {
+        getSharedPreferences("carplayapk-ui", 0).edit().putInt("theme_mode", which).apply();
         Ui.c(getApplicationContext(), which);
+        applyStatusBarAppearance();
         recreate();
     }
 
-    @Override
-    public void selectCar() {
-        if (!S0()) { P0(); return; }
-        T1();
-        if (this.r.isEmpty()) {
-            o2("还没有已配对的车机，请先点「蓝牙配对」。");
-            j2();
-            return;
+    /** 根据当前明暗主题设置状态栏图标颜色（亮色主题用深 icon，暗色主题用浅 icon）。 */
+    private void applyStatusBarAppearance() {
+        int flags = getWindow().getDecorView().getSystemUiVisibility();
+        if (Ui.f1233a) {
+            flags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+        } else {
+            flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
         }
-        String[] items = new String[this.r.size()];
-        for (int i = 0; i < this.r.size(); i++) items[i] = X1(i);
-        int checked = (this.q >= 0 && this.q < this.r.size()) ? this.q : 0;
-        new AlertDialog.Builder(this).setTitle("选择车机").setSingleChoiceItems(items, checked,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        MainActivity.this.q = which;
-                        String addr = MainActivity.this.r.get(which).b;
-                        getSharedPreferences("wireless-ui", 0).edit().putString("selected_address", addr).apply();
-                        dialog.dismiss();
-                        z2();
-                        a2();
-                        o2("已选择：" + X1(which));
-                    }
-                }).setNegativeButton("取消", (DialogInterface.OnClickListener) null).show();
+        getWindow().getDecorView().setSystemUiVisibility(flags);
+    }
+
+    @Override
+    public void setProactiveIap2(boolean on) {
+        // [V1.8.35] 设置 → 连接 开关：写 p1_2_proactive_iap2，AirPlaySession 下次建链时生效。
+        getSharedPreferences("carplayapk-debug", 0).edit().putBoolean("p1_2_proactive_iap2", on).apply();
+        if (settingsScreen != null) settingsScreen.setProactiveIap2(on);
+        ControlChannel.Log("USER_P1_2_PROACTIVE_IAP2_SET enabled=" + on);
+        o2(on ? "已开启主动发起 iAP2-over-WiFi（下次连接生效）。" : "已关闭主动发起 iAP2-over-WiFi。");
     }
 
     @Override
     public void setDebugMode(boolean on) {
         this.debugMode = on;
         getSharedPreferences("carplayapk-debug", 0).edit().putBoolean("debug_mode", on).apply();
+        // [V1.8.34] 调试模式同时控制运行日志是否落盘：关闭即停止记录。
+        AppLogger.setRecordingEnabled(on);
         if (settingsScreen != null) settingsScreen.setDebugMode(on);
-        o2(on ? "已开启调试模式。" : "已关闭调试模式。");
+        o2(on ? "已开启调试模式（运行日志已开启）。" : "已关闭调试模式（停止记录日志）。");
     }
 
     @Override
@@ -1777,13 +2214,32 @@ public final class MainActivity extends Activity
     public void openDeclaration() { k2(); }
 
     @Override
-    public void bluetoothPair() { j2(); }
+    public void bluetoothPair() { p1(); }
 
     @Override
     public void localBtIdentity() { n2(); }
 
     @Override
-    public void openLog() { a1(); }
+    public void openLog() {
+        // [V1.8.34] 调试模式关闭时不记录日志，提示用户而非打开空日志。
+        if (!AppLogger.isRecordingEnabled()) {
+            o2("调试模式未开启，未记录运行日志。请在设置中打开「调试模式」。");
+            return;
+        }
+        a1();
+    }
+
+    /** [V1.8.34] 设置页「手机蓝牙标识」状态：name 或 address 任一为空则显示「未设置」并高亮。 */
+    private void refreshLocalBtStatus() {
+        if (settingsScreen == null) {
+            return;
+        }
+        SharedPreferences prefs = getSharedPreferences("carplayapk-local-transport", 0);
+        String name = prefs.getString("phone_bluetooth_name", "");
+        String addr = prefs.getString("phone_bluetooth_address", "");
+        boolean anyEmpty = name == null || name.trim().isEmpty() || addr == null || addr.trim().isEmpty();
+        settingsScreen.setLocalBt(anyEmpty ? "未设置" : "已设置", anyEmpty);
+    }
 
     public void openGit() {
         try {
@@ -1812,6 +2268,13 @@ public final class MainActivity extends Activity
             alertDialog3.setOnDismissListener(null);
             this.S.dismiss();
             this.S = null;
+        }
+        if (this.btWlanReceiver != null) {
+            try {
+                unregisterReceiver(this.btWlanReceiver);
+            } catch (IllegalArgumentException unused) {
+            }
+            this.btWlanReceiver = null;
         }
         super.onDestroy();
     }
@@ -1852,7 +2315,14 @@ public final class MainActivity extends Activity
                 o2("权限已就绪，请选择车机后连接。");
             } else {
                 // 音源需要手机媒体音频（Car+ / 音乐 App），先取 MediaProjection 授权再连。
-                a4(str);
+                // 方案 B：先确保已接入手动选定的车机 WLAN，再走媒体授权与连接。
+                final String target = str;
+                ensureManualWlan(new Runnable() {
+                    @Override
+                    public void run() {
+                        a4(target);
+                    }
+                });
             }
         }
     }
@@ -1860,6 +2330,10 @@ public final class MainActivity extends Activity
     @Override 
     public void onResume() {
         super.onResume();
+        // [V1.8.34] 每次回到前台刷新蓝牙标识状态显示。
+        refreshLocalBtStatus();
+        // [V1.8.35] 同步 P1-2 开关（adb 广播 DEBUG_SET_P12 改动后回到前台也能对上）。
+        if (settingsScreen != null) settingsScreen.setProactiveIap2(ControlChannel.P1_2ProactiveIap2Enabled());
         // App 一到前台就广播 _carplay-ctrl，让车机从自己那一侧发起时也能发现本机。
         CarPlayCtrlAdvertiser.StartEarly(this);
         // [V1.8.25] 前台时确保常驻自动重连服务在跑（开机广播之外的一层保险）。

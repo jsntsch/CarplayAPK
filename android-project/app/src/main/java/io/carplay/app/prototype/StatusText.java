@@ -87,11 +87,11 @@ final class StatusText {
                 return "连接暂时中断，正在自动恢复\n已保留原生 Car+ 会话，无需反复点击连接";
             case "CHECKING":
             case "BLUETOOTH":
-                return "正在建立车机连接\n保持车机开机、蓝牙和 WLAN 开启；CarPlay 图标灰色时也可等待连接";
+                return "正在建立车机连接\n保持车机开机、蓝牙和 WLAN 开启";
             case "WAITING_ACCESSORY_START":
                 return "车机已通过证书挑战\n正在等待 CarPlay 启动参数，尚未取得车机 WLAN 配置；请留意车机上的连接确认提示";
             case "FORWARDING_NATIVE":
-                return "正在向车机发送画面\n请以车机实际显示为准；仍无画面时请导出日志\n通话目前仍由手机处理";
+                return "正在向车机发送画面；仍无画面时请导出日志\n";
             case "TRUST_REQUIRED":
                 return "车机证书发生变化\n请核对设备确认提示";
             case "CAR_SCREEN_IN_USE":
@@ -125,13 +125,13 @@ final class StatusText {
         }
         switch (str) {
             case "unconfirmed":
-                return "前台请求已发送，但尚未收到原生前台事件；请查看车机和日志";
+                return "前台请求已发送，但尚未收到原生前台事件";
             case "observed":
-                return "已收到原生 Car+ 前台事件；车机实际显示仍需现场确认";
+                return "已收到原生 Car+ 前台事件";
             case "waiting":
-                return "正在等待原生 Car+ 就绪后请求前台；车机实际显示尚未确认";
+                return "正在等待原生 Car+ 就绪后请求前台";
             case "written":
-                return "前台请求已发送；尚未收到原生前台事件，车机实际显示尚未确认";
+                return "前台请求已发送；尚未收到原生前台事件";
             default:
                 return "";
         }

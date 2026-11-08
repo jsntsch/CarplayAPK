@@ -26,9 +26,8 @@ public final class HomeScreenUi extends ScrollView {
     private final GradientDrawable[] cardBg;
     private final UiHolder autoConnectRow;
     private final UiHolder castResRow;
-    private final UiHolder phoneResRow;
-    private final UiHolder orientationRow;
-    private final UiHolder fitRow;
+    private final UiHolder btRow;
+    private final UiHolder wlanRow;
 
     private int lastState = -1;
     private String lastButton = null;
@@ -158,46 +157,35 @@ public final class HomeScreenUi extends ScrollView {
             }
         });
         if (castResRow.valueText != null) castResRow.valueText.setTextColor(Ui.f1241i);
-        phoneResRow = Ui.o(context, "手机屏幕", null, "—", false, null, null);
         screenCard.addView(castResRow.view);
-        Ui.g(screenCard, context);
-        screenCard.addView(phoneResRow.view);
         LinearLayout.LayoutParams screenLp = new LinearLayout.LayoutParams(-1, -2);
         screenLp.topMargin = Ui.h(context, 2.0f);
         root.addView(screenCard, screenLp);
 
-        // 「投 影」
-        Ui.p(root, context, "投 影");
+        // 「车 机」
+        Ui.p(root, context, "车 机");
         LinearLayout projCard = Ui.e(context);
-        orientationRow = Ui.o(context, "屏幕方向", null, "横屏", true, null, new View.OnClickListener() {
+        // 蓝牙：点击选择已配对的车机蓝牙；值显所选设备名，副文本显实时蓝牙状态。
+        btRow = Ui.o(context, "蓝牙", "点按选择车机蓝牙", "未选择", true, null, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Ui.i((android.app.Activity) getContext(), v, new String[]{"横屏", "竖屏"},
-                        "竖屏".equals(orientationRow.valueText != null ? orientationRow.valueText.getText() : "横屏") ? 1 : 0,
-                        new OnSelect() {
-                            @Override
-                            public void onSelected(int index) {
-                                actions.setOrientation(index);
-                            }
-                        });
+                actions.selectHeadUnitBt();
             }
         });
-        fitRow = Ui.o(context, "画面适配", null, "适应", true, null, new View.OnClickListener() {
+        if (btRow.valueText != null) btRow.valueText.setTextColor(Ui.f1241i);
+        if (btRow.subText != null) btRow.subText.setTextColor(Ui.f1253w);
+        // WLAN：点击选择已保存的 WLAN（车机所连路由器）；值显所选 SSID，副文本显实时 WLAN 状态。
+        wlanRow = Ui.o(context, "WLAN", "点按选择车机 WLAN", "未选择", true, null, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Ui.i((android.app.Activity) getContext(), v, new String[]{"适应", "拉伸"},
-                        "拉伸".equals(fitRow.valueText != null ? fitRow.valueText.getText() : "适应") ? 1 : 0,
-                        new OnSelect() {
-                            @Override
-                            public void onSelected(int index) {
-                                actions.setFitMode(index);
-                            }
-                        });
+                actions.selectSavedWlan();
             }
         });
-        projCard.addView(orientationRow.view);
+        if (wlanRow.valueText != null) wlanRow.valueText.setTextColor(Ui.f1241i);
+        if (wlanRow.subText != null) wlanRow.subText.setTextColor(Ui.f1253w);
+        projCard.addView(btRow.view);
         Ui.g(projCard, context);
-        projCard.addView(fitRow.view);
+        projCard.addView(wlanRow.view);
         root.addView(projCard, new LinearLayout.LayoutParams(-1, -2));
     }
 
@@ -239,19 +227,35 @@ public final class HomeScreenUi extends ScrollView {
         }
     }
 
-    public void setResolution(String cast, String phone) {
+    public void setResolution(String cast) {
         if (castResRow.valueText != null) castResRow.valueText.setText(cast);
-        if (phoneResRow.valueText != null) phoneResRow.valueText.setText(phone);
     }
 
-    public void setOrientation(int which) {
-        if (orientationRow.valueText != null)
-            orientationRow.valueText.setText(which == 1 ? "竖屏" : "横屏");
+    public void setBtStatus(String status) {
+        // 副文本显实时蓝牙状态，避免覆盖「已选车机蓝牙名」的值文本。
+        if (btRow.subText != null) {
+            btRow.subText.setText(status == null || status.isEmpty() ? "点按选择车机蓝牙" : ("蓝牙：" + status));
+        }
     }
 
-    public void setFitMode(int which) {
-        if (fitRow.valueText != null)
-            fitRow.valueText.setText(which == 1 ? "拉伸" : "适应");
+    public void setWlanStatus(String status) {
+        if (wlanRow.subText != null) {
+            wlanRow.subText.setText(status == null || status.isEmpty() ? "点按选择车机 WLAN" : ("WLAN：" + status));
+        }
+    }
+
+    public void setHubBt(String name) {
+        if (btRow.valueText != null) {
+            btRow.valueText.setText(name == null || name.isEmpty() ? "未选择" : name);
+            btRow.valueText.setTextColor(name == null || name.isEmpty() ? Ui.f1253w : Ui.f1241i);
+        }
+    }
+
+    public void setHubWlan(String ssid) {
+        if (wlanRow.valueText != null) {
+            wlanRow.valueText.setText(ssid == null || ssid.isEmpty() ? "未选择" : ssid);
+            wlanRow.valueText.setTextColor(ssid == null || ssid.isEmpty() ? Ui.f1253w : Ui.f1241i);
+        }
     }
 
     public void setAutoConnect(boolean on) {

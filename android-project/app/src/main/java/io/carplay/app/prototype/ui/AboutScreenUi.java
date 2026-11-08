@@ -9,8 +9,8 @@ import android.content.pm.PackageManager;
 
 /**
  * 关于页（移植自参考 APK 的 AboutScreen 布局）。
- * 结构：标题 → 版 本(版本/构建/设备/系统) → 关 注(GitHub) → 帮 助(使用教程/免责声明)。
- * 已按需求去掉抖音/小红书/酷安，删除底部说明文字。
+ * 结构：标题 → 版 本(版本/构建/设备/系统) → 关 注(GitHub) → 帮 助 与 支 持(使用教程/免责声明)。
+ * 已按需求去掉抖音/小红书/酷安，删除底部说明文字；帮助与支持区已恢复。
  */
 public final class AboutScreenUi extends ScrollView {
 
@@ -61,8 +61,8 @@ public final class AboutScreenUi extends ScrollView {
         followLp.topMargin = Ui.h(context, 2.0f);
         root.addView(followCard, followLp);
 
-        // 帮 助
-        Ui.p(root, context, "帮 助");
+        // 帮 助 与 支 持
+        Ui.p(root, context, "帮助与支持");
         LinearLayout helpCard = Ui.e(context);
         helpCard.addView(Ui.o(context, "使用教程", null, null, true, null, new android.view.View.OnClickListener() {
             @Override

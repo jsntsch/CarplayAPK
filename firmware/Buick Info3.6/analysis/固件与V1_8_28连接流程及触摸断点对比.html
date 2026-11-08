@@ -1,0 +1,59 @@
+<svg viewBox="0 0 680 474" width="100%" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>Buick Info3.6 固件与 CarPlayAPK V1.8.28 的连接流程及触摸断点对比</title>
+<desc>左列是车机固件的三层配对、点火自动重连与 SETUP startSession 门；右列是手机 APK 的一层配对、自动重连触发源与 SETUP 入站缺失；底部列出三个触摸断点。</desc>
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</marker>
+</defs>
+
+<text class="th" x="40" y="36" fill="var(--color-text-primary)" font-size="14" font-weight="500">Buick Info3.6 · 车机固件</text>
+<text class="th" x="360" y="36" fill="var(--color-text-primary)" font-size="14" font-weight="500">CarPlayAPK V1.8.28 · 手机</text>
+
+<line x1="340" y1="56" x2="340" y2="376" stroke="var(--color-border-tertiary)" stroke-width="0.5" stroke-dasharray="3 3"/>
+
+<rect x="40" y="56" width="280" height="96" rx="10" fill="var(--color-background-secondary)" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+<text class="th" x="56" y="80" fill="var(--color-text-primary)" font-size="13" font-weight="500">配对：三层</text>
+<text class="ts" x="56" y="102" fill="var(--color-text-secondary)" font-size="12">蓝牙 OOB link key + Apple EAP</text>
+<text class="ts" x="56" y="122" fill="var(--color-text-secondary)" font-size="12">/pair-setup · /pair-verify + keychain</text>
+<text class="ts" x="56" y="142" fill="var(--color-text-secondary)" font-size="12">AddCarPlayClient 登记 (MAC, ID)</text>
+
+<rect x="360" y="56" width="280" height="96" rx="10" fill="var(--color-background-secondary)" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+<text class="th" x="376" y="80" fill="var(--color-text-primary)" font-size="13" font-weight="500">配对：一层</text>
+<text class="ts" x="376" y="102" fill="var(--color-text-secondary)" font-size="12">PairingTlv8.h() 先 verify 后 setup</text>
+<text class="ts" x="376" y="122" fill="var(--color-text-secondary)" font-size="12">peer 键 = 车机返回 identifier</text>
+<text class="ts" x="376" y="142" fill="var(--color-text-secondary)" font-size="12">无 OOB / EAP / devid 会话登记</text>
+
+<rect x="40" y="168" width="280" height="96" rx="10" fill="var(--color-background-secondary)" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+<text class="th" x="56" y="192" fill="var(--color-text-primary)" font-size="13" font-weight="500">点火自动重连</text>
+<text class="ts" x="56" y="214" fill="var(--color-text-secondary)" font-size="12">恢复 [obj+0x9e0] 客户端表</text>
+<text class="ts" x="56" y="234" fill="var(--color-text-secondary)" font-size="12">browse _carplay-ctrl → SendConnect</text>
+<text class="ts" x="56" y="254" fill="var(--color-text-secondary)" font-size="12">GET /ctrl-int/1/connect → 手机 200</text>
+
+<rect x="360" y="168" width="280" height="96" rx="10" fill="var(--color-background-secondary)" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+<text class="th" x="376" y="192" fill="var(--color-text-primary)" font-size="13" font-weight="500">自动重连（V1.8.25 起）</text>
+<text class="ts" x="376" y="214" fill="var(--color-text-secondary)" font-size="12">BOOT / 蓝牙 ACL / WiFi / ctrl 邀请</text>
+<text class="ts" x="376" y="234" fill="var(--color-text-secondary)" font-size="12">常驻 FGS + StartEarly 广播应答</text>
+<text class="ts" x="376" y="254" fill="var(--color-text-secondary)" font-size="12">→ V0 起会话；方案B 手动 WLAN 兜底</text>
+
+<path d="M322 216 L356 216" fill="none" stroke="var(--color-text-secondary)" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<rect x="40" y="280" width="280" height="96" rx="10" fill="var(--color-background-secondary)" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+<text class="th" x="56" y="304" fill="var(--color-text-primary)" font-size="13" font-weight="500">SETUP → startSession 门</text>
+<text class="ts" x="56" y="326" fill="var(--color-text-secondary)" font-size="12">0x483b0 多道状态门 + 0x3d670</text>
+<text class="ts" x="56" y="346" fill="var(--color-text-secondary)" font-size="12">成功才置 [+0x466]=1 @0x484f1</text>
+<text class="ts" x="56" y="366" fill="var(--color-text-secondary)" font-size="12">开启 9 条车机→手机命令发送门</text>
+
+<rect x="360" y="280" width="280" height="96" rx="10" fill="var(--color-background-secondary)" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+<text class="th" x="376" y="304" fill="var(--color-text-primary)" font-size="13" font-weight="500">SETUP → 入站</text>
+<text class="ts" x="376" y="326" fill="var(--color-text-secondary)" font-size="12">无 X-Apple-Durations；单流 type110</text>
+<text class="ts" x="376" y="346" fill="var(--color-text-secondary)" font-size="12">音频未协商 pcmBytes=0</text>
+<text class="ts" x="376" y="366" fill="var(--color-text-secondary)" font-size="12">INBOUND_REQ / hidSendReport = 0</text>
+
+<path d="M358 328 L324 328" fill="none" stroke="var(--color-text-danger)" stroke-width="1.5" stroke-dasharray="3 2" marker-end="url(#arrow)"/>
+
+<rect x="40" y="390" width="600" height="64" rx="10" fill="var(--color-background-danger)" stroke="var(--color-border-danger)" stroke-width="0.5"/>
+<text class="th" x="56" y="412" fill="var(--color-text-danger)" font-size="13" font-weight="500">触摸断点（按上游优先级）</text>
+<text class="ts" x="56" y="432" fill="var(--color-text-danger)" font-size="12">① SendConnect 二元组不匹配 → 不发 connect　② [+0x466] 未置位 → 9 条反向命令全被 0x45100 拦下</text>
+<text class="ts" x="56" y="448" fill="var(--color-text-danger)" font-size="12">③ 回调槽 [+0x60]/[+0x48]/[+0x68] 为 NULL → 200 只代表转发成功，不等于 HMI 启用触摸</text>
+</svg>

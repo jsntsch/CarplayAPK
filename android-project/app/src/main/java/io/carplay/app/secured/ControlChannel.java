@@ -78,6 +78,142 @@ public final class ControlChannel {
         return n.a(DeviceMac());
     }
 
+    /**
+     * [V1.8.29] 会话序列 V2 总开关（P0-3 / P0-2 / P0-1 / P1-1 / P1-2 / P1-3）。
+     * [V1.8.30] **默认改为 false**：2026-11-08 22:44 真机 A/B 证实，V2 开启时
+     * 「RECORD 后多流 SETUP」被车机 400 并触发每 ~10.1s `VIDEO_SEND Broken pipe`
+     * 的会话重建；关闭 V2 后 40 秒内 `SESSION_FAILURE=0`、投屏恢复。
+     * 置 true 可重新启用做逐项 A/B，但当前版本不建议在生产路径开启。
+     */
+    public static boolean SeqV2Enabled() {
+        Context ctx = APP_CTX;
+        if (ctx == null) {
+            return false;
+        }
+        try {
+            return ctx.getSharedPreferences("carplayapk-debug", 0).getBoolean("session_seq_v2", false);
+        } catch (Throwable ignored) {
+            return false;
+        }
+    }
+
+    /**
+     * [V1.8.32] 反向通道调试总开关（P0-1 / P0-2 / P0-3 共用）。
+     * 默认 false：行为与 V1.8.31 完全一致（主动连车机 7000，等邀请仅作兜底）。
+     * 置 true：
+     *   P0-1 让「等车机 ctrl 回连」成为主路径（先播 ctrl、等 GET /ctrl-int/1/connect，超时再主动连）；
+     *   P0-2 在 ctrl 注册后打印本地 TXT 属性自证（CTRL_RESOLVE_TXT）；
+     *   P0-3 打印 ManualName 与系统蓝牙名的一致性（CTRL_IDENTITY_MATCH）。
+     * 通过 adb 广播切换，可一键回滚，不影响生产路径。
+     */
+    public static boolean CtrlWaitInvitationEnabled() {
+        Context ctx = APP_CTX;
+        if (ctx == null) {
+            return false;
+        }
+        try {
+            return ctx.getSharedPreferences("carplayapk-debug", 0)
+                    .getBoolean("ctrl_wait_invitation", false);
+        } catch (Throwable ignored) {
+            return false;
+        }
+    }
+
+    /**
+     * [V1.8.33] P1-1 蓝牙 iAP2 登记触发诊断总开关。
+     * 默认 false：行为与 V1.8.32 完全一致，不打印任何 iAP2 握手细节。
+     * 置 true：在 PairingSession / MfiCertificateVerifier / WirelessCarPlayService 的
+     * RFCOMM 监听、iAP2 识别、IAP2_IDENTIFIED、IAP2_PEER_CAPABILITIES、IAP2_PEER_RESTARTED
+     * 等关键节点打印 IAP2_DIAG_* 日志，用于在真车上定位握手断在哪一步
+     * （对照固件 IosControlClientCallback/AddCarPlayClient 的 +0x9e0 列表是否被填充）。
+     */
+    public static boolean Iap2DiagEnabled() {
+        Context ctx = APP_CTX;
+        if (ctx == null) {
+            return false;
+        }
+        try {
+            return ctx.getSharedPreferences("carplayapk-debug", 0)
+                    .getBoolean("iap2_diag", false);
+        } catch (Throwable ignored) {
+            return false;
+        }
+    }
+
+    /**
+     * [V1.8.33] P1-1 的 EA 能力列表变体开关：去掉 19982（transport_notification）。
+     * 默认 false：沿用 V1.8.32 的 toSend={19977..19982,22274,59904,59905}。
+     * 置 true：从 EA 的 to-send / to-receive 列表移除 19982，验证 V1.7.67 旧疑点
+     * （19982 触发车机 IAP2_PEER_RESTARTED 重启 iAP2 引导、使登记永远走不完）是否成立。
+     */
+    public static boolean Iap2EaDrop19982() {
+        Context ctx = APP_CTX;
+        if (ctx == null) {
+            return false;
+        }
+        try {
+            return ctx.getSharedPreferences("carplayapk-debug", 0)
+                    .getBoolean("iap2_ea_drop_19982", false);
+        } catch (Throwable ignored) {
+            return false;
+        }
+    }
+
+    /**
+     * [V1.8.34] P1-2 主动发起 iAP2-over-WiFi 总开关。
+     * 默认 false：沿用 V1.8.33 行为（network iAP2 仅由车机首条 CONTROL_POST 被动建立）。
+     * 置 true：会话认证完成后，手机作为 iAP2 host **主动**建立 network iAP2 会话并向车机
+     * 发送 iAP2 识别（绕开「车机等手机先发、手机等车机先发」的死锁），使车机
+     * NmeWifiTransportServer.on_iap_message 收到并置 iap_channel=true，
+     * 从而打通车机→手机的反向 iAP2 HID 触摸通道。
+     * [V1.8.35] 可通过 设置 → 连接 → 主动发起 iAP2-over-WiFi 开关切换，adb 广播 DEBUG_SET_P12 仍然可用。
+     */
+    public static boolean P1_2ProactiveIap2Enabled() {
+        Context ctx = APP_CTX;
+        if (ctx == null) {
+            return false;
+        }
+        try {
+            return ctx.getSharedPreferences("carplayapk-debug", 0)
+                    .getBoolean("p1_2_proactive_iap2", false);
+        } catch (Throwable ignored) {
+            return false;
+        }
+    }
+
+    /** [V1.8.33] P1-1 诊断日志：仅在 iap2_diag=true 时打印，前缀 IAP2_DIAG，便于 logcat 过滤。 */
+    public static void Iap2Diag(String message) {
+        if (!Iap2DiagEnabled()) {
+            return;
+        }
+        Log.i("CarPlayAPK", "IAP2_DIAG " + message);
+    }
+
+    /**
+     * [V1.8.29] 会话序列 V2 的统一日志：logcat tag CarPlayAPK（前缀 V2_SEQ）+ 应用内
+     * files/v2-seq-log.txt 双写。AppLogger 是 prototype 包私有，secured 包不能访问，
+     * 所以这里独立追加，避免改动业务层注入链。
+     */
+    public static void V2Log(String message) {
+        String line = "V2_SEQ " + message;
+        Log.i("CarPlayAPK", line);
+        Context ctx = APP_CTX;
+        if (ctx == null) {
+            return;
+        }
+        try {
+            java.io.FileOutputStream out = ctx.openFileOutput("v2-seq-log.txt", Context.MODE_APPEND);
+            try {
+                out.write((java.time.Instant.now() + " " + line + "\n")
+                        .getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            } finally {
+                out.close();
+            }
+        } catch (Throwable ignored) {
+            // 日志写入失败绝不影响会话。
+        }
+    }
+
 
     /**
      * 登记车机下发的 connect 身份。Info3.6 的 CarPlayControlClient 只有完成这一步才把会话
@@ -227,6 +363,12 @@ public final class ControlChannel {
                     + " srcvers=" + TXT_SRCVERS + " features=" + TXT_FEATURES + " protovers=" + TXT_PROTOVERS
                     + " identity_source=" + (strDeviceMac != null ? "LOCAL_BLUETOOTH" : "PAIRING_SNAPSHOT")
                     + " identity_matches_iap2=" + (strDeviceMac != null) + " values_logged=false");
+            if (CtrlWaitInvitationEnabled()) {
+                boolean idOk = n.a(str2) != null;
+                boolean srcOk = TXT_SRCVERS.matches("[0-9]+\\.[0-9]+\\.[0-9]+");
+                Log("CTRL_TXT_VALIDATE id_format_ok=" + idOk + " srcvers_format_ok=" + srcOk
+                        + " id=" + str2 + " name=" + ServiceName());
+            }
         } catch (Throwable th) {
             Log("V170_TXT_FILL_FAILED");
         }
@@ -268,9 +410,22 @@ public final class ControlChannel {
     }
 
     public static String ManualName() {
-        String string;
         Context context = APP_CTX;
-        return (context == null || (string = context.getSharedPreferences("carplayapk-local-transport", 0).getString("bluetooth_name", "")) == null) ? "" : string.trim();
+        if (context == null) {
+            return "";
+        }
+        android.content.SharedPreferences prefs =
+                context.getSharedPreferences("carplayapk-local-transport", 0);
+        // [V1.8.31] 设置页「手机蓝牙标识」保存的是 phone_bluetooth_name（MainActivity），
+        // 旧实现却读 bluetooth_name（SaveName 的历史键）⇒ 用户填写的蓝牙名永远读不到，
+        // ServiceName() 一直回退 "CarPlayAPK"，车机按蓝牙名匹配 SendConnect 会对不上。
+        // 优先读 UI 键，旧键仅作兼容回退。
+        String ui = prefs.getString("phone_bluetooth_name", "");
+        if (ui != null && ui.trim().length() != 0) {
+            return ui.trim();
+        }
+        String legacy = prefs.getString("bluetooth_name", "");
+        return legacy == null ? "" : legacy.trim();
     }
 
     public static void MarkInvited() {
@@ -331,8 +486,11 @@ public final class ControlChannel {
             str2 = "";
         }
         String strTrim = str2.trim();
-        context.getSharedPreferences("carplayapk-local-transport", 0).edit().putString("bluetooth_name", strTrim).commit();
-        Log("V172_NAME_SAVED len=" + strTrim.length());
+        // [V1.8.31] 双写两个键：UI 键供 ManualName()/ServiceName() 读取，旧键保留兼容。
+        context.getSharedPreferences("carplayapk-local-transport", 0).edit()
+                .putString("phone_bluetooth_name", strTrim)
+                .putString("bluetooth_name", strTrim).commit();
+        Log("V172_NAME_SAVED len=" + strTrim.length() + " keys=phone_bluetooth_name+bluetooth_name");
         return strTrim.length() == 0 ? "已清除蓝牙名称，重新连接后将使用默认名称广播。" : "已保存蓝牙名称，重新连接后生效。";
     }
 
@@ -340,5 +498,24 @@ public final class ControlChannel {
         // 只使用用户手动填写的蓝牙名称；未填写时用固定兜底名，不读取系统蓝牙名。
         String strManualName = ManualName();
         return strManualName.length() != 0 ? strManualName : "CarPlayAPK";
+    }
+
+    /** [V1.8.32 P0-3] 系统蓝牙名，用于与手填蓝牙名比对，确认 ctrl 服务实例名与车机配对记录一致。 */
+    public static String SystemBluetoothName() {
+        try {
+            android.bluetooth.BluetoothAdapter adapter = android.bluetooth.BluetoothAdapter.getDefaultAdapter();
+            if (adapter == null) {
+                return null;
+            }
+            String name;
+            try {
+                name = adapter.getName();
+            } catch (SecurityException ignored) {
+                return null;
+            }
+            return (name == null || name.isEmpty()) ? null : name.trim();
+        } catch (Throwable ignored) {
+            return null;
+        }
     }
 }

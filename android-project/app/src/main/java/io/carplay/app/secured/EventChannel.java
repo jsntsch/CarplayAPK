@@ -90,6 +90,14 @@ public final class EventChannel implements Closeable {
     private final AtomicInteger inboundHandlerFailures = new AtomicInteger();
     
     private final AtomicInteger unhandledInboundRequests = new AtomicInteger();
+    /** [V1.8.29] 入站请求总数（含 handler 抛错/为 null），用于确认固件反向控制通道门是否打开。 */
+    private final AtomicInteger inboundRequestsSeen = new AtomicInteger();
+    /** [V1.8.29] 单次同步请求的读超时覆盖（<=0 用构造值）；仅由 setRequestTimeoutOverride 修改。 */
+    private volatile int requestTimeoutMs = -1;
+    /** [V1.8.29] 为 true 时读超时不关闭通道（RECORD 专用：车机 Info3.6 不回 RECORD 响应）。 */
+    private volatile boolean tolerateReadTimeout = false;
+    /** [V1.8.29] 允许跳过的「迟到响应」条数（RECORD 超时后车机可能晚回一条）。 */
+    private volatile int staleResponseTolerance = 0;
     private volatile boolean w;
     private volatile boolean x;
     private volatile long y;
@@ -857,6 +865,21 @@ public final class EventChannel implements Closeable {
         return bVarS;
     }
 
+    /**
+     * [V1.8.29 P0-1] 覆盖「下一次同步请求」的读超时，并可选择超时时不关闭通道。
+     * w() 是 synchronized，调用方在持有本对象监视器期间设置/复位，不会影响其它请求。
+     * 必须在 finally 中用 (-1, false) 复位。
+     */
+    public synchronized void setRequestTimeoutOverride(int timeoutMs, boolean tolerateTimeout) {
+        this.requestTimeoutMs = timeoutMs;
+        this.tolerateReadTimeout = tolerateTimeout;
+        // 额度只在设置时授予；调用方 finally 用 (ms<=0, false) 复位时不清零，
+        // 因为迟到的 RECORD 响应会出现在**下一个**请求（流 SETUP）的读循环里。
+        if (tolerateTimeout) {
+            this.staleResponseTolerance = 1;
+        }
+    }
+
     public synchronized b v(String str, String str2, String str3, byte[] bArr) throws IOException {
         return w(str, str2, str3, bArr, Collections.EMPTY_MAP);
     }
@@ -876,13 +899,21 @@ public final class EventChannel implements Closeable {
             if (str3 != null) {
                 linkedHashMap.put("Content-Type", str3);
             }
-            this.m = (((long) this.e) * 1000000) + System.nanoTime();
+            int effectiveTimeoutMs = this.requestTimeoutMs > 0 ? this.requestTimeoutMs : this.e;
+            this.m = (((long) effectiveTimeoutMs) * 1000000) + System.nanoTime();
             try {
                 try {
                     writeMessage(str + " " + str2 + " RTSP/1.0", linkedHashMap, bArr);
                     for (int i = 0; i < 32; i++) {
                         bVarS = s();
                         if (!bVarS.a.startsWith("RTSP/") && !bVarS.a.startsWith("HTTP/")) {
+                            // [V1.8.29 P1-1] 任何入站（含 handler 为 null / 抛错）都要留下证据：
+                            // 固件反向控制通道门 [obj+0x466] 未开时本计数应恒为 0。
+                            int seen = this.inboundRequestsSeen.incrementAndGet();
+                            if (seen <= 5 || seen % 20 == 0) {
+                                ControlChannel.Log("CARPLAY_INBOUND_ANY uri=" + bVarS.a
+                                        + " count=" + seen + " handler_present=" + (this.requestHandler != null));
+                            }
                             c cVar = this.requestHandler;
                             byte[] bArrA;
                             if (cVar == null) {
@@ -921,6 +952,15 @@ public final class EventChannel implements Closeable {
                         } else if (!matchQueuedCommandResponse(bVarS)) {
                             String strD = bVarS.d("cseq");
                             if (strD != null && !strD.equals(Integer.toString(cseq))) {
+                                // [V1.8.29 P0-1] RECORD 短超时后车机可能晚回一条响应，
+                                // 它会先于下一条请求（流 SETUP）的响应到达。旧逻辑直接
+                                // close() 整条控制通道 ⇒ 会话立刻结束。这里容忍一次并继续读。
+                                if (this.staleResponseTolerance > 0) {
+                                    this.staleResponseTolerance--;
+                                    ControlChannel.V2Log("STALE_RESPONSE_TOLERATED cseq=" + strD
+                                            + " expected=" + cseq);
+                                    continue;
+                                }
                                 throw new IOException("RTSP CSeq mismatch");
                             }
                             bVarS.d = q(str, str2);
@@ -939,6 +979,17 @@ public final class EventChannel implements Closeable {
                         }
                     }
                     throw new IOException("Too many unsolicited RTSP requests");
+                } catch (java.net.SocketTimeoutException timeout) {
+                    // [V1.8.29 P0-1] RECORD 在 Info3.6 上不回响应。旧逻辑在这里 close() 整条控制
+                    // 通道并占锁到 EOF（实测 13s），后续流 SETUP / keepalive 全被卡住。
+                    // 打开 tolerateReadTimeout 时只释放锁、不关闭通道，把「无响应」交回调用方容忍。
+                    if (this.tolerateReadTimeout) {
+                        this.m = 0L;
+                        ControlChannel.V2Log("RECORD_READ_TIMEOUT_TOLERATED msg=" + timeout.getMessage());
+                        throw timeout;
+                    }
+                    close();
+                    throw timeout;
                 } catch (IOException | RuntimeException e2) {
                     close();
                     throw e2;
@@ -985,6 +1036,13 @@ public final class EventChannel implements Closeable {
                     if (bVarS.a.startsWith("RTSP/") || bVarS.a.startsWith("HTTP/")) {
                         handleEventResponse(bVarS);
                     } else {
+                        // [V1.8.29 P1-1] 常驻事件读循环同样记录任意入站，
+                        // 与 w() 的计数合并，作为固件反向门 [obj+0x466] 是否打开的总判据。
+                        int seen = this.inboundRequestsSeen.incrementAndGet();
+                        if (seen <= 5 || seen % 20 == 0) {
+                            ControlChannel.Log("CARPLAY_INBOUND_ANY uri=" + bVarS.a
+                                    + " count=" + seen + " origin=EVENT_READER");
+                        }
                         byte[] replyBody;
                         try {
                             replyBody = cVar.a(bVarS);
@@ -1123,6 +1181,11 @@ public final class EventChannel implements Closeable {
 
     public EventChannel(Socket socket, int i) throws IOException {
         this(socket.getInputStream(), socket.getOutputStream(), socket, socket, C(i));
+        // 排障埋点：打印控制/配对通道的对端地址，用于判定主动连接是否误连本机。
+        // 只记录 IP 与端口，不记录任何凭据或标识。
+        ControlChannel.Log("CTRL_EVENT_PEER addr="
+                + (socket.getInetAddress() == null ? "null" : socket.getInetAddress().getHostAddress())
+                + " port=" + socket.getPort());
         if (!socket.isConnected() || socket.isClosed()) {
             SyntheticRefs.c("Socket must be connected");
             throw null;

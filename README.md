@@ -8,8 +8,11 @@ a Buick / SAIC-GM INFO3.6 head unit, plus head-unit reference material and a
 "build from source + debug over USB" skill package.
 
 > 一句话：手机负责 AirPlay 发送端（画面/音频源），车机是接收端（解码显示）；
-> 本项目在手机侧完整重建了建链、握手、投屏、音频与触摸五条链路。
+> 本项目在手机侧完整重建了建链、握手、投屏、音频与触摸五条链路
+> (info3.6车机固件识别手机蓝牙EIR广播UUID非Aplle设备后不发触摸信号，手机蓝牙层限制APK暂无法支持触摸，其余车机可以实测是否支持触摸)
 >
+>支持无线 CarPlay 的 Apple 设备必须在 EIR 中广播 128-bit UUID 0x2D8D2466E14D451C88BC7301ABEA291A；
+>"Accessories may use this information to distinguish between devices with Apple CarPlay enabled and general Bluetooth devices."
 > In one line: the phone is the AirPlay sender (screen/audio source) and the head unit is the
 > receiver. This project reconstructs all five links on the phone side — discovery, handshake,
 > video, audio and touch.

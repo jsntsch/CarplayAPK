@@ -119,3 +119,162 @@ README §1（A 级）：**「触摸报告走 iAP2 HID，输入模式协商走 HT
   **但功能结论不变**：车机需要手机先发 iAP2-over-Network 标识才能置 `iap_channel`，而 APK 从不先发。无论传输细节如何，缺口在「发起方向」。
 - `+0x9e0` 列表在真机某次会话是否为空、`[+0x468]` 是否 NULL、HMI `SetCallbacks` 槽是否注册，静态字节码无法证明，需整车 pcap / 车机侧日志（受 §15.7 边界约束）。
 - 本分析**只做研究与落盘**，未改业务代码、未出包；修复项待用户确认后实施。
+
+## 7. V1.8.35 真机验证结果（2026-11-09 08:44，myBuick GS）—— **修正 §2 的因果判断**
+
+**结论先说**：P1-2「主动发起 iAP2-over-WiFi」**执行成功但无效**；真正的阻断点不在「手机不主动发 iAP2」，
+而在**保留 WLAN 重连路径整段跳过 BT iAP2 引导**（`X2()` 的 `this.j != null` 分支），
+导致车机从未收到手机的身份/可用性消息，`AddOrCarPlayClient` 永不登记。
+
+### 7.1 证据（logcat `CarPlayAPK` / `CarPlusWireless`，原始日志 `logs/v1.8.35/`）
+
+| 环节 | 实测 | 说明 |
+|---|---|---|
+| 会话进入方式 | `CURRENT_WIFI_REUSE_BY_SSID peer_name=myBuick`、`verified_previous_transport=true` | 走**保留 WLAN 重连**，不是全新配网 |
+| AirPlay | `CARPLAY_PAIR_VERIFIED` → `CARPLAY_INITIAL_SETUP` → `CARPLAY_SETUP_RESP_KEYS n=3 keys=[keepAlivePort, eventPort, timingPort]` → `EVTCP connect 192.168.5.1:5001` | 车机 SETUP 响应**不含任何 iAP2 bootstrap 字段** |
+| 车机 /info | 22 keys，`bluetoothIDs=[10:E8:A7:13:AD:5B]`，`features=0x6104040280`，`hidDevices` 含触摸屏 | 车机能力正常，`CAPS ... iap_channel=false`（=features 未含 `iAPChannel`） |
+| P1-2 | `P12_PROACTIVE_TRIGGERED j==null` → `P12_NETWORK_IAP_ROUTE_BUILT proactive=true` → `CARPLAY_IAP2_OUTPUT_THREAD_STARTED` | **主动建链确实执行** |
+| 手机→车机 iAP2 | 7× `CONTROL_COMMAND_SEND path=/command type=iAPSendMessage`（1×70B + 6×79B 重试，payload 首 2 字节 `FF5A` = iAP2 链路控制） | 全部 HTTP 200 |
+| 车机→手机 | `INBOUND_REQ=0`、`CARPLAY_COMMAND_RECEIVED=0`、`HID_REPORT_ARRIVED=0`、`TOUCH_FORWARDED=0` | **零入站**，iAP2 无任何应答 |
+| HID | `HID_GATE_OPEN cnt=1 mode=0 devices=0`（过早，SKIP）→ `HID_SWEEP mode=1` → 3× `hidSetInputMode` → 3×200 → `HID_MODE_REPORTED=true` | HID 协商本身正常，之后仅等车机发报告 |
+| ctrl | `CTRL_SERVICE_REGISTERED network_scoped=true`、`CTRL_ANNOUNCE name=OPPO_X8U port=34213`，但 `CTRL_INVITATION_ACCEPTED=0` / `V160_CTRL_TCP_ACCEPT=0` | 车机**从未回连**手机 `_carplay-ctrl` |
+| **BT iAP2** | `P1_START=0`、`RFCOMM_SELECTED_PEER_*=0`、`IAP2_*=0`；仅 `PAIR_VERIFY_FIRST_OK`（属 AirPlay pair-verify，非 BT iAP2） | **BT iAP2 整段没跑** |
+
+### 7.2 源码根因（A 级）
+
+```java
+// WirelessCarPlayService.onStartCommand（保留 WLAN 分支）
+this.j = networkFromNetworkHandle;   // 4064/4081：保留 wifi 时非 null
+...
+W2();                                // 4097 → X2(-1L)
+
+private void X2(long j2) {
+    if (this.j != null) {            // ← 保留 WLAN 重连
+        Y2(j2);                      // e7 → e2()：只起 AirPlay 保留会话
+        return;                      // ← 直接 return，永远不会走 BT iAP2
+    }
+    ...
+    h7 → c2(jB, jC, j2) → new PairingSession(...) → P1(...)   // 仅 this.j==null 才到这里
+}
+```
+
+- `this.j` 是 `private Network j`（保留的 WifiNetworkHandle），**不是** AirPlay 会话对象。
+- 因此「手机连车机 WiFi / 系统自动回连」两种场景只要命中 `CURRENT_WIFI_REUSE`，BT iAP2 就永远不会启动。
+- 这与 §2.2 的「死锁」判断并不冲突，但**顺序要修正**：不是「车机等手机发 iAP2」，
+  而是「手机连 BT iAP2 身份都没送出去」，车机侧 `AddCarPlayClient` 根本没被触发，
+  `iap_channel` 自然为 false，HID 报告自然为零。
+- 也解释了为什么 `V160_CTRL_TCP_ACCEPT` 在 V1.8.29~V1.8.35 始终为 0、P1-1 探针全程沉默。
+
+### 7.3 修复方向（V1.8.36，可开关）
+
+1. `X2()` 保留分支：`Y2(j2)` 之后**补一次 BT iAP2 引导**（新分配 `J.b()/J.c()` → `h7` → `c2()`），
+   开关 `p1_1_bt_iap2_retained`（默认 **false**，先 A/B）。
+2. 埋点：`X2_ENTER j_present=`、`X2_PATH=retained|bootstrap`、`C2_ENTER`、`C2_GATE g1= h1=`、`P1_CALLED`，
+   让下一轮抓包能直接看出是哪道门挡住。
+3. 判据：`P1_START` → `RFCOMM_SELECTED_PEER_CONNECTED` → `IAP2_AUTHENTICATED_WAITING_CARPLAY_START`
+   → `V160_CTRL_TCP_ACCEPT≥1` → `INBOUND_REQ>0` → `HID_REPORT_ARRIVED≥1`。
+
+> 边界：BT iAP2 与保留 AirPlay 会话并发是否会互相干扰（RFCOMM 抢占、`this.B` 被覆盖）尚未验证，
+> 因此必须开关化、失败只记日志不抛异常。
+
+## 8. V1.8.36/37 证伪 BT iAP2 路线 + V1.8.38 转向「车机 Bonjour 登记」（2026-11-09 18:xx）
+
+**结论先说**：§7.3 的「补 BT iAP2 就能让车机登记」被真机**证伪**。
+`GET /ctrl-int/1/connect` 的缺口不在 iAP2，而在**车机侧 Bonjour browser 是否把手机服务上报为
+Add（`IosControlClientCallback(AddOrUpdateController)`）**；BT iAP2 不是这条状态机的触发源，
+强补它还会让车机反复重协商（15~20s 重建）造成**投屏黑屏**。
+
+### 8.1 三份真机抓包的同一结论（C 级，`logs/v1.8.35|36|37`）
+
+| 判据 | v1.8.35（retained，无 BT iAP2） | v1.8.36（补 BT iAP2） | v1.8.37（+强发 0x4300） |
+|---|---|---|---|
+| `CTRL_ANNOUNCE` | 2 | 9 | 19 |
+| `V160_CTRL_TCP_ACCEPT` | **0** | **0** | **0** |
+| `CTRL_INVITATION_ACCEPTED` | **0** | **0** | **0** |
+| `CTRL_EARLY_PEER_CONNECTED` | **0** | **0** | **0** |
+| `CARPLAY_INBOUND_ANY` | **0** | **0** | **0** |
+| `HID_REPORT_ARRIVED` | **0** | **0** | **0** |
+| `P1_START` / BT iAP2 | 0 | 7（认证全通过） | 11 |
+| 视频 | 20~27fps 正常 | 会话 15~20s 重建 | 会话 15~20s 重建，**黑屏** |
+
+⇒ BT iAP2 跑通（`IAP2_IDENTIFIED` / `MFI_KEY_POSSESSION_VERIFIED`）也不改变
+`V160_CTRL_TCP_ACCEPT=0`；车机 EA 侧 `PEER_MESSAGE_IDS SEND count=0 ids=NONE`、
+`PEER_EA_PROTOCOLS` 为空，证明**车机在这条链路上根本不宣告 CarPlay**。
+V1.8.37 强发 0x4300 只得到 `IAP2_ACK_TIMEOUT_SYN`。
+
+### 8.2 固件门控链复核（A 级 capstone，VA=文件偏移）
+
+```
+_CarPlayControlClientEnsureStarted @0x52fc0
+  └─ 建 "_carplay-ctrl._tcp" browse（0x5303b，服务类型串 @0xa3d0f）
+_CarPlayControlClientBrowseCallback @0x536e0
+  └─ event 名表：1=Add / 2=Remove / 3=Stop / 4=Restarted（@0x53727..0x5374f）
+  └─ 从 Bonjour 字典取 "services"（键池 @0xb1d09）→ 逐项 0x5ba30 遍历 → ControlClientCallback @0x53c00（xref 3 处：0x5391f/0x539ec/0x53a71）
+IosControlClientCallback @0xe1a0
+  └─ 0xe1cd cmp ebp,2 ⇒ event<2 即 AddOrUpdateController
+  └─ 0xe1f0 call 0x52ac0(dict,&out)   → 取 "name"（实例名，键池 @0xb1cfc）
+  └─ 0xe20a call 0x681c0(name,...)     → 字符串转码/拷贝（非 MAC 解析）
+  └─ 0xe217 call 0x52b90(dict,&6B)     → 取 6 字节标识（蓝牙 MAC）
+  └─ 0xe272 call 0x178b0 = AddCarPlayClient(event,name,mac6,dict)
+SendConnect @0x17e10（唯一调用者 @0x14017，日志 'device_id=%s, service_name=%s' @0x13fa8）
+  └─ "SendConnect we have %zu entries" @0x9d519
+  └─ 0x17f38/0x17f47 双串比较；未命中 ebp=0xb 不发
+  └─ 命中 "SendConnect sending: %s, %s" @0x9d54f → call 0xe400 → GET /ctrl-int/1/connect
+```
+
+**关键更正**：`AddCarPlayClient` 的数据源是**mDNS 服务字典的 `name` + 6 字节 MAC**，
+不是蓝牙配对表（README §6.2 的旧表述按此收窄）。`services` / `ifname` / `removedServices`
+都是 **Bonjour browser 返回字典的键**，不是 TXT 键 —— 「补 TXT `services`」的思路作废。
+
+### 8.3 手机侧对应能力全部就绪（A 级源码 + 真机自证）
+
+- 注册 `_carplay-ctrl._tcp`，实例名=`ServiceName()`（=`OPPO_X8U`），端口=`localPort`，
+  TXT 10 键（`id`/`deviceid`/`btaddr`=手填 MAC、`srcvers=27.2.0`、`features=0x445F8A00,0x1C340` 等），
+  见 `ControlChannel.FillTxt()`、`CarPlayCtrlAdvertiser.q():752-755`。
+- 手机自己的 discover 探针能发现该服务：`CTRL_PROBE_FOUND type=_carplay-ctrl._tcp name=OPPO_X8U`
+  → mDNS responder 工作正常（本机回环，不等于车机收得到）。
+- ctrl TCP ServerSocket 全地址 LISTEN；`ControlRequestParser` 对 `GET /ctrl-int/1/connect`
+  回 200 并置 invitation（`ControlRequestParser:168-169`）；`/proc/net/tcp` 证明该端口零入站。
+- `CTRL_SERVICE_TXT ... n=0` 是 `onServiceRegistered` 回调不带 attributes 的 Android 行为，
+  **不代表车机收到空 TXT**（诊断盲点，不是缺陷）。
+
+### 8.4 定案（替换 §7.3 的修复方向）
+
+缺口收敛为**车机侧一级门控**：`_CarPlayControlClientEnsureStarted` 的 browser 是否启动、
+以及它是否把手机服务上报成 Add。两种可能：
+
+| 可能 | 判据 | 手机侧对策 |
+|---|---|---|
+| (a) 车机 browser 根本没启动（状态机未进 CarPlay / 未认定已配对设备） | 手机侧收不到任何来自车机的 `_carplay-ctrl` PTR query | 无解，需车机侧（蓝牙配对、HMI 重进 CarPlay、重启车机） |
+| (b) browser 在跑，但收不到手机应答（车机热点隔离客户端 multicast / 单播未回） | 有 query，但 `V160_CTRL_TCP_ACCEPT` 仍 0 | 向车机网关 **单播 mDNS 通告**（V1.8.38） |
+
+### 8.5 V1.8.38 落地（默认关、零视频回归）
+
+- 新类 `prototype/CarPlayCtrlMdnsHelper`：
+  - **探针**：`MulticastSocket(5353)` + `SO_REUSEADDR` + `joinGroup(224.0.0.251)` + `MulticastLock`，
+    只记录**非本机**来源的 DNS query，打 `CTRL_MDNS_QUERY from=… q=… carplay_ctrl=true/false`；
+    周期性发 `_airplay._tcp.local` PTR query 打 `CTRL_MDNS_PROBE_QUERY`，用来看双向 multicast 是否通。
+  - **单播通告**：每 5s 构造 PTR+SRV+TXT+A 四条 Answer 的 mDNS 应答，**同时**发给
+    224.0.0.251:5353 与车机网关:5353，打 `CTRL_MDNS_ANNOUNCE n=… unicast=… to=…`。
+- 开关 `ctrl_mdns_enhance`（默认 **false**）：`ControlChannel.CtrlMdnsEnhanceEnabled()`、
+  设置 → 连接「车机发现增强（mDNS）」、adb `DEBUG_SET_CTRL_MDNS --ez enabled true`。
+- 挂钩：`CarPlayCtrlAdvertiser.q()` 注册成功后 `start(...)`，`close()` 里 `stop()`；
+  所有异常只记 `CTRL_MDNS_START_FAILED`，绝不影响注册主流程。
+- **明确不碰**：AirPlay 会话、RECORD、HID、BT iAP2、0x4300。P1-1/P1-3 保持默认关，
+  并标注「已知导致车机重协商与投屏黑屏，勿开」。
+
+### 8.6 判据（按序）
+
+1. `CTRL_MDNS_STARTED` 出现（说明探针起来，端口未被占用）。
+2. 车机是否发 `_carplay-ctrl` query → `CTRL_MDNS_QUERY … carplay_ctrl=true`。
+3. 是否有来自 `192.168.5.1` 的任意 mDNS 报文 → `CTRL_MDNS_QUERY from=192.168.5.1`（下行连通性）。
+4. `V160_CTRL_TCP_ACCEPT≥1` / `CTRL_INVITATION_ACCEPTED≥1`。
+5. `CARPLAY_INBOUND_ANY≥1` → `HID_REPORT_ARRIVED≥1` → `TOUCH_FORWARDED≥1`。
+
+### 8.7 边界
+
+- 单播 mDNS 应答能否被车机 Bonjour browser 接受**未验证**；若车机只接受 multicast 且热点隔离，
+  该手段无效。
+- 车机 browser 启动条件仍属静态字节码无法证明的部分（需车机侧日志/整车抓包）。
+- 本轮不改业务协议、不动已验证视频链路；V1.8.38 只加发现层能力与诊断。
+

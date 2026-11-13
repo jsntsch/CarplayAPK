@@ -42,8 +42,11 @@ final class AppLogger {
     private AppLogger() {
     }
 
-    // [V1.8.26] 运行日志开关：关闭后不再写入文件（要求 8）
-    private static volatile boolean recording = true;
+    /**
+     * [V0.0.1] 连接日志默认**不记录**：必须先在设置里打开「调试模式」，再手动打开「连接日志」。
+     * 两个开关都打开时 recording 才为 true（由 MainActivity 计算），任何一处关闭立即停写。
+     */
+    private static volatile boolean recording = false;
 
     public static void setRecordingEnabled(boolean z) {
         recording = z;
@@ -188,7 +191,8 @@ final class AppLogger {
     }
 
     public static synchronized void g(Context context, String str) {
-        if (!recording) {
+        // 双保险：开关状态可能被旧配置或异常路径改写，这里再校验一次调试模式。
+        if (!recording || !io.carplay.app.secured.ControlChannel.DebugModeEnabled()) {
             return;
         }
         try {

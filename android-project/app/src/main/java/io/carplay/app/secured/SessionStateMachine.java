@@ -665,8 +665,8 @@ public final class SessionStateMachine {
         // 屏幕归自己时把 ownership 主动让给车机(entity=2)，等于自锁 HID。
         // 这里显式声明 Controller 持有屏幕（entity=1），与固件 0x447d0 从 params.resources
         // 逐项读取 entity 的实现一致；总开关 session_seq_v2=false 时恢复旧语义。
-        int screenEntity = io.carplay.app.secured.ControlChannel.SeqV2Enabled()
-                ? 1 : (this.d.a == 2 ? 2 : 1);
+        // [V0.0.1] 会话序列 V2 已删除，保留 V2 之前的语义：车机声明持有屏幕时不硬抢。
+        int screenEntity = (this.d.a == 2 ? 2 : 1);
         arrayList.add(Map.of("resourceID", Integer.valueOf(1), "entity", Integer.valueOf(screenEntity)));
         // 只声明屏幕（resourceID=1）的归属。
         // 规范 Table 23-71 把 resources 定义为「要变更的所有权」；把已经归手机的 audio 资源

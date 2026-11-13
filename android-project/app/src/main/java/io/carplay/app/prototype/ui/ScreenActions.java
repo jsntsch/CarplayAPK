@@ -21,7 +21,11 @@ public interface ScreenActions {
         void localBtIdentity();         // 本地蓝牙标识 (n2)
         // selectCar() 已移除：车机选择统一在 主页 → 车 机 → 蓝牙。
         void setProactiveIap2(boolean on); // [V1.8.35] 主动发起 iAP2-over-WiFi（P1-2）
-        void setDebugMode(boolean on);  // 调试模式
+        // [V1.8.60] 移除 setBtIap2Retained / setSeqV2 / setWaitCtrlConnect：
+        // 对应的三个设置项已从界面删除，运行时开关收敛为常量 false（见 ControlChannel）。
+        void setMdnsEnhance(boolean on); // [V1.8.38] 车机发现增强 mDNS 探针与单播通告
+        void setDebugMode(boolean on);  // 调试模式（总开关：logcat + 日志记录的先决条件）
+        void setLogRecording(boolean on);// [V0.0.1] 连接日志记录（需先开调试模式）
         void openLog();                 // 运行日志 (a1)
         void openTutorial();            // 使用教程 (d1)
         void openDeclaration();         // 免责声明 (k2)

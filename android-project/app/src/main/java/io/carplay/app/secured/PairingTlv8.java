@@ -271,14 +271,14 @@ public final class PairingTlv8 {
     }
 
     private static Map<Integer, byte[]> e(EventChannel eventChannel, String str, byte[] bArr, int i) throws IOException {
-        android.util.Log.i("CarPlusPair", "REQ " + str + " state=" + i + " bytes=" + bArr.length);
+        ControlChannel.LogTag("CarPlusPair", "REQ " + str + " state=" + i + " bytes=" + bArr.length);
         EventChannel.b bVarW = eventChannel.w("POST", str, c, bArr, str.equals("/pair-verify") ? Map.of("X-Apple-HKP", "2", "X-Apple-PD", "1") : Map.of("X-Apple-HKP", "2"));
         bVarW.g();
         byte[] bArrRaw = bVarW.c();
-        android.util.Log.i("CarPlusPair", "RESP " + str + " state=" + i + " bytes=" + (bArrRaw == null ? -1 : bArrRaw.length));
+        ControlChannel.LogTag("CarPlusPair", "RESP " + str + " state=" + i + " bytes=" + (bArrRaw == null ? -1 : bArrRaw.length));
         Map<Integer, byte[]> mapD = d(bArrRaw);
         if (mapD != null) {
-            android.util.Log.i("CarPlusPair", "RESP_TLV " + str + " state=" + i + " keys=" + mapD.keySet());
+            ControlChannel.LogTag("CarPlusPair", "RESP_TLV " + str + " state=" + i + " keys=" + mapD.keySet());
         }
         if (mapD.containsKey(7)) {
             throw new IOException("Pairing rejected at state " + i + ", peer error " + Arrays.toString(mapD.get(7)));

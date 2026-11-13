@@ -53,7 +53,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 final class CarPlayCtrlAdvertiser implements AutoCloseable {
     private static final String r = "_carplay-ctrl._tcp";
-    private static final String s = "950.7.1";
+    // [V1.8.43 U4] 删除无引用的残留版本串 "950.7.1"（出自 OcarPlay 反编译，非原生值）。
+    // 全部对外版本串统一由 ControlChannel.CARPLAY_BUILD_VERSION = "320.17.3" 提供。
     private final NsdManager a;
     private final Network b;
     private final List<LinkAddress> c;
@@ -79,6 +80,10 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
     // 此处用同一把静态锁串行化全部注册/注销，保证任意时刻只有一个活跃注册。
     private static final Object REG_LOCK = new Object();
     private static CarPlayCtrlAdvertiser activeAdvertiser;
+    // [V1.8.39] ctrl 端口固定：重注册时优先复用上次端口。
+    // 真机证据（logs/v1.8.38）：每次会话重建都换端口 38799→33771→41481，
+    // 车机 resolve 到的端口随之漂移，固件 SendConnect 的 (device_id, service_name) 双串匹配永远打不中。
+    private static volatile int preferredPort;
     private static int advertiserSeq;
     private final int instanceId;
 
@@ -493,6 +498,8 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
 
     @Override 
     public void close() {
+        // [V1.8.38] 服务注销时同步停掉 mDNS 探针与单播通告，避免残留线程与 socket。
+        CarPlayCtrlMdnsHelper.stop();
         // [V1.8.31] 与 q() 共用 REG_LOCK：注销→重注册必须严格串行，
         // 且所有调用方（StopEarly / PairingSession / accept loop / 冲突关闭）自动受益。
         synchronized (REG_LOCK) {
@@ -503,7 +510,8 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
                             s();
                             // 等 mDNS 注销回调（或超时）再放行，否则紧接着的同名注册
                             // 会被 NsdManager 自动改名成 "(2)"。
-                            long waitMs = ControlChannel.SeqV2Enabled() ? 1500L : 400L;
+                            // [V0.0.1] 固定 1200ms：会话序列 V2 已随设置项删除。
+                            long waitMs = 1200L;
                             boolean unregisteredInTime = false;
                             try {
                                 unregisteredInTime = ((a) this.q).unregistered.await(waitMs,
@@ -685,6 +693,12 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
     }
 
     /** 会话流程接管前关掉早期广播，避免同名服务重复注册（NsdManager 会直接注册失败）。 */
+    /** [V1.8.39] 是否已有活跃广播实例（自动重连路径据此复用，避免换端口与 NsdManager 改名）。 */
+    static synchronized boolean HasActiveInstance() {
+        CarPlayCtrlAdvertiser a = activeAdvertiser;
+        return a != null && !a.i.get();
+    }
+
     public static synchronized void StopEarly() {
         if (earlyAdvertiser != null) {
             try {
@@ -719,15 +733,28 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
                             }
                             int size = arrayList.size();
                             int i = 0;
-                            int localPort = 0;
+                            // [V1.8.39] 优先复用上次端口，让车机 resolve 到的端口保持稳定。
+                            int localPort = preferredPort;
                             int i2 = 0;
                             while (i2 < size) {
                                 Object obj = arrayList.get(i2);
                                 i2++;
-                                ServerSocket serverSocketA = this.h.a((InetAddress) obj, localPort);
+                                ServerSocket serverSocketA;
+                                try {
+                                    serverSocketA = this.h.a((InetAddress) obj, localPort);
+                                } catch (IOException portBusy) {
+                                    if (localPort == 0) {
+                                        throw portBusy;
+                                    }
+                                    ControlChannel.Log("CTRL_PORT_REUSE_FAILED port=" + localPort
+                                            + " fallback=random");
+                                    localPort = 0;
+                                    serverSocketA = this.h.a((InetAddress) obj, 0);
+                                }
                                 this.k.add(serverSocketA);
                                 if (localPort == 0) {
                                     localPort = serverSocketA.getLocalPort();
+                                    preferredPort = localPort;
                                 }
                             }
                             NsdServiceInfo nsdServiceInfo = new NsdServiceInfo();
@@ -753,6 +780,9 @@ final class CarPlayCtrlAdvertiser implements AutoCloseable {
                             ControlChannel.FillTxt(nsdServiceInfo, this.f);
                             this.n = true;
                             this.a.registerService(nsdServiceInfo, 1, this.q);
+                            // [V1.8.38] 车机发现增强（默认关）：注册后端口与 TXT 已确定，才启动 mDNS 探针与单播通告。
+                            CarPlayCtrlMdnsHelper.start(this.b, this.e, localPort,
+                                    nsdServiceInfo.getServiceName(), nsdServiceInfo.getAttributes(), this.d);
                             if (ControlChannel.CtrlWaitInvitationEnabled()) {
                                 // [V1.8.32 P0-2] 本地 TXT 自证：车机 mDNS 解析得到的内容即此处所设。
                                 Map<String, byte[]> attrs = nsdServiceInfo.getAttributes();

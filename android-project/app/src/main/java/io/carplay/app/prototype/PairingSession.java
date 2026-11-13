@@ -1665,7 +1665,11 @@ public final class PairingSession implements AutoCloseable {
             InputStream inputStream = bluetoothSocket.getInputStream();
             OutputStream outputStream = bluetoothSocket.getOutputStream();
             a writer = new a(this, bluetoothSocket, outputStream);
-            String model = "CarPlus " + Build.MODEL;
+            // [V1.8.43 U5/第5项] iAP2 内部名字：此处 model 会经 W() 的 0x4E09(19977) param 0
+            // 发给车机，旧值 "CarPlus "+Build.MODEL 同时暴露自有品牌与 Android 机型(PKJ110)，
+            // 与 TXT/SETUP/0x1D00 的 iPhone15,3 冲突。统一为同一真源常量。
+            // 注意：不改 ControlChannel.ServiceName()（mDNS 服务实例名，按既定结论不对齐）。
+            String model = io.carplay.app.secured.ControlChannel.CARPLAY_MODEL;
             if (this.d) {
                 verifier = this.e
                         ? MfiCertificateVerifier.j(this.c, model, writer)

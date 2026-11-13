@@ -263,7 +263,13 @@ public final class BtDiscovery implements AutoCloseable {
                 }
             }
             this.g.accept("PHONE_DISCOVERY_RECORDS_READY secure_records=" + uuidArr.length + " eir_requested=true radio_confirmed=false");
+            // [V1.8.45] 同步写 logcat（原先只经回调进应用内日志），便于实时抓取确认
+            // 蓝牙 iAP2 RFCOMM 监听是否真的挂载成功 —— 这是车机认证链的第一道门。
+            ControlChannel.Log("V1845_RFCOMM_READY records=" + uuidArr.length
+                    + " iap2_uuid=deca-fade ttl_ms=120000 proactive_7000_blocked=true");
         } catch (IOException | RuntimeException e) {
+            ControlChannel.Log("V1845_RFCOMM_FAILED type=" + e.getClass().getSimpleName()
+                    + " detail=" + e.getMessage());
             close();
             throw e;
         }

@@ -120,6 +120,10 @@ import java.util.stream.Stream;
  * Wireless CarPlay foreground service orchestrating Bluetooth, WiFi, sessions and UI through the whole lifecycle.
  */
 public final class WirelessCarPlayService extends Service {
+    /** [V1.8.46 修正1/2] 仅蓝牙引导：跑完 iAP2 认证但停在 z1() 之前，不建 AirPlay 会话。 */
+    public static final String EXTRA_BOOTSTRAP_ONLY = "io.carplay.app.prototype.BT_BOOTSTRAP_ONLY";
+    /** [V1.8.46] 车机 GET /ctrl-int/1/connect 到达后，清引导标志并在已运行实例内重建会话。 */
+    public static final String A1_RELEASE_BOOTSTRAP = "io.carplay.app.prototype.RELEASE_BT_BOOTSTRAP";
     public static final String V0 = "io.carplay.app.prototype.WIRELESS_START";
     public static final String W0 = "io.carplay.app.prototype.WIRELESS_STOP";
     public static final String X0 = "io.carplay.app.prototype.WIRELESS_SOURCE";
@@ -171,6 +175,8 @@ public final class WirelessCarPlayService extends Service {
     private DeviceMetadataStore.a a;
     private Runnable a0;
     private boolean b0;
+    /** [V1.8.46] 仅蓝牙引导模式：z1() 不建 AirPlay 会话，X2() 强制走 c2() 认证。 */
+    private volatile boolean bootstrapOnly = false;
     private volatile boolean c0;
     private String d;
     private String e;
@@ -696,7 +702,7 @@ public final class WirelessCarPlayService extends Service {
         @Override 
         public void a(String str) {
             String str2;
-            Log.d("CarPlusMetrics", str);
+            io.carplay.app.secured.ControlChannel.LogTagD("CarPlusMetrics", str);
             synchronized (this.b.s) {
                 try {
                     if (this.b.g1(this.a)) {
@@ -768,7 +774,7 @@ public final class WirelessCarPlayService extends Service {
 
         @Override 
         public void b(String str) {
-            Log.d("CarPlusMetrics", str);
+            io.carplay.app.secured.ControlChannel.LogTagD("CarPlusMetrics", str);
             if (this.b.g1(this.a)) {
                 this.b.x2(str, this.a);
             }
@@ -828,7 +834,7 @@ public final class WirelessCarPlayService extends Service {
 
         @Override 
         public void j(String str, boolean z) {
-            Log.d("CarPlusMetrics", str);
+            io.carplay.app.secured.ControlChannel.LogTagD("CarPlusMetrics", str);
             WirelessCarPlayService wirelessCarPlayService = this.b;
             long j = this.a;
             if (z) {
@@ -2340,10 +2346,18 @@ public final class WirelessCarPlayService extends Service {
     }
 
     private void X2(long j2) {
-        if (this.j != null) {
+        // [V1.8.36] 诊断：区分「保留 WLAN 重连」与「全新 BT 引导」两条路径。
+        io.carplay.app.secured.ControlChannel.Log("X2_ENTER retained=" + (this.j != null)
+                + " bootstrap_only=" + this.bootstrapOnly + " sid=" + j2 + " boot=" + this.J.e());
+        // [V1.8.46 修正1] 引导态必须走 c2()→PairingSession 跑完整 iAP2 认证；
+        // retained 的 Y2()→e2() 只做 WiFi 发现，会跳过 identification/MFi/EA/凭证，
+        // 车机 AddCarPlayClient 永不登记（补发开关已随设置项删除，恒为关闭）。
+        if (this.j != null && !this.bootstrapOnly) {
             Y2(j2);
             return;
         }
+        io.carplay.app.secured.ControlChannel.Log("X2_PATH=bootstrap sid=" + j2
+                + " bootstrap_only=" + this.bootstrapOnly);
         synchronized (this.s) {
             try {
                 if (!this.t.get() && this.J.e() >= 0 && (j2 < 0 || g1(j2))) {
@@ -2368,7 +2382,6 @@ public final class WirelessCarPlayService extends Service {
         }
     }
 
-    
     public static  boolean Y1(io.carplay.app.secured.HidCapabilities.c cVar, io.carplay.app.secured.HidCapabilities.c cVar2) {
         return cVar2.q() == 110 && cVar2.k() && cVar2.v() == cVar.v() && cVar2.j() == cVar.j() && cVar2.n() >= Math.min(60, cVar.n());
     }
@@ -2665,7 +2678,12 @@ public final class WirelessCarPlayService extends Service {
             BtDiscovery h5Var = null;
             String string = wirelessCarPlayService.getSharedPreferences(c1, 0).getString(r2(wirelessCarPlayService.A), null);
             synchronized (wirelessCarPlayService.s) {
-                if (g1(j2) && wirelessCarPlayService.h1(j3)) {
+                // [V1.8.36] 诊断：保留路径补发 BT iAP2 时，先看两道门是否通过。
+                boolean c2Gate = g1(j2) && wirelessCarPlayService.h1(j3);
+                io.carplay.app.secured.ControlChannel.Log("C2_ENTER sid=" + j2 + " tid=" + j3
+                        + " gate_g1=" + g1(j2) + " gate_h1=" + wirelessCarPlayService.h1(j3)
+                        + " peer_saved=" + (string != null));
+                if (c2Gate) {
                     boolean zD1 = wirelessCarPlayService.D1(wirelessCarPlayService.A, string);
                     boolean zB1 = wirelessCarPlayService.B1(wirelessCarPlayService.A, string);
                     boolean zA1 = wirelessCarPlayService.A1(wirelessCarPlayService.A);
@@ -2716,6 +2734,8 @@ public final class WirelessCarPlayService extends Service {
                         h5VarI.close();
                         wirelessCarPlayService.i1("PHONE_DISCOVERY_RETIRED_BEFORE_HANDOFF normal_secure_bootstrap_retained=true");
                     }
+                    io.carplay.app.secured.ControlChannel.Log("P1_CALLED target_present="
+                            + (wirelessCarPlayService.A != null) + " discovery=" + (h5Var != null));
                     pairingSession.P1(wirelessCarPlayService.A, true, h5Var);
                 }
             }
@@ -2995,7 +3015,7 @@ public final class WirelessCarPlayService extends Service {
 
     
     public void i1(String str) {
-        Log.i("CarPlusWireless", str);
+        io.carplay.app.secured.ControlChannel.LogTag("CarPlusWireless", str);
         AppLogger.g(this, str);
         String snapshot;
         synchronized (this.s) {
@@ -3645,6 +3665,15 @@ public final class WirelessCarPlayService extends Service {
         if (!g1(j2)) {
             return;
         }
+        // [V1.8.46 修正2] 唯一的硬门控：仅蓝牙引导模式下 iAP2 认证已完成，
+        // 但车机还没发 GET /ctrl-int/1/connect。这里必须停住，绝不
+        // startPcmCapture / new AirPlaySession / 连 7000（抢跑会被车机当普通 AirPlay 镜像）。
+        if (this.bootstrapOnly) {
+            io.carplay.app.secured.ControlChannel.Log(
+                    "V1846_BOOTSTRAP_HELD reason=WAIT_CTRL_CONNECT full_iap2_enabled=true"
+                    + " proactive_7000_blocked=true airplay_session_created=false");
+            return;
+        }
         // 音频采集挂在真正的连接主流程上（V1.8.2）。
         // 之前只挂在 onStartCommand 尾部，实测会话是由 Activity bind 后直接走到这里建立的
         // （14:59:56 仅有一次 APP_BUILD，而其后的会话仍正常建立），
@@ -3964,6 +3993,20 @@ public final class WirelessCarPlayService extends Service {
         if (W0.equals(action)) {
             e3("Stopped by user");
             return 2;
+        }
+        // [V1.8.46] 车机 ctrl connect 到达：清引导标志，在已运行实例内重跑一次 X2()，
+        // 让 z1() 正常建 AirPlay 会话。必须放在 b0 幂等 return 之前，否则 b0=true 会吞掉此 action。
+        if (A1_RELEASE_BOOTSTRAP.equals(action)) {
+            this.bootstrapOnly = false;
+            io.carplay.app.secured.ControlChannel.Log(
+                    "V1846_BOOTSTRAP_RELEASED proactive_7000_blocked=false sid=" + this.J.e());
+            X2(this.J.e());
+            return 3;
+        }
+        if (intent != null && intent.getBooleanExtra(EXTRA_BOOTSTRAP_ONLY, false)) {
+            this.bootstrapOnly = true;
+            io.carplay.app.secured.ControlChannel.Log(
+                    "V1846_BOOTSTRAP_MODE_ARMED full_iap2_enabled=true proactive_7000_blocked=true");
         }
         if (a1.equals(action)) {
             if (!this.t.get() && this.b0) {

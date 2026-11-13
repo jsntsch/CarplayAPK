@@ -47,6 +47,18 @@ import java.util.stream.Stream;
  */
 public final class MfiCertificateVerifier {
     private static final int O0 = 128;
+    // [V1.8.41] 车机固件里出现的 EA 协议名（libNmeCarPlay / MediaManagerService 字符串表），
+    // 按 com.buick.vip 优先排列：这是 sysdiagnose 里真实 iPhone 会话命中的那一个。
+    private static final String[] EA_PROTOCOLS = {
+            "com.buick.vip", "com.buick.noprotocol", "com.gm.noprotocol", "com.gm.vip"};
+    /**
+     * [V1.8.42] EAP 协议索引（param 10 条目的子参数 0）。
+     * iOS sysdiagnose 已证实：com.buick.vip = 1、com.buick.noprotocol = 3。
+     * 另两个为推断值（vip 组 1/2、noprotocol 组 3/4，buick 优先），
+     * 待 IAP2_PEER_EAP_HEX 探针 dump 车机自己 0x1D01 的 4 条 param 10 原始字节后校准，
+     * 因此日志固定带 eap_index_assumed=true，不要把本数组当成实测值。
+     */
+    private static final int[] EA_PROTO_INDEX = {1, 3, 4, 2};
     private static final long[] P0 = {2000, 6000, 14000};
     // 车机 0x1D01 param 17（BluetoothTransportComponent）里解析出的 ComponentID，
     // 用于回填 0x4E0E（DeviceTransportChannelID）。Info3.6 实测为 1。
@@ -81,6 +93,8 @@ public final class MfiCertificateVerifier {
     private Iap2Csm.a N0;
     private int O;
     private int P;
+    /** [V1.8.52] A：车机 0x1D01 是否声明 param 24（WirelessCarPlayTransportComponent）。 */
+    private boolean P24;
     private int Q;
     private int R;
     private int S;
@@ -91,6 +105,12 @@ public final class MfiCertificateVerifier {
     private int X;
     private int Y;
     private int Z;
+    // [V1.8.41] EA（External Accessory）设备登记状态。
+    // ea0 已发起过 0xEA00；ea1 当前尝试的协议索引；ea2 收到的 EA 数据包计数；ea3 最近一次应答 status。
+    private boolean ea0;
+    private int ea1;
+    private int ea2;
+    private int ea3 = -1;
     private final c a;
 
     /**
@@ -571,7 +591,25 @@ public final class MfiCertificateVerifier {
             this.a.h("IAP2_NETWORK_READY fresh_proof=true wifi_bootstrap_replayed=false");
             return;
         }
-        z(22274, new byte[0]);
+        // [V1.8.43 U7] 无视车机宣告，强发 0x5702（RequestAccessoryWiFiConfigurationInformation）。
+        // 规范 §23.2.7：蓝牙 iAP2 的唯一职责就是 5702→5703 传 WiFi 凭证；车机 0x1D01 的
+        // RECEIVE 列表不含 22274 时，z() 会把它拦成 IAP2_TX_SKIPPED_NOT_ADVERTISED，凭证闭环
+        // 永远不发生，配对状态机超时走 pair_failure。这里直接走 x() 入队（与 z() 唯一的差别
+        // 就是跳过 this.l.contains 门控），不加开关；车机若真不支持会在链路层忽略，不影响其它消息。
+        // 入站 22275(0x5703) 的处理已存在（a0() 内 IAP2_AUTHENTICATED_WIFI_CONFIGURATION_RECEIVED）。
+        // [V1.8.52] A：param24 门控 —— 车机未声明 WirelessCarPlayTransportComponent 时不强发 5702。
+        //   依据：社区 CSDN 136412276（车机配 param 24 后手机才发 AP 请求）+ V1.8.51 实测
+        //   （车机 SEND=0 / wifi_request=false，强发 CarPlay 类消息触发 IAP2_PEER_RESTARTED）。
+        if (ControlChannel.Iap2Param24GateEnabled() && !this.P24) {
+            this.a.h("IAP2_FORCE_5702_GATED reason=peer_param24_absent p24=false"
+                    + " peer_advertised=" + this.l.contains(22274));
+            ControlChannel.Iap2Diag("U7_FORCE_5702_GATED param24=0");
+        } else {
+            x(22274, new byte[0]);
+            this.a.h("IAP2_FORCE_5702_SENT reason=ignore_peer_advertisement"
+                    + " peer_advertised=" + this.l.contains(22274) + " payload_bytes=0");
+            ControlChannel.Iap2Diag("U7_FORCE_5702 peer_advertised=" + this.l.contains(22274));
+        }
         z(19980, Iap2Csm.B(0, Iap2Csm.A(strE)));
         z(19977, Iap2Csm.B(0, Iap2Csm.A(strA)));
         z(19978, Iap2Csm.B(0, Iap2Csm.A("zh")));
@@ -601,7 +639,16 @@ public final class MfiCertificateVerifier {
             // 已试载荷：MAC 串 / 空 / TLV(0,uint16 组件ID) / TLV(0,uint8 通道类型) / 补发 param17，
             // 全部被拒 ⇒ 该消息在本车机上不可用，且是链路重启的唯一触发点。故不再发送，让会话存活，
             // 以便观察车机是否主动下发 0x5703（AccessoryWiFiConfigurationInformation）。
-            this.a.h("IAP2_TRANSPORT_CHANNEL_ID_SKIPPED reason=not_required_by_carplay_spec 4E0D_acked=true wait_for_5703=true");
+            // [V1.8.52] C（复现用，默认 false）：开关打开才发 4E0E。
+            // ⚠️ 历史 5 种载荷（MAC 串/空/TLV(0,u16 组件ID)/TLV(0,u8 通道类型)/补发 param17）全部不被 ACK，
+            //    且是 IAP2_PEER_RESTARTED 的唯一触发点 ⇒ 默认保持「不发」。
+            if (io.carplay.app.secured.ControlChannel.Iap2Tx4e0eEnabled()) {
+                x(19982, new byte[0]);
+                this.a.h("IAP2_TX_4E0E_FORCED payload_bytes=0 hist_payloads_rejected=5 expect_peer_restart=true");
+                io.carplay.app.secured.ControlChannel.Iap2Diag("TX_4E0E_FORCED replay_only=true");
+            } else {
+                this.a.h("IAP2_TRANSPORT_CHANNEL_ID_SKIPPED reason=not_required_by_carplay_spec 4E0D_acked=true wait_for_5703=true");
+            }
         }
     }
 
@@ -673,6 +720,11 @@ public final class MfiCertificateVerifier {
         this.M = i;
         this.a.h(String.format(Locale.ROOT, "IAP2_RX_%04X", Integer.valueOf(i)));
         int i2 = cVar.a;
+        // [V1.8.41] EA 会话消息走独立分支，避免落入下方 MFI / 22275 判定。
+        if (i2 == 59904 || i2 == 59905 || i2 == 59906 || i2 == 59907) {
+            eaOnMessage(i2, cVar);
+            return;
+        }
         if (i2 == 7425) {
             if (this.C0 && (!this.t || !this.D0)) {
                 SyntheticRefs.c("IAP2_IDENTIFICATION_OUT_OF_ORDER");
@@ -721,7 +773,9 @@ public final class MfiCertificateVerifier {
             this.a.h(sbParams.toString());
             // 兜底诊断：转储传输组件原始字节。若 0x4E0E 仍被拒，用它反推车机期望的 ComponentID
             // （iAP2 TransportComponent 的 ComponentID 通常在前 2 字节，大端）。
-            for (int ck : new int[]{15, 16, 17, 24}) {
+            // [V1.8.42] 清单 5：把 param 20(VehicleInformation) / 21(VehicleStatus) 也纳入诊断转储。
+            // 只 dump 原始字节、不解析、不由手机发送：param 20/24 按规范属于 0x1D01（车机→手机）。
+            for (int ck : new int[]{15, 16, 17, 20, 21, 24}) {
                 byte[] comp = Iap2Csm.q(cVar.b, ck);
                 if (comp != null && comp.length > 0) {
                     StringBuilder sbHex = new StringBuilder("IAP2_PEER_TRANSPORT_HEX param=").append(ck).append(" len=").append(comp.length).append(" hex=");
@@ -754,13 +808,32 @@ public final class MfiCertificateVerifier {
                     }
                 }
             }
-            byte[] eaProto = Iap2Csm.q(cVar.b, 9);
-            if (eaProto != null && eaProto.length > 0) {
-                StringBuilder sbProto = new StringBuilder("IAP2_PEER_EA_PROTOCOLS text=");
-                for (byte b : eaProto) {
-                    sbProto.append((b >= 32 && b < 127) ? (char) b : '.');
+            // [V1.8.42] 清单 4：param 10 = supported_external_accessory_protocol（重复 TLV）。
+            // 旧探针读的是 param 9（maximum_current_drawn_from_device, Uint16 mA），
+            // 打出 "text=.." 被误判成「车机 EA 列表为空」。这里逐条 dump 原始字节，
+            // 车机自己发出的格式就是它认可的格式，用它校准我们 0x1D00 的 param 10 编码。
+            int eapIdx = 0;
+            for (Iap2Csm.e eap : cVar.b) {
+                if (eap.a != 10) {
+                    continue;
                 }
-                this.a.h(sbProto.toString());
+                byte[] eapBytes = eap.b();
+                StringBuilder sbEap = new StringBuilder("IAP2_PEER_EAP_HEX idx=").append(eapIdx)
+                        .append(" len=").append(eapBytes.length).append(" hex=");
+                for (byte eb : eapBytes) {
+                    sbEap.append(String.format(Locale.ROOT, "%02X", Integer.valueOf(eb & 255)));
+                }
+                this.a.h(sbEap.toString());
+                StringBuilder sbEapText = new StringBuilder("IAP2_PEER_EA_PROTOCOLS idx=")
+                        .append(eapIdx).append(" text=");
+                for (byte eb : eapBytes) {
+                    sbEapText.append((eb >= 32 && eb < 127) ? (char) eb : '.');
+                }
+                this.a.h(sbEapText.toString());
+                eapIdx++;
+            }
+            if (eapIdx == 0) {
+                this.a.h("IAP2_PEER_EAP_HEX none param10_absent=true");
             }
             if (this.b) {
                 V("IAP2_POWER_CAPABILITIES subscribe_ae00=" + this.m.contains(44544) + " update_ae01=" + this.l.contains(44545));
@@ -771,6 +844,10 @@ public final class MfiCertificateVerifier {
             this.a.h("IAP2_PEER_CAPABILITIES modern_start=" + this.m.contains(17153) + " modern_available=" + this.l.contains(17152) + " wifi_request=" + this.l.contains(22274) + " wireless_update=" + this.l.contains(19981) + " transport_notification=" + this.l.contains(19982));
             io.carplay.app.secured.ControlChannel.Iap2Diag("PEER_CAPS modern_start=" + this.m.contains(17153) + " modern_available=" + this.l.contains(17152) + " wifi_request=" + this.l.contains(22274) + " transport_notification(19982)=" + this.l.contains(19982) + " bt_component=" + t(cVar, 17));
             this.a.h("IAP2_PEER_TRANSPORT_COMPONENTS bluetooth=" + t(cVar, 17) + " wireless_carplay=" + t(cVar, 24) + " usb_device=" + t(cVar, 15) + " usb_host=" + t(cVar, 16));
+            // [V1.8.52] A：记录车机是否声明 param 24，供 5702/4300 门控使用（t() 返回 long，0=缺失）。
+            this.P24 = t(cVar, 24) != 0;
+            this.a.h("IAP2_PARAM24_STATE wireless_carplay=" + this.P24
+                    + " gate=" + io.carplay.app.secured.ControlChannel.Iap2Param24GateEnabled());
             // Info3.6 实测：车机既不接收 0x5702、也不发送 0x5703、也不支持 0x4301，
             // 三条同时成立 ⇒ 蓝牙 iAP2 在本机拿不到任何 WiFi 凭证，只能靠手动接入车机热点。
             // 打出可执行结论，避免继续在 iAP2 上反复试错。
@@ -794,6 +871,17 @@ public final class MfiCertificateVerifier {
             this.a.h("IAP2_IDENTIFIED");
             io.carplay.app.secured.ControlChannel.Iap2Diag("IDENTIFIED peer_advertised_19982=" + this.l.contains(19982)
                     + " peer_advertised_wifi_request=" + this.l.contains(22274) + " ea_drop_19982=" + io.carplay.app.secured.ControlChannel.Iap2EaDrop19982());
+            // [V1.8.49] EA00 时序 A/B：默认延后到 MFi 认证完成后（见 AA03 分支 this.t=true 之后）。
+            // 依据 Spec §23.2.7 / §23.2.5.1、sysdiagnose（carPlayCapable 0→1 在 MFi 之后）、
+            // 固件 "Received EAPSessionInitiated callback from Cinemo"（车机被动接收、回调在认证推进之后）。
+            // 开关 false ⇒ V1.8.48 旧行为（识别完成即发），用于 A/B 对照。
+            if (io.carplay.app.secured.ControlChannel.Iap2Ea00AfterAuthEnabled()) {
+                this.a.h("IAP2_EA_SESSION_TIMING trigger=IDENTIFIED deferred_to=POST_MFI_AUTH");
+                io.carplay.app.secured.ControlChannel.Iap2Diag("EA_SESSION_TIMING=DEFERRED_TO_POST_AUTH");
+            } else {
+                eaRequestSession();
+                io.carplay.app.secured.ControlChannel.Iap2Diag("EA_SESSION_TIMING=IDENTIFIED_IMMEDIATE");
+            }
             return;
         }
         if (i2 == 43526) {
@@ -871,12 +959,20 @@ public final class MfiCertificateVerifier {
                 this.t = true;
                 this.a.h("MFI_KEY_POSSESSION_VERIFIED_PINNED_APPLE_CHAIN_UNVERIFIED");
                 x(43525, new byte[0]);
+                // [V1.8.49] EA00 时序 A/B（默认）：MFi 认证完成后才发起 EA 会话请求。
+                // 插在 AA05 发出之后、W()/bEaPayload 之前 ⇒ 下方两个 return 分支都必经。
+                // eaRequestSession() 自带 ea0 防重复；开关 false 时此处不调用（旧路径已在 IDENTIFIED 发过）。
+                if (io.carplay.app.secured.ControlChannel.Iap2Ea00AfterAuthEnabled()) {
+                    this.a.h("IAP2_EA_SESSION_TIMING trigger=POST_MFI_AUTH authenticated=true after_msg=AA05");
+                    io.carplay.app.secured.ControlChannel.Iap2Diag("EA_SESSION_TIMING=POST_AUTH");
+                    eaRequestSession();
+                }
                 if (!this.C0 || this.s) {
                     W();
                     return;
                 } else {
                 this.D0 = true;
-                x(7424, bEaPayload());
+                x(7424, bIdent());
                 return;
                 }
             } catch (GeneralSecurityException e4) {
@@ -1229,6 +1325,183 @@ public final class MfiCertificateVerifier {
         return mfiCertificateVerifierS;
     }
 
+    /**
+     * [V1.8.41] EA 设备登记入口：识别完成后向车机请求 StartExternalAccessoryProtocolSession。
+     *
+     * 为什么必须补（libNmeCarPlay 反汇编 + MediaManagerService 字符串）：
+     *   MediaManagerService 的 addEAPMetaEntries 只在 EA 会话建立后写
+     *   CINEMO_METANAME_IAP_EAP_APP_SUPPORTS_CARPLAY，并置 Wireless Carplay Device connected；
+     *   这是 GMCarPlay/MediaManagerService 认为「CarPlay 已连接」的唯一上游，
+     *   也是 NmeCarPlay+0x998 的 HID 池能被填充的前提。
+     *   原实现只在 Identification 的能力表里声明了 59904/59905，从不真正发起会话。
+     *
+     * 只发一次入口请求，失败按 EA_PROTOCOLS 顺序换下一个协议（见 m1）。
+     */
+    private void eaRequestSession() {
+        if (!io.carplay.app.secured.ControlChannel.Iap2EaSessionEnabled()) {
+            this.a.h("IAP2_EA_SESSION_SKIP switch=false");
+            return;
+        }
+        if (this.ea0) {
+            return;
+        }
+        this.ea0 = true;
+        this.ea1 = 0;
+        eaTryNextProtocol();
+    }
+
+    /** [V1.8.41] 按 EA_PROTOCOLS 顺序发下一个 0xEA00 请求。 */
+    private void eaTryNextProtocol() {
+        if (this.ea1 >= EA_PROTOCOLS.length) {
+            this.a.h("IAP2_EA_SESSION_EXHAUSTED tried=" + EA_PROTOCOLS.length + " last_status=" + this.ea3);
+            io.carplay.app.secured.ControlChannel.Iap2Diag("EA_SESSION_EXHAUSTED tried=" + EA_PROTOCOLS.length);
+            return;
+        }
+        String proto = EA_PROTOCOLS[this.ea1];
+        boolean advertised = this.l.contains(Integer.valueOf(59904));
+        boolean indexMode = io.carplay.app.secured.ControlChannel.Iap2Ea00IndexEnabled();
+        try {
+            // [V1.8.48] A/B1：EA00 请求 param 0 编码方式（单变量开关 iap2_ea00_index，默认 true）。
+            //   indexMode=true  → param 0 = Uint8 ProtocolIndex（EA_PROTO_INDEX[ea1]，com.buick.vip=1）。
+            //     依据：sysdiagnose 车机 EAP 字典 ACCExternalAccessoryProtocolIndex=1、MatchAction=0、
+            //     SessionUsesSocketInterfaceKey=1；车机 0x1D01 param 10 是结构化 EAP 条目（子0=id）。
+            //     历史 param 0 = NUL 字符串时 EA00 只有链路 ACK、0 条应用层 RESP（EA 会话从未建立）。
+            //   indexMode=false → V1.8.47 旧行为（param 0 = NUL 结尾协议名字符串）。
+            byte[] p0 = indexMode
+                    ? new byte[]{(byte) EA_PROTO_INDEX[this.ea1]}
+                    : Iap2Csm.A(proto);
+            // [V1.8.51] P0-a：规范/社区双证 EA00 = param0 protocol_id(Uint8) + param1 session_id(Uint16 BE)。
+            //   wiomoc iap2/control_session_message/eap.py: StartExternalAccessoryProtocolSession
+            //     { protocol_id: Uint8, session_id: Uint16 }
+            //   CSDN 车机侧 _iap2_process_start_eap_session(): 分别解析 kIdEap_Identifier(u8) 与
+            //     kIdEap_Session_Identifier(u16)，且「session id 后续用于发送接收数据」。
+            // V1.8.50 及以前只发 param 0 ⇒ 车机拿不到会话 ID，link SYN 已注册的 sid=3(EA) 从未激活。
+            // 单变量开关 iap2_ea00_session_id，默认 true；显式 false 回退旧行为做 A/B。
+            boolean sessionIdMode = io.carplay.app.secured.ControlChannel.Iap2Ea00SessionIdEnabled();
+            byte[] ea00 = Iap2Csm.B(0, p0);
+            if (sessionIdMode) {
+                ea00 = Iap2Csm.f(ea00, Iap2Csm.B(1, new byte[]{0x00, 0x01}));
+            }
+            x(59904, ea00);
+            this.a.h("IAP2_EA_SESSION_REQ idx=" + this.ea1 + " proto=" + proto
+                    + " param0_mode=" + (indexMode ? ("index=" + EA_PROTO_INDEX[this.ea1]) : "string")
+                    + " param0_len=" + p0.length
+                    + " param1_session_id=" + (sessionIdMode ? "1" : "absent")
+                    + " ea00_params=" + (sessionIdMode ? 2 : 1)
+                    + " advertised=" + advertised
+                    + " peer_recv_ea02=" + this.l.contains(Integer.valueOf(59906))
+                    + " peer_send_ea02=" + this.m.contains(Integer.valueOf(59906))
+                    + " queue=" + this.j.size());
+            io.carplay.app.secured.ControlChannel.Iap2Diag("EA_SESSION_REQ idx=" + this.ea1
+                    + " proto=" + proto + " param0_mode=" + (indexMode ? "index" : "string")
+                    + " param1_session_id=" + (sessionIdMode ? "1" : "absent")
+                    + " advertised=" + advertised);
+        } catch (Throwable th) {
+            this.a.h("IAP2_EA_SESSION_REQ_FAILED proto=" + proto + " type=" + th.getClass().getSimpleName());
+        }
+    }
+
+    /**
+     * [V1.8.41] EA 消息入站处理（0xEA00 起停应答 / 0xEA02 数据 / 0xEA03 确认）。
+     * 只按 param 列表打印结构，不假设编码：真机拿到实际 param 布局后再细化语义。
+     */
+    private void eaOnMessage(int i, Iap2Csm.c cVar) {
+        StringBuilder sb = new StringBuilder("IAP2_EA_RX id=").append(j0(i)).append(" params=");
+        for (Iap2Csm.e e : cVar.b) {
+            byte[] eb = e.b();
+            sb.append(e.a).append('=').append(eb.length).append('B');
+            if (e.a == 0 && eb.length > 0 && eb.length <= 32) {
+                sb.append('[');
+                for (int k = 0; k < eb.length; k++) {
+                    int v = eb[k] & 255;
+                    sb.append(v >= 32 && v < 127 ? (char) v : '.');
+                }
+                sb.append(']');
+            }
+            sb.append(' ');
+        }
+        this.a.h(sb.toString());
+        if (i == 59904) {
+            byte[] st = null;
+            for (Iap2Csm.e e : cVar.b) {
+                if (e.a == 0) {
+                    st = e.b();
+                    break;
+                }
+            }
+            // 0xEA00 双向同 ID，靠 param 0 区分方向：
+            //   长度 2 = status 应答（我们发出的请求的回执）
+            //   其余   = 协议名字符串，即车机反过来请求本机启动某个 EA 协议
+            if (st != null && st.length != 2) {
+                String reqProto = new String(st, StandardCharsets.UTF_8);
+                int z = reqProto.indexOf(0);
+                if (z >= 0) {
+                    reqProto = reqProto.substring(0, z);
+                }
+                this.a.h("IAP2_EA_PEER_REQUEST proto=" + reqProto);
+                try {
+                    x(59904, Iap2Csm.B(0, new byte[]{0, 0}));
+                    this.a.h("IAP2_EA_PEER_REQUEST_ACCEPTED proto=" + reqProto);
+                } catch (Throwable th) {
+                    this.a.h("IAP2_EA_PEER_REQUEST_ACCEPT_FAILED type=" + th.getClass().getSimpleName());
+                }
+                return;
+            }
+            int status = (st != null && st.length >= 2) ? (((st[0] & 255) << 8) | (st[1] & 255)) : -1;
+            this.ea3 = status;
+            String proto = EA_PROTOCOLS[Math.min(this.ea1, EA_PROTOCOLS.length - 1)];
+            this.a.h("IAP2_EA_SESSION_RESP proto=" + proto + " status=" + status);
+            if (status == 0) {
+                this.a.h("V1848_EA_SESSION_ESTABLISHED proto=" + proto
+                        + " param0_mode=" + (io.carplay.app.secured.ControlChannel.Iap2Ea00IndexEnabled() ? "index" : "string")
+                        + " ea2=" + this.ea2);
+                io.carplay.app.secured.ControlChannel.Iap2Diag("EA_SESSION_ESTABLISHED proto=" + proto);
+            } else {
+                // 该协议被拒，换下一个（最多 EA_PROTOCOLS.length 次）。
+                this.ea1 += 1;
+                eaTryNextProtocol();
+            }
+            return;
+        }
+        if (i == 59905) {
+            this.a.h("IAP2_EA_SESSION_STOPPED");
+            return;
+        }
+        // [V1.8.51] P0-a 判据：规范里车机对 EA00 的应答是 0xEA03
+        // StatusExternalAccessoryProtocolSession { session_id: Uint16, status: SessionStatus(OK=0, CLOSE=1) }
+        // （wiomoc eap.py + Wireshark iAP2 插件 ID 表）；不是 EA00 带 status。
+        // 旧实现把 59907 当 IAP2_EA_DATA 计数 ⇒ 判据整体错位。此处为纯埋点，不改重试逻辑。
+        if (i == 59907) {
+            byte[] sidBytes = null;
+            byte[] statusBytes = null;
+            for (Iap2Csm.e e : cVar.b) {
+                if (e.a == 0) {
+                    sidBytes = e.b();
+                } else if (e.a == 1) {
+                    statusBytes = e.b();
+                }
+            }
+            int sessionId = (sidBytes != null && sidBytes.length >= 2)
+                    ? (((sidBytes[0] & 255) << 8) | (sidBytes[1] & 255)) : -1;
+            int status = (statusBytes != null && statusBytes.length >= 1)
+                    ? (statusBytes[0] & 255) : -1;
+            String protoEA03 = EA_PROTOCOLS[Math.min(this.ea1, EA_PROTOCOLS.length - 1)];
+            this.a.h("IAP2_EA03_STATUS proto=" + protoEA03 + " session_id=" + sessionId
+                    + " status=" + status + " param_count=" + cVar.b.size());
+            if (status == 0) {
+                this.a.h("V1851_EA_SESSION_ESTABLISHED proto=" + protoEA03
+                        + " session_id=" + sessionId + " ea2=" + this.ea2);
+                io.carplay.app.secured.ControlChannel.Iap2Diag(
+                        "EA03_SESSION_ESTABLISHED proto=" + protoEA03 + " session_id=" + sessionId);
+            }
+            return;
+        }
+        this.ea2 += 1;
+        if (this.ea2 <= 5 || (this.ea2 % 50) == 0) {
+            this.a.h("IAP2_EA_DATA id=" + j0(i) + " count=" + this.ea2 + " params=" + cVar.b.size());
+        }
+    }
+
     private void x(int i, byte[] bArr) throws IOException {
         if (this.j.size() < 32) {
             this.j.add(new d(i, Iap2Csm.o(i, bArr)));
@@ -1237,23 +1510,42 @@ public final class MfiCertificateVerifier {
         }
     }
 
+    /**
+     * [V1.8.48] P1：CarPlayAvailability(0x4300) 的本机蓝牙标识取值（单变量开关 iap2_avail_same_source，默认 true）。
+     *   sameSource=true  → ControlChannel.LocalBluetoothIdentifier()（手动填写 MAC，与 Identification
+     *      0x1D00 param 3/17 同源；其内部 n.a(DeviceMac()) 已做合法性校验，返回大写合法 MAC 或 null）。
+     *   sameSource=false → V1.8.47 旧行为：n.a(this.a.l())，经 BluetoothAdapterResolver.a(ctx, remoteAddr)，
+     *      当手动地址为空或等于远端地址时返回 null ⇒ availability_identifier_present=false。
+     */
+    private String bAvailId() {
+        if (io.carplay.app.secured.ControlChannel.Iap2AvailSameSourceEnabled()) {
+            try {
+                return ControlChannel.LocalBluetoothIdentifier();
+            } catch (RuntimeException e) {
+                return null;
+            }
+        }
+        try {
+            return io.carplay.app.secured.n.a(this.a.l());
+        } catch (RuntimeException e) {
+            return null;
+        }
+    }
+
     private void y() throws IOException {
         String str;
-        if (!this.l.contains(17152)) {
-            z(17152, new byte[0]);
-            return;
-        }
+        // [V1.8.50] ★ P1 死代码修复：标识求值 / q0 赋值 / 判据必须放在 17152 的 early-return 之前。
+        // V1.8.48 把这段放在 if (!l.contains(17152)) { … return; } 之后，而 Info3.6 的 RECEIVE 列表
+        // 恒不含 17152 ⇒ 整段从未执行（identifier_source 判据 0 次、availability_identifier_present 恒 false）。
+        // 移动后只恢复字段赋值与可观测性，不改变协议行为：0x4300 仍由 z() 丢弃（不强发，强发已证伪）。
+        // q0 的其它引用都带 R()（车机 SEND=0 ⇒ R() 恒 false），故不会引入第二个变量。
         if (!this.p0) {
             this.p0 = true;
             // 传统无线流程（车机声明 22274 wifi_request ⇒ R()=false）同样需要本机蓝牙标识：
             // Info3.6 靠它把 _carplay-ctrl 服务与 iAP2 会话绑定。原实现只在 modern-only
             // 时取标识，实测 Buick modern_only=false ⇒ 恒 absent ⇒ 车机不下发 connect。
-            // Resolve the local Bluetooth identifier for both modern and legacy wireless flows.
-            try {
-                this.r0 = io.carplay.app.secured.n.a(this.a.l());
-            } catch (RuntimeException unused) {
-                this.r0 = null;
-            }
+            // [V1.8.48] P1：同源开关决定取值来源，判据日志打 identifier_source。
+            this.r0 = bAvailId();
             this.q0 = this.r0 != null;
             c cVar = this.a;
             boolean zR = R();
@@ -1263,9 +1555,42 @@ public final class MfiCertificateVerifier {
             } else {
                 str = "UNCHANGED";
             }
-            cVar.h("IAP2_CARPLAY_AVAILABILITY_PLAN modern_only=" + zR + " local_bluetooth_identifier_present=" + z + " placeholder_sent=false identifier_wire_case=" + str);
+            String idSource = io.carplay.app.secured.ControlChannel.Iap2AvailSameSourceEnabled()
+                    ? "manual_same_as_identification" : "resolver_legacy";
+            cVar.h("IAP2_CARPLAY_AVAILABILITY_PLAN modern_only=" + zR + " local_bluetooth_identifier_present=" + z
+                    + " identifier_source=" + idSource + " placeholder_sent=false identifier_wire_case=" + str);
+            cVar.h("V1850_P1_REACHABLE identifier_source=" + idSource
+                    + " local_bt_id_present=" + z + " peer_advertised_17152=" + this.l.contains(17152));
             io.carplay.app.secured.ControlChannel.Iap2Diag("CARPLAY_AVAILABILITY_PLAN local_bt_id_present=" + z
-                    + " R(modern_only)=" + zR + " identifier_case=" + str + " local_bt_id=" + (this.r0 != null ? this.r0 : "null"));
+                    + " R(modern_only)=" + zR + " identifier_source=" + idSource
+                    + " identifier_case=" + str + " local_bt_id=" + (this.r0 != null ? this.r0 : "null"));
+        }
+        if (!this.l.contains(17152)) {
+            // [V1.8.37] 车机 0x1D01 的 RECEIVE 列表通常只含 EA 消息（Info3.6: 4E09..4E0E/EA00/EA01），
+            // 不含 17152(0x4300)。原实现直接 z(17152) ⇒ NOT_ADVERTISED 丢弃 ⇒ 0x4300 从未发出
+            // ⇒ 车机永不发 17153(CarPlayStartSession)，waiting_start 永久 true。
+            // 开关打开时绕过广告位校验直接发送，并携带本机蓝牙标识。
+            // [V1.8.52] A：param24 门控 —— 车机未声明 param 24 时不发 0x4300（否则触发 PEER_RESTARTED）。
+            if (io.carplay.app.secured.ControlChannel.Iap2Param24GateEnabled() && !this.P24) {
+                this.a.h("IAP2_AVAILABILITY_GATED reason=peer_param24_absent p24=false wire=false");
+                io.carplay.app.secured.ControlChannel.Iap2Diag("AVAILABILITY_GATED param24=0");
+                return;
+            }
+            if (io.carplay.app.secured.ControlChannel.P1_3ForceAvailabilityEnabled()) {
+                String localId = bAvailId();
+                byte[] availability = Iap2Csm.B(0, new byte[]{1});
+                if (localId != null) {
+                    availability = Iap2Csm.f(availability,
+                            Iap2Csm.B(1, Iap2Csm.A(localId.toLowerCase(Locale.ROOT))));
+                }
+                x(17152, Iap2Csm.B(1, availability));
+                this.a.h("IAP2_FORCE_AVAILABILITY_SENT with_id=" + (localId != null));
+                io.carplay.app.secured.ControlChannel.Iap2Diag(
+                        "FORCE_AVAILABILITY sent=true with_id=" + (localId != null));
+            } else {
+                z(17152, new byte[0]);
+            }
+            return;
         }
         byte[] bArrB = Iap2Csm.B(0, new byte[]{1});
         if (this.q0 && R()) {
@@ -1288,6 +1613,22 @@ public final class MfiCertificateVerifier {
     // 导致 R() 的 this.m.contains(17153) 永远 false、车机永不发 CarPlayStartSession(17153)，手机永久 waiting。
     // 这里声明手机支持 CarPlay：to-send 含车机期望手机发的控制/HID 类消息（其 RECEIVE 列表 0x4E09..0x4E0E/0xEA00/0xEA01），
     // to-receive 含 CarPlayStartSession(17153) 与 CarPlayAvailability(17152)，让车机在 0x1D01 的 SEND 里声明 17153。
+    /**
+     * [V1.8.52] B：0x1D00 StartIdentification 载荷选择（默认 false = 历史 bEaPayload()）。
+     * true = 发空载荷。依据：wiomoc `StartIdentification: pass`（无字段）、TI 官方 iAP2Info 无 1D00 参数、
+     * CSDN 车机侧「收到 start identification 后再回 0x1D01 携全部能力」⇒ 1D00 按规范应为空。
+     * 用于验证「我方 377B 载荷是否导致车机只给最小能力集（缺 param24 / SEND=0）」。
+     */
+    private static byte[] bIdent() {
+        if (io.carplay.app.secured.ControlChannel.Iap2IdentEmptyEnabled()) {
+            ControlChannel.Log("IAP2_IDENT_PAYLOAD_MODE empty=true bytes=0");
+            return new byte[0];
+        }
+        byte[] p = bEaPayload();
+        ControlChannel.Log("IAP2_IDENT_PAYLOAD_MODE empty=false bytes=" + (p == null ? -1 : p.length));
+        return p;
+    }
+
     private static byte[] bEaPayload() {
         try {
             // ⚠️ ID 必须按十六进制换算，不要手算十进制：
@@ -1296,8 +1637,10 @@ public final class MfiCertificateVerifier {
             //   导致车机认为 0x4E0E（传输通道 ID）未被协商 → 不 ACK 并 IAP2_PEER_RESTARTED。
             //   0x5702 = 22274（手机请求 AP 信息）、0x5703 = 22275（车机下发 AP 信息，旧协议无线 CarPlay 必需）。
             //   0xEA00/0xEA01 = 59904/59905（外部配件协议会话起停）。
-            int[] toSendRaw = {19977, 19978, 19979, 19980, 19981, 19982, 22274, 59904, 59905};
-            int[] toReceiveRaw = {17153, 17152, 22275, 19977, 19978, 19979, 19980, 19981, 19982, 59904, 59905};
+            // [V1.8.41] 补 0xEA02/0xEA03（59906/59907）= EA 会话数据与数据确认。
+            // 原实现只声明起停、不声明数据通道 ⇒ 即使 EA 会话建立成功也无通道可走。
+            int[] toSendRaw = {19977, 19978, 19979, 19980, 19981, 19982, 22274, 59904, 59905, 59906, 59907};
+            int[] toReceiveRaw = {17153, 17152, 22275, 19977, 19978, 19979, 19980, 19981, 19982, 59904, 59905, 59906, 59907};
             // [V1.8.33] P1-1 EA 变体：去掉 19982（transport_notification），验证 V1.7.67 旧疑点
             // （19982 触发车机 IAP2_PEER_RESTARTED 重启引导、使 +0x9e0 列表永远为空）。
             // 默认 false == V1.8.32 行为；置 true 仅在此次构造生效，不改其它路径。
@@ -1337,15 +1680,48 @@ public final class MfiCertificateVerifier {
                     Iap2Csm.B(3, Iap2Csm.A(serial)));
             byte[] payload = Iap2Csm.f(
                     Iap2Csm.B(0, Iap2Csm.A(name)),
-                    Iap2Csm.B(1, Iap2Csm.A(android.os.Build.MODEL)),
+                    // [V1.8.43 U5] 机型统一：0x1D00 param 1 = Model Identifier，
+                    // 此前是 android.os.Build.MODEL(PKJ110)，与 TXT/SETUP/param 5 的 iPhone15,3 冲突。
+                    Iap2Csm.B(1, Iap2Csm.A(ControlChannel.CARPLAY_MODEL)),
                     Iap2Csm.B(2, Iap2Csm.A("Apple Inc.")),
                     Iap2Csm.B(3, Iap2Csm.A(serial)),
                     Iap2Csm.B(4, Iap2Csm.A("17.0")),
-                    Iap2Csm.B(5, Iap2Csm.A("iPhone15,3")),
+                    Iap2Csm.B(5, Iap2Csm.A(ControlChannel.CARPLAY_MODEL)),
                     Iap2Csm.B(6, bEaIds(toSend)),
-                    Iap2Csm.B(7, bEaIds(toReceive)),
-                    Iap2Csm.B(8, Iap2Csm.A("zh")),
-                    Iap2Csm.B(17, btComponent));
+                    Iap2Csm.B(7, bEaIds(toReceive)));
+            // [V1.8.42] 规范勘误（wiomoc/iap2 identification.py，已由车机 0x1D01 实测验证）：
+            //   param 8 = power_providing_capability(Uint8)
+            //   param 9 = maximum_current_drawn_from_device(Uint16, mA)
+            //   param 12 = current_language(str)
+            // 历史实现把 "zh\0" 写进了 param 8。默认保留历史行为，由 iap2_ident_strict 单变量 A/B。
+            boolean identStrict = io.carplay.app.secured.ControlChannel.Iap2IdentStrictEnabled();
+            if (identStrict) {
+                payload = Iap2Csm.f(payload,
+                        Iap2Csm.B(8, new byte[]{0x00}),
+                        Iap2Csm.B(9, new byte[]{0x00, 0x00}));
+            } else {
+                payload = Iap2Csm.f(payload, Iap2Csm.B(8, Iap2Csm.A("zh")));
+            }
+            // [V1.8.42] param 10 = supported_external_accessory_protocol（重复 TLV）。
+            // V1.8.41 曾把 4 个 NUL 协议串写进 param 9（Uint16 mA），属字段污染，已删除。
+            // 每个条目本身也是嵌套 TLV，结构依据 ExternalAccessoryProtocol：
+            //   子0 id(Uint8) | 子1 name(NUL str) | 子2 match_action(Uint8) | 子3 native_transport_id(Uint16)
+            int eapCount = 0;
+            if (io.carplay.app.secured.ControlChannel.Iap2EaParam10Enabled()) {
+                for (int idx = 0; idx < EA_PROTOCOLS.length; idx++) {
+                    byte[] eap = Iap2Csm.f(
+                            Iap2Csm.B(0, new byte[]{(byte) EA_PROTO_INDEX[idx]}),
+                            Iap2Csm.B(1, Iap2Csm.A(EA_PROTOCOLS[idx])),
+                            Iap2Csm.B(2, new byte[]{0x00}),
+                            Iap2Csm.B(3, new byte[]{0x00, 0x01}));
+                    payload = Iap2Csm.f(payload, Iap2Csm.B(10, eap));
+                    eapCount++;
+                }
+            }
+            if (identStrict) {
+                payload = Iap2Csm.f(payload, Iap2Csm.B(12, Iap2Csm.A("zh")));
+            }
+            payload = Iap2Csm.f(payload, Iap2Csm.B(17, btComponent));
             StringBuilder sb = new StringBuilder("IAP2_IDENTIFICATION_EA to_send=");
             for (int i2 : toSend) {
                 sb.append(i2).append(',');
@@ -1355,6 +1731,11 @@ public final class MfiCertificateVerifier {
                 sb.append(i3).append(',');
             }
             sb.append(" bytes=").append(payload.length).append(" transport17_bytes=").append(btComponent.length).append(" transport17_id=1");
+            // [V1.8.42] 不再打印 ea_proto_list（param 9 污染已删除）。
+            // eap_index_assumed=true 提醒：EA_PROTO_INDEX 里两个索引是推断值，需用 IAP2_PEER_EAP_HEX 校准。
+            sb.append(" ea_param10_count=").append(eapCount)
+                    .append(" ident_strict=").append(identStrict)
+                    .append(" eap_index_assumed=true");
             // 注意：SyntheticRefs.c() 是 throw new IOException(...) 的占位实现，不是日志函数。
             // 用它打点会被本方法的 catch(IOException) 吞掉并返回空 payload，等于修复从未生效。
             // 这里必须用 ControlChannel.Log（public static，写 logcat tag CarPlayAPK）。
@@ -1598,7 +1979,7 @@ public final class MfiCertificateVerifier {
                                 this.D0 = true;
                                 this.E0 = false;
                                 this.a.h("IAP2_STARTUP_ORDER mode=IDENTIFICATION_FIRST");
-                                x(7424, bEaPayload());
+                                x(7424, bIdent());
                                 i0(j);
                             } else {
                                 byte[] bArr2 = (byte[]) bArrB.clone();
@@ -1624,7 +2005,7 @@ public final class MfiCertificateVerifier {
                                     if (this.C0) {
                                         x(43520, new byte[0]);
                                     } else {
-                                        x(7424, bEaPayload());
+                                        x(7424, bIdent());
                                     }
                                 } else {
                                     D("FINAL_ACK_PENDING");

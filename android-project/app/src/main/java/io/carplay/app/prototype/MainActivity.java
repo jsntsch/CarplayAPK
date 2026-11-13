@@ -359,6 +359,11 @@ public final class MainActivity extends Activity
     private void F0(String str) {
         try {
             getSharedPreferences("wireless-ui", 0).edit().putString("selected_address", str).apply();
+             // [V0.0.1] 一律主动连车机 7000（等待车机 connect 的开关已随设置项删除）。
+            // 判据锚点：CP_A_PROACTIVE_CONNECT + 后续 CARPLAY_SCREEN_ROUTE_OPENED / VIDEO_PROGRESS。
+            io.carplay.app.secured.ControlChannel.Log("CP_A_PROACTIVE_CONNECT source=UI_F0"
+                    + " wait_ctrl_connect=false target=car_7000 iap2_bootstrap=true");
+            AppLogger.g(this, "CP_A_PROACTIVE_CONNECT source=UI_F0");
             startForegroundService(new Intent(this, (Class<?>) WirelessCarPlayService.class).setAction(WirelessCarPlayService.V0).putExtra("selectedBtAddress", str).putExtra("fill_display", R0(str)).putExtra("useCurrentWifi", this.p != 0).putExtra("currentWifiHandle", this.p));
             this.g = true;
             o2(this.p == 0 ? "正在自动连接所选车机。仅在系统提示时允许 WLAN 连接，无需手动查找热点。" : "正在当前车机 WLAN 查找服务，随后进行配对和证书认证。请保持这个网络连接。");
@@ -1757,8 +1762,39 @@ public final class MainActivity extends Activity
         SharedPreferences dbgPrefs = getSharedPreferences("carplayapk-debug", 0);
         this.debugMode = dbgPrefs.getBoolean("debug_mode", false);
         this.autoConnect = dbgPrefs.getBoolean("auto_connect_launch", false);
-        // [V1.8.34] 调试模式兼作「运行日志记录」总开关：关闭则不写日志文件，开启才记录。
-        AppLogger.setRecordingEnabled(this.debugMode);
+        // [V0.0.1] 预埋 logcat 关闭：调试模式是唯一总闸，未开时 ControlChannel 全部静默。
+        io.carplay.app.secured.ControlChannel.setDebugMode(this.debugMode);
+        // [V0.0.1] 连接日志默认不落盘：调试模式 + 「连接日志记录」两个开关都打开才写文件。
+        AppLogger.setRecordingEnabled(this.debugMode && dbgPrefs.getBoolean("log_enabled", false));
+
+        // [V1.8.55][F] 关闭屏幕自动旋转：App 运行时锁定竖屏。
+        // 现状：Manifest 未声明 screenOrientation ⇒ Activity 跟随系统重力传感器旋转，
+        // 投屏/操作时界面乱转。这里请求固定竖屏（零权限、不改系统「自动旋转」开关）。
+        // 回退：carplayapk-debug / cp_f_lock_rotation = false。
+        try {
+            boolean lockRotation = dbgPrefs.getBoolean("cp_f_lock_rotation", true);
+            if (lockRotation) {
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                io.carplay.app.secured.ControlChannel.Log(
+                        "CP_F_LOCK_ROTATION enabled=true orientation=PORTRAIT system_rotation_untouched=true");
+            } else {
+                io.carplay.app.secured.ControlChannel.Log("CP_F_LOCK_ROTATION enabled=false");
+            }
+        } catch (Throwable rotationFailure) {
+            io.carplay.app.secured.ControlChannel.Log(
+                    "CP_F_LOCK_ROTATION_FAILED msg=" + rotationFailure.getMessage());
+        }
+
+        // [V1.8.58][I] iAP2-over-WiFi 端点监听：固件证明车机是客户端
+        // （NmeWifiTransportClient::wait_for_connect），手机必须先监听它才可能连上来。
+        // 只监听 + 打日志，不向车机发送任何报文。
+        // 回退：carplayapk-debug / cp_i_wifi_iap_listen = false。
+        try {
+            io.carplay.app.secured.WifiIapListener.get().start(this);
+        } catch (Throwable listenFailure) {
+            io.carplay.app.secured.ControlChannel.Log(
+                    "CP_I_LISTEN_BOOT_FAILED msg=" + listenFailure.getMessage());
+        }
 
         this.g = bundle != null && bundle.getBoolean("continue_source_intent", false);
         this.a = bundle != null && bundle.getBoolean("pairing_visibility_pending", false);
@@ -1781,6 +1817,12 @@ public final class MainActivity extends Activity
         settingsScreen.setTheme(themeMode);
         // [V1.8.35] 初始化「主动发起 iAP2-over-WiFi」（P1-2）开关状态（持久化于 carplayapk-debug）。
         settingsScreen.setProactiveIap2(ControlChannel.P1_2ProactiveIap2Enabled());
+        // [V1.8.38] 初始化「车机发现增强（mDNS）」开关状态。
+        settingsScreen.setMdnsEnhance(ControlChannel.CtrlMdnsEnhanceEnabled());
+        // [V0.0.1] 初始化「调试模式 / 连接日志记录」两个开关的显示状态（默认均为关）。
+        settingsScreen.setDebugMode(this.debugMode);
+        settingsScreen.setLogRecording(this.debugMode
+                && getSharedPreferences("carplayapk-debug", 0).getBoolean("log_enabled", false));
         // [V1.8.34] 初始化蓝牙标识状态显示（未设置则高亮）。
         refreshLocalBtStatus();
 
@@ -2198,13 +2240,42 @@ public final class MainActivity extends Activity
     }
 
     @Override
+    public void setMdnsEnhance(boolean on) {
+        // [V1.8.38] 设置 → 连接 开关：车机发现增强（mDNS 探针 + 单播通告），下次 ctrl 注册时生效。
+        getSharedPreferences("carplayapk-debug", 0).edit().putBoolean("ctrl_mdns_enhance", on).apply();
+        if (settingsScreen != null) settingsScreen.setMdnsEnhance(on);
+        ControlChannel.Log("USER_CTRL_MDNS_ENHANCE_SET enabled=" + on);
+        o2(on ? "已开启车机发现增强（即时生效）。" : "已关闭车机发现增强。");
+    }
+
+    @Override
     public void setDebugMode(boolean on) {
         this.debugMode = on;
-        getSharedPreferences("carplayapk-debug", 0).edit().putBoolean("debug_mode", on).apply();
-        // [V1.8.34] 调试模式同时控制运行日志是否落盘：关闭即停止记录。
-        AppLogger.setRecordingEnabled(on);
-        if (settingsScreen != null) settingsScreen.setDebugMode(on);
-        o2(on ? "已开启调试模式（运行日志已开启）。" : "已关闭调试模式（停止记录日志）。");
+        SharedPreferences dbgPrefs = getSharedPreferences("carplayapk-debug", 0);
+        dbgPrefs.edit().putBoolean("debug_mode", on).apply();
+        // [V0.0.1] 调试模式是 logcat 与连接日志的唯一总闸；关闭立即静默并停写。
+        io.carplay.app.secured.ControlChannel.setDebugMode(on);
+        boolean logOn = on && dbgPrefs.getBoolean("log_enabled", false);
+        AppLogger.setRecordingEnabled(logOn);
+        if (settingsScreen != null) {
+            settingsScreen.setDebugMode(on);
+            settingsScreen.setLogRecording(logOn);
+        }
+        o2(on ? "已开启调试模式。" : "已关闭调试模式（logcat 与连接日志均已停止）。");
+    }
+
+    /** [V0.0.1] 「连接日志记录」开关：必须先在设置里打开调试模式，否则拒绝并回弹。 */
+    @Override
+    public void setLogRecording(boolean on) {
+        if (on && !this.debugMode) {
+            if (settingsScreen != null) settingsScreen.setLogRecording(false);
+            o2("请先打开「调试模式」，再开启连接日志记录。");
+            return;
+        }
+        getSharedPreferences("carplayapk-debug", 0).edit().putBoolean("log_enabled", on).apply();
+        AppLogger.setRecordingEnabled(this.debugMode && on);
+        if (settingsScreen != null) settingsScreen.setLogRecording(on);
+        o2(on ? "已开启连接日志记录（保存到本机）。" : "已关闭连接日志记录。");
     }
 
     @Override
@@ -2221,9 +2292,11 @@ public final class MainActivity extends Activity
 
     @Override
     public void openLog() {
-        // [V1.8.34] 调试模式关闭时不记录日志，提示用户而非打开空日志。
+        // [V0.0.1] 双开关：调试模式 + 连接日志记录都打开才有内容可看。
         if (!AppLogger.isRecordingEnabled()) {
-            o2("调试模式未开启，未记录运行日志。请在设置中打开「调试模式」。");
+            o2(this.debugMode
+                    ? "连接日志记录未开启。请在设置中打开「连接日志记录」。"
+                    : "调试模式未开启，未记录运行日志。请先在设置中打开「调试模式」，再打开「连接日志记录」。");
             return;
         }
         a1();
@@ -2334,6 +2407,8 @@ public final class MainActivity extends Activity
         refreshLocalBtStatus();
         // [V1.8.35] 同步 P1-2 开关（adb 广播 DEBUG_SET_P12 改动后回到前台也能对上）。
         if (settingsScreen != null) settingsScreen.setProactiveIap2(ControlChannel.P1_2ProactiveIap2Enabled());
+        // [V1.8.38] 同步车机发现增强开关（adb 广播 DEBUG_SET_CTRL_MDNS）。
+        if (settingsScreen != null) settingsScreen.setMdnsEnhance(ControlChannel.CtrlMdnsEnhanceEnabled());
         // App 一到前台就广播 _carplay-ctrl，让车机从自己那一侧发起时也能发现本机。
         CarPlayCtrlAdvertiser.StartEarly(this);
         // [V1.8.25] 前台时确保常驻自动重连服务在跑（开机广播之外的一层保险）。

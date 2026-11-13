@@ -63,8 +63,29 @@
 | 6 | Messages Sent | EA to-send |
 | 7 | Messages Received | EA to-receive |
 | 8 | Preferred Language | `zh` |
-| 9 | Supported EA Protocols | `com.apple.carplay` 等 |
+| 9 | ~~Supported EA Protocols~~ | ⚠️ **勘误 2026-11-09**：实际是 `maximum_current_drawn_from_device`（**Uint16, mA**）。见下表 |
 | 14 | Transport Components | Bluetooth（含 MAC）/ WirelessCarPlay |
+
+> **⚠️ 勘误 2026-11-09（A 级）**
+> 上表来自早期社区文档，参数 8/9/10/14 的记载**有误**。以 `wiomoc/iap2` 开源实现
+> `identification.py`（原件存 `.workbuddy/re/iap2_identification_wiomoc.py`）为准，
+> 且已被 Info3.6 车机 `0x1D01` 实测逐项验证：
+>
+> | param | 正确含义 | 类型 | 车机实测 |
+> | --- | --- | --- | --- |
+> | 8 | `power_providing_capability` | Uint8 (0/1/2) | 1B |
+> | 9 | `maximum_current_drawn_from_device` | Uint16 (mA) | 2B |
+> | 10 | `supported_external_accessory_protocol` | **List，重复 TLV** | **×4** |
+> | 11 | `app_match_team_id` | str | 11B |
+> | 12 | `current_language` | str | 3B |
+> | 13 | `supported_language` | List[str] | 3B |
+> | 17 | `bluetooth_transport_component` | List | 42B |
+> | 20 / 21 / 24 | VehicleInformation / VehicleStatus / **WirelessCarPlay** | Optional | 缺失 |
+>
+> 由此作废两条旧结论：①「车机 0x1D01 的 param 9 声明 `com.apple.carplay`」——param 9 是 mA 数值，
+> `IAP2_PEER_EA_PROTOCOLS text=..` 是读错参数号造成的假象；②「param 10 是语言串」——
+> 它是 **4 条 EAP 协议条目**（`MediaManagerService::addEAPMetaEntries` @0x82455 `cmp ebx,4` 循环 4 次实证）。
+> V1.8.41 把 68 字节协议串写进 param 9 属于字段污染，必须删除。
 
 - V1.7.73 只补了 6/7；**V1.7.76 补齐 0–5、8**（`bEaPayload()`）。
 - 车机是否在 `0x1D01` 的 param 9 声明 `com.apple.carplay`，是判断「它是否愿意走 iAP2 无线 CarPlay」的关键；
@@ -105,12 +126,25 @@
    攻 `4E0E` 的五个版本（V1.7.73~83）都属于走错方向。
 3. **Accessory 必须声明 `WirelessCarPlayTransportComponent`（iAP2 param 24）** 才算支持无线 CarPlay。
 
-**Info3.6 实机对照**：`0x1D01` 只有 param 17（`CinemoBTComponent`），**param 24 缺失**、param 6（SEND）为空
-⇒ 按官方定义这台车机不具备无线 CarPlay 能力，也不会主动下发 `0x5703`。这解释了全部现象：
-投屏能起（普通 AirPlay 镜像）、触摸不可用（未登记为 CarPlay）、`4E0E` 一律被拒。
+**Info3.6 实机对照**：`0x1D01` 只有 param 17（`CinemoBTComponent`），param 24 缺失、param 6（SEND）为空。
 
-> 判据：`IAP2_TRANSPORT_CHANNEL_ID_SKIPPED reason=not_required_by_carplay_spec`（V1.7.84 起停发 4E0E）
-> 之后若仍无 `IAP2_RX_5703`，即确认该车机无无线 CarPlay 能力，应转向有线（USB）或放弃 CarPlay 登记。
+> #### ⛔ 2026-11-10 勘误：下面两段原结论已作废
+> 原文曾据此推出「按官方定义这台车机不具备无线 CarPlay 能力，也不会主动下发 0x5703……
+> 应转向有线（USB）或放弃 CarPlay 登记」。**此结论错误，不得再作为放弃依据**，三点理由：
+> 1. 用户实测 + iOS sysdiagnose 双向证明该车机能**纯无线**建立 CarPlay 会话
+>    （`2556870 Activated endpoint 'CarPlay' with seed 1`）。
+> 2. param 24 是 **0x1D01（车机→手机）** 的参数，用途是车机告知手机「我支持无线 CarPlay」；
+>    手机在 0x1D00 里补它不会让车机展开能力（param 24 是车机→手机字段，手机侧补无意义）。
+> 3. sysdiagnose 中蓝牙 iAP2 端点的 `carPlayCapable` 从 **0**（2526171）变为 **1**（2531155），
+>    同一 `connectionUUID=E8ECCC90-...`，中间经过 MFi 证书缓存（2530596）、`authState=1`（2530913）、
+>    EA 协议字典（2526216）⇒ 能力位是**蓝牙 iAP2 认证完成后才置上**的，不是 0x1D01 初始宣告。
+>
+> 当前权威结论见 `v1861-why-not-wireless-carplay-device.md`：根因在蓝牙发现层（EIR 缺 128-bit
+> UUID `2D8D2466…`），与会话发起方向、iAP2 参数完备性均无关。§1.5 的规范引文本身仍然有效，
+> 仅「实机对照」的推论作废。
+
+> 判据（保留作历史记录，不再用于定案）：`IAP2_TRANSPORT_CHANNEL_ID_SKIPPED reason=not_required_by_carplay_spec`
+> （V1.7.84 起停发 4E0E）。
 
 ## 2. 识别阶段 EA 列表协商（核心门控）/ Identification EA negotiation — the gate
 
@@ -182,7 +216,7 @@ iAP2 的 EA 集合是**交集**：A 的 to-send ∩ B 的 to-receive。
 | --- | --- | --- |
 | param 6 | 空/缺失 | 车机不声明自己要发任何 EA 消息 ⇒ 不会主动发 `0x5703` |
 | param 7 | 16B = 8 项 `4E09..4E0E,EA00,EA01` | 车机只收旧协议集 |
-| param 10 | `32x4`（128B） | 4 条 32 字节语言串（UTF-16），重复属正常，first-wins 即可 |
+| param 10 | `32x4` | ⚠️ **勘误 2026-11-09**：不是「语言串」。是 **4 条 `supported_external_accessory_protocol`**（嵌套 TLV，`MediaManagerService` 实测循环 4 次）；语言是 param 12/13。重复属正常，但**必须逐条解析**，不能 first-wins |
 | param 24 | 缺失 ⇒ `wireless_carplay=0` | **不支持新协议 `0x4301`**，只能走旧协议 |
 | param 17 | 42B | 蓝牙传输组件（含 MAC） |
 

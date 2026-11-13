@@ -17,7 +17,9 @@ public final class SettingsScreenUi extends ScrollView {
     private final UiHolder btPairRow;
     private final UiHolder localBtRow;
     private final UiHolder proactiveIap2Row;
+    private final UiHolder mdnsEnhanceRow;
     private final UiHolder debugRow;
+    private final UiHolder logRecordRow;
     private final UiHolder logRow;
 
     public SettingsScreenUi(Context context, ScreenActions.Settings actions) {
@@ -86,6 +88,19 @@ public final class SettingsScreenUi extends ScrollView {
                     }
                 });
         conn.addView(proactiveIap2Row.view);
+        Ui.g(conn, context);
+        // [V1.8.60] 移除「蓝牙 iAP2 引导（保留重连）/ 会话序列 V2 / 等待车机 connect」三个设置项：
+        // 三者均为早期单变量 A/B 的实验开关，结论已定（默认关闭即正确行为），
+        // 保留在 UI 上只会被误触。运行时开关一并收敛为常量 false，见 ControlChannel。
+        // [V1.8.38] 车机发现增强：诊断车机是否 browse _carplay-ctrl，并可选单播通告绕过热点隔离。
+        mdnsEnhanceRow = Ui.q(context, "车机发现增强（mDNS）",
+                "监听车机发现请求并向车机单播通告控制服务", false, new OnToggle() {
+                    @Override
+                    public void onChanged(boolean checked) {
+                        actions.setMdnsEnhance(checked);
+                    }
+                });
+        conn.addView(mdnsEnhanceRow.view);
         LinearLayout.LayoutParams connLp = new LinearLayout.LayoutParams(-1, -2);
         connLp.topMargin = Ui.h(context, 2.0f);
         root.addView(conn, connLp);
@@ -99,6 +114,16 @@ public final class SettingsScreenUi extends ScrollView {
                 actions.setDebugMode(checked);
             }
         });
+        // [V0.0.1] 连接日志默认关闭：只有先打开「调试模式」，这里才会真正落盘。
+        logRecordRow = Ui.q(context, "连接日志记录",
+                "写入本机文件（需先打开调试模式）", false, new OnToggle() {
+                    @Override
+                    public void onChanged(boolean checked) {
+                        actions.setLogRecording(checked);
+                    }
+                });
+        debug.addView(logRecordRow.view);
+        Ui.g(debug, context);
         logRow = Ui.o(context, "运行日志", null, null, true, null, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -142,8 +167,18 @@ public final class SettingsScreenUi extends ScrollView {
         if (debugRow.switchView != null) debugRow.switchView.setChecked(on, true);
     }
 
+    /** [V0.0.1] 连接日志记录开关状态（需调试模式开启才有效）。 */
+    public void setLogRecording(boolean on) {
+        if (logRecordRow.switchView != null) logRecordRow.switchView.setChecked(on, true);
+    }
+
     /** [V1.8.35] 主动发起 iAP2-over-WiFi（P1-2）开关状态。 */
     public void setProactiveIap2(boolean on) {
         if (proactiveIap2Row.switchView != null) proactiveIap2Row.switchView.setChecked(on, true);
+    }
+
+    /** [V1.8.38] 车机发现增强开关状态。 */
+    public void setMdnsEnhance(boolean on) {
+        if (mdnsEnhanceRow.switchView != null) mdnsEnhanceRow.switchView.setChecked(on, true);
     }
 }

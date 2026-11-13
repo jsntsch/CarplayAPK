@@ -25,6 +25,8 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <!-- V1.8.38 车机发现增强：接收 WiFi 上的 mDNS 组播报文需要 MulticastLock。 -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
 
     <queries>
         <package android:name="com.oplus.ocar" />
@@ -44,6 +46,7 @@
             android:name="io.carplay.app.prototype.MainActivity"
             android:exported="true"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:configChanges="smallestScreenSize|screenSize|screenLayout|orientation|keyboardHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -95,6 +98,14 @@
                 <action android:name="io.carplay.app.action.DEBUG_SET_IAP2" />
                 <!-- [V1.8.34] P1-2 主动发起 iAP2-over-WiFi 开关 -->
                 <action android:name="io.carplay.app.action.DEBUG_SET_P12" />
+                <!-- [V1.8.37] 强制发送 CarPlayAvailability(0x4300) 开关 -->
+                <action android:name="io.carplay.app.action.DEBUG_SET_AVAIL" />
+                <!-- [V1.8.38] 车机发现增强 mDNS 探针与单播通告开关 -->
+                <action android:name="io.carplay.app.action.DEBUG_SET_CTRL_MDNS" />
+                <!-- [V1.8.42] Identification param 10 与严格身份参数 A/B 开关 -->
+                <action android:name="io.carplay.app.action.DEBUG_SET_IDENT" />
+                <!-- [V0.0.1] 调试模式与连接日志记录：extra mode / log -->
+                <action android:name="io.carplay.app.action.DEBUG_SET_LOG" />
             </intent-filter>
         </receiver>
     </application>

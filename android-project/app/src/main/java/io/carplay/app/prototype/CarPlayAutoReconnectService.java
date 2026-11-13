@@ -62,6 +62,92 @@ public final class CarPlayAutoReconnectService extends Service {
     private boolean wifiMonitorRegistered;
     private android.os.Handler invitationHandler;
 
+    /**
+     * [V1.8.45] 修复 V1.8.44 的拦截层级错误。
+     *
+     * V1.8.44 把拦截放在 startSession() / MainActivity.F0()，导致 WirelessCarPlayService
+     * 一次都没启动；而蓝牙 iAP2 的 RFCOMM 监听是在 WirelessCarPlayService.c2()
+     * → PairingSession → BtDiscovery.u() 里 listenUsingRfcommWithServiceRecord 创建的。
+     * 结果车机在蓝牙第一道门就找不到 iAP2 通道：V1.8.44 真机日志出现 79 次
+     * ACL 连上/主动断开循环（HCI_ERR_PEER_USER），随后车机 UI 报「连接错误，请重试」，
+     * 根本没有走到会发 GET /ctrl-int/1/connect 的那一步。
+     *
+     * 规范 §23.2.5 的顺序是：蓝牙 iAP2 认证 → 交换 WiFi 凭证 → 手机连热点 →
+     * 广播 ctrl → 车机 connect。所谓「等待车机 connect」是在最后两步之间等待，
+     * 不等于把第一步的蓝牙监听也关掉。
+     *
+     * 本实现只启动独立的「识别准备」服务（BtDiscovery 挂 3 路 RFCOMM，
+     * 含 deca-fade iAP2 UUID），不启动 WirelessCarPlayService，因此仍然不会
+     * 抢跑连 7000。wait_ctrl_connect 仍是唯一开关，置 false 即完全回到 V1.8.43。
+     */
+    public static void ensureBtIap2Preparation(Context context, String reason) {
+        if (context == null) {
+            return;
+        }
+        // [V1.8.47] 修复 V1.8.46 连接闪退：引导实例在跑时，主服务 c2() 已自建 BtDiscovery
+        // 并挂 3 路 RFCOMM（真机 V1845_RFCOMM_READY / PHONE_DISCOVERY_REMEMBERED_PEER 直证），
+        // 准备服务是多余的。若此时仍 startForegroundService()，会命中
+        // PairingPreparationService.onStartCommand 的 L1()==true 早退分支 —— 服务不调
+        // startForeground() ⇒ 5s 后系统抛 ForegroundServiceDidNotStartInTimeException
+        // 杀进程，START_STICKY 重建又重复触发 ⇒ 崩溃死循环（08:39~08:42 共 20 次）。
+        if (WirelessCarPlayService.L1()) {
+            ControlChannel.Log("WAIT_CTRL_BT_IAP2_SKIPPED reason=BOOTSTRAP_SERVICE_OWNS_RFCOMM"
+                    + " reason_in=" + reason);
+            return;
+        }
+        try {
+            if (PairingPreparationService.f()) {
+                ControlChannel.Log("WAIT_CTRL_BT_IAP2_ACTIVE reason=" + reason);
+                return;
+            }
+            Intent intent = new Intent(context.getApplicationContext(), PairingPreparationService.class)
+                    .setAction(PairingPreparationService.e);
+            context.getApplicationContext().startForegroundService(intent);
+            ControlChannel.Log("WAIT_CTRL_BT_IAP2_STARTED reason=" + reason
+                    + " service=PairingPreparationService iap2_uuid=deca-fade secure_records=3"
+                    + " proactive_7000_blocked=true");
+            AppLogger.g(context, "WAIT_CTRL_BT_IAP2_STARTED reason=" + reason);
+        } catch (Throwable t) {
+            ControlChannel.Log("WAIT_CTRL_BT_IAP2_FAILED reason=" + reason
+                    + " type=" + t.getClass().getSimpleName());
+        }
+    }
+
+    /**
+     * [V1.8.46 修正1/2] 等待态启动「仅蓝牙引导」实例。
+     *
+     * V1.8.45 只挂被动 CAFE 监听（无 iAP2 认证）。这里改为启动主服务并带
+     * EXTRA_BOOTSTRAP_ONLY，让它跑完 c2()→PairingSession 的 identification /
+     * MFi / EA / WiFi 凭证，再由 z1() 硬门控停在 new AirPlaySession 之前。
+     * 幂等：WirelessCarPlayService.L1() 为 true 时直接返回。
+     */
+    public static void startBluetoothBootstrap(Context context, String mac, long wifiHandle) {
+        if (context == null || mac == null || !BluetoothAdapter.checkBluetoothAddress(mac)) {
+            ControlChannel.Log("V1846_BOOTSTRAP_SKIPPED reason=NO_SELECTED_RECEIVER");
+            return;
+        }
+        if (WirelessCarPlayService.L1()) {
+            ControlChannel.Log("V1846_BOOTSTRAP_ALREADY_RUNNING");
+            return;
+        }
+        try {
+            Intent intent = new Intent(context.getApplicationContext(), WirelessCarPlayService.class)
+                    .setAction(WirelessCarPlayService.V0)
+                    .putExtra("selectedBtAddress", mac)
+                    .putExtra(WirelessCarPlayService.EXTRA_BOOTSTRAP_ONLY, true);
+            if (wifiHandle != 0L) {
+                intent.putExtra("useCurrentWifi", true)
+                        .putExtra("currentWifiHandle", wifiHandle);
+            }
+            context.getApplicationContext().startForegroundService(intent);
+            ControlChannel.Log("V1846_BOOTSTRAP_STARTED proactive_7000_blocked=true"
+                    + " full_iap2_enabled=true use_current_wifi=" + (wifiHandle != 0L));
+            AppLogger.g(context, "V1846_BOOTSTRAP_STARTED full_iap2_enabled=true");
+        } catch (Throwable t) {
+            ControlChannel.Log("V1846_BOOTSTRAP_START_FAILED type=" + t.getClass().getSimpleName());
+        }
+    }
+
     /** [V1.8.32 P0-1] 开关开启时让「等车机 ctrl 回连」成为主路径：先播 ctrl，8s 内收到邀请即起会话，超时兜底主动连。 */
     private void scheduleInvitationTimeout(final String reason) {
         if (invitationHandler == null) {
@@ -199,7 +285,9 @@ public final class CarPlayAutoReconnectService extends Service {
         ControlChannel.Log("AUTO_SERVICE_COMMAND action=" + action + " reason=" + reason);
         AppLogger.g(this, "AUTO_SERVICE_COMMAND action=" + action + " reason=" + reason);
         if (ACTION_CTRL_INVITATION.equals(action)) {
-            startSession(CarPlayWifiConnector.readyNetwork());
+            // [V1.8.44] 规范 §23.2.5：车机主动 connect 到达后才允许手机连 7000 建会话。
+            ControlChannel.Log("WAIT_CTRL_ALLOW source=CTRL_INVITATION wait_ctrl_connect=false");
+            startSession(CarPlayWifiConnector.readyNetwork(), true);
         } else {
             handleEnsure(reason);
         }
@@ -365,13 +453,28 @@ public final class CarPlayAutoReconnectService extends Service {
 
     /** synchronized：两条 WiFi 触发路径串行，避免 StopEarly/StartEarly 并发竞态。 */
     private synchronized void restartCtrlAndStartSession(Network network) {
-        CarPlayCtrlAdvertiser.StopEarly();
-        CarPlayCtrlAdvertiser.StartEarly(this);
-        startSession(network);
+        // [V1.8.39] 复用已活跃的 ctrl 广播。原实现无条件 StopEarly+StartEarly：
+        // 真机 logs/v1.8.38 证明每次会话重建都换随机端口（38799→33771→41481），
+        // 且新注册会被 NsdManager 改名成 "OPPO_X8U (2)"，车机 SendConnect 的
+        // (device_id, service_name) 双串匹配因此永远打不中。
+        if (CarPlayCtrlAdvertiser.HasActiveInstance()) {
+            ControlChannel.Log("CTRL_EARLY_REUSED reason=ACTIVE_INSTANCE_RETAINED");
+        } else {
+            CarPlayCtrlAdvertiser.StopEarly();
+            CarPlayCtrlAdvertiser.StartEarly(this);
+        }
+        startSession(network, false);
     }
 
-    private void startSession(Network network) {
+    /**
+     * [V1.8.44] 启动会话的唯一出口。fromInvitation=true 表示车机已发 GET /ctrl-int/1/connect，
+     * 是规范允许的时机；false 表示手机侧主动发起（WiFi 就绪 / 蓝牙 ACL / ENSURE 兜底等）。
+     */
+    private void startSession(Network network, boolean fromInvitation) {
         String mac = CarPlayLinkStore.selectedAddress(this);
+        // [V1.8.53][A] 主动连 7000 放行（wait_ctrl_connect=false 或车机邀请）。
+        ControlChannel.Log("CP_A_PROACTIVE_CONNECT source=AUTO_START_SESSION from_invitation="
+                + fromInvitation + " wait_ctrl_connect=false network_present=" + (network != null));
         if (mac == null || !BluetoothAdapter.checkBluetoothAddress(mac)) {
             ControlChannel.Log("AUTO_SESSION_SKIPPED reason=NO_SELECTED_RECEIVER");
             return;

@@ -170,6 +170,24 @@ public final class PairingPreparationService extends Service {
     @Override 
     public int onStartCommand(Intent intent, int i, int i2) {
         if (intent == null || !e.equals(intent.getAction()) || WirelessCarPlayService.L1()) {
+            // [V1.8.47] 调用方一律用 startForegroundService()：Android 要求本服务在 5s 内
+            // 调 startForeground()，即使立刻要停也必须补这一次，否则系统抛
+            // ForegroundServiceDidNotStartInTimeException 杀掉整个进程（V1.8.46 闪退根因）。
+            // L1() 在 intent 发出后到服务启动前才变 true 的竞态窗口也靠这里兜住。
+            try {
+                ((NotificationManager) getSystemService(NotificationManager.class))
+                        .createNotificationChannel(new NotificationChannel("carplus-pairing", "车机重新识别", 2));
+                startForeground(77, new Notification.Builder(this, "carplus-pairing")
+                        .setSmallIcon(android.R.drawable.stat_notify_sync)
+                        .setContentTitle("正在准备车机重新识别")
+                        .setContentText("会话已启动，准备服务即将退出")
+                        .setOngoing(true).build(), 16);
+                io.carplay.app.secured.ControlChannel.Log(
+                        "PAIRING_PREP_FOREGROUND_SATISFIED reason=EARLY_EXIT");
+            } catch (Throwable t) {
+                io.carplay.app.secured.ControlChannel.Log(
+                        "PAIRING_PREP_FOREGROUND_FALLBACK_FAILED type=" + t.getClass().getSimpleName());
+            }
             d();
             return 2;
         }

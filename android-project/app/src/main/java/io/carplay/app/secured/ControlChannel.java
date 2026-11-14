@@ -119,26 +119,33 @@ public final class ControlChannel {
     }
 
     /**
-     * [V1.8.53][C] 未激活保护：RECORD 后 N 秒内若车机没有下发任何 /command（EVTCP :5001），
-     * 主动断开 AirPlay 会话，避免长时间黑屏挂着（历史上表现为「强连 7000 ⇒ 车机触摸无反应」）。
-     * 0 = 关闭保护。默认 45s。
+     * [V0.0.2][C] 未激活保护：RECORD 后 N 秒内若车机既没下发任何 /command（EVTCP :5001），
+     * 也没产生任何视频/音频流进度（见 CP_MEDIA_PROGRESS），就主动断开 AirPlay 会话，
+     * 避免长时间黑屏挂着（历史上表现为「强连 7000 ⇒ 车机触摸无反应」）。
+     * 0 = 关闭保护（默认）。实测：部分车机（如本别克 Info3.6）投屏正常但全程不下发 /command，
+     * 仅靠入站命令计数会误杀健康会话 ⇒ 默认关闭，并改为「入站命令 OR 媒体流进度」任一活跃即视为存活。
      */
     public static int CpGuardSec() {
         Context ctx = APP_CTX;
         if (ctx == null) {
-            return 45;
+            return 0;
         }
         try {
             return ctx.getSharedPreferences("carplayapk-debug", 0)
-                    .getInt("cp_c_guard_sec", 45);
+                    .getInt("cp_c_guard_sec", 0);
         } catch (Throwable ignored) {
-            return 45;
+            return 0;
         }
     }
 
     /** [V1.8.53][C] 入站 /command 计数（车机是否真的把本机当投影源）。 */
     public static final java.util.concurrent.atomic.AtomicInteger CP_INBOUND_COMMANDS =
             new java.util.concurrent.atomic.AtomicInteger();
+
+    /** [V0.0.2][C] 媒体流进度计数（视频单元 / 音频帧发送）。与 CP_INBOUND_COMMANDS 同为「会话存活」判据，
+     *  解决仅按入站命令计数导致正常投屏被误杀的问题。 */
+    public static final java.util.concurrent.atomic.AtomicLong CP_MEDIA_PROGRESS =
+            new java.util.concurrent.atomic.AtomicLong();
 
     /**
      * [V1.8.57][H] 只给「有效触摸设备」发 hidSetInputMode。

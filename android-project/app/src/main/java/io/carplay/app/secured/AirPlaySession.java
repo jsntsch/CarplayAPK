@@ -1566,20 +1566,24 @@ public final class AirPlaySession implements AutoCloseable {
             ControlChannel.Log("CP_C_GUARD_DISABLED sec=0");
             return;
         }
-        final int baseline = ControlChannel.CP_INBOUND_COMMANDS.get();
-        ControlChannel.Log("CP_C_GUARD_ARMED sec=" + guardSec + " baseline=" + baseline);
+        final int inboundBaseline = ControlChannel.CP_INBOUND_COMMANDS.get();
+        final long mediaBaseline = ControlChannel.CP_MEDIA_PROGRESS.get();
+        ControlChannel.Log("CP_C_GUARD_ARMED sec=" + guardSec
+                + " inbound_baseline=" + inboundBaseline + " media_baseline=" + mediaBaseline);
         Thread guardThread = new Thread(() -> {
             try {
                 Thread.sleep(guardSec * 1000L);
-                int delta = ControlChannel.CP_INBOUND_COMMANDS.get() - baseline;
-                if (delta > 0) {
-                    String okStr = "CP_C_GUARD_OK sec=" + guardSec + " inbound_commands=" + delta;
+                int inboundDelta = ControlChannel.CP_INBOUND_COMMANDS.get() - inboundBaseline;
+                long mediaDelta = ControlChannel.CP_MEDIA_PROGRESS.get() - mediaBaseline;
+                if (inboundDelta > 0 || mediaDelta > 0) {
+                    String okStr = "CP_C_GUARD_OK sec=" + guardSec
+                            + " inbound_commands=" + inboundDelta + " media_progress=" + mediaDelta;
                     this.n.a(okStr);
                     ControlChannel.Log(okStr);
                     return;
                 }
                 String tripStr = "CP_C_GUARD_TRIPPED sec=" + guardSec
-                        + " inbound_commands=0 action=close_session";
+                        + " inbound_commands=0 media_progress=0 action=close_session";
                 this.n.a(tripStr);
                 ControlChannel.Log(tripStr);
                 try {
@@ -1979,6 +1983,7 @@ public final class AirPlaySession implements AutoCloseable {
                             + " sentFrames=" + (dVar.z - dVar.K)
                             + " packets=" + dVar.A
                             + " gateEntered=" + (this.audioPcmBypass || dVar.g != 100 || (this.B.get() == null && !this.C.b())));
+                    ControlChannel.CP_MEDIA_PROGRESS.incrementAndGet();
                 }
                 // audioPcmBypass：车机拒绝 modesChanged（Info3.6 实测 422）后，音频资源所有权
                 // 永远停在 g==100，这个门会让发送循环每 10ms 空转一次、一个包都不消费
@@ -3161,6 +3166,7 @@ public final class AirPlaySession implements AutoCloseable {
                     }
                     this.q.addAndGet(encrypted.length);
                     long units = this.r.incrementAndGet();
+                    ControlChannel.CP_MEDIA_PROGRESS.incrementAndGet();
                     if (units == 1 || units % 300 == 0) {
                         this.n.a("VIDEO_UNITS_SENT=" + units);
                     }
